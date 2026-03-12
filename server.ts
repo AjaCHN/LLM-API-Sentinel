@@ -20,7 +20,7 @@ if (admin.apps.length === 0) {
   });
 }
 
-const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
+const db = admin.firestore();
 
 async function runBackgroundMonitor() {
   console.log('[Monitor] Starting background check...');
