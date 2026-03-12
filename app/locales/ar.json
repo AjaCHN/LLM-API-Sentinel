@@ -1,9 +1,36 @@
 {
   "title": "LLM API Sentinel",
-  "description": "Autonomous API Monitoring System",
-  "status": "Status",
-  "latency": "Latency",
-  "lastChecked": "Last Checked",
-  "online": "Online",
-  "offline": "Offline"
+  "description": "نظام مراقبة API ذاتي",
+  "header": {
+    "title": "LLM Sentinel",
+    "subtitle": "نظام مراقبة API عالمي",
+    "signIn": "تسجيل الدخول",
+    "signOut": "تسجيل الخروج",
+    "alerts": "تنبيهات"
+  },
+  "status": {
+    "title": "الحالة الحالية",
+    "sync": "مزامنة",
+    "trigger": "تشغيل الفحص",
+    "checking": "جاري الفحص..."
+  },
+  "latency": {
+    "title": "تاريخ التأخير (ms)"
+  },
+  "alerts": {
+    "title": "تنبيه النظام",
+    "viewDetails": "عرض التفاصيل"
+  },
+  "footer": {
+    "coverage": "تغطية عالمية",
+    "coverageDesc": "مراقبة مزودي AI الرئيسيين في الولايات المتحدة والصين.",
+    "ui": "واجهة متكيفة",
+    "uiDesc": "محسنة لجميع الأجهزة.",
+    "integrity": "سلامة البيانات",
+    "integrityDesc": "يتم حفظ البيانات التاريخية عبر Firebase."
+  },
+  "statusLabels": {
+    "online": "متصل",
+    "offline": "غير متصل"
+  }
 }

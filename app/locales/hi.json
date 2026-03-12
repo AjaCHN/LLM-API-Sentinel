@@ -1,9 +1,36 @@
 {
   "title": "LLM API Sentinel",
-  "description": "Autonomous API Monitoring System",
-  "status": "Status",
-  "latency": "Latency",
-  "lastChecked": "Last Checked",
-  "online": "Online",
-  "offline": "Offline"
+  "description": "स्वायत्त एपीआई निगरानी प्रणाली",
+  "header": {
+    "title": "LLM Sentinel",
+    "subtitle": "वैश्विक एपीआई निगरानी प्रणाली",
+    "signIn": "साइन इन करें",
+    "signOut": "साइन आउट करें",
+    "alerts": "अलर्ट"
+  },
+  "status": {
+    "title": "वर्तमान स्थिति",
+    "sync": "सिंक",
+    "trigger": "जांच शुरू करें",
+    "checking": "जांच हो रही है..."
+  },
+  "latency": {
+    "title": "विलंबता इतिहास (ms)"
+  },
+  "alerts": {
+    "title": "सिस्टम अलर्ट",
+    "viewDetails": "विवरण देखें"
+  },
+  "footer": {
+    "coverage": "वैश्विक कवरेज",
+    "coverageDesc": "अमेरिका और चीन में प्रमुख एआई प्रदाताओं की निगरानी।",
+    "ui": "अनुकूली यूआई",
+    "uiDesc": "सभी उपकरणों के लिए अनुकूलित।",
+    "integrity": "डेटा अखंडता",
+    "integrityDesc": "ऐतिहासिक डेटा फायरबेस के माध्यम से बना रहता है।"
+  },
+  "statusLabels": {
+    "online": "ऑनलाइन",
+    "offline": "ऑफ़लाइन"
+  }
 }

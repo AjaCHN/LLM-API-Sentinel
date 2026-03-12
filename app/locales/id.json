@@ -1,9 +1,36 @@
 {
   "title": "LLM API Sentinel",
-  "description": "Autonomous API Monitoring System",
-  "status": "Status",
-  "latency": "Latency",
-  "lastChecked": "Last Checked",
-  "online": "Online",
-  "offline": "Offline"
+  "description": "Sistem Pemantauan API Otonom",
+  "header": {
+    "title": "LLM Sentinel",
+    "subtitle": "Sistem Pemantauan API Global",
+    "signIn": "Masuk",
+    "signOut": "Keluar",
+    "alerts": "Peringatan"
+  },
+  "status": {
+    "title": "Status Saat Ini",
+    "sync": "Sinkronisasi",
+    "trigger": "Picu Pemeriksaan",
+    "checking": "Memeriksa..."
+  },
+  "latency": {
+    "title": "Riwayat Latensi (ms)"
+  },
+  "alerts": {
+    "title": "Peringatan Sistem",
+    "viewDetails": "Lihat Detail"
+  },
+  "footer": {
+    "coverage": "Cakupan Global",
+    "coverageDesc": "Memantau penyedia AI utama di AS dan Tiongkok.",
+    "ui": "UI Adaptif",
+    "uiDesc": "Dioptimalkan untuk semua perangkat.",
+    "integrity": "Integritas Data",
+    "integrityDesc": "Data historis dipertahankan melalui Firebase."
+  },
+  "statusLabels": {
+    "online": "Online",
+    "offline": "Offline"
+  }
 }

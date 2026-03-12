@@ -1,9 +1,36 @@
 {
   "title": "LLM API Sentinel",
-  "description": "Autonomous API Monitoring System",
-  "status": "Status",
-  "latency": "Latency",
-  "lastChecked": "Last Checked",
-  "online": "Online",
-  "offline": "Offline"
+  "description": "自主 API 監控系統",
+  "header": {
+    "title": "LLM Sentinel",
+    "subtitle": "全球 API 監控系統",
+    "signIn": "登入",
+    "signOut": "登出",
+    "alerts": "告警"
+  },
+  "status": {
+    "title": "當前狀態",
+    "sync": "同步",
+    "trigger": "觸發檢測",
+    "checking": "檢測中..."
+  },
+  "latency": {
+    "title": "延遲歷史 (ms)"
+  },
+  "alerts": {
+    "title": "系統告警",
+    "viewDetails": "查看詳情"
+  },
+  "footer": {
+    "coverage": "全球覆蓋",
+    "coverageDesc": "監控中美主要 AI 提供商。",
+    "ui": "自適應 UI",
+    "uiDesc": "針對所有設備優化。",
+    "integrity": "數據完整性",
+    "integrityDesc": "歷史數據通過 Firebase 持久化。"
+  },
+  "statusLabels": {
+    "online": "在線",
+    "offline": "離線"
+  }
 }

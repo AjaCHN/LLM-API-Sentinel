@@ -1,9 +1,36 @@
 {
   "title": "LLM API Sentinel",
-  "description": "Autonomous API Monitoring System",
-  "status": "Status",
-  "latency": "Latency",
-  "lastChecked": "Last Checked",
-  "online": "Online",
-  "offline": "Offline"
+  "description": "Autonomt API-övervakningssystem",
+  "header": {
+    "title": "LLM Sentinel",
+    "subtitle": "Globalt API-övervakningssystem",
+    "signIn": "Logga in",
+    "signOut": "Logga ut",
+    "alerts": "Varningar"
+  },
+  "status": {
+    "title": "Aktuell status",
+    "sync": "Synkronisera",
+    "trigger": "Starta kontroll",
+    "checking": "Kontrollerar..."
+  },
+  "latency": {
+    "title": "Latenshistorik (ms)"
+  },
+  "alerts": {
+    "title": "Systemvarning",
+    "viewDetails": "Visa detaljer"
+  },
+  "footer": {
+    "coverage": "Global täckning",
+    "coverageDesc": "Övervakning av stora AI-leverantörer i USA och Kina.",
+    "ui": "Adaptivt UI",
+    "uiDesc": "Optimerat för alla enheter.",
+    "integrity": "Dataintegritet",
+    "integrityDesc": "Historisk data sparas via Firebase."
+  },
+  "statusLabels": {
+    "online": "Online",
+    "offline": "Offline"
+  }
 }

@@ -1,9 +1,36 @@
 {
   "title": "LLM API Sentinel",
-  "description": "Autonomous API Monitoring System",
-  "status": "Status",
-  "latency": "Latency",
-  "lastChecked": "Last Checked",
-  "online": "Online",
-  "offline": "Offline"
+  "description": "Autonomní monitorovací systém API",
+  "header": {
+    "title": "LLM Sentinel",
+    "subtitle": "Globální monitorovací systém API",
+    "signIn": "Přihlásit se",
+    "signOut": "Odhlásit se",
+    "alerts": "Upozornění"
+  },
+  "status": {
+    "title": "Aktuální stav",
+    "sync": "Synchronizace",
+    "trigger": "Spustit kontrolu",
+    "checking": "Kontrola..."
+  },
+  "latency": {
+    "title": "Historie latence (ms)"
+  },
+  "alerts": {
+    "title": "Systémové upozornění",
+    "viewDetails": "Zobrazit podrobnosti"
+  },
+  "footer": {
+    "coverage": "Globální pokrytí",
+    "coverageDesc": "Monitorování hlavních poskytovatelů AI v USA a Číně.",
+    "ui": "Adaptivní UI",
+    "uiDesc": "Optimalizováno pro všechna zařízení.",
+    "integrity": "Integrita dat",
+    "integrityDesc": "Historická data jsou uložena přes Firebase."
+  },
+  "statusLabels": {
+    "online": "Online",
+    "offline": "Offline"
+  }
 }
