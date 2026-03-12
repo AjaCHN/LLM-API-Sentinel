@@ -1,11 +1,53 @@
-<div align="center">
+# LLM API Sentinel v2.0.0
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+[English](README.md) | [中文](README_CN.md)
 
-  <h1>Built with AI Studio</h2>
+Real-time monitoring and historical availability tracking for major LLM APIs worldwide.
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+## Features
+- **Global Monitoring**: Tracks reachability and latency for AI providers in the US (OpenAI, Anthropic, Google) and China (Moonshot, Zhipu, Baichuan).
+- **Historical Data**: Visualizes performance trends using interactive Area Charts.
+- **Adaptive UI**: Fully responsive design with Dark/Light mode support.
+- **Real-time Updates**: Powered by Firebase Firestore for instant status synchronization.
+- **Secure Access**: Manual health checks are protected by Google Authentication.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## Tech Stack
+- **Framework**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS 4
+- **Database**: Firebase Firestore
+- **Auth**: Firebase Authentication
+- **Charts**: Recharts
+- **Icons**: Lucide React
 
-</div>
+## Getting Started
+1. Configure your Firebase project in `firebase-applet-config.json`.
+2. Deploy Firestore rules using `firestore.rules`.
+3. Sign in to trigger manual health checks.
+
+---
+
+# LLM API Sentinel v2.0.0
+
+[English](README.md) | [中文](README_CN.md)
+
+全球主流大模型 API 实时监控与历史可用性追踪系统。
+
+## 功能特性
+- **全球监控**: 追踪美国（OpenAI, Anthropic, Google）和中国（Kimi, 智谱, 百川）主流 AI 供应商的连通性与延迟。
+- **历史数据**: 使用交互式面积图可视化性能趋势。
+- **自适应 UI**: 全响应式设计，支持深色/浅色模式切换。
+- **实时更新**: 基于 Firebase Firestore 实现状态即时同步。
+- **安全访问**: 手动健康检查受 Google 身份验证保护。
+
+## 技术栈
+- **框架**: Next.js 15 (App Router)
+- **样式**: Tailwind CSS 4
+- **数据库**: Firebase Firestore
+- **身份验证**: Firebase Authentication
+- **图表**: Recharts
+- **图标**: Lucide React
+
+## 快速开始
+1. 在 `firebase-applet-config.json` 中配置您的 Firebase 项目。
+2. 使用 `firestore.rules` 部署 Firestore 规则。
+3. 登录以触发手动健康检查。

@@ -1,0 +1,5 @@
+{
+  "name": "LLM API Sentinel v2.1.0",
+  "description": "Global LLM API monitoring system with real-time status, historical latency charts, dark mode, and real-time alerting.",
+  "requestFramePermissions": []
+}

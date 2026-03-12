@@ -1,0 +1,94 @@
+/* app/style.css v2.0.0 */
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --background: #E4E3E0;
+  --foreground: #141414;
+  --card: #FFFFFF;
+  --card-foreground: #141414;
+  --popover: #FFFFFF;
+  --popover-foreground: #141414;
+  --primary: #141414;
+  --primary-foreground: #E4E3E0;
+  --secondary: #F4F4F5;
+  --secondary-foreground: #18181B;
+  --muted: #F4F4F5;
+  --muted-foreground: #71717A;
+  --accent: #F4F4F5;
+  --accent-foreground: #18181B;
+  --destructive: #EF4444;
+  --destructive-foreground: #FAFAFA;
+  --border: #141414;
+  --input: #141414;
+  --ring: #141414;
+}
+
+.dark {
+  --background: #0C0C0C;
+  --foreground: #E4E3E0;
+  --card: #141414;
+  --card-foreground: #E4E3E0;
+  --popover: #141414;
+  --popover-foreground: #E4E3E0;
+  --primary: #E4E3E0;
+  --primary-foreground: #141414;
+  --secondary: #27272A;
+  --secondary-foreground: #FAFAFA;
+  --muted: #27272A;
+  --muted-foreground: #A1A1AA;
+  --accent: #27272A;
+  --accent-foreground: #FAFAFA;
+  --destructive: #7F1D1D;
+  --destructive-foreground: #FAFAFA;
+  --border: #E4E3E0;
+  --input: #E4E3E0;
+  --ring: #D4D4D8;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom styles for the sentinel app */
+.sentinel-card {
+  border: 1px solid var(--border);
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.sentinel-card:hover {
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+}

@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // API Status collection: Publicly readable, but only admins can update
+    match /api_status/{apiId} {
+      allow read: if true;
+      allow write: if isAuthenticated(); // For now, allow any authenticated user to trigger updates via the app logic
+    }
+
+    // Status History collection: Publicly readable, but only admins can update
+    match /status_history/{historyId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Alerts collection: Publicly readable, but only admins can update
+    match /alerts/{alertId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+  }
+}

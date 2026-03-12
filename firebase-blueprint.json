@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "ApiStatus": {
+      "title": "API Status",
+      "description": "Current status of an LLM API",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "provider": { "type": "string" },
+        "status": { "type": "string", "enum": ["online", "offline", "degraded"] },
+        "latency": { "type": "number" },
+        "lastChecked": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "provider", "status", "latency", "lastChecked"]
+    },
+    "StatusHistory": {
+      "title": "Status History",
+      "description": "Historical data point for an API",
+      "type": "object",
+      "properties": {
+        "apiId": { "type": "string" },
+        "status": { "type": "string" },
+        "latency": { "type": "number" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["apiId", "status", "latency", "timestamp"]
+    },
+    "Alert": {
+      "title": "Alert",
+      "description": "Real-time alert for API status changes",
+      "type": "object",
+      "properties": {
+        "apiId": { "type": "string" },
+        "apiName": { "type": "string" },
+        "type": { "type": "string", "enum": ["downtime", "latency"] },
+        "message": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "resolved": { "type": "boolean" }
+      },
+      "required": ["apiId", "apiName", "type", "message", "timestamp", "resolved"]
+    }
+  },
+  "firestore": {
+    "/api_status/{apiId}": {
+      "schema": "ApiStatus",
+      "description": "Current status of various LLM APIs"
+    },
+    "/status_history/{historyId}": {
+      "schema": "StatusHistory",
+      "description": "Historical snapshots of API performance"
+    },
+    "/alerts/{alertId}": {
+      "schema": "Alert",
+      "description": "Real-time alerts for API issues"
+    }
+  }
+}
