@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.0.0
+# LLM API Sentinel v2.0.2
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -20,13 +20,13 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 - **Icons**: Lucide React
 
 ## Getting Started
-1. Configure your Firebase project in `firebase-applet-config.json`.
+1. Configure your Firebase project using environment variables (see `.env.example`).
 2. Deploy Firestore rules using `firestore.rules`.
 3. Sign in to trigger manual health checks.
 
 ---
 
-# LLM API Sentinel v2.0.0
+# LLM API Sentinel v2.0.2
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -48,6 +48,6 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 - **图标**: Lucide React
 
 ## 快速开始
-1. 在 `firebase-applet-config.json` 中配置您的 Firebase 项目。
+1. 通过环境变量配置您的 Firebase 项目（参考 `.env.example`）。
 2. 使用 `firestore.rules` 部署 Firestore 规则。
 3. 登录以触发手动健康检查。

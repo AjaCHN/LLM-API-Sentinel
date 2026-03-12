@@ -1,11 +1,15 @@
-// server.ts v2.0.0
+// server.ts v2.0.2
 import express from 'express';
 import next from 'next';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
-import { performCheck, LATENCY_THRESHOLD } from './app/lib/monitor';
-import firebaseConfig from './firebase-applet-config.json' assert { type: 'json' };
+import { performCheck, LATENCY_THRESHOLD } from './app/lib/monitor.ts';
+
+const firebaseConfig = {
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  firestoreDatabaseId: process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID,
+};
 console.log('Firebase Config:', firebaseConfig);
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -14,13 +18,11 @@ const handle = app.getRequestHandler();
 const port = 3000;
 
 // Initialize Firebase Admin
-// In Cloud Run, it often auto-detects credentials. 
-// If not, we might need a service account, but we'll try this first.
-initializeApp({
+const appAdmin = initializeApp({
   projectId: firebaseConfig.projectId,
 });
 
-const db = getFirestore();
+const db = getFirestore(appAdmin, firebaseConfig.firestoreDatabaseId);
 
 async function runBackgroundMonitor() {
   console.log('[Monitor] Starting background check...');

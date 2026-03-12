@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.2]
+### Changed
+- **Configuration**: Moved Firebase configuration from `firebase-applet-config.json` to environment variables for better security and flexibility.
+
 ## [2.0.1]
 ### Added
 - **Security**: Hardened firestore.rules by restricting write access to admins only.
