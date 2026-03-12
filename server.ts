@@ -1,0 +1,90 @@
+// server.ts v2.2.0
+import express from 'express';
+import next from 'next';
+import * as admin from 'firebase-admin';
+import { parse } from 'url';
+import { performCheck, LATENCY_THRESHOLD } from './app/lib/monitor';
+import firebaseConfig from './firebase-applet-config.json';
+
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({ dev });
+const handle = app.getRequestHandler();
+const port = 3000;
+
+// Initialize Firebase Admin
+// In Cloud Run, it often auto-detects credentials. 
+// If not, we might need a service account, but we'll try this first.
+if (admin.apps.length === 0) {
+  admin.initializeApp({
+    projectId: firebaseConfig.projectId,
+  });
+}
+
+const db = admin.firestore(firebaseConfig.firestoreDatabaseId);
+
+async function runBackgroundMonitor() {
+  console.log('[Monitor] Starting background check...');
+  try {
+    const results = await performCheck();
+    const batch = db.batch();
+
+    for (const result of results) {
+      const statusRef = db.collection('api_status').doc(result.id);
+      batch.set(statusRef, result);
+
+      const historyRef = db.collection('status_history').doc();
+      batch.set(historyRef, {
+        apiId: result.id,
+        status: result.status,
+        latency: result.latency,
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      // Alert Logic
+      if (result.status === 'offline') {
+        const alertRef = db.collection('alerts').doc();
+        batch.set(alertRef, {
+          apiId: result.id,
+          apiName: result.name,
+          type: 'downtime',
+          message: `${result.name} is currently offline. (Auto-detected)`,
+          timestamp: admin.firestore.FieldValue.serverTimestamp(),
+          resolved: false
+        });
+      } else if (result.latency > LATENCY_THRESHOLD) {
+        const alertRef = db.collection('alerts').doc();
+        batch.set(alertRef, {
+          apiId: result.id,
+          apiName: result.name,
+          type: 'latency',
+          message: `${result.name} latency is high: ${result.latency}ms. (Auto-detected)`,
+          timestamp: admin.firestore.FieldValue.serverTimestamp(),
+          resolved: false
+        });
+      }
+    }
+
+    await batch.commit();
+    console.log('[Monitor] Background check completed and synced.');
+  } catch (error) {
+    console.error('[Monitor] Background check failed:', error);
+  }
+}
+
+app.prepare().then(() => {
+  const server = express();
+
+  // Background task: Every 5 minutes
+  setInterval(runBackgroundMonitor, 5 * 60 * 1000);
+  // Initial check
+  setTimeout(runBackgroundMonitor, 10000);
+
+  server.all(/.*/, (req, res) => {
+    const parsedUrl = parse(req.url!, true);
+    handle(req, res, parsedUrl);
+  });
+
+  server.listen(port, () => {
+    console.log(`> Ready on http://localhost:${port}`);
+  });
+});

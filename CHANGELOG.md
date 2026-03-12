@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.2.0]
+### Added
+- **Autonomous Monitoring**: Implemented a server-side background task that performs API checks every 5 minutes without user intervention.
+- **Custom Server**: Migrated to a custom Express server to support long-running background tasks.
+- **Firebase Admin**: Integrated `firebase-admin` for secure server-side Firestore updates.
+
 ## [2.1.0]
 ### Added
 - **Real-time Alerting**: Implemented a notification system for API downtime and high latency (>1500ms).

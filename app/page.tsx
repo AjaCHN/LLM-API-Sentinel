@@ -187,19 +187,11 @@ export default function Dashboard() {
       setAlerts(data);
     });
 
-    let interval: NodeJS.Timeout;
-    if (user) {
-      interval = setInterval(() => {
-        runCheck();
-      }, 5 * 60 * 1000);
-    }
-
     return () => {
       unsubscribeAuth();
       unsubscribeStatus();
       unsubscribeHistory();
       unsubscribeAlerts();
-      if (interval) clearInterval(interval);
     };
   }, [user, runCheck]);
 
@@ -232,7 +224,7 @@ export default function Dashboard() {
           <Activity className="w-8 h-8 text-primary" />
           <div>
             <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase italic font-serif">LLM Sentinel</h1>
-            <p className="mono-label">Global API Monitoring System v2.1.0</p>
+            <p className="mono-label">Autonomous API Monitoring System v2.2.0</p>
           </div>
         </div>
         
