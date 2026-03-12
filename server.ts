@@ -2,7 +2,7 @@
 import express from 'express';
 import next from 'next';
 import { initializeApp, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
 import { performCheck, LATENCY_THRESHOLD } from './app/lib/monitor';
 import firebaseConfig from './firebase-applet-config.json' assert { type: 'json' };
@@ -37,7 +37,7 @@ async function runBackgroundMonitor() {
         apiId: result.id,
         status: result.status,
         latency: result.latency,
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        timestamp: FieldValue.serverTimestamp(),
       });
 
       // Alert Logic
@@ -48,7 +48,7 @@ async function runBackgroundMonitor() {
           apiName: result.name,
           type: 'downtime',
           message: `${result.name} is currently offline. (Auto-detected)`,
-          timestamp: admin.firestore.FieldValue.serverTimestamp(),
+          timestamp: FieldValue.serverTimestamp(),
           resolved: false
         });
       } else if (result.latency > LATENCY_THRESHOLD) {
@@ -58,7 +58,7 @@ async function runBackgroundMonitor() {
           apiName: result.name,
           type: 'latency',
           message: `${result.name} latency is high: ${result.latency}ms. (Auto-detected)`,
-          timestamp: admin.firestore.FieldValue.serverTimestamp(),
+          timestamp: FieldValue.serverTimestamp(),
           resolved: false
         });
       }
