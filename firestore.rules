@@ -6,22 +6,27 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // API Status collection: Publicly readable, but only admins can update
+    function isAdmin() {
+      return isAuthenticated() &&
+        (request.auth.token.email == "ajalam2015@gmail.com" && request.auth.token.email_verified == true);
+    }
+
+    // API Status collection: Publicly readable, only admins can update
     match /api_status/{apiId} {
       allow read: if true;
-      allow write: if isAuthenticated(); // For now, allow any authenticated user to trigger updates via the app logic
+      allow write: if isAdmin();
     }
 
-    // Status History collection: Publicly readable, but only admins can update
+    // Status History collection: Publicly readable, only admins can update
     match /status_history/{historyId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
-    // Alerts collection: Publicly readable, but only admins can update
+    // Alerts collection: Publicly readable, only admins can update
     match /alerts/{alertId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isAdmin();
     }
   }
 }
