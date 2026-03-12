@@ -1,6 +1,12 @@
 # Changelog
 
-## [2.3.0]
+## [2.0.1]
+### Added
+- **Security**: Hardened firestore.rules by restricting write access to admins only.
+- **Robustness**: Fixed build errors related to Firebase Admin imports and FieldValue usage.
+- **Versioning**: Synchronized version numbers across all files.
+
+## [2.0.0]
 ### Added
 - **Internationalization (i18n)**: Implemented multi-language support (ar, cs, en, es, hi, id, it, nl, pl, sv, th, tr, ru, vi, zh-cn, zh-tw) using `next-intl`.
 
