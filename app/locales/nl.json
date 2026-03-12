@@ -1,0 +1,9 @@
+{
+  "title": "LLM API Sentinel",
+  "description": "Autonomous API Monitoring System",
+  "status": "Status",
+  "latency": "Latency",
+  "lastChecked": "Last Checked",
+  "online": "Online",
+  "offline": "Offline"
+}

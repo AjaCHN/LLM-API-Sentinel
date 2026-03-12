@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.3.0]
+### Added
+- **Internationalization (i18n)**: Implemented multi-language support (ar, cs, en, es, hi, id, it, nl, pl, sv, th, tr, ru, vi, zh-cn, zh-tw) using `next-intl`.
+
 ## [2.2.0]
 ### Added
 - **Autonomous Monitoring**: Implemented a server-side background task that performs API checks every 5 minutes without user intervention.
