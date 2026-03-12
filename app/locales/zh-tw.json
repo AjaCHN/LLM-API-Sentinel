@@ -23,7 +23,7 @@
   },
   "footer": {
     "coverage": "全球覆蓋",
-    "coverageDesc": "監控中美主要 AI 提供商。",
+    "coverageDesc": "監控 OpenAI, Anthropic, Google, Meta, Mistral 以及月之暗面, 智譜AI, 百川智能, 阿里巴巴, 騰訊, 百度, 深度求索等主要 AI 提供商。",
     "ui": "自適應 UI",
     "uiDesc": "針對所有設備優化。",
     "integrity": "數據完整性",
