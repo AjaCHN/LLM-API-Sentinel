@@ -1,17 +1,21 @@
-// server.ts v2.1.0
+// server.ts v3.3.0
 import express from 'express';
 import next from 'next';
-import { initializeApp, cert } from 'firebase-admin/app';
+import { initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { performCheck, LATENCY_THRESHOLD, APIS_TO_CHECK, ApiConfig } from './app/lib/monitor';
 import { sendAlert } from './app/lib/alerts';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const firebaseConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   firestoreDatabaseId: process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID,
 };
-console.log('Firebase Config:', firebaseConfig);
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -29,7 +33,6 @@ const db = getFirestore(appAdmin, firebaseConfig.firestoreDatabaseId || '(defaul
 const recentChecks: Record<string, boolean[]> = {};
 
 async function checkApi(api: ApiConfig) {
-  console.log(`[Monitor] Checking ${api.name}...`);
   try {
     const result = await performCheck(api);
     const batch = db.batch();
@@ -46,18 +49,16 @@ async function checkApi(api: ApiConfig) {
       timestamp: FieldValue.serverTimestamp(),
     });
 
-    // Update availability history
     if (!recentChecks[result.id]) {
       recentChecks[result.id] = [];
     }
     recentChecks[result.id].push(result.status === 'online');
-    if (recentChecks[result.id].length > 20) { // Keep last 20 checks
+    if (recentChecks[result.id].length > 20) {
       recentChecks[result.id].shift();
     }
 
     const availability = (recentChecks[result.id].filter(Boolean).length / recentChecks[result.id].length) * 100;
 
-    // Alert Logic
     if (availability < 95 && recentChecks[result.id].length >= 5) {
       const alertRef = db.collection('alerts').doc();
       batch.set(alertRef, {
@@ -72,7 +73,6 @@ async function checkApi(api: ApiConfig) {
       const suggestion = "Check API provider's status page. Verify network connectivity. Review recent API changes or rate limits.";
       await sendAlert(result.name, availability, new Date().toISOString(), suggestion);
       
-      // Reset history to avoid spamming alerts
       recentChecks[result.id] = [];
     } else if (result.status === 'offline') {
       const alertRef = db.collection('alerts').doc();
@@ -97,7 +97,6 @@ async function checkApi(api: ApiConfig) {
     }
 
     await batch.commit();
-    console.log(`[Monitor] Check completed for ${api.name}.`);
   } catch (error) {
     console.error(`[Monitor] Check failed for ${api.name}:`, error);
   }
@@ -106,14 +105,26 @@ async function checkApi(api: ApiConfig) {
 app.prepare().then(() => {
   const server = express();
 
+  // Request Logging
+  server.use((req, res, next) => {
+    if (!req.url.startsWith('/_next/static')) {
+      console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    }
+    next();
+  });
+
+  // Explicitly serve static files
+  server.use('/_next/static', express.static(path.join(__dirname, '.next/static')));
+  server.use(express.static(path.join(__dirname, 'public')));
+
   // Schedule individual API checks
   APIS_TO_CHECK.forEach(api => {
     setInterval(() => checkApi(api), api.interval);
-    // Initial check
-    setTimeout(() => checkApi(api), Math.random() * 5000); // Stagger initial checks
+    setTimeout(() => checkApi(api), Math.random() * 10000);
   });
 
-  server.all(/.*/, (req, res) => {
+  // Next.js request handler
+  server.all('*', (req, res) => {
     const parsedUrl = parse(req.url!, true);
     handle(req, res, parsedUrl);
   });

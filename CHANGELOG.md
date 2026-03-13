@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.3.0]
+### Fixed
+- **Custom Domain 404s**: Enhanced `server.ts` with explicit static file serving for `_next/static` and `public` folders. Added request logging for better diagnostics.
+
 ## [3.2.0]
 ### Fixed
 - **Root Layout Error**: Removed `notFound()` call from `app/layout.tsx` which is not allowed in Next.js root layouts. Simplified message loading logic.

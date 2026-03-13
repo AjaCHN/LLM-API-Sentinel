@@ -1,5 +1,5 @@
 {
-  "name": "LLM API Sentinel v3.2.0",
-  "description": "Autonomous LLM API monitoring system with 24/7 background checks, real-time alerts, historical performance tracking, and multi-language support. Fixed root layout navigation error.",
+  "name": "LLM API Sentinel v3.3.0",
+  "description": "Autonomous LLM API monitoring system with 24/7 background checks, real-time alerts, historical performance tracking, and multi-language support. Fixed 404 errors on custom domains.",
   "requestFramePermissions": []
 }
