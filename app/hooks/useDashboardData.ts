@@ -13,6 +13,7 @@ export function useDashboardData() {
   const [statuses, setStatuses] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
@@ -111,6 +112,24 @@ export function useDashboardData() {
       setAlerts(data);
     });
 
+    let unsubscribeTasks = () => {};
+    if (user) {
+      const qTasks = query(
+        collection(db, 'tasks'),
+        where('userId', '==', user.uid),
+        orderBy('createdAt', 'desc')
+      );
+      unsubscribeTasks = onSnapshot(qTasks, (snapshot) => {
+        const data = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setTasks(data);
+      });
+    } else {
+      setTasks([]);
+    }
+
     let interval: NodeJS.Timeout;
     if (user) {
       interval = setInterval(() => {
@@ -123,6 +142,7 @@ export function useDashboardData() {
       unsubscribeStatus();
       unsubscribeHistory();
       unsubscribeAlerts();
+      unsubscribeTasks();
       if (interval) clearInterval(interval);
     };
   }, [user, runCheck]);
@@ -132,8 +152,30 @@ export function useDashboardData() {
     await updateDoc(doc(db, 'alerts', id), { resolved: true });
   };
 
+  const addTask = async (title: string) => {
+    if (!user) return;
+    await addDoc(collection(db, 'tasks'), {
+      title,
+      status: 'todo',
+      createdAt: serverTimestamp(),
+      userId: user.uid
+    });
+  };
+
+  const updateTaskStatus = async (id: string, status: 'todo' | 'inProgress' | 'done') => {
+    if (!user) return;
+    await updateDoc(doc(db, 'tasks', id), { status });
+  };
+
+  const deleteTask = async (id: string) => {
+    if (!user) return;
+    import('firebase/firestore').then(({ deleteDoc }) => {
+      deleteDoc(doc(db, 'tasks', id));
+    });
+  };
+
   const login = () => signInWithPopup(auth, googleProvider);
   const logout = () => signOut(auth);
 
-  return { statuses, history, alerts, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, login, logout };
+  return { statuses, history, alerts, tasks, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, addTask, updateTaskStatus, deleteTask, login, logout };
 }

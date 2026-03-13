@@ -39,6 +39,18 @@
         "resolved": { "type": "boolean" }
       },
       "required": ["apiId", "apiName", "type", "message", "timestamp", "resolved"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "A task item for tracking issues or maintenance",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "status": { "type": "string", "enum": ["todo", "inProgress", "done"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" }
+      },
+      "required": ["title", "status", "createdAt", "userId"]
     }
   },
   "firestore": {
@@ -53,6 +65,10 @@
     "/alerts/{alertId}": {
       "schema": "Alert",
       "description": "Real-time alerts for API issues"
+    },
+    "/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Tasks for tracking issues or maintenance"
     }
   }
 }
