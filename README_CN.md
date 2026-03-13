@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.0.2
+# LLM API Sentinel v2.1.0
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -6,6 +6,9 @@
 
 ## 功能特性
 - **全球监控**: 追踪美国（OpenAI, Anthropic, Google）和中国（Kimi, 智谱, 百川）主流 AI 供应商的连通性与延迟。
+- **自定义策略**: 为每个 API 配置独立的检测间隔和策略（Ping 或完整请求）。
+- **吞吐量追踪**: 计算并可视化 API 吞吐量（每秒请求数）及延迟。
+- **告警系统**: 当可用性低于 95% 时，自动通过邮件和企业微信发送告警。
 - **历史数据**: 使用交互式面积图可视化性能趋势。
 - **自适应 UI**: 全响应式设计，支持深色/浅色模式切换。
 - **实时更新**: 基于 Firebase Firestore 实现状态即时同步。
@@ -18,8 +21,9 @@
 - **身份验证**: Firebase Authentication
 - **图表**: Recharts
 - **图标**: Lucide React
+- **告警**: Nodemailer, Axios
 
 ## 快速开始
-1. 通过环境变量配置您的 Firebase 项目（参考 `.env.example`）。
+1. 通过环境变量配置您的 Firebase 项目和告警设置（参考 `.env.example`）。
 2. 使用 `firestore.rules` 部署 Firestore 规则。
 3. 登录以触发手动健康检查。

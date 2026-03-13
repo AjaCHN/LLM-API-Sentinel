@@ -1,4 +1,4 @@
-// app/hooks/useDashboardData.ts v2.0.0
+// app/hooks/useDashboardData.ts v2.1.0
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -39,6 +39,7 @@ export function useDashboardData() {
           apiId: result.id,
           status: result.status,
           latency: result.latency,
+          throughput: result.throughput,
           timestamp: serverTimestamp(),
         });
 

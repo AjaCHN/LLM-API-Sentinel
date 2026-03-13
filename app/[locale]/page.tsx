@@ -1,4 +1,4 @@
-// app/[locale]/page.tsx v2.0.2
+// app/[locale]/page.tsx v2.1.0
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,11 +10,12 @@ import ApiStatusGrid from '../components/ApiStatusGrid';
 import LatencyHistoryChart from '../components/LatencyHistoryChart';
 import DashboardFooter from '../components/DashboardFooter';
 import { getApiColor, cn } from '../lib/utils';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Activity, Zap } from 'lucide-react';
 
 export default function Dashboard() {
   const { statuses, history, alerts, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, login, logout } = useDashboardData();
   const [showAlerts, setShowAlerts] = useState(false);
+  const [chartType, setChartType] = useState<'latency' | 'throughput'>('latency');
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -30,7 +31,7 @@ export default function Dashboard() {
       existing = { time };
       acc.push(existing);
     }
-    existing[curr.apiId] = curr.latency;
+    existing[curr.apiId] = chartType === 'latency' ? curr.latency : (curr.throughput || 0);
     return acc;
   }, []);
 
@@ -91,7 +92,31 @@ export default function Dashboard() {
 
         <section id="history-chart-section" className="border border-border bg-card/50 p-4 md:p-6 rounded-lg">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4">
-            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">Latency History (ms)</h2>
+            <div className="flex items-center gap-4">
+              <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">
+                {chartType === 'latency' ? 'Latency History (ms)' : 'Throughput (req/s)'}
+              </h2>
+              <div className="flex bg-background border border-border rounded-md p-0.5">
+                <button
+                  onClick={() => setChartType('latency')}
+                  className={cn(
+                    "px-2 py-1 text-[10px] uppercase tracking-wider rounded-sm transition-colors flex items-center gap-1",
+                    chartType === 'latency' ? "bg-foreground text-background font-bold" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Activity className="w-3 h-3" /> Latency
+                </button>
+                <button
+                  onClick={() => setChartType('throughput')}
+                  className={cn(
+                    "px-2 py-1 text-[10px] uppercase tracking-wider rounded-sm transition-colors flex items-center gap-1",
+                    chartType === 'throughput' ? "bg-foreground text-background font-bold" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Zap className="w-3 h-3" /> Throughput
+                </button>
+              </div>
+            </div>
             <div id="chart-legend" className="flex flex-wrap gap-x-4 gap-y-2 max-w-full">
               {statuses.slice(0, 8).map(s => (
                 <div key={s.id} className="flex items-center gap-1.5">

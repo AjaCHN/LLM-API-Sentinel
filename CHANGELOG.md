@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.1.0]
+### Added
+- **Custom Check Strategy**: Added support for custom intervals and check strategies (ping vs full request) per API.
+- **Throughput Tracking**: Added calculation and visualization for API throughput (requests per second).
+- **External Alerts**: Integrated Nodemailer and Axios to send alerts via Email and Enterprise WeChat when availability drops below 95%.
+
 ## [2.0.2]
 ### Changed
 - **Configuration**: Moved Firebase configuration from `firebase-applet-config.json` to environment variables for better security and flexibility.
