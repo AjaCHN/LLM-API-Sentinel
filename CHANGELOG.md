@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.1.0]
+### Fixed
+- **next-intl Configuration**: Fixed "Couldn't find next-intl config file" error by correctly configuring `next-intl/plugin` in `next.config.ts` and moving the configuration to the standard `i18n/request.ts` path.
+- **Recovery**: Restored `app/page.tsx` which was accidentally deleted.
+
+## [3.0.0]
+### Changed
+- **URL Cleanup**: Removed locale prefix from URLs (e.g., `/en/` -> `/`). Multi-language support is now handled via cookies/headers without cluttering the URL.
+- **Project Structure**: Moved routes from `app/[locale]` to root `app` directory for cleaner architecture.
+
 ## [2.6.0]
 ### Fixed
 - **SDK Log Suppression**: Set Firestore log level to `error` to suppress internal SDK logs regarding transient stream cancellations (`CANCELLED: Disconnecting idle stream`). This ensures the console remains clean while still reporting critical failures.

@@ -1,4 +1,4 @@
-// app/i18n.ts v2.3.0
+// i18n/request.ts v3.1.0
 import { getRequestConfig } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
@@ -9,6 +9,6 @@ export default getRequestConfig(async ({ locale }) => {
 
   return {
     locale: locale as string,
-    messages: (await import(`./locales/${locale}.json`)).default
+    messages: (await import(`../app/locales/${locale}.json`)).default
   };
 });
