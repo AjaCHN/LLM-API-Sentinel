@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.6.0]
+### Fixed
+- **SDK Log Suppression**: Set Firestore log level to `error` to suppress internal SDK logs regarding transient stream cancellations (`CANCELLED: Disconnecting idle stream`). This ensures the console remains clean while still reporting critical failures.
+
+## [2.5.0]
+### Fixed
+- **Log Noise Reduction**: Updated `handleFirestoreError` to explicitly suppress `CANCELLED` and `idle stream` logs in the console. These are transient SDK behaviors that don't impact functionality but create log clutter.
+
+## [2.4.0]
+### Fixed
+- **Firestore Stability**: Forced long polling and disabled auto-detection to prevent `CANCELLED: Disconnecting idle stream` errors in containerized environments.
+- **Error Handling**: Refined `handleFirestoreError` to suppress transient SDK-internal logs while maintaining visibility for critical security/quota errors.
+
+## [2.3.0]
+### Added
+- **Task Management**: Implemented a comprehensive task status feature (todo, inProgress, done) with real-time Firestore sync.
+- **Security Rules**: Hardened Firestore rules with domain-specific validators and strict schema enforcement.
+- **Error Boundaries**: Added global React Error Boundary to catch and display detailed Firestore permission errors.
+
 ## [2.1.0]
 ### Added
 - **Custom Check Strategy**: Added support for custom intervals and check strategies (ping vs full request) per API.

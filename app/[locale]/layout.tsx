@@ -1,4 +1,4 @@
-// app/[locale]/layout.tsx v2.1.0
+// app/[locale]/layout.tsx v2.6.0
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import '../globals.css';
@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'LLM API Sentinel v2.1.0 | Global AI API Monitoring',
+  title: 'LLM API Sentinel v2.6.0 | Global AI API Monitoring',
   description: 'Real-time monitoring and historical availability tracking for major LLM APIs including OpenAI, Anthropic, Gemini, Kimi, and more.',
   keywords: ['LLM', 'API Monitoring', 'AI Status', 'OpenAI', 'Gemini', 'Claude', 'Kimi', 'DeepSeek'],
   authors: [{ name: 'Sut' }],

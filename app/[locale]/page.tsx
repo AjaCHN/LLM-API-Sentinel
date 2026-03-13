@@ -1,4 +1,4 @@
-// app/[locale]/page.tsx v2.1.0
+// app/[locale]/page.tsx v2.6.0
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,6 +10,7 @@ import ApiStatusGrid from '../components/ApiStatusGrid';
 import LatencyHistoryChart from '../components/LatencyHistoryChart';
 import TaskList from '../components/TaskList';
 import DashboardFooter from '../components/DashboardFooter';
+import ErrorBoundary from '../components/ErrorBoundary';
 import { getApiColor, cn } from '../lib/utils';
 import { AlertTriangle, Activity, Zap } from 'lucide-react';
 
@@ -54,93 +55,95 @@ export default function Dashboard() {
       />
 
       <main id="main-content" className="p-4 md:p-6 max-w-7xl mx-auto space-y-6 md:space-y-8">
-        {alerts.length > 0 && (
-          <div id="alerts-banner" className="bg-rose-500/10 border border-rose-500/20 p-3 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-500">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="w-5 h-5 text-rose-500" />
-              <p className="text-xs font-bold text-rose-500 uppercase tracking-wider">
-                System Alert: {alerts.length} active issue{alerts.length > 1 ? 's' : ''} detected
-              </p>
+        <ErrorBoundary>
+          {alerts.length > 0 && (
+            <div id="alerts-banner" className="bg-rose-500/10 border border-rose-500/20 p-3 rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-500">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="w-5 h-5 text-rose-500" />
+                <p className="text-xs font-bold text-rose-500 uppercase tracking-wider">
+                  System Alert: {alerts.length} active issue{alerts.length > 1 ? 's' : ''} detected
+                </p>
+              </div>
+              <button onClick={() => setShowAlerts(true)} className="text-[10px] font-bold uppercase underline text-rose-500">View Details</button>
             </div>
-            <button onClick={() => setShowAlerts(true)} className="text-[10px] font-bold uppercase underline text-rose-500">View Details</button>
-          </div>
-        )}
+          )}
 
-        <section id="status-grid-section">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
-            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">Current Status</h2>
-            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-              {lastUpdate && (
-                <span className="text-[10px] font-mono opacity-50">
-                  SYNC: {format(lastUpdate, 'HH:mm:ss')}
-                </span>
-              )}
-              <button 
-                onClick={runCheck}
-                disabled={isChecking || !user}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 border border-border text-[10px] font-bold uppercase tracking-widest transition-all rounded-md",
-                  isChecking ? "opacity-50 cursor-not-allowed" : "hover:bg-foreground hover:text-background",
-                  !user && "opacity-30 cursor-not-allowed"
+          <section id="status-grid-section">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
+              <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">Current Status</h2>
+              <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                {lastUpdate && (
+                  <span className="text-[10px] font-mono opacity-50">
+                    SYNC: {format(lastUpdate, 'HH:mm:ss')}
+                  </span>
                 )}
-              >
-                {isChecking ? 'Checking...' : 'Trigger'}
-              </button>
+                <button 
+                  onClick={runCheck}
+                  disabled={isChecking || !user}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-1.5 border border-border text-[10px] font-bold uppercase tracking-widest transition-all rounded-md",
+                    isChecking ? "opacity-50 cursor-not-allowed" : "hover:bg-foreground hover:text-background",
+                    !user && "opacity-30 cursor-not-allowed"
+                  )}
+                >
+                  {isChecking ? 'Checking...' : 'Trigger'}
+                </button>
+              </div>
             </div>
-          </div>
-          <ApiStatusGrid statuses={statuses} />
-        </section>
+            <ApiStatusGrid statuses={statuses} />
+          </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-          <section id="history-chart-section" className="lg:col-span-2 border border-border bg-card/50 p-4 md:p-6 rounded-lg">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4">
-              <div className="flex items-center gap-4">
-                <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">
-                  {chartType === 'latency' ? 'Latency History (ms)' : 'Throughput (req/s)'}
-                </h2>
-                <div className="flex bg-background border border-border rounded-md p-0.5">
-                  <button
-                    onClick={() => setChartType('latency')}
-                    className={cn(
-                      "px-2 py-1 text-[10px] uppercase tracking-wider rounded-sm transition-colors flex items-center gap-1",
-                      chartType === 'latency' ? "bg-foreground text-background font-bold" : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <Activity className="w-3 h-3" /> Latency
-                  </button>
-                  <button
-                    onClick={() => setChartType('throughput')}
-                    className={cn(
-                      "px-2 py-1 text-[10px] uppercase tracking-wider rounded-sm transition-colors flex items-center gap-1",
-                      chartType === 'throughput' ? "bg-foreground text-background font-bold" : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <Zap className="w-3 h-3" /> Throughput
-                  </button>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+            <section id="history-chart-section" className="lg:col-span-2 border border-border bg-card/50 p-4 md:p-6 rounded-lg">
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4">
+                <div className="flex items-center gap-4">
+                  <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">
+                    {chartType === 'latency' ? 'Latency History (ms)' : 'Throughput (req/s)'}
+                  </h2>
+                  <div className="flex bg-background border border-border rounded-md p-0.5">
+                    <button
+                      onClick={() => setChartType('latency')}
+                      className={cn(
+                        "px-2 py-1 text-[10px] uppercase tracking-wider rounded-sm transition-colors flex items-center gap-1",
+                        chartType === 'latency' ? "bg-foreground text-background font-bold" : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <Activity className="w-3 h-3" /> Latency
+                    </button>
+                    <button
+                      onClick={() => setChartType('throughput')}
+                      className={cn(
+                        "px-2 py-1 text-[10px] uppercase tracking-wider rounded-sm transition-colors flex items-center gap-1",
+                        chartType === 'throughput' ? "bg-foreground text-background font-bold" : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <Zap className="w-3 h-3" /> Throughput
+                    </button>
+                  </div>
+                </div>
+                <div id="chart-legend" className="flex flex-wrap gap-x-4 gap-y-2 max-w-full">
+                  {statuses.slice(0, 8).map(s => (
+                    <div key={s.id} className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: getApiColor(s.id) }} />
+                      <span className="text-[9px] font-mono opacity-50 uppercase whitespace-nowrap">{s.name}</span>
+                    </div>
+                  ))}
+                  {statuses.length > 8 && <span className="text-[9px] font-mono opacity-30 uppercase">+{statuses.length - 8} more</span>}
                 </div>
               </div>
-              <div id="chart-legend" className="flex flex-wrap gap-x-4 gap-y-2 max-w-full">
-                {statuses.slice(0, 8).map(s => (
-                  <div key={s.id} className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: getApiColor(s.id) }} />
-                    <span className="text-[9px] font-mono opacity-50 uppercase whitespace-nowrap">{s.name}</span>
-                  </div>
-                ))}
-                {statuses.length > 8 && <span className="text-[9px] font-mono opacity-30 uppercase">+{statuses.length - 8} more</span>}
-              </div>
-            </div>
-            <LatencyHistoryChart chartData={chartData} statuses={statuses} getApiColor={getApiColor} />
-          </section>
+              <LatencyHistoryChart chartData={chartData} statuses={statuses} getApiColor={getApiColor} />
+            </section>
 
-          <section id="tasks-section" className="lg:col-span-1">
-            <TaskList 
-              tasks={tasks} 
-              addTask={addTask} 
-              updateTaskStatus={updateTaskStatus} 
-              deleteTask={deleteTask} 
-            />
-          </section>
-        </div>
+            <section id="tasks-section" className="lg:col-span-1">
+              <TaskList 
+                tasks={tasks} 
+                addTask={addTask} 
+                updateTaskStatus={updateTaskStatus} 
+                deleteTask={deleteTask} 
+              />
+            </section>
+          </div>
+        </ErrorBoundary>
 
         <DashboardFooter />
       </main>

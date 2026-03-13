@@ -1,20 +1,104 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper functions
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: api_status
+    // Document ID: apiId
+    // Fields:
+    //   - id: string (required)
+    //   - name: string (required, < 50 chars)
+    //   - provider: string (required, < 50 chars)
+    //   - status: string (required, enum: ["online", "offline", "degraded"])
+    //   - latency: number (required, >= 0)
+    //   - lastChecked: timestamp (required)
+    //
+    // Collection: status_history
+    // Document ID: historyId
+    // Fields:
+    //   - apiId: string (required)
+    //   - status: string (required)
+    //   - latency: number (required, >= 0)
+    //   - timestamp: timestamp (required)
+    //
+    // Collection: alerts
+    // Document ID: alertId
+    // Fields:
+    //   - apiId: string (required)
+    //   - apiName: string (required)
+    //   - type: string (required, enum: ["downtime", "latency"])
+    //   - message: string (required, < 500 chars)
+    //   - timestamp: timestamp (required)
+    //   - resolved: boolean (required)
+    //
+    // Collection: tasks
+    // Document ID: taskId
+    // Fields:
+    //   - title: string (required, 1-200 chars)
+    //   - status: string (required, enum: ["todo", "inProgress", "done"])
+    //   - createdAt: timestamp (required)
+    //   - userId: string (required, matches request.auth.uid)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
     function isAuthenticated() {
       return request.auth != null;
     }
 
     function isAdmin() {
       return isAuthenticated() &&
-        (request.auth.token.email == "ajalam2015@gmail.com" && request.auth.token.email_verified == true);
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "ajalam2015@gmail.com" && request.auth.token.email_verified == true));
     }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidString(field, min, max) {
+      return request.resource.data[field] is string && 
+             request.resource.data[field].size() >= min && 
+             request.resource.data[field].size() <= max;
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidApiStatus(data) {
+      return hasOnlyAllowedFields(['id', 'name', 'provider', 'status', 'latency', 'lastChecked', 'throughput']) &&
+             data.id is string &&
+             data.name is string && data.name.size() < 100 &&
+             data.provider is string &&
+             data.status in ['online', 'offline', 'degraded'] &&
+             data.latency is number && data.latency >= 0;
+    }
+
+    function isValidTask(data) {
+      return hasOnlyAllowedFields(['title', 'status', 'createdAt', 'userId']) &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
+             data.status in ['todo', 'inProgress', 'done'] &&
+             data.userId == request.auth.uid;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
 
     // API Status collection: Publicly readable, only admins can update
     match /api_status/{apiId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAdmin() && isValidApiStatus(request.resource.data);
     }
 
     // Status History collection: Publicly readable, only admins can update
@@ -32,9 +116,19 @@ service cloud.firestore {
     // Tasks collection: Users can read and write their own tasks
     match /tasks/{taskId} {
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && isValidTask(request.resource.data);
+      allow update: if isAuthenticated() && 
+                      resource.data.userId == request.auth.uid && 
+                      isValidTask(request.resource.data) &&
+                      request.resource.data.userId == resource.data.userId &&
+                      request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // Users collection (for role checking)
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isAdmin();
     }
   }
 }
