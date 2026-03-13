@@ -1,11 +1,10 @@
-// app/layout.tsx v3.0.0
+// app/layout.tsx v3.2.0
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from './components/ThemeProvider';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
-import { notFound } from 'next/navigation';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -18,7 +17,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'LLM API Sentinel v3.0.0 | Global AI API Monitoring',
+  title: 'LLM API Sentinel v3.2.0 | Global AI API Monitoring',
   description: 'Real-time monitoring and historical availability tracking for major LLM APIs including OpenAI, Anthropic, Gemini, Kimi, and more.',
   keywords: ['LLM', 'API Monitoring', 'AI Status', 'OpenAI', 'Gemini', 'Claude', 'Kimi', 'DeepSeek'],
   authors: [{ name: 'Sut' }],
@@ -44,12 +43,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const locale = await getLocale();
-  let messages;
-  try {
-    messages = await getMessages({ locale });
-  } catch (error) {
-    notFound();
-  }
+  const messages = await getMessages();
 
   return (
     <html lang={locale} suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>

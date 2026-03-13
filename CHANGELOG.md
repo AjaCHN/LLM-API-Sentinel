@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.2.0]
+### Fixed
+- **Root Layout Error**: Removed `notFound()` call from `app/layout.tsx` which is not allowed in Next.js root layouts. Simplified message loading logic.
+
 ## [3.1.0]
 ### Fixed
 - **next-intl Configuration**: Fixed "Couldn't find next-intl config file" error by correctly configuring `next-intl/plugin` in `next.config.ts` and moving the configuration to the standard `i18n/request.ts` path.
