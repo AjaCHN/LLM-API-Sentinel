@@ -1,16 +1,11 @@
-// server.ts v3.3.0
+// server.ts v2.1.0
 import express from 'express';
 import next from 'next';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import { performCheck, LATENCY_THRESHOLD, APIS_TO_CHECK, ApiConfig } from './app/lib/monitor';
 import { sendAlert } from './app/lib/alerts';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const firebaseConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -105,26 +100,13 @@ async function checkApi(api: ApiConfig) {
 app.prepare().then(() => {
   const server = express();
 
-  // Request Logging
-  server.use((req, res, next) => {
-    if (!req.url.startsWith('/_next/static')) {
-      console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    }
-    next();
-  });
-
-  // Explicitly serve static files
-  server.use('/_next/static', express.static(path.join(__dirname, '.next/static')));
-  server.use(express.static(path.join(__dirname, 'public')));
-
   // Schedule individual API checks
   APIS_TO_CHECK.forEach(api => {
     setInterval(() => checkApi(api), api.interval);
-    setTimeout(() => checkApi(api), Math.random() * 10000);
+    setTimeout(() => checkApi(api), Math.random() * 5000);
   });
 
-  // Next.js request handler
-  server.all('*', (req, res) => {
+  server.all(/.*/, (req, res) => {
     const parsedUrl = parse(req.url!, true);
     handle(req, res, parsedUrl);
   });
