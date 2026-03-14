@@ -51,6 +51,19 @@
         "userId": { "type": "string" }
       },
       "required": ["title", "status", "createdAt", "userId"]
+    },
+    "UserPreferences": {
+      "title": "UserPreferences",
+      "description": "User notification and threshold settings",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "latencyThreshold": { "type": "number" },
+        "enableEmailAlerts": { "type": "boolean" },
+        "enableInAppAlerts": { "type": "boolean" }
+      },
+      "required": ["userId", "email"]
     }
   },
   "firestore": {
@@ -69,6 +82,10 @@
     "/tasks/{taskId}": {
       "schema": "Task",
       "description": "Tasks for tracking issues or maintenance"
+    },
+    "/user_preferences/{userId}": {
+      "schema": "UserPreferences",
+      "description": "User notification and threshold settings"
     }
   }
 }

@@ -130,5 +130,10 @@ service cloud.firestore {
       allow read: if isOwner(userId) || isAdmin();
       allow write: if isAdmin();
     }
+
+    // User Preferences collection: Users can read and write their own preferences
+    match /user_preferences/{userId} {
+      allow read, write: if isOwner(userId);
+    }
   }
 }

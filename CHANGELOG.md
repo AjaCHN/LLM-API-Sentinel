@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.3.1]
+### Fixed
+- **Root Layout Rendering**: Removed `notFound()` call from `i18n/request.ts` to prevent rendering errors in the root layout. Now defaults to English locale when an invalid locale is encountered.
+
 ## [3.3.0]
 ### Fixed
 - **Custom Domain 404s**: Enhanced `server.ts` with explicit static file serving for `_next/static` and `public` folders. Added request logging for better diagnostics.

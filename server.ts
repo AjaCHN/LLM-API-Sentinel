@@ -4,6 +4,7 @@ import next from 'next';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
+import nodemailer from 'nodemailer';
 import { performCheck, LATENCY_THRESHOLD, APIS_TO_CHECK, ApiConfig } from './app/lib/monitor';
 import { sendAlert } from './app/lib/alerts';
 
@@ -24,6 +25,21 @@ const appAdmin = initializeApp({
 
 const db = getFirestore(appAdmin, firebaseConfig.firestoreDatabaseId || '(default)');
 
+// Nodemailer Transporter (Requires SMTP config)
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+
+async function sendEmailAlert(to: string, subject: string, text: string) {
+  if (!process.env.SMTP_HOST) return;
+  await transporter.sendMail({ from: process.env.SMTP_FROM, to, subject, text });
+}
+
 // Keep track of recent checks to calculate availability
 const recentChecks: Record<string, boolean[]> = {};
 
@@ -32,8 +48,12 @@ async function checkApi(api: ApiConfig) {
     const result = await performCheck(api);
     const batch = db.batch();
 
+    // Get previous status
     const statusRef = db.collection('api_status').doc(result.id);
-    batch.set(statusRef, result);
+    const statusDoc = await statusRef.get();
+    const prevStatus = statusDoc.exists ? statusDoc.data()?.status : null;
+
+    batch.set(statusRef, { ...result, lastStatus: prevStatus });
 
     const historyRef = db.collection('status_history').doc();
     batch.set(historyRef, {
@@ -43,6 +63,31 @@ async function checkApi(api: ApiConfig) {
       throughput: result.throughput,
       timestamp: FieldValue.serverTimestamp(),
     });
+
+    // Alert Logic: Status Change
+    if (prevStatus && prevStatus !== result.status) {
+      const message = `${api.name} status changed from ${prevStatus} to ${result.status}.`;
+      
+      // In-App Alert
+      const alertRef = db.collection('alerts').doc();
+      batch.set(alertRef, {
+        apiId: result.id,
+        apiName: result.name,
+        type: 'downtime',
+        message,
+        timestamp: FieldValue.serverTimestamp(),
+        resolved: false
+      });
+
+      // Email Alert (Fetch users who want alerts)
+      const prefs = await db.collection('user_preferences').get();
+      prefs.forEach(async (doc) => {
+        const pref = doc.data();
+        if (pref.enableEmailAlerts) {
+          await sendEmailAlert(pref.email, 'API Status Alert', message);
+        }
+      });
+    }
 
     if (!recentChecks[result.id]) {
       recentChecks[result.id] = [];
