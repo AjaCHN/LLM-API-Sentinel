@@ -1,89 +1,25 @@
-// app/hooks/useDashboardData.ts v3.3.0
+// app/hooks/useDashboardData.ts v3.3.1
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { collection, onSnapshot, query, orderBy, limit, setDoc, doc, addDoc, serverTimestamp, where, updateDoc, deleteDoc } from 'firebase/firestore';
-import { onAuthStateChanged, signInWithPopup, signOut, User, AuthError } from 'firebase/auth';
-import { db, auth, googleProvider } from '../lib/firebase';
-import { format } from 'date-fns';
+import { collection, onSnapshot, query, orderBy, limit, setDoc, doc, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
+import { useAuth } from './useAuth';
+import { useTasks } from './useTasks';
 
 const LATENCY_THRESHOLD = 1500;
-
-enum OperationType {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LIST = 'list',
-  GET = 'get',
-  WRITE = 'write',
-}
-
-interface FirestoreErrorInfo {
-  error: string;
-  operationType: OperationType;
-  path: string | null;
-  authInfo: {
-    userId: string | undefined;
-    email: string | null | undefined;
-    emailVerified: boolean | undefined;
-    isAnonymous: boolean | undefined;
-    tenantId: string | null | undefined;
-    providerInfo: {
-      providerId: string;
-      displayName: string | null;
-      email: string | null;
-      photoUrl: string | null;
-    }[];
-  }
-}
-
-function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
-  const errorMessage = error instanceof Error ? error.message : String(error);
-  const isTransient = errorMessage.includes('CANCELLED') || 
-                      errorMessage.toLowerCase().includes('idle stream') ||
-                      errorMessage.toLowerCase().includes('timeout');
-
-  const errInfo: FirestoreErrorInfo = {
-    error: errorMessage,
-    authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
-        providerId: provider.providerId,
-        displayName: provider.displayName,
-        email: provider.email,
-        photoUrl: provider.photoURL
-      })) || []
-    },
-    operationType,
-    path
-  }
-  
-  // Only log to console if it's NOT a transient stream error
-  if (!isTransient) {
-    console.error('Firestore Error: ', JSON.stringify(errInfo));
-  }
-
-  // Only throw for critical errors that require system intervention (like security rules)
-  if (errorMessage.toLowerCase().includes('permission') || 
-      errorMessage.toLowerCase().includes('unauthenticated') ||
-      errorMessage.toLowerCase().includes('quota')) {
-    throw new Error(JSON.stringify(errInfo));
-  }
-}
 
 export function useDashboardData() {
   const [statuses, setStatuses] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [user, setUser] = useState<User | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [geo, setGeo] = useState<any | null>(null);
+
+  const { user, login, logout } = useAuth();
+  const { tasks, addTask, updateTaskStatus, deleteTask } = useTasks(user);
 
   useEffect(() => {
     fetch('https://ipapi.co/json/')
@@ -93,7 +29,7 @@ export function useDashboardData() {
   }, []);
 
   const runCheck = useCallback(async () => {
-    if (!auth.currentUser) return;
+    if (!user) return;
     
     setIsChecking(true);
     try {
@@ -152,11 +88,9 @@ export function useDashboardData() {
     } finally {
       setIsChecking(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (u) => setUser(u));
-    
     const qStatus = query(collection(db, 'api_status'));
     const unsubscribeStatus = onSnapshot(qStatus, (snapshot) => {
       const data = snapshot.docs.map(doc => doc.data());
@@ -174,7 +108,7 @@ export function useDashboardData() {
         const d = doc.data();
         return {
           ...d,
-          time: d.timestamp ? format(d.timestamp.toDate(), 'HH:mm:ss') : '',
+          time: d.timestamp ? new Date(d.timestamp.toDate()).toLocaleTimeString() : '',
           timestamp: d.timestamp?.toDate()
         };
       }).reverse();
@@ -195,24 +129,6 @@ export function useDashboardData() {
       setAlerts(data);
     }, (e) => handleFirestoreError(e, OperationType.LIST, 'alerts'));
 
-    let unsubscribeTasks = () => {};
-    if (user) {
-      const qTasks = query(
-        collection(db, 'tasks'),
-        where('userId', '==', user.uid),
-        orderBy('createdAt', 'desc')
-      );
-      unsubscribeTasks = onSnapshot(qTasks, (snapshot) => {
-        const data = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setTasks(data);
-      }, (e) => handleFirestoreError(e, OperationType.LIST, 'tasks'));
-    } else {
-      setTasks([]);
-    }
-
     let interval: NodeJS.Timeout;
     if (user) {
       interval = setInterval(() => {
@@ -221,11 +137,9 @@ export function useDashboardData() {
     }
 
     return () => {
-      unsubscribeAuth();
       unsubscribeStatus();
       unsubscribeHistory();
       unsubscribeAlerts();
-      unsubscribeTasks();
       if (interval) clearInterval(interval);
     };
   }, [user, runCheck]);
@@ -238,60 +152,6 @@ export function useDashboardData() {
       handleFirestoreError(e, OperationType.UPDATE, `alerts/${id}`);
     }
   };
-
-  const addTask = async (title: string) => {
-    if (!user) return;
-    try {
-      await addDoc(collection(db, 'tasks'), {
-        title,
-        status: 'todo',
-        createdAt: serverTimestamp(),
-        userId: user.uid
-      });
-    } catch (e) {
-      handleFirestoreError(e, OperationType.CREATE, 'tasks');
-    }
-  };
-
-  const updateTaskStatus = async (id: string, status: 'todo' | 'inProgress' | 'done') => {
-    if (!user) return;
-    try {
-      await updateDoc(doc(db, 'tasks', id), { status });
-    } catch (e) {
-      handleFirestoreError(e, OperationType.UPDATE, `tasks/${id}`);
-    }
-  };
-
-  const deleteTask = async (id: string) => {
-    if (!user) return;
-    try {
-      await deleteDoc(doc(db, 'tasks', id));
-    } catch (e) {
-      handleFirestoreError(e, OperationType.DELETE, `tasks/${id}`);
-    }
-  };
-
-  const login = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      const authError = error as AuthError;
-      if (authError.code === 'auth/popup-closed-by-user') {
-        console.warn('Login popup was closed by user before completion.');
-        // Optionally show a non-intrusive UI message here if needed
-      } else if (authError.code === 'auth/cancelled-popup-request') {
-        console.warn('Multiple popup requests detected. Previous one cancelled.');
-      } else {
-        console.error('Authentication error:', authError.code, authError.message);
-        // For other errors, we might want to alert the user or suggest opening in a new tab
-        if (typeof window !== 'undefined' && window.parent !== window) {
-          console.info('Tip: If login fails in the preview iframe, try opening the app in a new tab.');
-        }
-      }
-    }
-  };
-
-  const logout = () => signOut(auth);
 
   return { statuses, history, alerts, tasks, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, addTask, updateTaskStatus, deleteTask, login, logout };
 }

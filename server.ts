@@ -4,6 +4,7 @@ import next from 'next';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
+import path from 'path';
 import nodemailer from 'nodemailer';
 import { performCheck, LATENCY_THRESHOLD, APIS_TO_CHECK, ApiConfig } from './app/lib/monitor';
 import { sendAlert } from './app/lib/alerts';
@@ -144,6 +145,10 @@ async function checkApi(api: ApiConfig) {
 
 app.prepare().then(() => {
   const server = express();
+
+  // Explicitly serve static files
+  server.use('/_next/static', express.static(path.join(__dirname, '.next/static')));
+  server.use('/public', express.static(path.join(__dirname, 'public')));
 
   // Schedule individual API checks
   APIS_TO_CHECK.forEach(api => {

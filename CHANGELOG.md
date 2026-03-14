@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.3.3]
+### Fixed
+- **Preview 404s**: Re-added explicit static file serving (`/_next/static`, `/public`) in `server.ts` to ensure assets load correctly in the preview iframe.
+
+## [3.3.2]
+### Refactored
+- **Codebase**: Split `useDashboardData.ts` into `useAuth.ts`, `useTasks.ts`, and `firestoreUtils.ts` to improve maintainability and reduce file size.
+
 ## [3.3.1]
 ### Fixed
 - **Root Layout Rendering**: Removed `notFound()` call from `i18n/request.ts` to prevent rendering errors in the root layout. Now defaults to English locale when an invalid locale is encountered.
