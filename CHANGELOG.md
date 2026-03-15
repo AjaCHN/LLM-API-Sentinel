@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.4.1]
+### Fixed
+- **Firestore Connectivity**: 简化了 Firestore 初始化配置，移除了可能导致冲突的实验性标志，并增强了配置校验逻辑。
+
+## [3.4.0]
+### Fixed
+- **Firestore Connectivity**: 进一步优化了 Firestore 初始化配置，增加了 `useFetchStreams: false` 以提高在容器化环境中的连接稳定性。
+- **Diagnostics**: 增强了连接测试逻辑，增加了详细的配置状态检查日志，帮助定位 Secrets 配置问题。
+
+## [3.3.9]
+### Added
+- **User Profile**: 新增了详细的个人资料页面 (`/profile`)，展示账户详情、加入时间及地理位置。
+- **User Options**: 引入了 `UserDropdown` 组件，集成个人资料、设置与退出登录入口，提升用户体验。
+- **Settings**: 新增了设置页面 (`/settings`)，支持用户自定义告警阈值、刷新频率及通知偏好。
+- **Persistence**: 用户偏好设置现在持久化存储在 Firestore 的 `user_preferences` 集合中。
+
+## [3.3.8]
+### Fixed
+- **Firebase Initialization**: 修复了 `experimentalForceLongPolling` 和 `experimentalAutoDetectLongPolling` 不能同时使用的配置冲突错误。
+
 ## [3.3.7]
 ### Fixed
 - **Firestore Connectivity**: 增加了重试机制和配置脱敏显示。

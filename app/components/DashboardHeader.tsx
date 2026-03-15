@@ -4,6 +4,7 @@
 import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import AlertsDropdown from './AlertsDropdown';
+import UserDropdown from './UserDropdown';
 
 export default function DashboardHeader({ 
   user, 
@@ -65,18 +66,7 @@ export default function DashboardHeader({
 
         <div className="flex items-center gap-3">
           {user ? (
-            <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-[10px] font-bold leading-none mb-1">{user.displayName}</p>
-                <p className="text-[9px] opacity-50 font-mono leading-none">{user.email}</p>
-              </div>
-              <button 
-                onClick={logout}
-                className="p-2 border border-border hover:bg-destructive hover:text-destructive-foreground transition-colors rounded-md"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
+            <UserDropdown user={user} logout={logout} />
           ) : (
             <button 
               onClick={login}
