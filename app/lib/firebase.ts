@@ -1,4 +1,4 @@
-// app/lib/firebase.ts v2.6.0
+// app/lib/firebase.ts v3.3.6
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { initializeFirestore, doc, getDocFromServer, setLogLevel } from 'firebase/firestore';
@@ -13,15 +13,26 @@ const firebaseConfig = {
   firestoreDatabaseId: process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID,
 };
 
+// 检查配置是否完整
+const missingKeys = Object.entries(firebaseConfig)
+  .filter(([key, value]) => !value && key !== 'firestoreDatabaseId')
+  .map(([key]) => key);
+
+if (missingKeys.length > 0) {
+  console.error(`Firebase Configuration Error: Missing required environment variables: ${missingKeys.join(', ')}`);
+  console.error("Please check your AI Studio Secrets and ensure all NEXT_PUBLIC_FIREBASE_* variables are set.");
+}
+
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const auth = getAuth(app);
 
-// Suppress transient SDK logs (like stream cancellations) by setting log level to error
+// 设置日志级别为 error 以减少干扰
 setLogLevel('error');
 
 export const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
-  experimentalAutoDetectLongPolling: false, // Force long polling immediately to prevent idle stream errors
+  experimentalAutoDetectLongPolling: false,
+  useFetchStreams: false, // 禁用 fetch streams 以提高在某些代理环境下的稳定性
 }, firebaseConfig.firestoreDatabaseId || '(default)');
 export const googleProvider = new GoogleAuthProvider();
 
@@ -32,11 +43,19 @@ export const googleProvider = new GoogleAuthProvider();
 async function testConnection() {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
+    console.log("Firestore connection successful.");
   } catch (error) {
-    if(error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration. ");
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
+    if (errorMessage.includes('the client is offline')) {
+      console.error("Firestore Error: The client is offline. Check your internet connection or Firebase config.");
+    } else if (errorMessage.includes('NOT_FOUND') || errorMessage.includes('not-found')) {
+      console.error("Firestore Error: 404 NOT_FOUND. This usually means the Project ID or Database ID is incorrect.");
+      console.error(`Current Config - Project: ${firebaseConfig.projectId}, Database: ${firebaseConfig.firestoreDatabaseId || '(default)'}`);
+      console.error("Please verify these values in your AI Studio Secrets.");
+    } else {
+      console.error("Firestore connection test failed:", errorMessage);
     }
-    // Skip logging for other errors, as this is simply a connection test.
   }
 }
 testConnection();

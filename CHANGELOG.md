@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.3.6]
+### Fixed
+- **Firestore Connectivity**: 增加了对 Firebase 配置完整性的检查。
+- **Stability**: 在 Firestore 初始化中禁用了 `useFetchStreams`，并增加了配置缺失的详细错误提示，以解决“客户端离线”问题。
+
+## [3.3.5]
+### Fixed
+- **Firestore Connectivity**: Improved error logging for `NOT_FOUND` issues. The `testConnection` function now explicitly reports the current Project ID and Database ID when a connection fails, helping users identify misconfigured Secrets in AI Studio.
+
 ## [3.3.4]
 ### Fixed
 - **Preview 404s**: Moved `page.tsx` and `layout.tsx` to `app/[locale]` directory to correctly align with `next-intl` routing, resolving 404 errors in the preview environment.
