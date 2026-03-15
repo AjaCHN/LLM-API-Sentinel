@@ -1,5 +1,5 @@
 {
-  "name": "LLM API Sentinel v3.3.6",
+  "name": "LLM API Sentinel v3.3.7",
   "description": "Autonomous LLM API monitoring system with 24/7 background checks, real-time alerts, historical performance tracking, and multi-language support. Refactored dashboard hooks for better maintainability. Fixed preview 404 errors by moving page and layout to [locale] folder.",
   "requestFramePermissions": []
 }

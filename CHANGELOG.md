@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.3.7]
+### Fixed
+- **Firestore Connectivity**: 增加了重试机制和配置脱敏显示。
+- **Robustness**: 优化了初始化配置，增加了对 `window` 的检查，以确保连接验证仅在客户端执行。
+
 ## [3.3.6]
 ### Fixed
 - **Firestore Connectivity**: 增加了对 Firebase 配置完整性的检查。

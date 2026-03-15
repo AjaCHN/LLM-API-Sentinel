@@ -1,4 +1,4 @@
-// app/lib/firebase.ts v3.3.6
+// app/lib/firebase.ts v3.3.7
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { initializeFirestore, doc, getDocFromServer, setLogLevel } from 'firebase/firestore';
@@ -13,50 +13,65 @@ const firebaseConfig = {
   firestoreDatabaseId: process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID,
 };
 
-// 检查配置是否完整
-const missingKeys = Object.entries(firebaseConfig)
-  .filter(([key, value]) => !value && key !== 'firestoreDatabaseId')
-  .map(([key]) => key);
+// 检查配置并脱敏打印关键信息以便核对
+const checkConfig = () => {
+  const missingKeys = Object.entries(firebaseConfig)
+    .filter(([key, value]) => !value && key !== 'firestoreDatabaseId')
+    .map(([key]) => key);
 
-if (missingKeys.length > 0) {
-  console.error(`Firebase Configuration Error: Missing required environment variables: ${missingKeys.join(', ')}`);
-  console.error("Please check your AI Studio Secrets and ensure all NEXT_PUBLIC_FIREBASE_* variables are set.");
+  if (missingKeys.length > 0) {
+    console.error(`Firebase Configuration Error: Missing keys: ${missingKeys.join(', ')}`);
+  } else {
+    console.log("Firebase Config detected:");
+    console.log(`- Project ID: ${firebaseConfig.projectId}`);
+    console.log(`- API Key: ${firebaseConfig.apiKey?.substring(0, 5)}...${firebaseConfig.apiKey?.substring(firebaseConfig.apiKey.length - 3)}`);
+    console.log(`- Database ID: ${firebaseConfig.firestoreDatabaseId || '(default)'}`);
+  }
+};
+
+if (typeof window !== 'undefined') {
+  checkConfig();
 }
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const auth = getAuth(app);
 
-// 设置日志级别为 error 以减少干扰
+// 设置日志级别
 setLogLevel('error');
 
+// 初始化 Firestore，使用更稳健的配置
 export const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
-  experimentalAutoDetectLongPolling: false,
-  useFetchStreams: false, // 禁用 fetch streams 以提高在某些代理环境下的稳定性
+  experimentalAutoDetectLongPolling: true, // 允许自动检测，但在受限环境下优先使用长轮询
 }, firebaseConfig.firestoreDatabaseId || '(default)');
+
 export const googleProvider = new GoogleAuthProvider();
 
-
-
-
-
-async function testConnection() {
+async function testConnection(retries = 3) {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
-    console.log("Firestore connection successful.");
+    console.log("Firestore connection verified successfully.");
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     
     if (errorMessage.includes('the client is offline')) {
-      console.error("Firestore Error: The client is offline. Check your internet connection or Firebase config.");
+      if (retries > 0) {
+        console.warn(`Firestore is offline, retrying... (${retries} left)`);
+        setTimeout(() => testConnection(retries - 1), 2000);
+      } else {
+        console.error("Firestore Error: Persistent offline state. Please verify your Project ID and API Key in AI Studio Secrets.");
+        console.error("Also ensure that 'Cloud Firestore API' is enabled in your Google Cloud Console.");
+      }
     } else if (errorMessage.includes('NOT_FOUND') || errorMessage.includes('not-found')) {
-      console.error("Firestore Error: 404 NOT_FOUND. This usually means the Project ID or Database ID is incorrect.");
+      console.error("Firestore Error: 404 NOT_FOUND. Check Project ID and Database ID.");
       console.error(`Current Config - Project: ${firebaseConfig.projectId}, Database: ${firebaseConfig.firestoreDatabaseId || '(default)'}`);
-      console.error("Please verify these values in your AI Studio Secrets.");
     } else {
       console.error("Firestore connection test failed:", errorMessage);
     }
   }
 }
-testConnection();
+
+if (typeof window !== 'undefined') {
+  testConnection();
+}
 
