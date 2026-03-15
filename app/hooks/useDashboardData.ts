@@ -33,56 +33,7 @@ export function useDashboardData() {
     
     setIsChecking(true);
     try {
-      const res = await fetch('/api/check');
-      const results: any[] = await res.json();
-      
-      for (const result of results) {
-        try {
-          await setDoc(doc(db, 'api_status', result.id), result);
-        } catch (e) {
-          handleFirestoreError(e, OperationType.WRITE, `api_status/${result.id}`);
-        }
-
-        try {
-          await addDoc(collection(db, 'status_history'), {
-            apiId: result.id,
-            status: result.status,
-            latency: result.latency,
-            throughput: result.throughput,
-            timestamp: serverTimestamp(),
-          });
-        } catch (e) {
-          handleFirestoreError(e, OperationType.CREATE, 'status_history');
-        }
-
-        if (result.status === 'offline') {
-          try {
-            await addDoc(collection(db, 'alerts'), {
-              apiId: result.id,
-              apiName: result.name,
-              type: 'downtime',
-              message: `${result.name} is currently offline.`,
-              timestamp: serverTimestamp(),
-              resolved: false
-            });
-          } catch (e) {
-            handleFirestoreError(e, OperationType.CREATE, 'alerts');
-          }
-        } else if (result.latency > LATENCY_THRESHOLD) {
-          try {
-            await addDoc(collection(db, 'alerts'), {
-              apiId: result.id,
-              apiName: result.name,
-              type: 'latency',
-              message: `${result.name} latency is high: ${result.latency}ms.`,
-              timestamp: serverTimestamp(),
-              resolved: false
-            });
-          } catch (e) {
-            handleFirestoreError(e, OperationType.CREATE, 'alerts');
-          }
-        }
-      }
+      await fetch('/api/check');
     } catch (error) {
       console.error('Check failed:', error);
     } finally {

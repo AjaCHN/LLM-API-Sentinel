@@ -32,5 +32,34 @@
   "statusLabels": {
     "online": "在线",
     "offline": "离线"
+  },
+  "profile": {
+    "title": "个人资料",
+    "accountDetails": "账户详情",
+    "joined": "加入时间",
+    "lastLogin": "最后登录",
+    "currentLocation": "当前位置",
+    "quickActions": "快速操作",
+    "toggleTheme": "切换主题",
+    "backToDashboard": "返回控制台",
+    "signOut": "退出登录"
+  },
+  "settings": {
+    "title": "系统设置",
+    "alerts": "告警设置",
+    "display": "界面显示",
+    "security": "安全隐私",
+    "data": "数据管理",
+    "thresholds": "告警阈值与通知",
+    "latencyThreshold": "延迟告警阈值 (ms)",
+    "latencyDesc": "当 API 延迟超过此值时将触发告警。",
+    "refreshInterval": "数据刷新频率 (分钟)",
+    "enableEmailAlerts": "启用邮件告警",
+    "emailAlertsDesc": "发送告警通知到您的注册邮箱。",
+    "enableInAppAlerts": "启用应用内通知",
+    "inAppAlertsDesc": "在仪表盘顶部显示实时告警。",
+    "saveSettings": "保存设置",
+    "saving": "保存中...",
+    "note": "注意：某些设置可能需要重新加载页面才能生效。"
   }
 }

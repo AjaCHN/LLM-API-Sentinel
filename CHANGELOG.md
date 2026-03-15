@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.4.6]
+### Fixed
+- **Firestore Permissions**: 移除了客户端 `useDashboardData` 中错误的 Firestore 写操作，API 状态更新现完全由服务器端处理，解决了 `Missing or insufficient permissions` 错误。
+
+## [3.4.5]
+### Fixed
+- **Firebase Initialization**: 修复了 Firestore 持久化离线状态错误，将 Firebase 配置源从环境变量切换为 `firebase-applet-config.json`，确保了配置的准确性与实时同步。
+
+## [3.4.4]
+### Fixed
+- **Static Asset Loading**: 移除了自定义服务器中错误的静态文件路由配置，交由 Next.js 内置处理器处理，修复了 `Uncaught SyntaxError: Unexpected token '<'` 错误。
+
+## [3.4.3]
+### Added
+- **Language Switcher**: 在顶部导航栏新增了中英文语言切换功能。
+
+## [3.4.2]
+### Added
+- **Localization**: 完善了 Profile 和 Settings 页面的中英文翻译，补全了相关语言包。
+
 ## [3.4.1]
 ### Fixed
 - **Firestore Connectivity**: 简化了 Firestore 初始化配置，移除了可能导致冲突的实验性标志，并增强了配置校验逻辑。

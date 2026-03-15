@@ -1,18 +1,14 @@
-// server.ts v2.1.0
+// server.ts v2.1.1
 import express from 'express';
 import next from 'next';
-import { initializeApp } from 'firebase-admin/app';
+import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
 import path from 'path';
 import nodemailer from 'nodemailer';
 import { performCheck, LATENCY_THRESHOLD, APIS_TO_CHECK, ApiConfig } from './app/lib/monitor';
 import { sendAlert } from './app/lib/alerts';
-
-const firebaseConfig = {
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  firestoreDatabaseId: process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID,
-};
+import firebaseConfig from './firebase-applet-config.json';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -20,11 +16,13 @@ const handle = app.getRequestHandler();
 const port = 3000;
 
 // Initialize Firebase Admin
+// Note: In this environment, we use the project ID from config.
+// The service account is handled by the platform.
 const appAdmin = initializeApp({
   projectId: firebaseConfig.projectId,
 });
 
-const db = getFirestore(appAdmin, firebaseConfig.firestoreDatabaseId || '(default)');
+const db = getFirestore(appAdmin, firebaseConfig.firestoreDatabaseId);
 
 // Nodemailer Transporter (Requires SMTP config)
 const transporter = nodemailer.createTransport({
@@ -145,10 +143,6 @@ async function checkApi(api: ApiConfig) {
 
 app.prepare().then(() => {
   const server = express();
-
-  // Explicitly serve static files
-  server.use('/_next/static', express.static(path.join(__dirname, '.next/static')));
-  server.use('/public', express.static(path.join(__dirname, 'public')));
 
   // Schedule individual API checks
   APIS_TO_CHECK.forEach(api => {

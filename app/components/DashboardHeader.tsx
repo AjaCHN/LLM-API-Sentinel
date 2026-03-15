@@ -1,10 +1,11 @@
-// app/components/DashboardHeader.tsx v2.3.0
+// app/components/DashboardHeader.tsx v2.4.0
 'use client';
 
-import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, X } from 'lucide-react';
+import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, Languages } from 'lucide-react';
 import { cn } from '../lib/utils';
 import AlertsDropdown from './AlertsDropdown';
 import UserDropdown from './UserDropdown';
+import { usePathname, useRouter } from '../navigation';
 
 export default function DashboardHeader({ 
   user, 
@@ -18,19 +19,31 @@ export default function DashboardHeader({
   logout, 
   resolveAlert 
 }: any) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const switchLocale = (newLocale: string) => {
+    router.push(pathname, { locale: newLocale });
+  };
+
   return (
     <header id="main-header" className="border-b border-border p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 bg-background/80 backdrop-blur-md z-50">
       <div id="brand-section" className="flex items-center gap-3">
         <Activity className="w-8 h-8 text-primary" />
         <div>
           <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase italic font-serif">LLM Sentinel</h1>
-          <p className="mono-label">Global API Monitoring System v2.3.0</p>
+          <p className="mono-label">Global API Monitoring System v2.4.0</p>
         </div>
       </div>
       
       <div id="controls-section" className="flex items-center gap-3 md:gap-4 w-full md:w-auto justify-between md:justify-end">
         <div className="flex items-center gap-2">
-          <div className="relative">
+          <div className="relative flex items-center gap-2">
+            <div className="flex items-center border border-border rounded-md overflow-hidden">
+              <button onClick={() => switchLocale('en')} className="px-2 py-1 text-[10px] font-bold hover:bg-muted">EN</button>
+              <button onClick={() => switchLocale('zh-cn')} className="px-2 py-1 text-[10px] font-bold hover:bg-muted border-l border-border">ZH</button>
+            </div>
+
             <button 
               onClick={() => setShowAlerts(!showAlerts)}
               className="p-2 border border-border hover:bg-foreground hover:text-background transition-colors rounded-md relative"

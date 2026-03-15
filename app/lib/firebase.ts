@@ -1,17 +1,8 @@
-// app/lib/firebase.ts v3.4.1
+// app/lib/firebase.ts v3.4.2
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { initializeFirestore, doc, getDocFromServer, setLogLevel } from 'firebase/firestore';
-
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  firestoreDatabaseId: process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID,
-};
+import firebaseConfig from '../../firebase-applet-config.json';
 
 // 严格检查配置
 const validateConfig = () => {
@@ -35,8 +26,7 @@ export const auth = getAuth(app);
 setLogLevel('error');
 
 // 初始化 Firestore
-// 使用标准初始化，移除实验性标志以排除配置冲突
-export const db = initializeFirestore(app, {}, firebaseConfig.firestoreDatabaseId || '(default)');
+export const db = initializeFirestore(app, {}, firebaseConfig.firestoreDatabaseId);
 
 export const googleProvider = new GoogleAuthProvider();
 
@@ -58,12 +48,12 @@ async function testConnection(retries = 5) {
         console.error("Current Config Check:", {
           projectId: firebaseConfig.projectId ? 'Set' : 'MISSING',
           apiKey: firebaseConfig.apiKey ? 'Set' : 'MISSING',
-          databaseId: firebaseConfig.firestoreDatabaseId || '(default)'
+          databaseId: firebaseConfig.firestoreDatabaseId
         });
       }
     } else if (errorMessage.includes('NOT_FOUND') || errorMessage.includes('not-found')) {
       console.error("Firestore Error: 404 NOT_FOUND. This usually means the Project ID or Database ID is incorrect.");
-      console.error(`Current Config - Project: ${firebaseConfig.projectId}, Database: ${firebaseConfig.firestoreDatabaseId || '(default)'}`);
+      console.error(`Current Config - Project: ${firebaseConfig.projectId}, Database: ${firebaseConfig.firestoreDatabaseId}`);
     } else {
       console.error("Firestore connection test failed with unexpected error:", errorMessage);
     }
