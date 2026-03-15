@@ -1,17 +1,17 @@
-// app/page.tsx v3.1.0
+// app/[locale]/page.tsx v3.3.4
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { format } from 'date-fns';
-import { useDashboardData } from './hooks/useDashboardData';
-import DashboardHeader from './components/DashboardHeader';
-import ApiStatusGrid from './components/ApiStatusGrid';
-import LatencyHistoryChart from './components/LatencyHistoryChart';
-import TaskList from './components/TaskList';
-import DashboardFooter from './components/DashboardFooter';
-import ErrorBoundary from './components/ErrorBoundary';
-import { getApiColor, cn } from './lib/utils';
+import { useDashboardData } from '../hooks/useDashboardData';
+import DashboardHeader from '../components/DashboardHeader';
+import ApiStatusGrid from '../components/ApiStatusGrid';
+import LatencyHistoryChart from '../components/LatencyHistoryChart';
+import TaskList from '../components/TaskList';
+import DashboardFooter from '../components/DashboardFooter';
+import ErrorBoundary from '../components/ErrorBoundary';
+import { getApiColor, cn } from '../lib/utils';
 import { AlertTriangle, Activity, Zap } from 'lucide-react';
 
 export default function Dashboard() {

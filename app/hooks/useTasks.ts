@@ -1,7 +1,8 @@
 // app/hooks/useTasks.ts v3.3.1
 'use client';
 import { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, User } from 'firebase/firestore';
+import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { User } from 'firebase/auth';
 import { db } from '../lib/firebase';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 
@@ -24,6 +25,7 @@ export function useTasks(user: User | null) {
         setTasks(data);
       }, (e) => handleFirestoreError(e, OperationType.LIST, 'tasks'));
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTasks([]);
     }
     return unsubscribe;

@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.3.4]
+### Fixed
+- **Preview 404s**: Moved `page.tsx` and `layout.tsx` to `app/[locale]` directory to correctly align with `next-intl` routing, resolving 404 errors in the preview environment.
+
 ## [3.3.3]
 ### Fixed
 - **Preview 404s**: Re-added explicit static file serving (`/_next/static`, `/public`) in `server.ts` to ensure assets load correctly in the preview iframe.

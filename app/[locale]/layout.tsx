@@ -1,8 +1,8 @@
-// app/layout.tsx v3.2.0
+// app/[locale]/layout.tsx v3.3.4
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
-import './globals.css';
-import { ThemeProvider } from './components/ThemeProvider';
+import '../globals.css';
+import { ThemeProvider } from '../components/ThemeProvider';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 

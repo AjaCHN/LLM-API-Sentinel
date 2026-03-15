@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { collection, onSnapshot, query, orderBy, limit, setDoc, doc, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, limit, setDoc, doc, addDoc, serverTimestamp, updateDoc, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 import { useAuth } from './useAuth';
