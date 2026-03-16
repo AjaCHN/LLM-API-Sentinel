@@ -1,5 +1,6 @@
-// app/lib/monitor.ts v2.1.0
+// app/lib/monitor.ts v2.2.0
 import axios from 'axios';
+import { getApiConfig } from './config';
 
 export interface ApiConfig {
   id: string;
@@ -10,6 +11,8 @@ export interface ApiConfig {
   strategy: 'ping' | 'full';
   method?: string;
   body?: any;
+  customBody?: string; // JSON string
+  timeout?: number; // in milliseconds
   headers?: any;
 }
 
@@ -34,22 +37,24 @@ export const APIS_TO_CHECK: ApiConfig[] = [
 export const LATENCY_THRESHOLD = 1500;
 
 export async function performCheck(api: ApiConfig) {
+  const config = await getApiConfig(api.id);
+  const effectiveApi = config ? { ...api, ...config } : api;
   const start = Date.now();
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const timeoutId = setTimeout(() => controller.abort(), effectiveApi.timeout || 6000);
 
     const options: RequestInit = {
-      method: api.strategy === 'full' && api.method ? api.method : 'GET',
+      method: effectiveApi.strategy === 'full' && effectiveApi.method ? effectiveApi.method : 'GET',
       signal: controller.signal,
-      headers: { 'Content-Type': 'application/json', ...(api.headers || {}) },
+      headers: { 'Content-Type': 'application/json', ...(effectiveApi.headers || {}) },
     };
 
-    if (api.strategy === 'full' && api.body) {
-      options.body = JSON.stringify(api.body);
+    if (effectiveApi.strategy === 'full') {
+      options.body = effectiveApi.customBody || JSON.stringify(effectiveApi.body);
     }
 
-    const response = await fetch(api.url, options);
+    const response = await fetch(effectiveApi.url, options);
     
     clearTimeout(timeoutId);
     const latency = Date.now() - start;
@@ -59,7 +64,7 @@ export async function performCheck(api: ApiConfig) {
     const throughput = isOnline ? parseFloat((1000 / (latency || 1)).toFixed(2)) : 0;
     
     return {
-      ...api,
+      ...effectiveApi,
       status: isOnline ? 'online' : 'offline',
       latency,
       throughput,
@@ -67,7 +72,7 @@ export async function performCheck(api: ApiConfig) {
     };
   } catch (error) {
     return {
-      ...api,
+      ...effectiveApi,
       status: 'offline',
       latency: 0,
       throughput: 0,

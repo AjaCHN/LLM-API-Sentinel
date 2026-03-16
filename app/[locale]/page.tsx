@@ -1,4 +1,4 @@
-// app/[locale]/page.tsx v3.3.4
+// app/[locale]/page.tsx v3.4.0
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,7 +15,7 @@ import { getApiColor, cn } from '../lib/utils';
 import { AlertTriangle, Activity, Zap } from 'lucide-react';
 
 export default function Dashboard() {
-  const { statuses, history, alerts, tasks, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, addTask, updateTaskStatus, deleteTask, login, logout } = useDashboardData();
+  const { statuses, history, alerts, tasks, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, addTask, updateTaskStatus, deleteTask, login, logout, baselines } = useDashboardData();
   const [showAlerts, setShowAlerts] = useState(false);
   const [chartType, setChartType] = useState<'latency' | 'throughput'>('latency');
   const { theme, setTheme } = useTheme();
@@ -90,7 +90,7 @@ export default function Dashboard() {
                 </button>
               </div>
             </div>
-            <ApiStatusGrid statuses={statuses} />
+            <ApiStatusGrid statuses={statuses} baselines={baselines} />
           </section>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">

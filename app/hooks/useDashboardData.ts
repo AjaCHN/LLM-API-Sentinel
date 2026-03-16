@@ -1,19 +1,20 @@
-// app/hooks/useDashboardData.ts v3.3.1
+// app/hooks/useDashboardData.ts v3.4.0
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { collection, onSnapshot, query, orderBy, limit, setDoc, doc, addDoc, serverTimestamp, updateDoc, where } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, limit, doc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 import { useAuth } from './useAuth';
 import { useTasks } from './useTasks';
-
-const LATENCY_THRESHOLD = 1500;
+import { APIS_TO_CHECK } from '../lib/monitor';
+import { getMetricsBaseline } from '../lib/metrics';
 
 export function useDashboardData() {
   const [statuses, setStatuses] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
+  const [baselines, setBaselines] = useState<Record<string, any>>({});
   const [isChecking, setIsChecking] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [geo, setGeo] = useState<any | null>(null);
@@ -95,6 +96,17 @@ export function useDashboardData() {
     };
   }, [user, runCheck]);
 
+  useEffect(() => {
+    async function fetchBaselines() {
+      const newBaselines: Record<string, any> = {};
+      for (const api of APIS_TO_CHECK) {
+        newBaselines[api.id] = await getMetricsBaseline(api.id);
+      }
+      setBaselines(newBaselines);
+    }
+    fetchBaselines();
+  }, [statuses]);
+
   const resolveAlert = async (id: string) => {
     if (!user) return;
     try {
@@ -104,6 +116,6 @@ export function useDashboardData() {
     }
   };
 
-  return { statuses, history, alerts, tasks, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, addTask, updateTaskStatus, deleteTask, login, logout };
+  return { statuses, history, alerts, tasks, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, addTask, updateTaskStatus, deleteTask, login, logout, baselines };
 }
 
