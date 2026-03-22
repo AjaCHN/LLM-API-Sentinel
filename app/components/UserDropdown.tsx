@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import { User, Settings, LogOut, ChevronDown, Shield, Mail, Calendar } from 'lucide-react';
 import { cn } from '../lib/utils';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 
 interface UserDropdownProps {
@@ -34,9 +35,9 @@ export default function UserDropdown({ user, logout }: UserDropdownProps) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 p-1 pr-2 border border-border hover:bg-muted/50 transition-all rounded-full bg-muted/20"
       >
-        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 overflow-hidden">
+        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 overflow-hidden relative">
           {user.photoURL ? (
-            <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
+            <Image src={user.photoURL} alt={user.displayName || 'User'} fill className="object-cover" referrerPolicy="no-referrer" />
           ) : (
             <User className="w-4 h-4 text-primary" />
           )}

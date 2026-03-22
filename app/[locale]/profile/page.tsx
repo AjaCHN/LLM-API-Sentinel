@@ -11,6 +11,7 @@ import { User, Mail, Shield, Calendar, MapPin, Activity, Bell, Settings as Setti
 import { cn } from '../../lib/utils';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 
 export default function ProfilePage() {
@@ -86,9 +87,9 @@ export default function ProfilePage() {
             <div className="h-32 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent" />
             <div className="px-6 pb-8 -mt-12 flex flex-col md:flex-row items-center md:items-end gap-6">
               <div className="relative">
-                <div className="w-32 h-32 rounded-2xl border-4 border-background bg-muted overflow-hidden shadow-lg">
+                <div className="w-32 h-32 rounded-2xl border-4 border-background bg-muted overflow-hidden shadow-lg relative">
                   {user.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
+                    <Image src={user.photoURL} alt={user.displayName || 'User'} fill className="object-cover" referrerPolicy="no-referrer" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-primary/10">
                       <User className="w-12 h-12 text-primary" />
