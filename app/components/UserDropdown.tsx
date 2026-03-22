@@ -36,7 +36,7 @@ export default function UserDropdown({ user, logout }: UserDropdownProps) {
       >
         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 overflow-hidden">
           {user.photoURL ? (
-            <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
+            <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
           ) : (
             <User className="w-4 h-4 text-primary" />
           )}

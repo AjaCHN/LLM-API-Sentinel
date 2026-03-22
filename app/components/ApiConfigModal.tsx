@@ -1,14 +1,17 @@
-// app/components/ApiConfigModal.tsx v1.0.0
+// app/components/ApiConfigModal.tsx v1.2.0
 'use client';
 
 import { useState } from 'react';
 import { ApiConfig } from '../lib/monitor';
 
-export default function ApiConfigModal({ api, onClose, onSave }: { api: ApiConfig, onClose: () => void, onSave: (config: ApiConfig) => void }) {
-  const [config, setConfig] = useState<ApiConfig>({ ...api });
+export default function ApiConfigModal({ api, onClose, onSave }: { api: any, onClose: () => void, onSave: (config: ApiConfig) => void }) {
+  const [config, setConfig] = useState<ApiConfig>({ 
+    ...api, 
+    id: api.originalId || api.id 
+  });
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-card border border-border p-6 rounded-lg w-full max-w-md space-y-4">
         <h2 className="font-bold text-lg">Configure {api.name}</h2>
         
@@ -38,12 +41,13 @@ export default function ApiConfigModal({ api, onClose, onSave }: { api: ApiConfi
             value={config.customBody || ''} 
             onChange={e => setConfig({...config, customBody: e.target.value})}
             className="w-full bg-background border border-border rounded p-2 text-sm h-24 font-mono"
+            placeholder='{"prompt": "Hello"}'
           />
         </div>
 
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 text-sm font-bold uppercase border border-border rounded">Cancel</button>
-          <button onClick={() => onSave(config)} className="px-4 py-2 text-sm font-bold uppercase bg-foreground text-background rounded">Save</button>
+          <button onClick={onClose} className="px-4 py-2 text-sm font-bold uppercase border border-border rounded hover:bg-muted">Cancel</button>
+          <button onClick={() => onSave(config)} className="px-4 py-2 text-sm font-bold uppercase bg-foreground text-background rounded hover:opacity-90">Save</button>
         </div>
       </div>
     </div>

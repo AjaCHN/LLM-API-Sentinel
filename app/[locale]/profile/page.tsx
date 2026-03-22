@@ -88,7 +88,7 @@ export default function ProfilePage() {
               <div className="relative">
                 <div className="w-32 h-32 rounded-2xl border-4 border-background bg-muted overflow-hidden shadow-lg">
                   {user.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName} className="w-full h-full object-cover" />
+                    <img src={user.photoURL} alt={user.displayName || 'User'} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-primary/10">
                       <User className="w-12 h-12 text-primary" />
@@ -140,7 +140,7 @@ export default function ProfilePage() {
                     <p className="text-[10px] uppercase font-bold opacity-50">电子邮箱 (Email Address)</p>
                     <div className="flex items-center gap-2">
                       <p className="text-sm">{user.email}</p>
-                      {user.emailVerified && <Shield className="w-3 h-3 text-emerald-500" title="Verified" />}
+                      {user.emailVerified && <Shield className="w-3 h-3 text-emerald-500" />}
                     </div>
                   </div>
                   <div className="space-y-1">

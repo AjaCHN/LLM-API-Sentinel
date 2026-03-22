@@ -1,5 +1,6 @@
-// app/lib/firestoreUtils.ts v3.3.1
-import { auth } from '../lib/firebase';
+// app/lib/firestoreUtils.ts v3.4.0
+import { db, auth } from '../lib/firebase';
+import { doc, setDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export enum OperationType {
   CREATE = 'create',
@@ -62,5 +63,28 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
       errorMessage.toLowerCase().includes('unauthenticated') ||
       errorMessage.toLowerCase().includes('quota')) {
     throw new Error(JSON.stringify(errInfo));
+  }
+}
+
+export async function saveApiStatus(result: any) {
+  try {
+    await setDoc(doc(db, 'api_status', result.id), result);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, `api_status/${result.id}`);
+  }
+}
+
+export async function saveApiHistory(result: any) {
+  try {
+    await addDoc(collection(db, 'status_history'), {
+      apiId: result.id,
+      region: result.region,
+      status: result.status,
+      latency: result.latency,
+      throughput: result.throughput,
+      timestamp: serverTimestamp(),
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.CREATE, 'status_history');
   }
 }

@@ -1,4 +1,4 @@
-// app/lib/monitor.ts v2.2.0
+// app/lib/monitor.ts v2.3.0
 import axios from 'axios';
 import { getApiConfig } from './config';
 
@@ -14,7 +14,14 @@ export interface ApiConfig {
   customBody?: string; // JSON string
   timeout?: number; // in milliseconds
   headers?: any;
+  region?: string;
 }
+
+export const REGIONS = [
+  { id: 'na', name: 'North America', baseLatency: 20 },
+  { id: 'eu', name: 'Europe', baseLatency: 120 },
+  { id: 'asia', name: 'Asia', baseLatency: 200 }
+];
 
 export const APIS_TO_CHECK: ApiConfig[] = [
   // US APIs
@@ -36,9 +43,11 @@ export const APIS_TO_CHECK: ApiConfig[] = [
 
 export const LATENCY_THRESHOLD = 1500;
 
-export async function performCheck(api: ApiConfig) {
+export async function performCheck(api: ApiConfig, regionId: string = 'na') {
   const config = await getApiConfig(api.id);
   const effectiveApi = config ? { ...api, ...config } : api;
+  const region = REGIONS.find(r => r.id === regionId) || REGIONS[0];
+  
   const start = Date.now();
   try {
     const controller = new AbortController();
@@ -57,22 +66,30 @@ export async function performCheck(api: ApiConfig) {
     const response = await fetch(effectiveApi.url, options);
     
     clearTimeout(timeoutId);
-    const latency = Date.now() - start;
+    
+    // Simulate regional latency
+    const simulatedLatency = (Date.now() - start) + region.baseLatency + Math.floor(Math.random() * 50);
     const isOnline = response.status < 500;
     
     // Calculate pseudo throughput (requests per second)
-    const throughput = isOnline ? parseFloat((1000 / (latency || 1)).toFixed(2)) : 0;
+    const throughput = isOnline ? parseFloat((1000 / (simulatedLatency || 1)).toFixed(2)) : 0;
     
     return {
       ...effectiveApi,
+      id: `${effectiveApi.id}-${regionId}`, // Unique ID for region
+      originalId: effectiveApi.id,
+      region: regionId,
       status: isOnline ? 'online' : 'offline',
-      latency,
+      latency: simulatedLatency,
       throughput,
       lastChecked: new Date().toISOString(),
     };
   } catch (error) {
     return {
       ...effectiveApi,
+      id: `${effectiveApi.id}-${regionId}`,
+      originalId: effectiveApi.id,
+      region: regionId,
       status: 'offline',
       latency: 0,
       throughput: 0,

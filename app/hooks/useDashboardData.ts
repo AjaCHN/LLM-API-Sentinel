@@ -1,4 +1,4 @@
-// app/hooks/useDashboardData.ts v3.4.0
+// app/hooks/useDashboardData.ts v3.5.0
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -7,7 +7,7 @@ import { db } from '../lib/firebase';
 import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
 import { useAuth } from './useAuth';
 import { useTasks } from './useTasks';
-import { APIS_TO_CHECK } from '../lib/monitor';
+import { APIS_TO_CHECK, REGIONS } from '../lib/monitor';
 import { getMetricsBaseline } from '../lib/metrics';
 
 export function useDashboardData() {
@@ -100,7 +100,10 @@ export function useDashboardData() {
     async function fetchBaselines() {
       const newBaselines: Record<string, any> = {};
       for (const api of APIS_TO_CHECK) {
-        newBaselines[api.id] = await getMetricsBaseline(api.id);
+        for (const region of REGIONS) {
+          const id = `${api.id}-${region.id}`;
+          newBaselines[id] = await getMetricsBaseline(id);
+        }
       }
       setBaselines(newBaselines);
     }
