@@ -30,24 +30,29 @@ export async function getMetricsBaseline(apiId: string) {
     where('timestamp', '>=', Timestamp.fromDate(sevenDaysAgo))
   );
   
-  const querySnapshot = await getDocs(q);
-  const metrics: ApiMetric[] = [];
-  querySnapshot.forEach((doc) => {
-    metrics.push(doc.data() as ApiMetric);
-  });
-  
-  if (metrics.length === 0) return null;
-  
-  const latencies = metrics.map(m => m.latency).sort((a, b) => a - b);
-  const avgLatency = latencies.reduce((a, b) => a + b, 0) / latencies.length;
-  const p95Latency = latencies[Math.floor(latencies.length * 0.95)];
-  const avgThroughput = metrics.reduce((a, b) => a + b.throughput, 0) / metrics.length;
-  
-  return {
-    avgLatency,
-    p95Latency,
-    avgThroughput,
-  };
+  try {
+    const querySnapshot = await getDocs(q);
+    const metrics: ApiMetric[] = [];
+    querySnapshot.forEach((doc) => {
+      metrics.push(doc.data() as ApiMetric);
+    });
+    
+    if (metrics.length === 0) return null;
+    
+    const latencies = metrics.map(m => m.latency).sort((a, b) => a - b);
+    const avgLatency = latencies.reduce((a, b) => a + b, 0) / latencies.length;
+    const p95Latency = latencies[Math.floor(latencies.length * 0.95)];
+    const avgThroughput = metrics.reduce((a, b) => a + (b.throughput || 0), 0) / metrics.length;
+    
+    return {
+      avgLatency,
+      p95Latency,
+      avgThroughput,
+    };
+  } catch (error) {
+    console.error('Error getting metrics baseline:', error);
+    return null;
+  }
 }
 
 async function sendEmailAlert(apiName: string, region: string, status: string, reason: string) {

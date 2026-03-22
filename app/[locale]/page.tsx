@@ -8,6 +8,7 @@ import { useDashboardData } from '../hooks/useDashboardData';
 import DashboardHeader from '../components/DashboardHeader';
 import ApiStatusGrid from '../components/ApiStatusGrid';
 import LatencyHistoryChart from '../components/LatencyHistoryChart';
+import MetricsComparisonChart from '../components/MetricsComparisonChart';
 import TaskList from '../components/TaskList';
 import DashboardFooter from '../components/DashboardFooter';
 import ErrorBoundary from '../components/ErrorBoundary';
@@ -20,7 +21,7 @@ import { saveApiConfig } from '../lib/config';
 export default function Dashboard() {
   const { statuses, history, alerts, tasks, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, addTask, updateTaskStatus, deleteTask, login, logout, baselines } = useDashboardData();
   const [showAlerts, setShowAlerts] = useState(false);
-  const [chartType, setChartType] = useState<'latency' | 'throughput'>('latency');
+  const [chartType, setChartType] = useState<'latency' | 'throughput' | 'baseline'>('latency');
   const [selectedRegion, setSelectedRegion] = useState<string>('na');
   const [editingApi, setEditingApi] = useState<any | null>(null);
   const { theme, setTheme } = useTheme();
@@ -129,7 +130,7 @@ export default function Dashboard() {
               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4">
                 <div className="flex items-center gap-4">
                   <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">
-                    {chartType === 'latency' ? 'Latency History (ms)' : 'Throughput (req/s)'}
+                    {chartType === 'latency' ? 'Latency History (ms)' : chartType === 'throughput' ? 'Throughput (req/s)' : 'Performance Baseline'}
                   </h2>
                   <div className="flex bg-background border border-border rounded-md p-0.5">
                     <button
@@ -150,9 +151,18 @@ export default function Dashboard() {
                     >
                       <Zap className="w-3 h-3" /> Throughput
                     </button>
+                    <button
+                      onClick={() => setChartType('baseline')}
+                      className={cn(
+                        "px-2 py-1 text-[10px] uppercase tracking-wider rounded-sm transition-colors flex items-center gap-1",
+                        chartType === 'baseline' ? "bg-foreground text-background font-bold" : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <Activity className="w-3 h-3" /> Baseline
+                    </button>
                   </div>
                 </div>
-                <div id="chart-legend" className="flex flex-wrap gap-x-4 gap-y-2 max-w-full">
+                <div id="chart-legend" className={cn("flex flex-wrap gap-x-4 gap-y-2 max-w-full", chartType === 'baseline' && "hidden")}>
                   {filteredStatuses.slice(0, 8).map(s => (
                     <div key={s.id} className="flex items-center gap-1.5">
                       <div className="w-2 h-2 rounded-full" style={{ backgroundColor: getApiColor(s.originalId || s.id) }} />
@@ -162,7 +172,11 @@ export default function Dashboard() {
                   {filteredStatuses.length > 8 && <span className="text-[9px] font-mono opacity-30 uppercase">+{filteredStatuses.length - 8} more</span>}
                 </div>
               </div>
-              <LatencyHistoryChart chartData={chartData} statuses={filteredStatuses} getApiColor={(id) => getApiColor(id.split('-')[0])} />
+              {chartType === 'baseline' ? (
+                <MetricsComparisonChart baselines={baselines} statuses={filteredStatuses} />
+              ) : (
+                <LatencyHistoryChart chartData={chartData} statuses={filteredStatuses} getApiColor={(id) => getApiColor(id.split('-')[0])} />
+              )}
             </section>
 
             <section id="tasks-section" className="lg:col-span-1">
