@@ -1,4 +1,4 @@
-// app/lib/scoring.ts v3.5.1
+// app/lib/scoring.ts v4.0.1
 export function calculateHealthScore(
   availability: number, // 0-100
   avgLatency: number, // ms

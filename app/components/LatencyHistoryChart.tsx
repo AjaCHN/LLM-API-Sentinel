@@ -15,7 +15,7 @@ export default function LatencyHistoryChart({ chartData, statuses, getApiColor }
   console.log('LatencyHistoryChart rendering, data:', chartData);
   return (
     <div id="chart-container" className="h-[250px] md:h-[350px] w-full min-h-[250px] relative overflow-hidden">
-      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50}>
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={50} aspect={undefined}>
         <AreaChart data={chartData}>
           <defs>
             {statuses.map(s => (

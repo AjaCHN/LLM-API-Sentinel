@@ -1,4 +1,4 @@
-// app/lib/alerts.ts v3.4.7
+// app/lib/alerts.ts v4.0.1
 import nodemailer from 'nodemailer';
 import axios from 'axios';
 

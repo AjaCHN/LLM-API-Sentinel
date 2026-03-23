@@ -31,7 +31,12 @@
   },
   "statusLabels": {
     "online": "Online",
-    "offline": "Offline"
+    "offline": "Offline",
+    "degraded": "Degraded",
+    "latency": "Latency",
+    "rps": "RPS",
+    "status": "Status",
+    "noData": "No data available."
   },
   "profile": {
     "title": "Profile",
@@ -42,7 +47,17 @@
     "quickActions": "Quick Actions",
     "toggleTheme": "Toggle Theme",
     "backToDashboard": "Back to Dashboard",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "userId": "User ID",
+    "emailAddress": "Email Address",
+    "recentActivity": "Recent Activity",
+    "noRecentActivity": "No recent activity recorded.",
+    "sentinelPro": "Sentinel Pro",
+    "sentinelProDesc": "Your account is currently under Pro monitoring. All API requests are encrypted and logged.",
+    "pleaseSignIn": "Please Sign In",
+    "signInToViewProfile": "You need to sign in to view your profile.",
+    "signInNow": "Sign In Now",
+    "backToHome": "Back to Home"
   },
   "settings": {
     "title": "System Settings",
@@ -60,6 +75,10 @@
     "inAppAlertsDesc": "Show real-time alerts on dashboard.",
     "saveSettings": "Save Settings",
     "saving": "Saving...",
-    "note": "Note: Some settings may require a page reload."
+    "note": "Note: Some settings may require a page reload. Email alerts require SMTP configuration.",
+    "configureMonitoring": "Configure your monitoring preferences",
+    "minute": "Minute",
+    "minutes": "Minutes",
+    "settingsSaved": "Settings saved successfully!"
   }
 }

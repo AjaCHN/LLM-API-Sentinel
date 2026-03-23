@@ -1,4 +1,4 @@
-// app/lib/firestoreUtils.ts v3.4.7
+// app/lib/firestoreUtils.ts v4.0.1
 import { db, auth } from '../lib/firebase';
 import { doc, setDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -68,7 +68,11 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
 
 export async function saveApiStatus(result: any) {
   try {
-    await setDoc(doc(db, 'api_status', result.id), result);
+    const { lastChecked, ...rest } = result;
+    await setDoc(doc(db, 'api_status', result.id), {
+      ...rest,
+      lastChecked: serverTimestamp(),
+    });
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, `api_status/${result.id}`);
   }

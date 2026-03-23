@@ -31,7 +31,12 @@
   },
   "statusLabels": {
     "online": "在线",
-    "offline": "离线"
+    "offline": "离线",
+    "degraded": "降级",
+    "latency": "延迟",
+    "rps": "RPS",
+    "status": "状态",
+    "noData": "暂无数据"
   },
   "profile": {
     "title": "个人资料",
@@ -42,7 +47,17 @@
     "quickActions": "快速操作",
     "toggleTheme": "切换主题",
     "backToDashboard": "返回控制台",
-    "signOut": "退出登录"
+    "signOut": "退出登录",
+    "userId": "用户 ID",
+    "emailAddress": "电子邮箱",
+    "recentActivity": "最近活动",
+    "noRecentActivity": "暂无最近活动记录。",
+    "sentinelPro": "Sentinel Pro",
+    "sentinelProDesc": "您的账户当前处于专业版监控状态。所有 API 请求均已加密并记录。",
+    "pleaseSignIn": "请先登录",
+    "signInToViewProfile": "您需要登录后才能查看个人资料。",
+    "signInNow": "立即登录",
+    "backToHome": "返回首页"
   },
   "settings": {
     "title": "系统设置",
@@ -60,6 +75,10 @@
     "inAppAlertsDesc": "在仪表盘顶部显示实时告警。",
     "saveSettings": "保存设置",
     "saving": "保存中...",
-    "note": "注意：某些设置可能需要重新加载页面才能生效。"
+    "note": "注意：某些设置可能需要重新加载页面才能生效。邮件告警功能需要配置 SMTP 服务。",
+    "configureMonitoring": "配置您的监控首选项",
+    "minute": "分钟",
+    "minutes": "分钟",
+    "settingsSaved": "设置已保存！"
   }
 }

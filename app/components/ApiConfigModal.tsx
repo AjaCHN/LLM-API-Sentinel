@@ -1,8 +1,11 @@
-// app/components/ApiConfigModal.tsx v3.4.7
+// app/components/ApiConfigModal.tsx v4.0.1
 'use client';
 
 import { useState } from 'react';
-import { ApiConfig } from '../lib/monitor';
+import { ApiConfig } from '@/lib/monitor';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function ApiConfigModal({ api, onClose, onSave }: { api: any, onClose: () => void, onSave: (config: ApiConfig) => void }) {
   const [config, setConfig] = useState<ApiConfig>({ 
@@ -15,39 +18,37 @@ export default function ApiConfigModal({ api, onClose, onSave }: { api: any, onC
       <div className="bg-card border border-border p-6 rounded-lg w-full max-w-md space-y-4">
         <h2 className="font-bold text-lg">Configure {api.name}</h2>
         
-        <div>
-          <label className="text-xs font-mono opacity-50 uppercase">Interval (ms)</label>
-          <input 
+        <div className="space-y-2">
+          <Label className="text-xs font-mono opacity-50 uppercase">Interval (ms)</Label>
+          <Input 
             type="number" 
             value={config.interval} 
             onChange={e => setConfig({...config, interval: parseInt(e.target.value)})}
-            className="w-full bg-background border border-border rounded p-2 text-sm"
           />
         </div>
 
-        <div>
-          <label className="text-xs font-mono opacity-50 uppercase">Timeout (ms)</label>
-          <input 
+        <div className="space-y-2">
+          <Label className="text-xs font-mono opacity-50 uppercase">Timeout (ms)</Label>
+          <Input 
             type="number" 
             value={config.timeout || 6000} 
             onChange={e => setConfig({...config, timeout: parseInt(e.target.value)})}
-            className="w-full bg-background border border-border rounded p-2 text-sm"
           />
         </div>
 
-        <div>
-          <label className="text-xs font-mono opacity-50 uppercase">Custom Body (JSON)</label>
+        <div className="space-y-2">
+          <Label className="text-xs font-mono opacity-50 uppercase">Custom Body (JSON)</Label>
           <textarea 
             value={config.customBody || ''} 
             onChange={e => setConfig({...config, customBody: e.target.value})}
-            className="w-full bg-background border border-border rounded p-2 text-sm h-24 font-mono"
+            className="w-full bg-background border border-border rounded p-2 text-sm h-24 font-mono focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder='{"prompt": "Hello"}'
           />
         </div>
 
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 text-sm font-bold uppercase border border-border rounded hover:bg-muted">Cancel</button>
-          <button onClick={() => onSave(config)} className="px-4 py-2 text-sm font-bold uppercase bg-foreground text-background rounded hover:opacity-90">Save</button>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button onClick={() => onSave(config)}>Save</Button>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-// app/lib/logo-generator.ts v3.5.0
+// app/lib/logo-generator.ts v4.0.1
 import { GoogleGenAI } from "@google/genai";
 
 export async function generateLogo() {
@@ -21,9 +21,11 @@ export async function generateLogo() {
     },
   });
 
-  for (const part of response.candidates[0].content.parts) {
-    if (part.inlineData) {
-      return `data:image/png;base64,${part.inlineData.data}`;
+  if (response.candidates?.[0]?.content?.parts) {
+    for (const part of response.candidates[0].content.parts) {
+      if (part.inlineData) {
+        return `data:image/png;base64,${part.inlineData.data}`;
+      }
     }
   }
   return null;

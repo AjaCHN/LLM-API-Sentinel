@@ -7,6 +7,7 @@ import { useDashboardData } from '../../hooks/useDashboardData';
 import DashboardHeader from '../../components/DashboardHeader';
 import DashboardFooter from '../../components/DashboardFooter';
 import ErrorBoundary from '../../components/ErrorBoundary';
+import { useTranslations } from 'next-intl';
 import { Settings as SettingsIcon, Bell, Shield, Eye, Database, Save, AlertCircle } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -15,6 +16,7 @@ import { handleFirestoreError, OperationType } from '../../lib/firestoreUtils';
 
 export default function SettingsPage() {
   const { user, alerts, geo, login, logout, resolveAlert } = useDashboardData();
+  const t = useTranslations('settings');
   const [showAlerts, setShowAlerts] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -54,7 +56,7 @@ export default function SettingsPage() {
         email: user.email,
         updatedAt: new Date().toISOString()
       });
-      alert('设置已保存 (Settings saved successfully!)');
+      alert(t('settingsSaved'));
     } catch (e) {
       handleFirestoreError(e, OperationType.WRITE, `user_preferences/${user.uid}`);
     } finally {
@@ -97,8 +99,8 @@ export default function SettingsPage() {
               <SettingsIcon className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">系统设置 (System Settings)</h1>
-              <p className="text-xs text-muted-foreground uppercase tracking-widest font-mono">Configure your monitoring preferences</p>
+              <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+              <p className="text-xs text-muted-foreground uppercase tracking-widest font-mono">{t('configureMonitoring')}</p>
             </div>
           </div>
 
@@ -106,16 +108,16 @@ export default function SettingsPage() {
             {/* Sidebar Tabs */}
             <div className="space-y-1">
               <button className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium bg-primary/10 text-primary rounded-lg">
-                <Bell className="w-4 h-4" /> 告警设置 (Alerts)
+                <Bell className="w-4 h-4" /> {t('alerts')}
               </button>
               <button className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-muted rounded-lg transition-colors">
-                <Eye className="w-4 h-4" /> 界面显示 (Display)
+                <Eye className="w-4 h-4" /> {t('display')}
               </button>
               <button className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-muted rounded-lg transition-colors">
-                <Shield className="w-4 h-4" /> 安全隐私 (Security)
+                <Shield className="w-4 h-4" /> {t('security')}
               </button>
               <button className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-muted rounded-lg transition-colors">
-                <Database className="w-4 h-4" /> 数据管理 (Data)
+                <Database className="w-4 h-4" /> {t('data')}
               </button>
             </div>
 
@@ -123,39 +125,39 @@ export default function SettingsPage() {
             <div className="md:col-span-3 space-y-6">
               <div className="border border-border bg-card rounded-xl overflow-hidden">
                 <div className="p-6 border-b border-border">
-                  <h3 className="text-sm font-bold uppercase tracking-widest">告警阈值与通知 (Thresholds & Notifications)</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-widest">{t('thresholds')}</h3>
                 </div>
                 <div className="p-6 space-y-6">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase opacity-50">延迟告警阈值 (Latency Threshold - ms)</label>
+                    <label className="text-xs font-bold uppercase opacity-50">{t('latencyThreshold')}</label>
                     <input 
                       type="number" 
                       value={preferences.latencyThreshold}
                       onChange={(e) => setPreferences({...preferences, latencyThreshold: parseInt(e.target.value)})}
                       className="w-full p-3 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                     />
-                    <p className="text-[10px] text-muted-foreground">当 API 延迟超过此值时将触发告警。 (Alerts trigger when latency exceeds this value.)</p>
+                    <p className="text-[10px] text-muted-foreground">{t('latencyDesc')}</p>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase opacity-50">数据刷新频率 (Refresh Interval - minutes)</label>
+                    <label className="text-xs font-bold uppercase opacity-50">{t('refreshInterval')}</label>
                     <select 
                       value={preferences.refreshInterval}
                       onChange={(e) => setPreferences({...preferences, refreshInterval: parseInt(e.target.value)})}
                       className="w-full p-3 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                     >
-                      <option value={1}>1 分钟 (1 Minute)</option>
-                      <option value={5}>5 分钟 (5 Minutes)</option>
-                      <option value={15}>15 分钟 (15 Minutes)</option>
-                      <option value={30}>30 分钟 (30 Minutes)</option>
+                      <option value={1}>1 {t('minute')}</option>
+                      <option value={5}>5 {t('minutes')}</option>
+                      <option value={15}>15 {t('minutes')}</option>
+                      <option value={30}>30 {t('minutes')}</option>
                     </select>
                   </div>
 
                   <div className="pt-4 space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium">启用邮件告警 (Enable Email Alerts)</p>
-                        <p className="text-[10px] text-muted-foreground">发送告警通知到您的注册邮箱。 (Send notifications to your email.)</p>
+                        <p className="text-sm font-medium">{t('enableEmailAlerts')}</p>
+                        <p className="text-[10px] text-muted-foreground">{t('emailAlertsDesc')}</p>
                       </div>
                       <button 
                         onClick={() => setPreferences({...preferences, enableEmailAlerts: !preferences.enableEmailAlerts})}
@@ -173,8 +175,8 @@ export default function SettingsPage() {
 
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium">启用应用内通知 (Enable In-App Alerts)</p>
-                        <p className="text-[10px] text-muted-foreground">在仪表盘顶部显示实时告警。 (Show real-time alerts on dashboard.)</p>
+                        <p className="text-sm font-medium">{t('enableInAppAlerts')}</p>
+                        <p className="text-[10px] text-muted-foreground">{t('inAppAlertsDesc')}</p>
                       </div>
                       <button 
                         onClick={() => setPreferences({...preferences, enableInAppAlerts: !preferences.enableInAppAlerts})}
@@ -197,7 +199,7 @@ export default function SettingsPage() {
                     disabled={saving}
                     className="flex items-center gap-2 px-6 py-2 bg-primary text-primary-foreground font-bold rounded-lg hover:opacity-90 transition-all disabled:opacity-50"
                   >
-                    {saving ? '保存中...' : <><Save className="w-4 h-4" /> 保存设置 (Save Settings)</>}
+                    {saving ? t('saving') : <><Save className="w-4 h-4" /> {t('saveSettings')}</>}
                   </button>
                 </div>
               </div>
@@ -205,8 +207,7 @@ export default function SettingsPage() {
               <div className="p-4 border border-amber-500/20 bg-amber-500/5 rounded-xl flex gap-3">
                 <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
                 <p className="text-[11px] text-amber-500/80 leading-relaxed">
-                  注意：某些设置可能需要重新加载页面才能生效。邮件告警功能需要配置 SMTP 服务。
-                  Note: Some settings may require a page reload. Email alerts require SMTP configuration.
+                  {t('note')}
                 </p>
               </div>
             </div>

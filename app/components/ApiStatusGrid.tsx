@@ -1,6 +1,7 @@
-// app/components/ApiStatusGrid.tsx v3.4.7
+// app/components/ApiStatusGrid.tsx v4.0.1
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ShieldCheck, ShieldAlert, AlertTriangle, TrendingUp, TrendingDown, Settings } from 'lucide-react';
 import { cn } from '../lib/utils'; 
 import { ApiConfig } from '../lib/monitor';
@@ -8,6 +9,7 @@ import { ApiConfig } from '../lib/monitor';
 const LATENCY_THRESHOLD = 1500;
 
 export default function ApiStatusGrid({ statuses, baselines, onEditConfig }: { statuses: any[], baselines: Record<string, any>, onEditConfig: (api: ApiConfig) => void }) {
+  const t = useTranslations('statusLabels');
   return (
     <div id="api-cards-container" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {statuses.length > 0 ? statuses.map((api) => {
@@ -49,16 +51,16 @@ export default function ApiStatusGrid({ statuses, baselines, onEditConfig }: { s
             
             <div className="space-y-2">
               <div className="flex justify-between items-center border-t border-border/10 pt-2">
-                <span className="text-[10px] font-mono opacity-50 uppercase">Status</span>
+                <span className="text-[10px] font-mono opacity-50 uppercase">{t('status')}</span>
                 <span className={cn(
                   "text-[9px] font-bold uppercase px-1.5 py-0.5 rounded",
                   api.status === 'online' ? (isDegraded ? "bg-amber-500/10 text-amber-500" : "bg-emerald-500/10 text-emerald-500") : "bg-rose-500/10 text-rose-500"
                 )}>
-                  {api.status === 'online' && isDegraded ? 'degraded' : api.status}
+                  {api.status === 'online' && isDegraded ? t('degraded') : t(api.status)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-mono opacity-50 uppercase">Latency</span>
+                <span className="text-[10px] font-mono opacity-50 uppercase">{t('latency')}</span>
                 <div className="flex items-center gap-2">
                   <span className={cn(
                     "text-xs font-mono font-bold",
@@ -76,7 +78,7 @@ export default function ApiStatusGrid({ statuses, baselines, onEditConfig }: { s
                 </div>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-mono opacity-50 uppercase">RPS</span>
+                <span className="text-[10px] font-mono opacity-50 uppercase">{t('rps')}</span>
                 <div className="flex items-center gap-2">
                   <span className={cn(
                     "text-xs font-mono font-bold",
@@ -98,7 +100,7 @@ export default function ApiStatusGrid({ statuses, baselines, onEditConfig }: { s
         );
       }) : (
         <div className="col-span-full border border-dashed border-border/30 p-12 text-center rounded-lg">
-          <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest">No data available.</p>
+          <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest">{t('noData')}</p>
         </div>
       )}
     </div>

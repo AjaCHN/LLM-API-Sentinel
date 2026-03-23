@@ -1,11 +1,11 @@
-// app/components/AlertConfig.tsx v3.5.1
+// app/components/AlertConfig.tsx v4.0.1
 'use client';
 
 import { useState } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Switch } from './ui/switch';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 export default function AlertConfig({ apiId, initialConfig }: { apiId: string, initialConfig: any }) {
   const [config, setConfig] = useState(initialConfig);

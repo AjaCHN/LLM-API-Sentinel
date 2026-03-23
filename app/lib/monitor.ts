@@ -1,4 +1,4 @@
-// app/lib/monitor.ts v3.4.7
+// app/lib/monitor.ts v4.0.1
 import axios from 'axios';
 import { getApiConfig } from './config';
 

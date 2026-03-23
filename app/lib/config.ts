@@ -1,4 +1,4 @@
-// app/lib/config.ts v3.4.7
+// app/lib/config.ts v4.0.1
 import { db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ApiConfig } from './monitor';

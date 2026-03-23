@@ -5,6 +5,7 @@ import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, Languages } from 'luc
 import { cn } from '../lib/utils';
 import AlertsDropdown from './AlertsDropdown';
 import UserDropdown from './UserDropdown';
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from '../navigation';
 
 export default function DashboardHeader({ 
@@ -21,6 +22,7 @@ export default function DashboardHeader({
 }: any) {
   const pathname = usePathname();
   const router = useRouter();
+  const t = useTranslations('header');
 
   const switchLocale = (newLocale: string) => {
     router.push(pathname, { locale: newLocale });
@@ -31,8 +33,8 @@ export default function DashboardHeader({
       <div id="brand-section" className="flex items-center gap-3">
         <Activity className="w-8 h-8 text-primary" />
         <div>
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase italic font-serif">LLM Sentinel</h1>
-          <p className="mono-label">Global API Monitoring System v2.4.0</p>
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase italic font-serif">{t('title')}</h1>
+          <p className="mono-label">{t('subtitle')} v4.0.1</p>
         </div>
       </div>
       
@@ -47,7 +49,7 @@ export default function DashboardHeader({
             <button 
               onClick={() => setShowAlerts(!showAlerts)}
               className="p-2 border border-border hover:bg-foreground hover:text-background transition-colors rounded-md relative"
-              title="Alerts"
+              title={t('alerts')}
             >
               <Bell className="w-5 h-5" />
               {alerts.length > 0 && (
@@ -86,7 +88,7 @@ export default function DashboardHeader({
               className="flex items-center gap-2 px-4 py-2 border border-border hover:bg-foreground hover:text-background transition-colors uppercase text-[10px] font-bold tracking-widest rounded-md"
             >
               <LogIn className="w-4 h-4" />
-              Sign In
+              {t('signIn')}
             </button>
           )}
         </div>

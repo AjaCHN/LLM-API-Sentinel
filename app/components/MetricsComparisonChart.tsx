@@ -35,7 +35,7 @@ export default function MetricsComparisonChart({ baselines, statuses }: { baseli
 
   return (
     <div className="h-[250px] md:h-[350px] w-full relative min-h-[250px]">
-      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} aspect={undefined}>
         <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.05} vertical={false} />
           <XAxis 

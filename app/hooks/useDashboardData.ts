@@ -1,4 +1,4 @@
-// app/hooks/useDashboardData.ts v3.4.7
+// app/hooks/useDashboardData.ts v4.0.1
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';

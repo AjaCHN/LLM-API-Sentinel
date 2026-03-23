@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.0.1]
+### Added
+- **i18n**: Added missing language support for Japanese (ja), Korean (ko), French (fr), Portuguese (pt-BR), and German (de).
+- **Docs**: Updated `README.md` and `README_CN.md` with latest architecture details.
+- **Spec**: Synchronized `openspec/` documentation with v4.0.0 refactoring.
+### Fixed
+- **Robustness**: Verified build stability and linting after modular refactoring.
+
+## [4.0.0]
+### Refactored
+- **Architecture**: Major refactoring of `app/[locale]/page.tsx` into modular components (`AlertBanner`, `ControlBar`, `ChartSection`) to improve maintainability and reduce file size.
+- **UI**: Re-integrated `shadcn/ui` components (`button`, `input`, `label`, `switch`) and standardized their location in `app/components/ui`.
+- **Configuration**: Updated `tsconfig.json` paths and `components.json` to correctly map `@/*` to the `app/` directory.
+### Fixed
+- **Build**: Resolved deployment failures by cleaning up redundant directories and fixing import path inconsistencies.
+- **Charts**: Fixed Recharts `ResponsiveContainer` sizing issues by explicitly setting `aspect={undefined}`.
+
 ## [3.5.1]
 ### Fixed
 - **UI**: Resolved Recharts rendering issue where width/height were calculated as -1 by adding `minWidth={0}` and `minHeight={0}` to `ResponsiveContainer`.

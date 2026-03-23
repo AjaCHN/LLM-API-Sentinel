@@ -1,12 +1,17 @@
 # 功能特性规范
 
 ## 核心监控能力
-- **全球 API 覆盖**: 支持监控美国 (OpenAI, Anthropic, Google, Meta/Groq, Mistral) 和中国 (Moonshot, Zhipu, Baichuan, Alibaba, Tencent, Baidu) 的主流 AI 供应商。
+- **全球 API 覆盖**: 支持监控美国 (OpenAI, Anthropic, Google, Meta/Groq, Mistral) 和中国 (Moonshot, Zhipu, Baichuan, Alibaba, Tencent, Baidu, DeepSeek) 的主流 AI 供应商。
 - **多区域检测**: 内置北美 (NA)、欧洲 (EU) 和亚洲 (Asia) 节点的模拟检测逻辑，并为每个区域生成独立的检测记录。
 - **自定义检测策略**: 为每个 API 配置独立的检测间隔和策略（Ping 或完整请求）。
 - **后台自主监控**: 服务器端后台任务每 5 分钟自动执行一次 API 可用性检测。
 - **吞吐量追踪**: 计算并可视化 API 吞吐量（每秒请求数 RPS）及延迟。
 - **API性能指标深度分析**: 自动拉取过去 7 天的历史数据，计算平均响应时间、峰值响应时间 (P95) 和平均吞吐量 (RPS)。
+
+## 架构优化 (v4.0.0+)
+- **模块化重构**: 将核心仪表盘 (`page.tsx`) 拆分为 `AlertBanner`、`ControlBar`、`ChartSection`、`ApiStatusGrid`、`TaskList` 等独立组件，提升了代码的可读性和可维护性。
+- **UI 组件标准化**: 统一使用 `shadcn/ui` 规范重构了按钮、输入框、开关等基础组件。
+- **构建稳定性**: 优化了 TypeScript 类型检查和路径解析，修复了容器化环境下的内存溢出 (OOM) 风险。
 
 ## 告警与通知
 - **实时告警系统**: 智能告警逻辑，支持宕机告警、可用性降级告警和高延迟告警 (>1500ms)。
@@ -19,7 +24,6 @@
 - **数据可视化**: 使用交互式面积图展示历史延迟趋势，新增 `MetricsComparisonChart` 进行直观对比。已优化 `Recharts` 容器在 Next.js 15 环境下的渲染稳定性。
 - **实时更新**: 基于 Firebase Firestore 实现状态即时同步。
 - **国际化 (i18n)**: 支持超过 20 种语言，包括英语、中文、西班牙语、阿拉伯语、法语、葡萄牙语、德语、日语、韩语和俄语，并在顶部导航栏提供语言切换器。项目规范文档已统一为中文。
-- **构建优化**: 修复了容器化环境下的 `package.json` 解析路径问题，确保了构建流程的稳定性。
 
 ## 用户与设置
 - **安全访问**: 敏感操作和手动健康检查受 Google 身份验证保护。

@@ -17,8 +17,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'LLM API Sentinel v3.5.0 | Global AI API Monitoring',
-  description: 'Real-time monitoring and historical availability tracking for major LLM APIs including OpenAI, Anthropic, Gemini, Kimi, and more.',
+  title: 'LLM API Sentinel v4.0.1 | Global AI API Monitoring',
+  description: 'Real-time monitoring and historical availability tracking for major LLM APIs including OpenAI, Anthropic, Gemini, Kimi, and more. v4.0.1',
   keywords: ['LLM', 'API Monitoring', 'AI Status', 'OpenAI', 'Gemini', 'Claude', 'Kimi', 'DeepSeek'],
   authors: [{ name: 'Sut' }],
   openGraph: {

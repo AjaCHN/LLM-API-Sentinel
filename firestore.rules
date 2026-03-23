@@ -76,12 +76,13 @@ service cloud.firestore {
     // ===============================================================
 
     function isValidApiStatus(data) {
-      return hasOnlyAllowedFields(['id', 'name', 'provider', 'status', 'latency', 'lastChecked', 'throughput', 'originalId', 'region']) &&
+      return hasOnlyAllowedFields(['id', 'name', 'provider', 'status', 'latency', 'lastChecked', 'throughput', 'originalId', 'region', 'url', 'interval', 'strategy', 'method', 'body', 'customBody', 'timeout', 'headers']) &&
              data.id is string &&
              data.name is string && data.name.size() < 100 &&
              data.provider is string &&
              data.status in ['online', 'offline', 'degraded'] &&
-             data.latency is number && data.latency >= 0;
+             data.latency is number && data.latency >= 0 &&
+             data.lastChecked is timestamp;
     }
 
     function isValidStatusHistory(data) {
