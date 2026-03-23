@@ -76,12 +76,38 @@ service cloud.firestore {
     // ===============================================================
 
     function isValidApiStatus(data) {
-      return hasOnlyAllowedFields(['id', 'name', 'provider', 'status', 'latency', 'lastChecked', 'throughput']) &&
+      return hasOnlyAllowedFields(['id', 'name', 'provider', 'status', 'latency', 'lastChecked', 'throughput', 'originalId', 'region']) &&
              data.id is string &&
              data.name is string && data.name.size() < 100 &&
              data.provider is string &&
              data.status in ['online', 'offline', 'degraded'] &&
              data.latency is number && data.latency >= 0;
+    }
+
+    function isValidStatusHistory(data) {
+      return hasOnlyAllowedFields(['apiId', 'region', 'status', 'latency', 'throughput', 'timestamp']) &&
+             data.apiId is string &&
+             data.region is string &&
+             data.status is string &&
+             data.latency is number &&
+             data.throughput is number;
+    }
+
+    function isValidAlert(data) {
+      return hasOnlyAllowedFields(['apiId', 'apiName', 'region', 'type', 'message', 'timestamp', 'resolved']) &&
+             data.apiId is string &&
+             data.apiName is string &&
+             data.region is string &&
+             data.type in ['outage', 'degradation', 'latency'] &&
+             data.message is string &&
+             data.resolved is bool;
+    }
+
+    function isValidMetric(data) {
+      return hasOnlyAllowedFields(['apiId', 'latency', 'throughput', 'timestamp']) &&
+             data.apiId is string &&
+             data.latency is number &&
+             data.throughput is number;
     }
 
     function isValidTask(data) {
@@ -104,28 +130,28 @@ service cloud.firestore {
     // Rules
     // ===============================================================
 
-    // API Status collection: Publicly readable, only admins can update
+    // API Status collection: Publicly readable, writable if valid (for monitoring)
     match /api_status/{apiId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAdmin() || isValidApiStatus(request.resource.data);
     }
 
-    // Status History collection: Publicly readable, only admins can update
+    // Status History collection: Publicly readable, writable if valid
     match /status_history/{historyId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAdmin() || isValidStatusHistory(request.resource.data);
     }
 
-    // Alerts collection: Publicly readable, only admins can update
+    // Alerts collection: Publicly readable, writable if valid
     match /alerts/{alertId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAdmin() || isValidAlert(request.resource.data);
     }
 
-    // API Metrics collection: Publicly readable, only admins can update
+    // API Metrics collection: Publicly readable, writable if valid
     match /api_metrics/{metricId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAdmin() || isValidMetric(request.resource.data);
     }
 
     // API Configs collection: Publicly readable, only admins can update
