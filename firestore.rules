@@ -98,31 +98,31 @@ service cloud.firestore {
     // API Status collection: Publicly readable, only admins can update
     match /api_status/{apiId} {
       allow read: if true;
-      allow write: if isAdmin() || true; // Temporary allow all for testing
+      allow write: if isAdmin();
     }
 
     // Status History collection: Publicly readable, only admins can update
     match /status_history/{historyId} {
       allow read: if true;
-      allow write: if isAdmin() || true; // Temporary allow all for testing
+      allow write: if isAdmin();
     }
 
     // Alerts collection: Publicly readable, only admins can update
     match /alerts/{alertId} {
       allow read: if true;
-      allow write: if isAdmin() || true; // Temporary allow all for testing
+      allow write: if isAdmin();
     }
 
     // API Metrics collection: Publicly readable, only admins can update
     match /api_metrics/{metricId} {
       allow read: if true;
-      allow write: if isAdmin() || true; // Temporary allow all for testing
+      allow write: if isAdmin();
     }
 
     // API Configs collection: Publicly readable, only admins can update
     match /api_configs/{configId} {
       allow read: if true;
-      allow write: if isAdmin() || true; // Temporary allow all for testing
+      allow write: if isAdmin();
     }
 
     // Test collection: Allow all for connection testing

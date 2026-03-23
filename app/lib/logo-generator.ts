@@ -1,8 +1,9 @@
-// app/lib/logo-generator.ts v3.4.9
+// app/lib/logo-generator.ts v3.5.0
 import { GoogleGenAI } from "@google/genai";
 
 export async function generateLogo() {
-  const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY });
+  // Create a new instance right before the call to use the latest API key from the dialog
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY });
   const response = await ai.models.generateContent({
     model: 'gemini-3.1-flash-image-preview',
     contents: {

@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.5.0]
+### Added
+- **Security**: Hardened Firestore security rules by removing temporary write permissions and enforcing strict admin-only access for core collections.
+- **Logo Generation**: Improved `LogoPage` with mandatory API key selection logic for `gemini-3.1-flash-image-preview`.
+- **Versioning**: Synchronized version numbers to v3.5.0.
+
 ## [3.4.9]
 ### Added
 - **Logo Generation**: Added a utility and a dedicated page for generating and downloading the application logo and favicon using Gemini 3.1 Flash Image.
