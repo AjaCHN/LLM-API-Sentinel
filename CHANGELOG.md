@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.5.1]
+### Fixed
+- **UI**: Resolved Recharts rendering issue where width/height were calculated as -1 by adding `minWidth={0}` and `minHeight={0}` to `ResponsiveContainer`.
+- **UI**: Added `debounce={50}` and `overflow-hidden` to `LatencyHistoryChart` for more stable rendering in flex/grid layouts.
+
 ## [3.5.0]
 ### Added
 - **Security**: Hardened Firestore security rules by removing temporary write permissions and enforcing strict admin-only access for core collections.
