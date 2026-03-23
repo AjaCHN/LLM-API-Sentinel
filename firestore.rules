@@ -91,6 +91,15 @@ service cloud.firestore {
              data.userId == request.auth.uid;
     }
 
+    function isValidApiConfig(data) {
+      return hasOnlyAllowedFields(['apiId', 'baselineLatency', 'baselineAvailability', 'latencyThreshold', 'availabilityThreshold']) &&
+             data.apiId is string &&
+             data.baselineLatency is number && data.baselineLatency >= 0 &&
+             data.baselineAvailability is number && data.baselineAvailability >= 0 && data.baselineAvailability <= 100 &&
+             data.latencyThreshold is number && data.latencyThreshold >= 0 &&
+             data.availabilityThreshold is number && data.availabilityThreshold >= 0 && data.availabilityThreshold <= 100;
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
@@ -122,7 +131,7 @@ service cloud.firestore {
     // API Configs collection: Publicly readable, only admins can update
     match /api_configs/{configId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isAdmin() && isValidApiConfig(request.resource.data);
     }
 
     // Test collection: Allow all for connection testing

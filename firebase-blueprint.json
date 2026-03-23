@@ -59,11 +59,23 @@
       "properties": {
         "userId": { "type": "string" },
         "email": { "type": "string", "format": "email" },
-        "latencyThreshold": { "type": "number" },
         "enableEmailAlerts": { "type": "boolean" },
         "enableInAppAlerts": { "type": "boolean" }
       },
       "required": ["userId", "email"]
+    },
+    "ApiConfig": {
+      "title": "ApiConfig",
+      "description": "Baseline and threshold settings for an API",
+      "type": "object",
+      "properties": {
+        "apiId": { "type": "string" },
+        "baselineLatency": { "type": "number" },
+        "baselineAvailability": { "type": "number" },
+        "latencyThreshold": { "type": "number" },
+        "availabilityThreshold": { "type": "number" }
+      },
+      "required": ["apiId", "baselineLatency", "baselineAvailability", "latencyThreshold", "availabilityThreshold"]
     }
   },
   "firestore": {
@@ -86,6 +98,10 @@
     "/user_preferences/{userId}": {
       "schema": "UserPreferences",
       "description": "User notification and threshold settings"
+    },
+    "/api_configs/{apiId}": {
+      "schema": "ApiConfig",
+      "description": "Baseline and threshold settings for an API"
     }
   }
 }
