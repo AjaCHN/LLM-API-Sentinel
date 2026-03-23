@@ -1,14 +1,27 @@
-# Features Specification
+# 功能特性规范
 
-## 2.0.0
-- **Multi-Region Detection**: Built-in simulated detection logic for North America (NA), Europe (EU), and Asia (Asia) nodes, generating independent detection records for each region.
-- **Alert Notification System**: Intelligent alert logic for downtime, availability degradation, and high latency. Integrates `nodemailer` for email notifications based on user preferences.
-- **API Performance Metrics Deep Analysis**: Automatically pulls historical data from the past 7 days to calculate Average Latency, P95 Latency, and Average Throughput (RPS). Features a new `MetricsComparisonChart` for visual comparison.
-- **Internationalization (i18n)**: Supports over 20 languages including English, Chinese, Spanish, Arabic, French, Portuguese, German, Japanese, Korean, and Russian.
-- **Global API Coverage**: Added major AI providers from China (Moonshot, Zhipu, Baichuan, Alibaba, Tencent, Baidu) and US (Meta/Groq, Mistral).
-- **Dark Mode**: Implemented full dark/light theme support with `next-themes`.
-- **Responsive Design**: Optimized layout for desktop, tablet, and mobile devices.
-- **GEO Info**: Added real-time geographic location detection for the monitoring node.
-- **SEO Optimization**: Added comprehensive meta tags and OpenGraph support.
-- **Semantic IDs**: Added unique IDs to all major containers for easier debugging.
-- **Documentation**: Created bilingual README files (EN/CN).
+## 核心监控能力
+- **全球 API 覆盖**: 支持监控美国 (OpenAI, Anthropic, Google, Meta/Groq, Mistral) 和中国 (Moonshot, Zhipu, Baichuan, Alibaba, Tencent, Baidu) 的主流 AI 供应商。
+- **多区域检测**: 内置北美 (NA)、欧洲 (EU) 和亚洲 (Asia) 节点的模拟检测逻辑，并为每个区域生成独立的检测记录。
+- **自定义检测策略**: 为每个 API 配置独立的检测间隔和策略（Ping 或完整请求）。
+- **后台自主监控**: 服务器端后台任务每 5 分钟自动执行一次 API 可用性检测。
+- **吞吐量追踪**: 计算并可视化 API 吞吐量（每秒请求数 RPS）及延迟。
+- **API性能指标深度分析**: 自动拉取过去 7 天的历史数据，计算平均响应时间、峰值响应时间 (P95) 和平均吞吐量 (RPS)。
+
+## 告警与通知
+- **实时告警系统**: 智能告警逻辑，支持宕机告警、可用性降级告警和高延迟告警 (>1500ms)。
+- **邮件通知**: 集成 `nodemailer`，根据用户偏好发送邮件通知。
+- **告警管理**: 认证用户可以在 UI 中查看并处理/解决活动告警。
+
+## 用户体验与 UI
+- **自适应 UI**: 全响应式设计，深度优化桌面端、平板和移动端体验。
+- **深色模式**: 完整支持深色/浅色主题切换 (`next-themes`)。
+- **数据可视化**: 使用交互式面积图展示历史延迟趋势，新增 `MetricsComparisonChart` 进行直观对比。
+- **实时更新**: 基于 Firebase Firestore 实现状态即时同步。
+- **国际化 (i18n)**: 支持超过 20 种语言，包括英语、中文、西班牙语、阿拉伯语、法语、葡萄牙语、德语、日语、韩语和俄语，并在顶部导航栏提供语言切换器。
+
+## 用户与设置
+- **安全访问**: 敏感操作和手动健康检查受 Google 身份验证保护。
+- **个人资料**: 详细的个人资料页面，展示账户详情、加入时间及地理位置。
+- **偏好设置**: 支持用户自定义告警阈值、刷新频率及通知偏好，并持久化存储至 Firestore。
+- **任务管理**: 实现了全面的任务状态功能（待办、进行中、已完成），并与 Firestore 实时同步。

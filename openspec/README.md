@@ -4,6 +4,7 @@
 
 ## 目录结构
 - [架构概览](architecture.md)
+- [功能特性](features.md)
 - [数据模型与安全](data.md)
 - [UI 组件库](ui.md)
 - [逻辑与服务](logic.md)
