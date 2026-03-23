@@ -14,8 +14,8 @@ import {
 export default function LatencyHistoryChart({ chartData, statuses, getApiColor }: { chartData: any[], statuses: any[], getApiColor: (id: string) => string }) {
   console.log('LatencyHistoryChart rendering, data:', chartData);
   return (
-    <div id="chart-container" className="h-[250px] md:h-[350px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
+    <div id="chart-container" className="h-[250px] md:h-[350px] w-full min-h-[250px] relative">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
         <AreaChart data={chartData}>
           <defs>
             {statuses.map(s => (
