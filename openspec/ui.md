@@ -11,7 +11,7 @@
 以网格形式展示所有受监控 API 的实时状态卡片，支持响应式布局（移动端单列，桌面端多列）。
 
 ### LatencyHistoryChart (延迟历史图表)
-使用 `Recharts` 渲染的交互式面积图，展示 API 过去一段时间的延迟和吞吐量趋势。
+使用 `Recharts` 渲染的交互式面积图，展示 API 过去一段时间的延迟和吞吐量趋势。已修复 `ResponsiveContainer` 在某些布局下的尺寸计算问题（通过添加 `min-h` 和 `relative` 定位）。
 
 ### MetricsComparisonChart (指标对比图表)
 直观对比不同 API 的平均延迟、峰值延迟 (P95) 和平均吞吐量 (RPS)。

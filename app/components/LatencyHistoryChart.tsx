@@ -1,4 +1,4 @@
-// app/components/LatencyHistoryChart.tsx v2.3.0
+// app/components/LatencyHistoryChart.tsx v3.4.8
 'use client';
 
 import { 

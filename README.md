@@ -1,10 +1,11 @@
-# LLM API Sentinel v2.0.0
+# LLM API Sentinel v3.4.9
 
 [English](README.md) | [中文](README_CN.md)
 
 Real-time monitoring and historical availability tracking for major LLM APIs worldwide.
 
 ## Features
+- **Logo Generation**: Built-in utility to generate a professional application logo and favicon using Gemini 3.1 Flash Image. Available at `/logo`.
 - **Global Monitoring**: Tracks reachability and latency for AI providers in the US (OpenAI, Anthropic, Google) and China (Moonshot, Zhipu, Baichuan).
 - **Multi-Region Detection**: Built-in simulated detection logic for North America (NA), Europe (EU), and Asia (Asia) nodes, generating independent detection records for each region.
 - **Alert Notification System**: Intelligent alert logic for downtime, availability degradation, and high latency. Integrates `nodemailer` for email notifications based on user preferences.

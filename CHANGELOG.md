@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.4.9]
+### Added
+- **Logo Generation**: Added a utility and a dedicated page for generating and downloading the application logo and favicon using Gemini 3.1 Flash Image.
+- **Versioning**: Synchronized version numbers to v3.4.9.
+
+## [3.4.8]
+### Fixed
+- **Documentation**: Unified project documentation to Chinese and updated README files.
+- **Build**: Fixed package.json path parsing in containerized environments.
+- **UI**: Fixed Recharts ResponsiveContainer sizing issues in Next.js 15.
+
 ## [3.4.7]
 ### Added
 - **Internationalization (i18n)**: Checked and completed all language files for 20+ languages.

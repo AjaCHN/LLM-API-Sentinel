@@ -1,10 +1,11 @@
-# LLM API Sentinel v2.0.0
+# LLM API Sentinel v3.4.9
 
 [English](README.md) | [中文](README_CN.md)
 
 全球主流大模型 API 实时监控与历史可用性追踪系统。
 
 ## 功能特性
+- **Logo 生成**: 内置 Logo 生成工具，使用 Gemini 3.1 Flash Image 为应用生成专业的 Logo 和 Favicon。访问 `/logo` 即可使用。
 - **全球监控**: 追踪美国（OpenAI, Anthropic, Google）和中国（Kimi, 智谱, 百川）主流 AI 供应商的连通性与延迟。
 - **多区域检测**: 内置北美 (NA)、欧洲 (EU) 和亚洲 (Asia) 节点的模拟检测逻辑，并为每个区域生成独立的检测记录。
 - **告警通知系统**: 智能告警逻辑，支持宕机告警、可用性降级告警和高延迟告警。集成 `nodemailer`，根据用户偏好发送邮件通知。
