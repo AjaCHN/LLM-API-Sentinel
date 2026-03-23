@@ -1,4 +1,4 @@
-// app/lib/firestoreUtils.ts v3.4.0
+// app/lib/firestoreUtils.ts v3.4.7
 import { db, auth } from '../lib/firebase';
 import { doc, setDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 

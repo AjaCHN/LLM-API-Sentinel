@@ -1,4 +1,4 @@
-// app/components/DashboardFooter.tsx v2.3.0
+// app/components/DashboardFooter.tsx v3.4.7
 'use client';
 
 import { Zap, Settings, ShieldCheck } from 'lucide-react';

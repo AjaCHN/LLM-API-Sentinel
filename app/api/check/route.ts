@@ -1,4 +1,4 @@
-// app/api/check/route.ts v2.6.0
+// app/api/check/route.ts v3.4.7
 import { NextResponse } from 'next/server';
 import { performCheck, APIS_TO_CHECK, REGIONS } from '../../lib/monitor';
 import { saveMetric, checkAndCreateAlerts } from '../../lib/metrics';

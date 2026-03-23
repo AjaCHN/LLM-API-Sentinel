@@ -1,37 +1,37 @@
 {
   "title": "LLM API Sentinel",
-  "description": "نظام مراقبة API ذاتي",
+  "description": "Autonomous API Monitoring System",
   "header": {
     "title": "LLM Sentinel",
-    "subtitle": "نظام مراقبة API عالمي",
-    "signIn": "تسجيل الدخول",
-    "signOut": "تسجيل الخروج",
-    "alerts": "تنبيهات"
+    "subtitle": "Global API Monitoring System",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "alerts": "Alerts"
   },
   "status": {
-    "title": "الحالة الحالية",
-    "sync": "مزامنة",
-    "trigger": "تشغيل الفحص",
-    "checking": "جاري الفحص..."
+    "title": "Current Status",
+    "sync": "Sync",
+    "trigger": "Trigger",
+    "checking": "Checking..."
   },
   "latency": {
-    "title": "تاريخ التأخير (ms)"
+    "title": "Latency History (ms)"
   },
   "alerts": {
-    "title": "تنبيه النظام",
-    "viewDetails": "عرض التفاصيل"
+    "title": "System Alert",
+    "viewDetails": "View Details"
   },
   "footer": {
-    "coverage": "تغطية عالمية",
-    "coverageDesc": "مراقبة مزودي AI الرئيسيين في الولايات المتحدة والصين.",
-    "ui": "واجهة متكيفة",
-    "uiDesc": "محسنة لجميع الأجهزة.",
-    "integrity": "سلامة البيانات",
-    "integrityDesc": "يتم حفظ البيانات التاريخية عبر Firebase."
+    "coverage": "Global Coverage",
+    "coverageDesc": "Monitoring major AI providers across US and China.",
+    "ui": "Adaptive UI",
+    "uiDesc": "Optimized for all devices.",
+    "integrity": "Data Integrity",
+    "integrityDesc": "Historical data is persisted via Firebase."
   },
   "statusLabels": {
-    "online": "متصل",
-    "offline": "غير متصل"
+    "online": "Online",
+    "offline": "Offline"
   },
   "profile": {
     "title": "Profile",

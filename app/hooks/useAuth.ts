@@ -1,4 +1,4 @@
-// app/hooks/useAuth.ts v3.3.1
+// app/hooks/useAuth.ts v3.4.7
 'use client';
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut, User, AuthError } from 'firebase/auth';

@@ -1,4 +1,4 @@
-// app/components/MetricsComparisonChart.tsx v1.0.0
+// app/components/MetricsComparisonChart.tsx v3.4.7
 'use client';
 
 import { 

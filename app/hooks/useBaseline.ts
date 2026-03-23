@@ -1,4 +1,4 @@
-// app/hooks/useBaseline.ts v1.0.0
+// app/hooks/useBaseline.ts v3.4.7
 import { useState, useEffect } from 'react';
 import { getMetricsBaseline } from '../lib/metrics';
 

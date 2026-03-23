@@ -1,4 +1,4 @@
-// server.ts v2.2.0
+// server.ts v3.4.7
 import express from 'express';
 import next from 'next';
 import { initializeApp, cert } from 'firebase-admin/app';

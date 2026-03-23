@@ -1,7 +1,7 @@
-// i18n/request.ts v3.1.1
+// i18n/request.ts v3.4.7
 import { getRequestConfig } from 'next-intl/server';
 
-const locales = ['ar', 'cs', 'en', 'es', 'hi', 'id', 'it', 'nl', 'pl', 'sv', 'th', 'tr', 'ru', 'vi', 'zh-cn', 'zh-tw'];
+const locales = ['ar', 'cs', 'de', 'en', 'es', 'fr', 'hi', 'id', 'it', 'ja', 'ko', 'nl', 'pl', 'pt-BR', 'ru', 'sv', 'th', 'tr', 'vi', 'zh-cn', 'zh-tw'];
 
 export default getRequestConfig(async ({ locale }) => {
   if (!locale || !locales.includes(locale as any)) {

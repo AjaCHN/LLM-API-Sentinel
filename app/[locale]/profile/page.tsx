@@ -1,4 +1,4 @@
-// app/[locale]/profile/page.tsx v1.0.0
+// app/[locale]/profile/page.tsx v3.4.7
 'use client';
 
 import { useState, useEffect } from 'react';

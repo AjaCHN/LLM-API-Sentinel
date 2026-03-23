@@ -1,4 +1,4 @@
-// app/components/ErrorBoundary.tsx v1.0.0
+// app/components/ErrorBoundary.tsx v3.4.7
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';

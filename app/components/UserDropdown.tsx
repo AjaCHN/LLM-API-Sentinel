@@ -1,4 +1,4 @@
-// app/components/UserDropdown.tsx v1.0.0
+// app/components/UserDropdown.tsx v3.4.7
 'use client';
 
 import { useState, useRef, useEffect } from 'react';

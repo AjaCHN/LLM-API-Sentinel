@@ -1,4 +1,4 @@
-// app/components/ApiStatusGrid.tsx v2.6.0
+// app/components/ApiStatusGrid.tsx v3.4.7
 'use client';
 
 import { ShieldCheck, ShieldAlert, AlertTriangle, TrendingUp, TrendingDown, Settings } from 'lucide-react';

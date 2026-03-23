@@ -1,4 +1,4 @@
-// app/hooks/useTasks.ts v3.3.1
+// app/hooks/useTasks.ts v3.4.7
 'use client';
 import { useState, useEffect } from 'react';
 import { collection, onSnapshot, query, where, orderBy, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';

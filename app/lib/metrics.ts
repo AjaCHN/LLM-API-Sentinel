@@ -1,4 +1,4 @@
-// app/lib/metrics.ts v1.2.0
+// app/lib/metrics.ts v3.4.7
 import { db } from './firebase';
 import { collection, addDoc, query, where, getDocs, Timestamp, orderBy, limit } from 'firebase/firestore';
 

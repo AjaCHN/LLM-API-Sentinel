@@ -1,4 +1,4 @@
-// app/components/DashboardHeader.tsx v2.4.0
+// app/components/DashboardHeader.tsx v3.4.7
 'use client';
 
 import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, Languages } from 'lucide-react';

@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.7]
+### Added
+- **Internationalization (i18n)**: Checked and completed all language files for 20+ languages.
+- **Robustness**: Added error handling for undefined throughput in metrics calculation and chart rendering.
+- **Documentation**: Updated README.md, README_CN.md, and openspec/features.md with new features.
+- **Versioning**: Synchronized version numbers across all code files to v3.4.7.
+
 ## [3.4.6]
 ### Fixed
 - **Firestore Permissions**: 移除了客户端 `useDashboardData` 中错误的 Firestore 写操作，API 状态更新现完全由服务器端处理，解决了 `Missing or insufficient permissions` 错误。
