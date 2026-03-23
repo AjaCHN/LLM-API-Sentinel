@@ -1,4 +1,4 @@
-// app/components/LatencyHistoryChart.tsx v3.4.7
+// app/components/LatencyHistoryChart.tsx v2.3.0
 'use client';
 
 import { 
@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 
 export default function LatencyHistoryChart({ chartData, statuses, getApiColor }: { chartData: any[], statuses: any[], getApiColor: (id: string) => string }) {
+  console.log('LatencyHistoryChart rendering, data:', chartData);
   return (
     <div id="chart-container" className="h-[250px] md:h-[350px] w-full">
       <ResponsiveContainer width="100%" height="100%">
