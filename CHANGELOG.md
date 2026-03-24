@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.0.5]
+### Fixed
+- **i18n**: Switched `localePrefix` to `always` to resolve persistent `defaultLocale` errors and improve routing stability.
+- **Performance**: Addressed potential `ChunkLoadError` by stabilizing locale-based routing.
+
+## [4.0.4]
+### Fixed
+- **i18n**: Resolved `next-intl` error where `localePrefix: 'as-needed'` required a `defaultLocale` in `navigation.ts`.
+
+## [4.0.3]
+### Fixed
+- **Architecture**: Resolved "Module not found: Can't resolve 'fs'" errors by isolating `firebase-admin` imports into server-only utility files (`firestore-server.ts`, `metrics-server.ts`).
+- **Performance**: Optimized client bundle by removing unnecessary server-side dependencies.
+
 ## [4.0.2]
 ### Fixed
 - **Security**: Hardened Firestore security rules with strict validation and authentication checks.

@@ -1,4 +1,4 @@
-# 功能特性规范
+# 功能特性规范 (v4.0.5)
 
 ## 核心监控能力
 - **全球 API 覆盖**: 支持监控美国 (OpenAI, Anthropic, Google, Meta/Groq, Mistral) 和中国 (Moonshot, Zhipu, Baichuan, Alibaba, Tencent, Baidu, DeepSeek) 的主流 AI 供应商。
@@ -8,10 +8,11 @@
 - **吞吐量追踪**: 计算并可视化 API 吞吐量（每秒请求数 RPS）及延迟。
 - **API性能指标深度分析**: 自动拉取过去 7 天的历史数据，计算平均响应时间、峰值响应时间 (P95) 和平均吞吐量 (RPS)。
 
-## 架构优化 (v4.0.0+)
+## 架构优化 (v4.0.5)
 - **模块化重构**: 将核心仪表盘 (`page.tsx`) 拆分为 `AlertBanner`、`ControlBar`、`ChartSection`、`ApiStatusGrid`、`TaskList` 等独立组件，提升了代码的可读性和可维护性。
 - **UI 组件标准化**: 统一使用 `shadcn/ui` 规范重构了按钮、输入框、开关等基础组件。
 - **构建稳定性**: 优化了 TypeScript 类型检查和路径解析，修复了容器化环境下的内存溢出 (OOM) 风险。
+- **i18n 路由优化**: 切换 `localePrefix` 为 `always`，解决了 Next.js 15 环境下的 `defaultLocale` 路由冲突。
 
 ## 告警与通知
 - **实时告警系统**: 智能告警逻辑，支持宕机告警、可用性降级告警和高延迟告警 (>1500ms)。

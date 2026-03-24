@@ -1,8 +1,8 @@
-// app/api/check/route.ts v4.0.2
+// app/api/check/route.ts v4.0.3
 import { NextResponse } from 'next/server';
 import { performCheck, APIS_TO_CHECK, REGIONS } from '../../lib/monitor';
-import { saveMetric, checkAndCreateAlerts } from '../../lib/metrics';
-import { saveApiStatus, saveApiHistory } from '../../lib/firestoreUtils';
+import { saveMetric, checkAndCreateAlerts } from '../../lib/metrics-server';
+import { saveApiStatus, saveApiHistory } from '../../lib/firestore-server';
 
 export async function GET() {
   const allResults = [];

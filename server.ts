@@ -1,4 +1,4 @@
-// server.ts v4.0.2
+// server.ts v4.0.3
 import express from 'express';
 import next from 'next';
 import { adminDb } from './app/lib/firebase-admin';
@@ -7,6 +7,8 @@ import { parse } from 'url';
 import nodemailer from 'nodemailer';
 import { performCheck, LATENCY_THRESHOLD, APIS_TO_CHECK, ApiConfig, REGIONS } from './app/lib/monitor';
 import { sendAlert } from './app/lib/alerts';
+import { saveApiStatus, saveApiHistory } from './app/lib/firestore-server';
+import { saveMetric, checkAndCreateAlerts } from './app/lib/metrics-server';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -35,59 +37,18 @@ async function checkApi(api: ApiConfig) {
   for (const region of REGIONS) {
     try {
       const result = await performCheck(api, region.id);
-      const batch = adminDb.batch();
-
-      // Get previous status
-      const statusRef = adminDb.collection('api_status').doc(result.id);
-      const statusDoc = await statusRef.get();
-      const prevStatus = statusDoc.exists ? statusDoc.data()?.status : null;
-
-      batch.set(statusRef, { ...result, lastStatus: prevStatus });
-
-      const historyRef = adminDb.collection('status_history').doc();
-      batch.set(historyRef, {
+      
+      // Use server-side utilities
+      await saveApiStatus(result);
+      await saveApiHistory(result);
+      await saveMetric({
         apiId: result.id,
-        region: region.id,
-        status: result.status,
         latency: result.latency,
         throughput: result.throughput,
-        timestamp: FieldValue.serverTimestamp(),
       });
-
-      const metricRef = adminDb.collection('api_metrics').doc();
-      batch.set(metricRef, {
-        apiId: result.id,
-        latency: result.latency,
-        throughput: result.throughput || 0,
-        timestamp: FieldValue.serverTimestamp(),
-      });
-
-      // Alert Logic: Status Change
-      if (prevStatus && prevStatus !== result.status) {
-        const message = `${api.name} (${region.name}) status changed from ${prevStatus} to ${result.status}.`;
-        
-        // In-App Alert
-        const alertRef = adminDb.collection('alerts').doc();
-        batch.set(alertRef, {
-          apiId: result.id,
-          apiName: result.name,
-          region: region.id,
-          type: 'downtime',
-          message,
-          timestamp: FieldValue.serverTimestamp(),
-          resolved: false
-        });
-
-        // Email Alert (Fetch users who want alerts)
-        const prefs = await adminDb.collection('user_preferences').get();
-        prefs.forEach(async (doc) => {
-          const pref = doc.data();
-          if (pref.enableEmailAlerts) {
-            await sendEmailAlert(pref.email, 'API Status Alert', message);
-          }
-        });
-      }
-
+      await checkAndCreateAlerts(result);
+      
+      // Availability logic for local tracking (optional, but kept for consistency)
       if (!recentChecks[result.id]) {
         recentChecks[result.id] = [];
       }
@@ -96,54 +57,12 @@ async function checkApi(api: ApiConfig) {
         recentChecks[result.id].shift();
       }
 
-      const availability = (recentChecks[result.id].filter(Boolean).length / recentChecks[result.id].length) * 100;
-
-      if (availability < 90 && recentChecks[result.id].length >= 10) {
-        const alertRef = adminDb.collection('alerts').doc();
-        batch.set(alertRef, {
-          apiId: result.id,
-          apiName: result.name,
-          region: region.id,
-          type: 'degradation',
-          message: `${result.name} (${region.name}) availability dropped to ${availability.toFixed(2)}%. (Auto-detected)`,
-          timestamp: FieldValue.serverTimestamp(),
-          resolved: false
-        });
-        
-        const suggestion = "Check API provider's status page. Verify network connectivity. Review recent API changes or rate limits.";
-        await sendAlert(result.name, availability, new Date().toISOString(), suggestion);
-        
-        recentChecks[result.id] = [];
-      } else if (result.status === 'offline') {
-        const alertRef = adminDb.collection('alerts').doc();
-        batch.set(alertRef, {
-          apiId: result.id,
-          apiName: result.name,
-          region: region.id,
-          type: 'outage',
-          message: `${result.name} (${region.name}) is currently offline. (Auto-detected)`,
-          timestamp: FieldValue.serverTimestamp(),
-          resolved: false
-        });
-      } else if (result.latency > LATENCY_THRESHOLD) {
-        const alertRef = adminDb.collection('alerts').doc();
-        batch.set(alertRef, {
-          apiId: result.id,
-          apiName: result.name,
-          region: region.id,
-          type: 'latency',
-          message: `${result.name} (${region.name}) latency is high: ${result.latency}ms. (Auto-detected)`,
-          timestamp: FieldValue.serverTimestamp(),
-          resolved: false
-        });
-      }
-
-      await batch.commit();
     } catch (error) {
       console.error(`[Monitor] Check failed for ${api.name} in ${region.name}:`, error);
     }
   }
 }
+
 
 
 app.prepare().then(() => {

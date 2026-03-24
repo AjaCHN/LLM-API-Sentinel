@@ -1,10 +1,11 @@
-# LLM API Sentinel v4.0.1
+# LLM API Sentinel v4.0.5
 
 [English](README.md) | [中文](README_CN.md)
 
 全球主流大模型 API 实时监控与历史可用性追踪系统。
 
 ## 功能特性
+- **架构优化 (v4.0.5)**: 通过切换 `localePrefix` 为 `always` 解决了 `next-intl` 路由冲突。通过隔离服务器端依赖（`firebase-admin`, `fs`）提升了客户端 Bundle 的稳定性。
 - **模块化架构 (v4.0.0+)**: 将核心仪表盘重构为专用组件（`AlertBanner`、`ControlBar`、`ChartSection`），显著提升了代码的可维护性和性能。
 - **Logo 生成**: 内置 Logo 生成工具，使用 Gemini 3.1 Flash Image 为应用生成专业的 Logo 和 Favicon。访问 `/logo` 即可使用。
 - **全球监控**: 追踪美国（OpenAI, Anthropic, Google）和中国（Kimi, 智谱, 百川, DeepSeek）主流 AI 供应商的连通性与延迟。

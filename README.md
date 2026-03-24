@@ -1,10 +1,11 @@
-# LLM API Sentinel v4.0.1
+# LLM API Sentinel v4.0.5
 
 [English](README.md) | [中文](README_CN.md)
 
 Real-time monitoring and historical availability tracking for major LLM APIs worldwide.
 
 ## Features
+- **Architecture Optimization (v4.0.5)**: Resolved `next-intl` routing conflicts by switching to `localePrefix: 'always'`. Improved client bundle stability by isolating server-side dependencies (`firebase-admin`, `fs`).
 - **Modular Architecture (v4.0.0+)**: Refactored core dashboard into specialized components (`AlertBanner`, `ControlBar`, `ChartSection`) for better maintainability and performance.
 - **Logo Generation**: Built-in utility to generate a professional application logo and favicon using Gemini 3.1 Flash Image. Available at `/logo`.
 - **Global Monitoring**: Tracks reachability and latency for AI providers in the US (OpenAI, Anthropic, Google) and China (Moonshot, Zhipu, Baichuan, DeepSeek).
