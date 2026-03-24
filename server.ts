@@ -1,4 +1,4 @@
-// server.ts v4.0.3
+// server.ts v4.0.5
 import express from 'express';
 import next from 'next';
 import { adminDb } from './app/lib/firebase-admin';
@@ -9,6 +9,7 @@ import { performCheck, LATENCY_THRESHOLD, APIS_TO_CHECK, ApiConfig, REGIONS } fr
 import { sendAlert } from './app/lib/alerts';
 import { saveApiStatus, saveApiHistory } from './app/lib/firestore-server';
 import { saveMetric, checkAndCreateAlerts } from './app/lib/metrics-server';
+import { getApiConfigAdmin } from './app/lib/config-server';
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -34,9 +35,10 @@ async function sendEmailAlert(to: string, subject: string, text: string) {
 const recentChecks: Record<string, boolean[]> = {};
 
 async function checkApi(api: ApiConfig) {
+  const configOverride = await getApiConfigAdmin(api.id);
   for (const region of REGIONS) {
     try {
-      const result = await performCheck(api, region.id);
+      const result = await performCheck(api, region.id, configOverride);
       
       // Use server-side utilities
       await saveApiStatus(result);

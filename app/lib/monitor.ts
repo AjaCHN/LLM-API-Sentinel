@@ -1,6 +1,5 @@
-// app/lib/monitor.ts v4.0.2
+// app/lib/monitor.ts v4.0.5
 import axios from 'axios';
-import { getApiConfig } from './config';
 
 export interface ApiConfig {
   id: string;
@@ -43,9 +42,8 @@ export const APIS_TO_CHECK: ApiConfig[] = [
 
 export const LATENCY_THRESHOLD = 1500;
 
-export async function performCheck(api: ApiConfig, regionId: string = 'na') {
-  const config = await getApiConfig(api.id);
-  const effectiveApi = config ? { ...api, ...config } : api;
+export async function performCheck(api: ApiConfig, regionId: string = 'na', configOverride?: any) {
+  const effectiveApi = configOverride ? { ...api, ...configOverride } : api;
   const region = REGIONS.find(r => r.id === regionId) || REGIONS[0];
   
   const start = Date.now();

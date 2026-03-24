@@ -1,15 +1,17 @@
-// app/api/check/route.ts v4.0.3
+// app/api/check/route.ts v4.0.5
 import { NextResponse } from 'next/server';
 import { performCheck, APIS_TO_CHECK, REGIONS } from '../../lib/monitor';
 import { saveMetric, checkAndCreateAlerts } from '../../lib/metrics-server';
 import { saveApiStatus, saveApiHistory } from '../../lib/firestore-server';
+import { getApiConfigAdmin } from '../../lib/config-server';
 
 export async function GET() {
   const allResults = [];
   
   for (const region of REGIONS) {
     const results = await Promise.all(APIS_TO_CHECK.map(async (api) => {
-      const result = await performCheck(api, region.id);
+      const configOverride = await getApiConfigAdmin(api.id);
+      const result = await performCheck(api, region.id, configOverride);
       // These functions now use firebase-admin on the server
       await saveApiStatus(result);
       await saveApiHistory(result);
