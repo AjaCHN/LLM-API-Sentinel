@@ -1,6 +1,8 @@
-// app/lib/firestoreUtils.ts v4.0.1
+// app/lib/firestoreUtils.ts v4.0.2
 import { db, auth } from '../lib/firebase';
 import { doc, setDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+const isServer = typeof window === 'undefined';
 
 export enum OperationType {
   CREATE = 'create',
@@ -67,6 +69,21 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
 }
 
 export async function saveApiStatus(result: any) {
+  if (isServer) {
+    const { adminDb } = await import('./firebase-admin');
+    const { FieldValue } = await import('firebase-admin/firestore');
+    try {
+      const { lastChecked, ...rest } = result;
+      await adminDb.collection('api_status').doc(result.id).set({
+        ...rest,
+        lastChecked: FieldValue.serverTimestamp(),
+      });
+      return;
+    } catch (error) {
+      console.error('Admin saveApiStatus failed:', error);
+    }
+  }
+
   try {
     const { lastChecked, ...rest } = result;
     await setDoc(doc(db, 'api_status', result.id), {
@@ -79,6 +96,24 @@ export async function saveApiStatus(result: any) {
 }
 
 export async function saveApiHistory(result: any) {
+  if (isServer) {
+    const { adminDb } = await import('./firebase-admin');
+    const { FieldValue } = await import('firebase-admin/firestore');
+    try {
+      await adminDb.collection('status_history').add({
+        apiId: result.id,
+        region: result.region,
+        status: result.status,
+        latency: result.latency,
+        throughput: result.throughput,
+        timestamp: FieldValue.serverTimestamp(),
+      });
+      return;
+    } catch (error) {
+      console.error('Admin saveApiHistory failed:', error);
+    }
+  }
+
   try {
     await addDoc(collection(db, 'status_history'), {
       apiId: result.id,
@@ -92,3 +127,4 @@ export async function saveApiHistory(result: any) {
     handleFirestoreError(error, OperationType.CREATE, 'status_history');
   }
 }
+

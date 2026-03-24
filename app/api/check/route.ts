@@ -1,4 +1,4 @@
-// app/api/check/route.ts v3.4.7
+// app/api/check/route.ts v4.0.2
 import { NextResponse } from 'next/server';
 import { performCheck, APIS_TO_CHECK, REGIONS } from '../../lib/monitor';
 import { saveMetric, checkAndCreateAlerts } from '../../lib/metrics';
@@ -10,10 +10,11 @@ export async function GET() {
   for (const region of REGIONS) {
     const results = await Promise.all(APIS_TO_CHECK.map(async (api) => {
       const result = await performCheck(api, region.id);
+      // These functions now use firebase-admin on the server
       await saveApiStatus(result);
       await saveApiHistory(result);
       await saveMetric({
-        apiId: result.id, // Save metric with region-specific ID
+        apiId: result.id,
         latency: result.latency,
         throughput: result.throughput,
       });
@@ -25,3 +26,4 @@ export async function GET() {
   
   return NextResponse.json(allResults);
 }
+

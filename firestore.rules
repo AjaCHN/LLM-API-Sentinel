@@ -6,35 +6,40 @@ service cloud.firestore {
     // ===============================================================
     //
     // Collection: api_status
-    // Document ID: apiId
+    // Document ID: apiId (e.g., openai-gpt-4o-na)
     // Fields:
-    //   - id: string (required)
-    //   - name: string (required, < 50 chars)
-    //   - provider: string (required, < 50 chars)
+    //   - id: string (required, < 100 chars)
+    //   - name: string (required, < 100 chars)
+    //   - provider: string (required, < 100 chars)
     //   - status: string (required, enum: ["online", "offline", "degraded"])
     //   - latency: number (required, >= 0)
+    //   - throughput: number (required, >= 0)
     //   - lastChecked: timestamp (required)
+    //   - region: string (required, < 50 chars)
     //
     // Collection: status_history
-    // Document ID: historyId
+    // Document ID: auto-generated
     // Fields:
-    //   - apiId: string (required)
-    //   - status: string (required)
+    //   - apiId: string (required, < 100 chars)
+    //   - region: string (required, < 50 chars)
+    //   - status: string (required, enum: ["online", "offline", "degraded"])
     //   - latency: number (required, >= 0)
+    //   - throughput: number (required, >= 0)
     //   - timestamp: timestamp (required)
     //
     // Collection: alerts
-    // Document ID: alertId
+    // Document ID: auto-generated
     // Fields:
-    //   - apiId: string (required)
-    //   - apiName: string (required)
-    //   - type: string (required, enum: ["downtime", "latency"])
-    //   - message: string (required, < 500 chars)
+    //   - apiId: string (required, < 100 chars)
+    //   - apiName: string (required, < 100 chars)
+    //   - region: string (required, < 50 chars)
+    //   - type: string (required, enum: ["outage", "degradation", "latency"])
+    //   - message: string (required, < 1000 chars)
     //   - timestamp: timestamp (required)
     //   - resolved: boolean (required)
     //
     // Collection: tasks
-    // Document ID: taskId
+    // Document ID: auto-generated
     // Fields:
     //   - title: string (required, 1-200 chars)
     //   - status: string (required, enum: ["todo", "inProgress", "done"])
@@ -76,94 +81,109 @@ service cloud.firestore {
     // ===============================================================
 
     function isValidApiStatus(data) {
-      return hasOnlyAllowedFields(['id', 'name', 'provider', 'status', 'latency', 'lastChecked', 'throughput', 'originalId', 'region', 'url', 'interval', 'strategy', 'method', 'body', 'customBody', 'timeout', 'headers']) &&
-             data.id is string &&
+      return hasOnlyAllowedFields(['id', 'name', 'provider', 'status', 'latency', 'lastChecked', 'throughput', 'originalId', 'region', 'url', 'interval', 'strategy', 'method', 'body', 'customBody', 'timeout', 'headers', 'lastStatus']) &&
+             data.id is string && data.id.size() < 100 &&
              data.name is string && data.name.size() < 100 &&
-             data.provider is string &&
+             data.provider is string && data.provider.size() < 100 &&
              data.status in ['online', 'offline', 'degraded'] &&
              data.latency is number && data.latency >= 0 &&
-             data.lastChecked is timestamp;
+             data.throughput is number && data.throughput >= 0 &&
+             data.lastChecked is timestamp &&
+             data.region is string && data.region.size() < 50;
     }
 
     function isValidStatusHistory(data) {
       return hasOnlyAllowedFields(['apiId', 'region', 'status', 'latency', 'throughput', 'timestamp']) &&
-             data.apiId is string &&
-             data.region is string &&
-             data.status is string &&
-             data.latency is number &&
-             data.throughput is number;
+             data.apiId is string && data.apiId.size() < 100 &&
+             data.region is string && data.region.size() < 50 &&
+             data.status in ['online', 'offline', 'degraded'] &&
+             data.latency is number && data.latency >= 0 &&
+             data.throughput is number && data.throughput >= 0 &&
+             data.timestamp is timestamp;
     }
 
     function isValidAlert(data) {
       return hasOnlyAllowedFields(['apiId', 'apiName', 'region', 'type', 'message', 'timestamp', 'resolved']) &&
-             data.apiId is string &&
-             data.apiName is string &&
-             data.region is string &&
-             data.type in ['outage', 'degradation', 'latency'] &&
-             data.message is string &&
+             data.apiId is string && data.apiId.size() < 100 &&
+             data.apiName is string && data.apiName.size() < 100 &&
+             data.region is string && data.region.size() < 50 &&
+             data.type in ['outage', 'degradation', 'latency', 'downtime'] &&
+             data.message is string && data.message.size() < 1000 &&
+             data.timestamp is timestamp &&
              data.resolved is bool;
     }
 
     function isValidMetric(data) {
       return hasOnlyAllowedFields(['apiId', 'latency', 'throughput', 'timestamp']) &&
-             data.apiId is string &&
-             data.latency is number &&
-             data.throughput is number;
+             data.apiId is string && data.apiId.size() < 100 &&
+             data.latency is number && data.latency >= 0 &&
+             data.throughput is number && data.throughput >= 0 &&
+             data.timestamp is timestamp;
     }
 
     function isValidTask(data) {
       return hasOnlyAllowedFields(['title', 'status', 'createdAt', 'userId']) &&
              data.title is string && data.title.size() >= 1 && data.title.size() <= 200 &&
              data.status in ['todo', 'inProgress', 'done'] &&
+             data.createdAt is timestamp &&
              data.userId == request.auth.uid;
     }
 
     function isValidApiConfig(data) {
       return hasOnlyAllowedFields(['apiId', 'baselineLatency', 'baselineAvailability', 'latencyThreshold', 'availabilityThreshold']) &&
-             data.apiId is string &&
+             data.apiId is string && data.apiId.size() < 100 &&
              data.baselineLatency is number && data.baselineLatency >= 0 &&
              data.baselineAvailability is number && data.baselineAvailability >= 0 && data.baselineAvailability <= 100 &&
              data.latencyThreshold is number && data.latencyThreshold >= 0 &&
              data.availabilityThreshold is number && data.availabilityThreshold >= 0 && data.availabilityThreshold <= 100;
     }
 
+    function isValidUserPref(data) {
+      return hasOnlyAllowedFields(['userId', 'email', 'enableEmailAlerts', 'enableInAppAlerts', 'latencyThreshold', 'refreshInterval']) &&
+             data.userId == request.auth.uid &&
+             data.email is string && data.email.size() < 200;
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
 
-    // API Status collection: Publicly readable, writable if valid (for monitoring)
+    // API Status collection: Authenticated users can read, only admins can write
     match /api_status/{apiId} {
-      allow read: if true;
-      allow write: if isAdmin() || isValidApiStatus(request.resource.data);
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() && isValidApiStatus(request.resource.data);
     }
 
-    // Status History collection: Publicly readable, writable if valid
+    // Status History collection: Authenticated users can read, only admins can write
     match /status_history/{historyId} {
-      allow read: if true;
-      allow write: if isAdmin() || isValidStatusHistory(request.resource.data);
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() && isValidStatusHistory(request.resource.data);
     }
 
-    // Alerts collection: Publicly readable, writable if valid
+    // Alerts collection: Authenticated users can read, resolve their own alerts (if applicable) or admins write
     match /alerts/{alertId} {
-      allow read: if true;
-      allow write: if isAdmin() || isValidAlert(request.resource.data);
+      allow read: if isAuthenticated();
+      allow create: if isAdmin() && isValidAlert(request.resource.data);
+      allow update: if isAuthenticated() && 
+                      (isAdmin() || (hasOnlyAllowedFields(['resolved']) && request.resource.data.resolved == true)) &&
+                      isValidAlert(request.resource.data);
     }
 
-    // API Metrics collection: Publicly readable, writable if valid
+    // API Metrics collection: Authenticated users can read, only admins can write
     match /api_metrics/{metricId} {
-      allow read: if true;
-      allow write: if isAdmin() || isValidMetric(request.resource.data);
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() && isValidMetric(request.resource.data);
     }
 
-    // API Configs collection: Publicly readable, only admins can update
+    // API Configs collection: Authenticated users can read, only admins can write
     match /api_configs/{configId} {
-      allow read: if true;
+      allow read: if isAuthenticated();
       allow write: if isAdmin() && isValidApiConfig(request.resource.data);
     }
 
-    // Test collection: Allow all for connection testing
+    // Test collection: Restricted to authenticated users
     match /test/{docId} {
-      allow read, write: if true;
+      allow read, write: if isAuthenticated();
     }
 
     // Tasks collection: Users can read and write their own tasks
@@ -186,7 +206,9 @@ service cloud.firestore {
 
     // User Preferences collection: Users can read and write their own preferences
     match /user_preferences/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isOwner(userId) && isValidUserPref(request.resource.data);
     }
   }
 }
+

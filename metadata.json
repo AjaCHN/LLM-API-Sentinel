@@ -1,5 +1,5 @@
 {
-  "name": "LLM API Sentinel v4.0.1",
-  "description": "Refactored autonomous LLM API monitoring system with modular components, shadcn/ui integration, 24/7 background checks, real-time alerts, and historical performance tracking. v4.0.1",
+  "name": "LLM API Sentinel v4.0.2",
+  "description": "Refactored autonomous LLM API monitoring system with modular components, shadcn/ui integration, 24/7 background checks, real-time alerts, and historical performance tracking. v4.0.2",
   "requestFramePermissions": []
 }

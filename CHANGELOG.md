@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.0.2]
+### Fixed
+- **Security**: Hardened Firestore security rules with strict validation and authentication checks.
+- **Architecture**: Integrated `firebase-admin` singleton for secure server-side writes in both custom server and Next.js routes.
+- **Versioning**: Synchronized version numbers across all files.
+
 ## [4.0.1]
 ### Added
 - **i18n**: Added missing language support for Japanese (ja), Korean (ko), French (fr), Portuguese (pt-BR), and German (de).
