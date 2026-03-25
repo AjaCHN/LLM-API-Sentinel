@@ -1,0 +1,45 @@
+{
+  "entities": {
+    "Config": {
+      "title": "Config",
+      "description": "System configuration",
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "Metric": {
+      "title": "Metric",
+      "description": "System metrics",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/config/{configId}": {
+      "schema": {
+        "$ref": "#/entities/Config"
+      },
+      "description": "System configuration documents"
+    },
+    "/metrics/{metricId}": {
+      "schema": {
+        "$ref": "#/entities/Metric"
+      },
+      "description": "System metrics documents"
+    }
+  }
+}
