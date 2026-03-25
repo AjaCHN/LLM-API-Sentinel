@@ -12,7 +12,7 @@ export async function GET() {
     const results = await Promise.all(APIS_TO_CHECK.map(async (api) => {
       const configOverride = await getApiConfigAdmin(api.id);
       const result = await performCheck(api, region.id, configOverride);
-      // These functions now use firebase-admin on the server
+      // These functions now use the client SDK on the server
       await saveApiStatus(result);
       await saveApiHistory(result);
       await saveMetric({

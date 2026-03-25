@@ -1,15 +1,15 @@
-// app/lib/metrics-server.ts v4.0.3
-import { adminDb } from './firebase-admin';
-import { FieldValue } from 'firebase-admin/firestore';
+// app/lib/metrics-server.ts v4.0.4
+import { db } from './firebase';
+import { collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
 
 export async function saveMetric(metric: { apiId: string; latency: number; throughput: number }) {
   try {
-    await adminDb.collection('api_metrics').add({
+    await addDoc(collection(db, 'api_metrics'), {
       ...metric,
-      timestamp: FieldValue.serverTimestamp(),
+      timestamp: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Admin saveMetric failed:', error);
+    console.error('Server saveMetric failed:', error);
   }
 }
 
@@ -22,13 +22,13 @@ export async function checkAndCreateAlerts(apiResult: any) {
   try {
     if (apiResult.status === 'offline') {
       const message = `API ${apiResult.name} (${apiResult.region}) is currently offline.`;
-      await adminDb.collection('alerts').add({
+      await addDoc(collection(db, 'alerts'), {
         apiId: apiResult.id,
         apiName: apiResult.name,
         region: apiResult.region,
         type: 'outage',
         message,
-        timestamp: FieldValue.serverTimestamp(),
+        timestamp: serverTimestamp(),
         resolved: false
       });
       await sendEmailAlert(apiResult.name, apiResult.region, 'Offline', 'Transient interruption detected');
@@ -36,12 +36,14 @@ export async function checkAndCreateAlerts(apiResult: any) {
     }
 
     // Check last 10 metrics for availability < 90%
-    const metricsSnap = await adminDb.collection('api_metrics')
-      .where('apiId', '==', apiResult.id)
-      .orderBy('timestamp', 'desc')
-      .limit(10)
-      .get();
+    const q = query(
+      collection(db, 'api_metrics'),
+      where('apiId', '==', apiResult.id),
+      orderBy('timestamp', 'desc'),
+      limit(10)
+    );
     
+    const metricsSnap = await getDocs(q);
     const metrics = metricsSnap.docs.map(doc => doc.data());
 
     if (metrics.length >= 10) {
@@ -50,19 +52,19 @@ export async function checkAndCreateAlerts(apiResult: any) {
       
       if (availability < 90) {
         const message = `API ${apiResult.name} (${apiResult.region}) availability dropped to ${availability}%.`;
-        await adminDb.collection('alerts').add({
+        await addDoc(collection(db, 'alerts'), {
           apiId: apiResult.id,
           apiName: apiResult.name,
           region: apiResult.region,
           type: 'degradation',
           message,
-          timestamp: FieldValue.serverTimestamp(),
+          timestamp: serverTimestamp(),
           resolved: false
         });
         await sendEmailAlert(apiResult.name, apiResult.region, 'Degraded', `Availability < 90% (${availability}%)`);
       }
     }
   } catch (error) {
-    console.error('Admin checkAndCreateAlerts failed:', error);
+    console.error('Server checkAndCreateAlerts failed:', error);
   }
 }
