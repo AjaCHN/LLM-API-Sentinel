@@ -5,7 +5,7 @@ import { AlertTriangle, X, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '../lib/utils';
 
-interface Alert {
+export interface Alert {
   id: string;
   apiId: string;
   apiName: string;

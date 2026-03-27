@@ -15,10 +15,7 @@ const nextConfig = {
     ],
   },
   output: 'standalone',
-  transpilePackages: ['motion', 'next-intl'],
-  turbopack: {
-    root: '.',
-  },
+  transpilePackages: ['motion'],
 };
 
 export default nextConfig;
