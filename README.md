@@ -1,20 +1,11 @@
-# LLM API Sentinel v4.0.5
+# LLM API Sentinel v2.0.0
 
 [English](README.md) | [中文](README_CN.md)
 
 Real-time monitoring and historical availability tracking for major LLM APIs worldwide.
 
 ## Features
-- **Architecture Optimization (v4.0.5)**: Resolved `next-intl` routing conflicts by switching to `localePrefix: 'always'`. Improved client bundle stability by isolating server-side dependencies (`firebase-admin`, `fs`).
-- **Modular Architecture (v4.0.0+)**: Refactored core dashboard into specialized components (`AlertBanner`, `ControlBar`, `ChartSection`) for better maintainability and performance.
-- **Logo Generation**: Built-in utility to generate a professional application logo and favicon using Gemini 3.1 Flash Image. Available at `/logo`.
-- **Global Monitoring**: Tracks reachability and latency for AI providers in the US (OpenAI, Anthropic, Google) and China (Moonshot, Zhipu, Baichuan, DeepSeek).
-- **Multi-Region Detection**: Built-in simulated detection logic for North America (NA), Europe (EU), and Asia (Asia) nodes, generating independent detection records for each region.
-- **Alert Notification System**: Intelligent alert logic for downtime, availability degradation, and high latency. Integrates `nodemailer` for email notifications based on user preferences.
-- **API Performance Metrics Deep Analysis**: Automatically pulls historical data from the past 7 days to calculate Average Latency, P95 Latency, and Average Throughput (RPS). Features a new `MetricsComparisonChart` for visual comparison.
-- **Internationalization (i18n)**: Supports over 20 languages including English, Chinese, Spanish, Arabic, French, Portuguese, German, Japanese, Korean, and Russian.
-- **Custom Strategies**: Configure independent check intervals and strategies (ping vs full request) per API.
-- **Throughput Tracking**: Calculates and visualizes API throughput (requests per second) alongside latency.
+- **Global Monitoring**: Tracks reachability and latency for AI providers in the US (OpenAI, Anthropic, Google) and China (Moonshot, Zhipu, Baichuan).
 - **Historical Data**: Visualizes performance trends using interactive Area Charts.
 - **Adaptive UI**: Fully responsive design with Dark/Light mode support.
 - **Real-time Updates**: Powered by Firebase Firestore for instant status synchronization.
@@ -27,10 +18,36 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 - **Auth**: Firebase Authentication
 - **Charts**: Recharts
 - **Icons**: Lucide React
-- **Alerts**: Nodemailer, Axios
-- **i18n**: next-intl
 
 ## Getting Started
-1. Configure your Firebase project and alert settings using environment variables (see `.env.example`).
+1. Configure your Firebase project in `firebase-applet-config.json`.
 2. Deploy Firestore rules using `firestore.rules`.
 3. Sign in to trigger manual health checks.
+
+---
+
+# LLM API Sentinel v2.0.0
+
+[English](README.md) | [中文](README_CN.md)
+
+全球主流大模型 API 实时监控与历史可用性追踪系统。
+
+## 功能特性
+- **全球监控**: 追踪美国（OpenAI, Anthropic, Google）和中国（Kimi, 智谱, 百川）主流 AI 供应商的连通性与延迟。
+- **历史数据**: 使用交互式面积图可视化性能趋势。
+- **自适应 UI**: 全响应式设计，支持深色/浅色模式切换。
+- **实时更新**: 基于 Firebase Firestore 实现状态即时同步。
+- **安全访问**: 手动健康检查受 Google 身份验证保护。
+
+## 技术栈
+- **框架**: Next.js 15 (App Router)
+- **样式**: Tailwind CSS 4
+- **数据库**: Firebase Firestore
+- **身份验证**: Firebase Authentication
+- **图表**: Recharts
+- **图标**: Lucide React
+
+## 快速开始
+1. 在 `firebase-applet-config.json` 中配置您的 Firebase 项目。
+2. 使用 `firestore.rules` 部署 Firestore 规则。
+3. 登录以触发手动健康检查。

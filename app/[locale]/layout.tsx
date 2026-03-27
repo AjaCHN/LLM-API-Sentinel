@@ -1,10 +1,11 @@
-// app/[locale]/layout.tsx v3.5.0
+// app/[locale]/layout.tsx v2.3.0
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import '../globals.css';
 import { ThemeProvider } from '../components/ThemeProvider';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, getLocale } from 'next-intl/server';
+import { getMessages } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -17,8 +18,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'LLM API Sentinel v4.0.1 | Global AI API Monitoring',
-  description: 'Real-time monitoring and historical availability tracking for major LLM APIs including OpenAI, Anthropic, Gemini, Kimi, and more. v4.0.1',
+  title: 'LLM API Sentinel v2.3.0 | Global AI API Monitoring',
+  description: 'Real-time monitoring and historical availability tracking for major LLM APIs including OpenAI, Anthropic, Gemini, Kimi, and more.',
   keywords: ['LLM', 'API Monitoring', 'AI Status', 'OpenAI', 'Gemini', 'Claude', 'Kimi', 'DeepSeek'],
   authors: [{ name: 'Sut' }],
   openGraph: {
@@ -38,12 +39,19 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({
-  children
+  children,
+  params
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
-  const locale = await getLocale();
-  const messages = await getMessages();
+  const { locale } = await params;
+  let messages;
+  try {
+    messages = await getMessages({ locale });
+  } catch (error) {
+    notFound();
+  }
 
   return (
     <html lang={locale} suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>

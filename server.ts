@@ -1,80 +1,81 @@
-// server.ts v4.0.5
+// server.ts v2.0.0
 import express from 'express';
 import next from 'next';
-import { adminDb } from './app/lib/firebase-admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
-import nodemailer from 'nodemailer';
-import { performCheck, LATENCY_THRESHOLD, APIS_TO_CHECK, ApiConfig, REGIONS } from './app/lib/monitor';
-import { sendAlert } from './app/lib/alerts';
-import { saveApiStatus, saveApiHistory } from './app/lib/firestore-server';
-import { saveMetric, checkAndCreateAlerts } from './app/lib/metrics-server';
-import { getApiConfigAdmin } from './app/lib/config-server';
+import { performCheck, LATENCY_THRESHOLD } from './app/lib/monitor';
+import firebaseConfig from './firebase-applet-config.json' assert { type: 'json' };
+console.log('Firebase Config:', firebaseConfig);
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 const port = 3000;
 
-// Nodemailer Transporter (Requires SMTP config)
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
+// Initialize Firebase Admin
+const appAdmin = initializeApp({
+  projectId: firebaseConfig.projectId,
 });
 
-async function sendEmailAlert(to: string, subject: string, text: string) {
-  if (!process.env.SMTP_HOST) return;
-  await transporter.sendMail({ from: process.env.SMTP_FROM, to, subject, text });
-}
+const db = getFirestore(appAdmin, firebaseConfig.firestoreDatabaseId);
 
-// Keep track of recent checks to calculate availability
-const recentChecks: Record<string, boolean[]> = {};
+async function runBackgroundMonitor() {
+  console.log('[Monitor] Starting background check...');
+  try {
+    const results = await performCheck();
+    const batch = db.batch();
 
-async function checkApi(api: ApiConfig) {
-  const configOverride = await getApiConfigAdmin(api.id);
-  for (const region of REGIONS) {
-    try {
-      const result = await performCheck(api, region.id, configOverride);
-      
-      // Use server-side utilities
-      await saveApiStatus(result);
-      await saveApiHistory(result);
-      await saveMetric({
+    for (const result of results) {
+      const statusRef = db.collection('api_status').doc(result.id);
+      batch.set(statusRef, result);
+
+      const historyRef = db.collection('status_history').doc();
+      batch.set(historyRef, {
         apiId: result.id,
+        status: result.status,
         latency: result.latency,
-        throughput: result.throughput,
+        timestamp: FieldValue.serverTimestamp(),
       });
-      await checkAndCreateAlerts(result);
-      
-      // Availability logic for local tracking (optional, but kept for consistency)
-      if (!recentChecks[result.id]) {
-        recentChecks[result.id] = [];
-      }
-      recentChecks[result.id].push(result.status === 'online');
-      if (recentChecks[result.id].length > 20) {
-        recentChecks[result.id].shift();
-      }
 
-    } catch (error) {
-      console.error(`[Monitor] Check failed for ${api.name} in ${region.name}:`, error);
+      // Alert Logic
+      if (result.status === 'offline') {
+        const alertRef = db.collection('alerts').doc();
+        batch.set(alertRef, {
+          apiId: result.id,
+          apiName: result.name,
+          type: 'downtime',
+          message: `${result.name} is currently offline. (Auto-detected)`,
+          timestamp: FieldValue.serverTimestamp(),
+          resolved: false
+        });
+      } else if (result.latency > LATENCY_THRESHOLD) {
+        const alertRef = db.collection('alerts').doc();
+        batch.set(alertRef, {
+          apiId: result.id,
+          apiName: result.name,
+          type: 'latency',
+          message: `${result.name} latency is high: ${result.latency}ms. (Auto-detected)`,
+          timestamp: FieldValue.serverTimestamp(),
+          resolved: false
+        });
+      }
     }
+
+    await batch.commit();
+    console.log('[Monitor] Background check completed and synced.');
+  } catch (error) {
+    console.error('[Monitor] Background check failed:', error);
   }
 }
-
-
 
 app.prepare().then(() => {
   const server = express();
 
-  // Schedule individual API checks
-  APIS_TO_CHECK.forEach(api => {
-    setInterval(() => checkApi(api), api.interval);
-    setTimeout(() => checkApi(api), Math.random() * 5000);
-  });
+  // Background task: Every 5 minutes
+  setInterval(runBackgroundMonitor, 5 * 60 * 1000);
+  // Initial check
+  setTimeout(runBackgroundMonitor, 10000);
 
   server.all(/.*/, (req, res) => {
     const parsedUrl = parse(req.url!, true);
@@ -88,4 +89,3 @@ app.prepare().then(() => {
   console.error('Next.js prepare failed:', err);
   process.exit(1);
 });
-

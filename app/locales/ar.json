@@ -32,34 +32,5 @@
   "statusLabels": {
     "online": "متصل",
     "offline": "غير متصل"
-  },
-  "profile": {
-    "title": "Profile",
-    "accountDetails": "Account Details",
-    "joined": "Joined",
-    "lastLogin": "Last Login",
-    "currentLocation": "Current Location",
-    "quickActions": "Quick Actions",
-    "toggleTheme": "Toggle Theme",
-    "backToDashboard": "Back to Dashboard",
-    "signOut": "Sign Out"
-  },
-  "settings": {
-    "title": "System Settings",
-    "alerts": "Alerts",
-    "display": "Display",
-    "security": "Security",
-    "data": "Data",
-    "thresholds": "Thresholds & Notifications",
-    "latencyThreshold": "Latency Threshold (ms)",
-    "latencyDesc": "Alerts trigger when latency exceeds this value.",
-    "refreshInterval": "Refresh Interval (minutes)",
-    "enableEmailAlerts": "Enable Email Alerts",
-    "emailAlertsDesc": "Send notifications to your email.",
-    "enableInAppAlerts": "Enable In-App Alerts",
-    "inAppAlertsDesc": "Show real-time alerts on dashboard.",
-    "saveSettings": "Save Settings",
-    "saving": "Saving...",
-    "note": "Note: Some settings may require a page reload."
   }
 }

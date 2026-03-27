@@ -1,19 +1,11 @@
-// middleware.ts v3.4.7
+// middleware.ts v2.3.0
 import createMiddleware from 'next-intl/middleware';
 
 export default createMiddleware({
-  locales: ['en', 'zh-cn', 'zh-tw', 'es', 'ar'],
-  defaultLocale: 'en',
-  localePrefix: 'always'
+  locales: ['ar', 'cs', 'en', 'es', 'hi', 'id', 'it', 'nl', 'pl', 'sv', 'th', 'tr', 'ru', 'vi', 'zh-cn', 'zh-tw'],
+  defaultLocale: 'en'
 });
 
 export const config = {
-  matcher: [
-    // Match all pathnames except for
-    // - /api (API routes)
-    // - /_next (Next.js internals)
-    // - /_static (inside /public)
-    // - all root files inside /public (e.g. /favicon.ico)
-    '/((?!api|_next|_static|_vercel|[\\w-]+\\.\\w+).*)'
-  ]
+  matcher: ['/', '/(ar|cs|en|es|hi|id|it|nl|pl|sv|th|tr|ru|vi|zh-cn|zh-tw)/:path*']
 };

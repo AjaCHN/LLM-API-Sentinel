@@ -1,4 +1,4 @@
-// app/lib/utils.ts v4.0.1
+// app/lib/utils.ts v2.3.0
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 

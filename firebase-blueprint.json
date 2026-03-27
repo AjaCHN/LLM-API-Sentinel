@@ -39,43 +39,6 @@
         "resolved": { "type": "boolean" }
       },
       "required": ["apiId", "apiName", "type", "message", "timestamp", "resolved"]
-    },
-    "Task": {
-      "title": "Task",
-      "description": "A task item for tracking issues or maintenance",
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" },
-        "status": { "type": "string", "enum": ["todo", "inProgress", "done"] },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "userId": { "type": "string" }
-      },
-      "required": ["title", "status", "createdAt", "userId"]
-    },
-    "UserPreferences": {
-      "title": "UserPreferences",
-      "description": "User notification and threshold settings",
-      "type": "object",
-      "properties": {
-        "userId": { "type": "string" },
-        "email": { "type": "string", "format": "email" },
-        "enableEmailAlerts": { "type": "boolean" },
-        "enableInAppAlerts": { "type": "boolean" }
-      },
-      "required": ["userId", "email"]
-    },
-    "ApiConfig": {
-      "title": "ApiConfig",
-      "description": "Baseline and threshold settings for an API",
-      "type": "object",
-      "properties": {
-        "apiId": { "type": "string" },
-        "baselineLatency": { "type": "number" },
-        "baselineAvailability": { "type": "number" },
-        "latencyThreshold": { "type": "number" },
-        "availabilityThreshold": { "type": "number" }
-      },
-      "required": ["apiId", "baselineLatency", "baselineAvailability", "latencyThreshold", "availabilityThreshold"]
     }
   },
   "firestore": {
@@ -90,18 +53,6 @@
     "/alerts/{alertId}": {
       "schema": "Alert",
       "description": "Real-time alerts for API issues"
-    },
-    "/tasks/{taskId}": {
-      "schema": "Task",
-      "description": "Tasks for tracking issues or maintenance"
-    },
-    "/user_preferences/{userId}": {
-      "schema": "UserPreferences",
-      "description": "User notification and threshold settings"
-    },
-    "/api_configs/{apiId}": {
-      "schema": "ApiConfig",
-      "description": "Baseline and threshold settings for an API"
     }
   }
 }

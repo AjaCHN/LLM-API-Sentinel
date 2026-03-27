@@ -1,26 +1,22 @@
-// app/hooks/useDashboardData.ts v4.0.2
+// app/hooks/useDashboardData.ts v2.0.0
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { collection, onSnapshot, query, orderBy, limit, doc, updateDoc, where } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import { handleFirestoreError, OperationType } from '../lib/firestoreUtils';
-import { useAuth } from './useAuth';
-import { useTasks } from './useTasks';
-import { APIS_TO_CHECK, REGIONS } from '../lib/monitor';
-import { getMetricsBaseline } from '../lib/metrics';
+import { collection, onSnapshot, query, orderBy, limit, setDoc, doc, addDoc, serverTimestamp, where, updateDoc } from 'firebase/firestore';
+import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
+import { db, auth, googleProvider } from '../lib/firebase';
+import { format } from 'date-fns';
+
+const LATENCY_THRESHOLD = 1500;
 
 export function useDashboardData() {
   const [statuses, setStatuses] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
-  const [baselines, setBaselines] = useState<Record<string, any>>({});
+  const [user, setUser] = useState<User | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [geo, setGeo] = useState<any | null>(null);
-
-  const { user, login, logout } = useAuth();
-  const { tasks, addTask, updateTaskStatus, deleteTask } = useTasks(user);
 
   useEffect(() => {
     fetch('https://ipapi.co/json/')
@@ -30,25 +26,58 @@ export function useDashboardData() {
   }, []);
 
   const runCheck = useCallback(async () => {
-    if (!user) return;
+    if (!auth.currentUser) return;
     
     setIsChecking(true);
     try {
-      await fetch('/api/check');
+      const res = await fetch('/api/check');
+      const results: any[] = await res.json();
+      
+      for (const result of results) {
+        await setDoc(doc(db, 'api_status', result.id), result);
+        await addDoc(collection(db, 'status_history'), {
+          apiId: result.id,
+          status: result.status,
+          latency: result.latency,
+          timestamp: serverTimestamp(),
+        });
+
+        if (result.status === 'offline') {
+          await addDoc(collection(db, 'alerts'), {
+            apiId: result.id,
+            apiName: result.name,
+            type: 'downtime',
+            message: `${result.name} is currently offline.`,
+            timestamp: serverTimestamp(),
+            resolved: false
+          });
+        } else if (result.latency > LATENCY_THRESHOLD) {
+          await addDoc(collection(db, 'alerts'), {
+            apiId: result.id,
+            apiName: result.name,
+            type: 'latency',
+            message: `${result.name} latency is high: ${result.latency}ms.`,
+            timestamp: serverTimestamp(),
+            resolved: false
+          });
+        }
+      }
     } catch (error) {
       console.error('Check failed:', error);
     } finally {
       setIsChecking(false);
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (u) => setUser(u));
+    
     const qStatus = query(collection(db, 'api_status'));
     const unsubscribeStatus = onSnapshot(qStatus, (snapshot) => {
       const data = snapshot.docs.map(doc => doc.data());
       setStatuses(data.sort((a, b) => a.name.localeCompare(b.name)));
       setLastUpdate(new Date());
-    }, (e) => handleFirestoreError(e, OperationType.LIST, 'api_status'));
+    });
 
     const qHistory = query(
       collection(db, 'status_history'), 
@@ -60,12 +89,12 @@ export function useDashboardData() {
         const d = doc.data();
         return {
           ...d,
-          time: d.timestamp ? new Date(d.timestamp.toDate()).toLocaleTimeString() : '',
+          time: d.timestamp ? format(d.timestamp.toDate(), 'HH:mm:ss') : '',
           timestamp: d.timestamp?.toDate()
         };
       }).reverse();
       setHistory(data);
-    }, (e) => handleFirestoreError(e, OperationType.LIST, 'status_history'));
+    });
 
     const qAlerts = query(
       collection(db, 'alerts'),
@@ -79,7 +108,7 @@ export function useDashboardData() {
         ...doc.data()
       }));
       setAlerts(data);
-    }, (e) => handleFirestoreError(e, OperationType.LIST, 'alerts'));
+    });
 
     let interval: NodeJS.Timeout;
     if (user) {
@@ -89,6 +118,7 @@ export function useDashboardData() {
     }
 
     return () => {
+      unsubscribeAuth();
       unsubscribeStatus();
       unsubscribeHistory();
       unsubscribeAlerts();
@@ -96,29 +126,13 @@ export function useDashboardData() {
     };
   }, [user, runCheck]);
 
-  useEffect(() => {
-    async function fetchBaselines() {
-      const newBaselines: Record<string, any> = {};
-      for (const api of APIS_TO_CHECK) {
-        for (const region of REGIONS) {
-          const id = `${api.id}-${region.id}`;
-          newBaselines[id] = await getMetricsBaseline(id);
-        }
-      }
-      setBaselines(newBaselines);
-    }
-    fetchBaselines();
-  }, [statuses]);
-
   const resolveAlert = async (id: string) => {
     if (!user) return;
-    try {
-      await updateDoc(doc(db, 'alerts', id), { resolved: true });
-    } catch (e) {
-      handleFirestoreError(e, OperationType.UPDATE, `alerts/${id}`);
-    }
+    await updateDoc(doc(db, 'alerts', id), { resolved: true });
   };
 
-  return { statuses, history, alerts, tasks, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, addTask, updateTaskStatus, deleteTask, login, logout, baselines };
-}
+  const login = () => signInWithPopup(auth, googleProvider);
+  const logout = () => signOut(auth);
 
+  return { statuses, history, alerts, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, login, logout };
+}
