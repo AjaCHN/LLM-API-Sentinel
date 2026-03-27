@@ -1,4 +1,4 @@
-// app/lib/monitor.ts v2.0.0
+// app/lib/monitor.ts v2.1.0
 export const APIS_TO_CHECK = [
   // US APIs
   { id: 'openai-gpt-4o', name: 'GPT-4o', provider: 'OpenAI', url: 'https://api.openai.com/v1/models' },
@@ -18,40 +18,76 @@ export const APIS_TO_CHECK = [
 ];
 
 export const LATENCY_THRESHOLD = 1500;
+export const MAX_RETRIES = 2;
+export const RETRY_DELAY = 1000;
+
+export interface ApiCheckResult {
+  id: string;
+  name: string;
+  provider: string;
+  url: string;
+  status: 'online' | 'offline';
+  latency: number;
+  lastChecked: string;
+  error?: string;
+  retries?: number;
+}
+
+async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0): Promise<ApiCheckResult> {
+  const start = Date.now();
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    const response = await fetch(api.url, {
+      method: 'GET',
+      signal: controller.signal,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    
+    clearTimeout(timeoutId);
+    const latency = Date.now() - start;
+    const isOnline = response.status < 500;
+    
+    if (!isOnline && retries < MAX_RETRIES) {
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return checkApi(api, retries + 1);
+    }
+    
+    return {
+      ...api,
+      status: isOnline ? 'online' : 'offline',
+      latency,
+      lastChecked: new Date().toISOString(),
+      retries,
+    };
+  } catch (error) {
+    if (retries < MAX_RETRIES) {
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return checkApi(api, retries + 1);
+    }
+    
+    return {
+      ...api,
+      status: 'offline',
+      latency: 0,
+      lastChecked: new Date().toISOString(),
+      error: error instanceof Error ? error.message : String(error),
+      retries,
+    };
+  }
+}
 
 export async function performCheck() {
-  const results = await Promise.all(
-    APIS_TO_CHECK.map(async (api) => {
-      const start = Date.now();
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-        const response = await fetch(api.url, {
-          method: 'GET',
-          signal: controller.signal,
-          headers: { 'Content-Type': 'application/json' },
-        });
-        
-        clearTimeout(timeoutId);
-        const latency = Date.now() - start;
-        const isOnline = response.status < 500;
-        
-        return {
-          ...api,
-          status: isOnline ? 'online' : 'offline',
-          latency,
-          lastChecked: new Date().toISOString(),
-        };
-      } catch (error) {
-        return {
-          ...api,
-          status: 'offline',
-          latency: 0,
-          lastChecked: new Date().toISOString(),
-        };
-      }
-    })
-  );
+  // 限制并发请求数量，避免过多同时请求
+  const MAX_CONCURRENT = 5;
+  const results: ApiCheckResult[] = [];
+  
+  for (let i = 0; i < APIS_TO_CHECK.length; i += MAX_CONCURRENT) {
+    const batch = APIS_TO_CHECK.slice(i, i + MAX_CONCURRENT);
+    const batchResults = await Promise.all(batch.map(api => checkApi(api)));
+    results.push(...batchResults);
+  }
+  
   return results;
 }

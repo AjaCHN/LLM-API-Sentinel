@@ -3,6 +3,8 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from './components/ThemeProvider';
+import { NextIntlClientProvider } from 'next-intl';
+import { useLocale, useMessages } from 'next-intl';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -35,16 +37,24 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+function IntlProvider({ children }: { children: React.ReactNode }) {
+  const locale = useLocale();
+  const messages = useMessages();
+
+  return (
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      {children}
+    </NextIntlClientProvider>
+  );
+}
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Default to 'en' but keep the configuration flexible
-  const defaultLocale = 'en';
-
   return (
-    <html lang={defaultLocale} suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body suppressHydrationWarning className="antialiased">
         <ThemeProvider
           attribute="class"
@@ -52,7 +62,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <IntlProvider>
+            {children}
+          </IntlProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -11,15 +11,16 @@ import LatencyHistoryChart from './components/LatencyHistoryChart';
 import DashboardFooter from './components/DashboardFooter';
 import { getApiColor, cn } from './lib/utils';
 import { AlertTriangle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function Dashboard() {
   const { statuses, history, alerts, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, login, logout } = useDashboardData();
   const [showAlerts, setShowAlerts] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const t = useTranslations();
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -57,20 +58,20 @@ export default function Dashboard() {
             <div className="flex items-center gap-3">
               <AlertTriangle className="w-5 h-5 text-rose-500" />
               <p className="text-xs font-bold text-rose-500 uppercase tracking-wider">
-                System Alert: {alerts.length} active issue{alerts.length > 1 ? 's' : ''} detected
+                {t('alerts.title')}: {alerts.length} active issue{alerts.length > 1 ? 's' : ''} detected
               </p>
             </div>
-            <button onClick={() => setShowAlerts(true)} className="text-[10px] font-bold uppercase underline text-rose-500">View Details</button>
+            <button onClick={() => setShowAlerts(true)} className="text-[10px] font-bold uppercase underline text-rose-500">{t('alerts.viewDetails')}</button>
           </div>
         )}
 
         <section id="status-grid-section">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
-            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">Current Status</h2>
+            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">{t('status.title')}</h2>
             <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
               {lastUpdate && (
                 <span className="text-[10px] font-mono opacity-50">
-                  SYNC: {format(lastUpdate, 'HH:mm:ss')}
+                  {t('status.sync')}: {format(lastUpdate, 'HH:mm:ss')}
                 </span>
               )}
               <button 
@@ -82,7 +83,7 @@ export default function Dashboard() {
                   !user && "opacity-30 cursor-not-allowed"
                 )}
               >
-                {isChecking ? 'Checking...' : 'Trigger'}
+                {isChecking ? t('status.checking') : t('status.trigger')}
               </button>
             </div>
           </div>
@@ -91,7 +92,7 @@ export default function Dashboard() {
 
         <section id="history-chart-section" className="border border-border bg-card/50 p-4 md:p-6 rounded-lg">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4">
-            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">Latency History (ms)</h2>
+            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">{t('latency.title')}</h2>
             <div id="chart-legend" className="flex flex-wrap gap-x-4 gap-y-2 max-w-full">
               {statuses.slice(0, 8).map(s => (
                 <div key={s.id} className="flex items-center gap-1.5">

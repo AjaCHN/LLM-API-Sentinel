@@ -1,4 +1,4 @@
-// app/components/ApiStatusGrid.tsx v2.3.0
+// app/components/ApiStatusGrid.tsx v2.4.0
 'use client';
 
 import { ShieldCheck, ShieldAlert, AlertTriangle } from 'lucide-react';
@@ -6,7 +6,19 @@ import { cn } from '../lib/utils'; // Assuming utils exists, or I'll need to cre
 
 const LATENCY_THRESHOLD = 1500;
 
-export default function ApiStatusGrid({ statuses }: { statuses: any[] }) {
+export interface ApiStatus {
+  id: string;
+  name: string;
+  provider: string;
+  url: string;
+  status: 'online' | 'offline';
+  latency: number;
+  lastChecked: string;
+  error?: string;
+  retries?: number;
+}
+
+export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
   return (
     <div id="api-cards-container" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {statuses.length > 0 ? statuses.map((api) => (

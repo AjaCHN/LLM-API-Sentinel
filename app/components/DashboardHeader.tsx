@@ -1,9 +1,24 @@
-// app/components/DashboardHeader.tsx v2.3.0
+// app/components/DashboardHeader.tsx v2.4.0
 'use client';
 
 import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, X } from 'lucide-react';
 import { cn } from '../lib/utils';
-import AlertsDropdown from './AlertsDropdown';
+import AlertsDropdown, { Alert } from './AlertsDropdown';
+import { useTranslations } from 'next-intl';
+import { User } from 'firebase/auth';
+
+interface DashboardHeaderProps {
+  user: User | null;
+  alerts: Alert[];
+  showAlerts: boolean;
+  setShowAlerts: (show: boolean) => void;
+  theme: string;
+  setTheme: (theme: string) => void;
+  geo: { city: string; country: string; ip?: string } | null;
+  login: () => Promise<void>;
+  logout: () => Promise<void>;
+  resolveAlert: (id: string) => Promise<void>;
+}
 
 export default function DashboardHeader({ 
   user, 
@@ -16,14 +31,16 @@ export default function DashboardHeader({
   login, 
   logout, 
   resolveAlert 
-}: any) {
+}: DashboardHeaderProps) {
+  const t = useTranslations();
+  
   return (
     <header id="main-header" className="border-b border-border p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 bg-background/80 backdrop-blur-md z-50">
       <div id="brand-section" className="flex items-center gap-3">
         <Activity className="w-8 h-8 text-primary" />
         <div>
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase italic font-serif">LLM Sentinel</h1>
-          <p className="mono-label">Global API Monitoring System v2.3.0</p>
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase italic font-serif">{t('header.title')}</h1>
+          <p className="mono-label">{t('header.subtitle')} v2.3.0</p>
         </div>
       </div>
       
@@ -33,7 +50,7 @@ export default function DashboardHeader({
             <button 
               onClick={() => setShowAlerts(!showAlerts)}
               className="p-2 border border-border hover:bg-foreground hover:text-background transition-colors rounded-md relative"
-              title="Alerts"
+              title={t('header.alerts')}
             >
               <Bell className="w-5 h-5" />
               {alerts.length > 0 && (
@@ -83,7 +100,7 @@ export default function DashboardHeader({
               className="flex items-center gap-2 px-4 py-2 border border-border hover:bg-foreground hover:text-background transition-colors uppercase text-[10px] font-bold tracking-widest rounded-md"
             >
               <LogIn className="w-4 h-4" />
-              Sign In
+              {t('header.signIn')}
             </button>
           )}
         </div>

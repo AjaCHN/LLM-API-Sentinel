@@ -1,6 +1,7 @@
-// app/components/LatencyHistoryChart.tsx v2.3.0
+// app/components/LatencyHistoryChart.tsx v2.4.0
 'use client';
 
+import { memo } from 'react';
 import { 
   XAxis, 
   YAxis, 
@@ -11,11 +12,37 @@ import {
   Area
 } from 'recharts';
 
-export default function LatencyHistoryChart({ chartData, statuses, getApiColor }: { chartData: any[], statuses: any[], getApiColor: (id: string) => string }) {
+export interface ApiStatus {
+  id: string;
+  name: string;
+  provider: string;
+  url: string;
+  status: 'online' | 'offline';
+  latency: number;
+  lastChecked: string;
+  error?: string;
+  retries?: number;
+}
+
+export interface ChartDataPoint {
+  time: string;
+  [apiId: string]: number | string;
+}
+
+interface LatencyHistoryChartProps {
+  chartData: ChartDataPoint[];
+  statuses: ApiStatus[];
+  getApiColor: (id: string) => string;
+}
+
+function LatencyHistoryChart({ chartData, statuses, getApiColor }: LatencyHistoryChartProps) {
+  // 优化：限制显示的数据点数量，提高渲染性能
+  const optimizedChartData = chartData.slice(-50); // 只显示最近50个数据点
+
   return (
     <div id="chart-container" className="h-[250px] md:h-[350px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={chartData}>
+        <AreaChart data={optimizedChartData}>
           <defs>
             {statuses.map(s => (
               <linearGradient key={`grad-${s.id}`} id={`color-${s.id}`} x1="0" y1="0" x2="0" y2="1">
@@ -30,6 +57,7 @@ export default function LatencyHistoryChart({ chartData, statuses, getApiColor }
             axisLine={{ stroke: 'currentColor', opacity: 0.1 }}
             tickLine={false}
             tick={{ fontSize: 9, fontFamily: 'monospace', fill: 'currentColor', opacity: 0.4 }}
+            interval={optimizedChartData.length > 20 ? 'preserveStartEnd' : 0}
           />
           <YAxis 
             axisLine={{ stroke: 'currentColor', opacity: 0.1 }}
@@ -46,6 +74,7 @@ export default function LatencyHistoryChart({ chartData, statuses, getApiColor }
               color: 'var(--foreground)'
             }}
             itemStyle={{ padding: '0px' }}
+            filterNull={true}
           />
           {statuses.map(s => (
             <Area
@@ -65,3 +94,12 @@ export default function LatencyHistoryChart({ chartData, statuses, getApiColor }
     </div>
   );
 }
+
+// 使用 React.memo 减少不必要的重渲染
+export default memo(LatencyHistoryChart, (prevProps, nextProps) => {
+  // 只有当数据或状态真正改变时才重渲染
+  return (
+    JSON.stringify(prevProps.chartData) === JSON.stringify(nextProps.chartData) &&
+    JSON.stringify(prevProps.statuses) === JSON.stringify(nextProps.statuses)
+  );
+});
