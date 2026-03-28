@@ -1,6 +1,7 @@
 // app/components/DashboardHeader.tsx v2.4.0
 'use client';
 
+import React from 'react';
 import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import AlertsDropdown, { Alert } from './AlertsDropdown';

@@ -5,7 +5,10 @@ import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
 import { performCheck, LATENCY_THRESHOLD } from './app/lib/monitor';
-import firebaseConfig from './firebase-applet-config.json' assert { type: 'json' };
+import fs from 'fs';
+
+// Read firebase config file
+const firebaseConfig = JSON.parse(fs.readFileSync('./firebase-applet-config.json', 'utf8'));
 console.log('Firebase Config:', firebaseConfig);
 
 const dev = process.env.NODE_ENV !== 'production';

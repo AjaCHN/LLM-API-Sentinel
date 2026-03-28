@@ -16,6 +16,10 @@ const nextConfig = {
   },
   output: 'standalone',
   transpilePackages: ['motion'],
+  // Disable Turbopack
+  experimental: {
+    turbo: false
+  }
 };
 
 export default nextConfig;

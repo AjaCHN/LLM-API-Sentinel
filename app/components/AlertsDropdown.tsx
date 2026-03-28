@@ -1,6 +1,7 @@
 // app/components/AlertsDropdown.tsx v2.4.0
 'use client';
 
+import React from 'react';
 import { AlertTriangle, X, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '../lib/utils';
@@ -36,7 +37,7 @@ export default function AlertsDropdown({ alerts, onClose, onResolve }: { alerts:
 
   return (
     <div id="alerts-dropdown" className="absolute right-0 mt-2 w-72 sm:w-80 bg-card border border-border rounded-lg shadow-xl z-50 overflow-hidden">
-      <div className="p-3 border-b border-border flex justify-between items-center bg-muted/30">
+      <div className="p-3 border-b border-border flex justify-between items-center bg-card/80">
         <span className="text-[10px] font-bold uppercase tracking-widest">Active Alerts</span>
         <button onClick={onClose} className="opacity-50 hover:opacity-100"><X className="w-4 h-4" /></button>
       </div>

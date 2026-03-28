@@ -1,6 +1,7 @@
 // app/components/ApiStatusGrid.tsx v2.4.0
 'use client';
 
+import React from 'react';
 import { ShieldCheck, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { cn } from '../lib/utils'; // Assuming utils exists, or I'll need to create it
 

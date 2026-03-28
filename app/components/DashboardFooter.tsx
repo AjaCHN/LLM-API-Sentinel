@@ -1,6 +1,7 @@
 // app/components/DashboardFooter.tsx v2.3.0
 'use client';
 
+import React from 'react';
 import { Zap, Settings, ShieldCheck } from 'lucide-react';
 
 export default function DashboardFooter() {

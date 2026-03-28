@@ -1,6 +1,7 @@
 // app/layout.tsx v2.3.0
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
+import React from 'react';
 import './globals.css';
 import { ThemeProvider } from './components/ThemeProvider';
 
