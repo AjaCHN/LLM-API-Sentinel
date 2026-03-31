@@ -1,5 +1,10 @@
 # Features Specification
 
+## 2.4.0
+- **Alerts System**: Enhanced alerts dropdown component with improved severity visualization and error handling.
+- **Performance**: Optimized component rendering and data fetching.
+- **UI/UX**: Improved responsive design and user experience.
+
 ## 2.0.1
 - **Security**: Hardened firestore.rules by restricting write access to admins only.
 - **Robustness**: Fixed build errors related to Firebase Admin imports and FieldValue usage.

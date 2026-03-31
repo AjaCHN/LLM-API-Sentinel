@@ -26,3 +26,21 @@ export default function ApiStatusGrid({ statuses }) {
   );
 }
 ```
+
+## AlertsDropdown (告警下拉组件)
+```tsx
+// app/components/AlertsDropdown.tsx
+export default function AlertsDropdown({ alerts, onClose, onResolve }: { alerts: Alert[], onClose: () => void, onResolve: (id: string) => void }) {
+  return (
+    <div id="alerts-dropdown" className="absolute right-0 mt-2 w-72 sm:w-80 bg-card border border-border rounded-lg shadow-xl z-50 overflow-hidden">
+      <div className="p-3 border-b border-border flex justify-between items-center bg-card/80">
+        <span className="text-[10px] font-bold uppercase tracking-widest">Active Alerts</span>
+        <button onClick={onClose} className="opacity-50 hover:opacity-100"><X className="w-4 h-4" /></button>
+      </div>
+      <div className="max-h-96 overflow-y-auto">
+        {/* 告警列表或空状态 */}
+      </div>
+    </div>
+  );
+}
+```

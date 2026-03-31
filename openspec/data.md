@@ -14,6 +14,25 @@
 - `/status_history/{historyId}`: 历史性能数据。
 - `/alerts/{alertId}`: 系统告警。
 
+### 实体详细定义
+
+#### Alert 实体
+```typescript
+interface Alert {
+  id: string;           // 告警唯一 ID
+  apiId: string;        // API 唯一标识符
+  apiName: string;      // API 名称
+  type: 'downtime' | 'latency';  // 告警类型
+  severity: 'low' | 'medium' | 'high';  // 严重程度
+  message: string;      // 告警消息
+  timestamp: any;       // 告警时间戳
+  resolved: boolean;    // 是否已解决
+  error?: string;       // 错误信息（可选）
+  retries?: number;     // 重试次数（可选）
+  latency?: number;     // 延迟值（可选）
+}
+```
+
 ## 安全规则 (firestore.rules)
 
 ```javascript
