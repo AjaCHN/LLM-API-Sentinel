@@ -1,9 +1,14 @@
 # Features Specification
 
-## 2.4.0
-- **Alerts System**: Enhanced alerts dropdown component with improved severity visualization and error handling.
-- **Performance**: Optimized component rendering and data fetching.
-- **UI/UX**: Improved responsive design and user experience.
+## 2.2.0
+- **Autonomous Monitoring**: Implemented a server-side background task that performs API checks every 5 minutes without user intervention.
+- **Custom Server**: Migrated to a custom Express server to support long-running background tasks.
+- **Firebase Admin**: Integrated `firebase-admin` for secure server-side Firestore updates.
+
+## 2.1.0
+- **Real-time Alerting**: Implemented a notification system for API downtime and high latency (>1500ms).
+- **Alerts UI**: Added a notification bell with dropdown and a global alert banner.
+- **Alert Management**: Authenticated users can resolve active alerts.
 
 ## 2.0.1
 - **Security**: Hardened firestore.rules by restricting write access to admins only.
@@ -18,3 +23,4 @@
 - **SEO Optimization**: Added comprehensive meta tags and OpenGraph support.
 - **Semantic IDs**: Added unique IDs to all major containers for easier debugging.
 - **Documentation**: Created bilingual README files (EN/CN).
+- **Internationalization (i18n)**: Implemented multi-language support using `next-intl`.

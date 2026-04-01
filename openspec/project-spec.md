@@ -6,12 +6,15 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 
 ### 1.1 核心功能
 - **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta/Groq, Mistral）和中国（Moonshot, 智谱, 百川, 阿里, 腾讯, 百度）主流 AI 供应商的连通性与延迟
+- **自主监控**：服务器端后台任务每 5 分钟自动执行 API 检查
 - **历史数据**：使用交互式面积图可视化性能趋势
+- **实时告警**：API 宕机和高延迟（>1500ms）的通知系统
+- **告警管理**：认证用户可以解决活跃告警
 - **自适应 UI**：全响应式设计，支持深色/浅色模式切换
 - **实时更新**：基于 Firebase Firestore 实现状态即时同步
 - **安全访问**：手动健康检查受 Google 身份验证保护
 - **地理信息**：实时地理位置检测
-- **国际化**：支持多语言界面
+- **国际化**：支持多语言界面（ar, cs, en, es, hi, id, it, nl, pl, sv, th, tr, ru, vi, zh-cn, zh-tw）
 - **SEO 优化**：全面的元标签和 OpenGraph 支持
 
 ### 1.2 技术栈
@@ -19,11 +22,13 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 - **服务器**：Express (用于后台任务)
 - **数据库**：Firebase Firestore
 - **身份验证**：Firebase Authentication
+- **Firebase Admin**：用于安全的服务器端 Firestore 更新
 - **样式**：Tailwind CSS 4
 - **图表**：Recharts
 - **图标**：Lucide React
 - **工具库**：date-fns
 - **主题**：next-themes
+- **国际化**：next-intl
 
 ## 2. 代码规范
 
