@@ -3,7 +3,8 @@
 
 import React from 'react';
 import { ShieldCheck, ShieldAlert, AlertTriangle } from 'lucide-react';
-import { cn } from '../lib/utils'; // Assuming utils exists, or I'll need to create it
+import { useTranslations } from 'next-intl';
+import { cn } from '../lib/utils';
 
 const LATENCY_THRESHOLD = 1500;
 
@@ -20,6 +21,8 @@ export interface ApiStatus {
 }
 
 export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
+  const t = useTranslations();
+
   return (
     <div id="api-cards-container" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       {statuses.length > 0 ? statuses.map((api) => (
@@ -39,10 +42,10 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
               <ShieldAlert className="w-5 h-5 text-rose-500 animate-pulse" />
             )}
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex justify-between items-center border-t border-border/10 pt-2">
-              <span className="text-[10px] font-mono opacity-50 uppercase">Status</span>
+              <span className="text-[10px] font-mono opacity-50 uppercase">{t('status.title')}</span>
               <span className={cn(
                 "text-[9px] font-bold uppercase px-1.5 py-0.5 rounded",
                 api.status === 'online' ? (api.latency > LATENCY_THRESHOLD ? "bg-amber-500/10 text-amber-500" : "bg-emerald-500/10 text-emerald-500") : "bg-rose-500/10 text-rose-500"
@@ -51,7 +54,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-mono opacity-50 uppercase">Latency</span>
+              <span className="text-[10px] font-mono opacity-50 uppercase">{t('apiStatus.latency')}</span>
               <span className={cn(
                 "text-xs font-mono font-bold",
                 api.latency > LATENCY_THRESHOLD ? "text-amber-500" : ""
@@ -61,7 +64,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
         </div>
       )) : (
         <div className="col-span-full border border-dashed border-border/30 p-12 text-center rounded-lg">
-          <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest">No data available.</p>
+          <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest">{t('alerts.noAlerts')}</p>
         </div>
       )}
     </div>

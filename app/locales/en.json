@@ -2,35 +2,62 @@
   "title": "LLM API Sentinel",
   "description": "Autonomous API Monitoring System",
   "header": {
-    "title": "LLM Sentinel",
-    "subtitle": "Global API Monitoring System",
+    "title": "LLM API Sentinel",
+    "subtitle": "Global AI API Monitoring System v2.4.0",
     "signIn": "Sign In",
     "signOut": "Sign Out",
-    "alerts": "Alerts"
+    "alerts": "Alerts",
+    "toggleTheme": "Toggle Theme"
   },
   "status": {
     "title": "Current Status",
     "sync": "Sync",
     "trigger": "Trigger",
-    "checking": "Checking..."
+    "checking": "Checking...",
+    "runCheck": "Run Check",
+    "lastSync": "Last Sync"
   },
   "latency": {
-    "title": "Latency History (ms)"
+    "title": "Latency History",
+    "unit": "ms",
+    "more": "more"
   },
   "alerts": {
     "title": "System Alert",
-    "viewDetails": "View Details"
+    "viewDetails": "View Details",
+    "activeIssues": "active issue(s)",
+    "noAlerts": "No Alerts"
   },
   "footer": {
-    "coverage": "Global Coverage",
-    "coverageDesc": "Monitoring major AI providers across US and China.",
-    "ui": "Adaptive UI",
-    "uiDesc": "Optimized for all devices.",
-    "integrity": "Data Integrity",
-    "integrityDesc": "Historical data is persisted via Firebase."
+    "coverage": {
+      "title": "Global Coverage",
+      "desc": "Real-time monitoring of LLM APIs across multiple regions worldwide"
+    },
+    "ui": {
+      "title": "Modern UI",
+      "desc": "Responsive design with dark mode support and smooth animations"
+    },
+    "integrity": {
+      "title": "Data Integrity",
+      "desc": "Secure data collection and storage with Firebase integration"
+    }
   },
   "statusLabels": {
     "online": "Online",
-    "offline": "Offline"
+    "offline": "Offline",
+    "unknown": "Unknown"
+  },
+  "apiStatus": {
+    "latency": "Latency",
+    "uptime": "Uptime",
+    "lastCheck": "Last Check",
+    "responseTime": "Response Time"
+  },
+  "user": {
+    "guest": "Guest",
+    "welcome": "Welcome"
+  },
+  "location": {
+    "unknown": "Unknown Location"
   }
 }

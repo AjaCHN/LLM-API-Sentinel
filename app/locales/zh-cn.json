@@ -2,35 +2,62 @@
   "title": "LLM API Sentinel",
   "description": "自主 API 监控系统",
   "header": {
-    "title": "LLM Sentinel",
-    "subtitle": "全球 API 监控系统",
+    "title": "LLM API Sentinel",
+    "subtitle": "全球 AI API 监控系统 v2.4.0",
     "signIn": "登录",
     "signOut": "退出",
-    "alerts": "告警"
+    "alerts": "告警",
+    "toggleTheme": "切换主题"
   },
   "status": {
     "title": "当前状态",
     "sync": "同步",
     "trigger": "触发检测",
-    "checking": "检测中..."
+    "checking": "检测中...",
+    "runCheck": "立即检测",
+    "lastSync": "上次同步"
   },
   "latency": {
-    "title": "延迟历史 (ms)"
+    "title": "延迟历史",
+    "unit": "毫秒",
+    "more": "更多"
   },
   "alerts": {
     "title": "系统告警",
-    "viewDetails": "查看详情"
+    "viewDetails": "查看详情",
+    "activeIssues": "个活跃问题",
+    "noAlerts": "暂无告警"
   },
   "footer": {
-    "coverage": "全球覆盖",
-    "coverageDesc": "监控 OpenAI, Anthropic, Google, Meta, Mistral 以及月之暗面, 智谱AI, 百川智能, 阿里巴巴, 腾讯, 百度, 深度求索等主要 AI 提供商。",
-    "ui": "自适应 UI",
-    "uiDesc": "针对所有设备优化。",
-    "integrity": "数据完整性",
-    "integrityDesc": "历史数据通过 Firebase 持久化。"
+    "coverage": {
+      "title": "全球覆盖",
+      "desc": "实时监控全球多个地区的 LLM API"
+    },
+    "ui": {
+      "title": "现代 UI",
+      "desc": "响应式设计，支持暗黑模式和流畅动画"
+    },
+    "integrity": {
+      "title": "数据完整性",
+      "desc": "通过 Firebase 集成实现安全的数据收集和存储"
+    }
   },
   "statusLabels": {
     "online": "在线",
-    "offline": "离线"
+    "offline": "离线",
+    "unknown": "未知"
+  },
+  "apiStatus": {
+    "latency": "延迟",
+    "uptime": "可用率",
+    "lastCheck": "上次检测",
+    "responseTime": "响应时间"
+  },
+  "user": {
+    "guest": "访客",
+    "welcome": "欢迎"
+  },
+  "location": {
+    "unknown": "未知位置"
   }
 }

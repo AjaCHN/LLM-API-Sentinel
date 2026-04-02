@@ -4,6 +4,7 @@
 import React from 'react';
 import { AlertTriangle, X, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
 import { cn } from '../lib/utils';
 
 export interface Alert {
@@ -21,6 +22,8 @@ export interface Alert {
 }
 
 export default function AlertsDropdown({ alerts, onClose, onResolve }: { alerts: Alert[], onClose: () => void, onResolve: (id: string) => void }) {
+  const t = useTranslations();
+
   // 根据严重程度获取颜色
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -38,7 +41,7 @@ export default function AlertsDropdown({ alerts, onClose, onResolve }: { alerts:
   return (
     <div id="alerts-dropdown" className="absolute right-0 mt-2 w-72 sm:w-80 bg-card border border-border rounded-lg shadow-xl z-50 overflow-hidden">
       <div className="p-3 border-b border-border flex justify-between items-center bg-card/80">
-        <span className="text-[10px] font-bold uppercase tracking-widest">Active Alerts</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest">{t('alerts.title')}</span>
         <button onClick={onClose} className="opacity-50 hover:opacity-100"><X className="w-4 h-4" /></button>
       </div>
       <div className="max-h-96 overflow-y-auto">
@@ -75,7 +78,7 @@ export default function AlertsDropdown({ alerts, onClose, onResolve }: { alerts:
                       <span className="ml-2">Retries: {alert.retries}</span>
                     )}
                   </div>
-                  <button 
+                  <button
                     onClick={() => onResolve(alert.id)}
                     className="text-[9px] font-bold uppercase text-emerald-500 hover:underline"
                   >
