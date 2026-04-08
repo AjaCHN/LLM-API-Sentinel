@@ -1,11 +1,4 @@
 // next.config.mjs v2.4.0
-import createNextIntlPlugin from 'next-intl/plugin';
-
-const withNextIntl = createNextIntlPlugin({
-  // Specify the path to your i18n config file
-  i18nConfigPath: './app/i18n.ts'
-});
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -28,7 +21,11 @@ const nextConfig = {
   transpilePackages: ['motion'],
   experimental: {
     turbo: false
+  },
+  i18n: {
+    locales: ['en', 'zh-cn', 'zh-tw', 'es', 'ar', 'fr', 'pt-BR', 'de', 'ja', 'ko', 'ru', 'vi', 'tr', 'th', 'sv', 'nl', 'pl', 'it', 'id', 'hi', 'cs'],
+    defaultLocale: 'en',
   }
 };
 
-export default withNextIntl(nextConfig);
+export default nextConfig;
