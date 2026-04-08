@@ -1,9 +1,9 @@
 # 架构概览
 
-LLM API Sentinel 采用 Next.js 15 (App Router) 构建，结合自定义 Express 服务器进行后台监控。
+LLM API Sentinel 采用 Next.js 14 (App Router) 构建，结合自定义 Express 服务器进行后台监控。
 
 ## 技术栈
-- **框架**: Next.js 15
+- **框架**: Next.js 14
 - **服务器**: Express (用于后台任务)
 - **数据库**: Firebase Firestore
 - **身份验证**: Firebase Authentication

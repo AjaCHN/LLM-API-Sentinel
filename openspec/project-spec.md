@@ -18,7 +18,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 - **SEO 优化**：全面的元标签和 OpenGraph 支持
 
 ### 1.2 技术栈
-- **框架**：Next.js 15 (App Router)
+- **框架**：Next.js 14 (App Router)
 - **服务器**：Express (用于后台任务)
 - **数据库**：Firebase Firestore
 - **身份验证**：Firebase Authentication
@@ -99,18 +99,182 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 ## 4. 测试策略
 
 ### 4.1 测试类型
-- **单元测试**：测试单个函数和组件
-- **集成测试**：测试组件之间的交互
-- **端到端测试**：测试完整的用户流程
+- **单元测试**：测试单个函数和组件的功能
+- **集成测试**：测试组件之间的交互和数据流
+- **端到端测试**：测试完整的用户流程和系统功能
 
 ### 4.2 测试覆盖
 - 目标覆盖率：≥80%
 - 重点测试监控逻辑和数据处理
+- 关键功能必须有测试覆盖
 
 ### 4.3 测试工具
-- **Jest**：用于单元测试
+- **Jest**：用于单元测试和集成测试
 - **React Testing Library**：用于组件测试
 - **Playwright**：用于端到端测试
+
+### 4.4 具体测试用例
+
+#### 单元测试
+
+##### 1. 监控逻辑测试
+```typescript
+// tests/unit/monitoring.test.ts
+describe('Monitoring Logic', () => {
+  test('should detect API downtime', () => {
+    // 测试 API 宕机检测逻辑
+  });
+  
+  test('should detect high latency', () => {
+    // 测试高延迟检测逻辑
+  });
+  
+  test('should calculate average latency', () => {
+    // 测试平均延迟计算逻辑
+  });
+});
+```
+
+##### 2. 告警系统测试
+```typescript
+// tests/unit/alerts.test.ts
+describe('Alert System', () => {
+  test('should create alert for downtime', () => {
+    // 测试宕机告警创建逻辑
+  });
+  
+  test('should create alert for high latency', () => {
+    // 测试高延迟告警创建逻辑
+  });
+  
+  test('should resolve alert', () => {
+    // 测试告警解决逻辑
+  });
+});
+```
+
+##### 3. 组件测试
+```typescript
+// tests/unit/components/ApiStatusGrid.test.tsx
+describe('ApiStatusGrid', () => {
+  test('should render status cards correctly', () => {
+    // 测试状态网格渲染
+  });
+  
+  test('should display offline status correctly', () => {
+    // 测试离线状态显示
+  });
+});
+```
+
+#### 集成测试
+
+##### 1. 数据流测试
+```typescript
+// tests/integration/data-flow.test.ts
+describe('Data Flow', () => {
+  test('should fetch and display API statuses', () => {
+    // 测试从 Firestore 获取数据并显示
+  });
+  
+  test('should handle real-time updates', () => {
+    // 测试实时数据更新
+  });
+});
+```
+
+##### 2. 认证流程测试
+```typescript
+// tests/integration/auth.test.ts
+describe('Authentication', () => {
+  test('should restrict access to authenticated users', () => {
+    // 测试认证流程
+  });
+  
+  test('should allow admin actions for authorized users', () => {
+    // 测试管理员权限
+  });
+});
+```
+
+#### 端到端测试
+
+##### 1. 主页面测试
+```typescript
+// tests/e2e/homepage.test.ts
+describe('Homepage', () => {
+  test('should load and display API statuses', async ({ page }) => {
+    // 测试主页面加载和状态显示
+  });
+  
+  test('should toggle dark/light mode', async ({ page }) => {
+    // 测试主题切换
+  });
+  
+  test('should display alerts in dropdown', async ({ page }) => {
+    // 测试告警显示
+  });
+});
+```
+
+##### 2. 告警管理测试
+```typescript
+// tests/e2e/alerts.test.ts
+describe('Alert Management', () => {
+  test('should resolve alert as authenticated user', async ({ page }) => {
+    // 测试告警解决功能
+  });
+});
+```
+
+### 4.5 测试流程
+
+#### 1. 开发阶段
+- 编写功能代码的同时编写单元测试
+- 确保每个函数和组件都有相应的测试
+
+#### 2. 集成阶段
+- 运行集成测试，确保组件之间的交互正常
+- 验证数据流和状态管理
+
+#### 3. 部署前
+- 运行完整的端到端测试
+- 确保所有测试通过
+- 检查测试覆盖率
+
+### 4.6 测试配置
+
+#### Jest 配置
+```javascript
+// jest.config.js
+module.exports = {
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/app/$1',
+  },
+};
+```
+
+#### Playwright 配置
+```javascript
+// playwright.config.ts
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests/e2e',
+  webServer: {
+    command: 'npm run dev',
+    port: 3000,
+  },
+});
+```
+
+### 4.7 测试运行命令
+- `npm test`：运行所有测试
+- `npm run test:watch`：运行测试并监视文件变化
+- `npx playwright test`：运行端到端测试
+- `npx jest --coverage`：运行测试并生成覆盖率报告
 
 ## 5. 性能优化
 
@@ -146,14 +310,155 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 ## 7. 部署策略
 
 ### 7.1 环境配置
-- **开发环境**：本地开发服务器
-- **测试环境**：模拟生产环境
-- **生产环境**：正式部署环境
+
+#### 1. 开发环境
+- **配置**：本地开发服务器
+- **命令**：`npm run dev`
+- **端口**：3000
+- **环境变量**：`NODE_ENV=development`
+
+#### 2. 测试环境
+- **配置**：模拟生产环境
+- **命令**：`npm run build && npm start`
+- **端口**：3000
+- **环境变量**：`NODE_ENV=test`
+
+#### 3. 生产环境
+- **配置**：正式部署环境
+- **命令**：`npm run build && npm start`
+- **端口**：3000
+- **环境变量**：`NODE_ENV=production`
 
 ### 7.2 部署流程
-- 使用 CI/CD 自动化部署
-- 实现蓝绿部署策略
-- 配置监控和告警系统
+
+#### 1. 本地开发流程
+1. 克隆代码库：`git clone https://github.com/sutchan/LLM-API-Sentinel.git`
+2. 安装依赖：`npm install`
+3. 配置 Firebase 项目：
+   - 创建 Firebase 项目
+   - 启用 Firestore 和 Authentication
+   - 生成 `firebase-applet-config.json`
+4. 启动开发服务器：`npm run dev`
+
+#### 2. 测试环境部署
+1. 合并代码到 `develop` 分支
+2. 运行测试：`npm test`
+3. 构建项目：`npm run build`
+4. 部署到测试服务器
+
+#### 3. 生产环境部署
+1. 合并代码到 `main` 分支
+2. 运行完整测试：`npm test`
+3. 构建项目：`npm run build`
+4. 部署到生产服务器
+5. 验证部署：检查应用是否正常运行
+
+### 7.3 CI/CD 配置
+
+#### GitHub Actions 配置
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm install
+      - run: npm test
+      - run: npm run build
+      - name: Deploy to Vercel
+        if: github.ref == 'refs/heads/main'
+        run: |
+          npm install -g vercel
+          vercel --prod
+```
+
+### 7.4 蓝绿部署策略
+
+1. **部署蓝环境**：
+   - 部署新版本到蓝环境
+   - 验证蓝环境功能正常
+
+2. **切换流量**：
+   - 将流量从绿环境切换到蓝环境
+   - 监控系统运行状态
+
+3. **回滚策略**：
+   - 如果蓝环境出现问题，立即切回绿环境
+   - 分析问题并修复
+
+### 7.5 监控和告警系统
+
+#### 1. 应用监控
+- **性能监控**：使用 Vercel Analytics 或 New Relic
+- **错误监控**：使用 Sentry
+- **用户体验监控**：使用 Google Analytics
+
+#### 2. 系统监控
+- **服务器监控**：CPU、内存、磁盘使用情况
+- **网络监控**：网络流量、响应时间
+- **数据库监控**：Firestore 查询性能、数据使用情况
+
+#### 3. 告警配置
+- **邮件告警**：系统故障、性能异常
+- **Slack 通知**：部署完成、重要事件
+- **SMS 告警**：严重故障（可选）
+
+### 7.6 环境变量配置
+
+#### 开发环境
+```env
+# .env.local
+NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-auth-domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
+NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+```
+
+#### 生产环境
+```env
+# .env.production
+NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-auth-domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
+NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
+```
+
+### 7.7 部署注意事项
+
+1. **Firebase 配置**：
+   - 确保 Firestore 规则正确配置
+   - 启用必要的 Firebase 服务
+
+2. **安全性**：
+   - 保护环境变量
+   - 确保 API 密钥不被暴露
+   - 配置适当的 CORS 策略
+
+3. **性能优化**：
+   - 启用静态资源缓存
+   - 优化图片和静态文件
+   - 配置 CDN 加速
+
+4. **扩展性**：
+   - 考虑使用负载均衡
+   - 配置自动缩放策略
+   - 优化数据库查询
 
 ## 8. 国际化
 

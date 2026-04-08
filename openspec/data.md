@@ -16,6 +16,40 @@
 
 ### 实体详细定义
 
+#### ApiStatus 实体
+```typescript
+interface ApiStatus {
+  id: string;           // API 唯一标识符
+  name: string;         // API 名称
+  provider: string;     // 供应商名称
+  region: string;       // 区域（US/China）
+  status: 'online' | 'offline';  // 在线状态
+  latency: number;      // 响应延迟（毫秒）
+  lastChecked: any;     // 最后检查时间戳
+  error?: string;       // 错误信息（可选）
+  geoLocation?: {       // 地理位置信息（可选）
+    city: string;
+    country: string;
+    region: string;
+    latitude: number;
+    longitude: number;
+  };
+}
+```
+
+#### StatusHistory 实体
+```typescript
+interface StatusHistory {
+  id: string;           // 历史记录唯一 ID
+  apiId: string;        // API 唯一标识符
+  apiName: string;      // API 名称
+  timestamp: any;       // 记录时间戳
+  status: 'online' | 'offline';  // 在线状态
+  latency: number;      // 响应延迟（毫秒）
+  error?: string;       // 错误信息（可选）
+}
+```
+
 #### Alert 实体
 ```typescript
 interface Alert {

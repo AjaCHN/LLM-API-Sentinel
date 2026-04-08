@@ -1,15 +1,5 @@
 # Changelog
 
-## [2.0.1]
-### Added
-- **Security**: Hardened firestore.rules by restricting write access to admins only.
-- **Robustness**: Fixed build errors related to Firebase Admin imports and FieldValue usage.
-- **Versioning**: Synchronized version numbers across all files.
-
-## [2.0.0]
-### Added
-- **Internationalization (i18n)**: Implemented multi-language support (ar, cs, en, es, hi, id, it, nl, pl, sv, th, tr, ru, vi, zh-cn, zh-tw) using `next-intl`.
-
 ## [2.2.0]
 ### Added
 - **Autonomous Monitoring**: Implemented a server-side background task that performs API checks every 5 minutes without user intervention.
@@ -22,6 +12,12 @@
 - **Alerts UI**: Added a notification bell with dropdown and a global alert banner.
 - **Alert Management**: Authenticated users can resolve active alerts.
 
+## [2.0.1]
+### Added
+- **Security**: Hardened firestore.rules by restricting write access to admins only.
+- **Robustness**: Fixed build errors related to Firebase Admin imports and FieldValue usage.
+- **Versioning**: Synchronized version numbers across all files.
+
 ## [2.0.0]
 ### Added
 - **Global API Coverage**: Added major AI providers from China (Moonshot, Zhipu, Baichuan, Alibaba, Tencent, Baidu) and US (Meta/Groq, Mistral).
@@ -31,6 +27,7 @@
 - **SEO Optimization**: Added comprehensive meta tags and OpenGraph support.
 - **Semantic IDs**: Added unique IDs to all major containers for easier debugging.
 - **Documentation**: Created bilingual README files (EN/CN).
+- **Internationalization (i18n)**: Implemented multi-language support (ar, cs, en, es, hi, id, it, nl, pl, sv, th, tr, ru, vi, zh-cn, zh-tw) using `next-intl`.
 
 ### Changed
 - **Refactoring**: Moved core logic directories (`lib`, `hooks`, `components`) into the `app/` directory for better structure.
