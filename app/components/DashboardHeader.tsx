@@ -1,7 +1,7 @@
 // app/components/DashboardHeader.tsx v2.4.0
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import AlertsDropdown, { Alert } from './AlertsDropdown';
@@ -22,7 +22,7 @@ interface DashboardHeaderProps {
   resolveAlert: (id: string) => Promise<void>;
 }
 
-export default function DashboardHeader({ 
+function DashboardHeader({ 
   user, 
   alerts, 
   showAlerts, 
@@ -112,3 +112,5 @@ export default function DashboardHeader({
     </header>
   );
 }
+
+export default memo(DashboardHeader);

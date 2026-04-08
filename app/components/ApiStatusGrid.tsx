@@ -1,7 +1,7 @@
 // app/components/ApiStatusGrid.tsx v2.4.0
 'use client';
 
-import React from 'react';
+import React, { memo } from 'react';
 import { ShieldCheck, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '../lib/utils';
@@ -20,7 +20,7 @@ export interface ApiStatus {
   retries?: number;
 }
 
-export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
+function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
   const t = useTranslations();
 
   return (
@@ -70,3 +70,5 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
     </div>
   );
 }
+
+export default memo(ApiStatusGrid);

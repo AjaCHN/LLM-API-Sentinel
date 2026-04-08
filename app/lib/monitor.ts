@@ -20,6 +20,7 @@ export const APIS_TO_CHECK = [
 export const LATENCY_THRESHOLD = 1500;
 export const MAX_RETRIES = 2;
 export const RETRY_DELAY = 1000;
+export const CACHE_DURATION = 60000; // 1分钟缓存
 
 export interface ApiCheckResult {
   id: string;
@@ -32,6 +33,9 @@ export interface ApiCheckResult {
   error?: string;
   retries?: number;
 }
+
+// 缓存存储
+const cache: Map<string, { data: ApiCheckResult; timestamp: number }> = new Map();
 
 async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0): Promise<ApiCheckResult> {
   const start = Date.now();
@@ -54,20 +58,25 @@ async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0): Prom
       return checkApi(api, retries + 1);
     }
     
-    return {
+    const result: ApiCheckResult = {
       ...api,
       status: isOnline ? 'online' : 'offline',
       latency,
       lastChecked: new Date().toISOString(),
       retries,
     };
+    
+    // 缓存结果
+    cache.set(api.id, { data: result, timestamp: Date.now() });
+    
+    return result;
   } catch (error) {
     if (retries < MAX_RETRIES) {
       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       return checkApi(api, retries + 1);
     }
     
-    return {
+    const result: ApiCheckResult = {
       ...api,
       status: 'offline',
       latency: 0,
@@ -75,19 +84,48 @@ async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0): Prom
       error: error instanceof Error ? error.message : String(error),
       retries,
     };
+    
+    // 缓存结果
+    cache.set(api.id, { data: result, timestamp: Date.now() });
+    
+    return result;
   }
 }
 
-export async function performCheck() {
+export async function performCheck(forceRefresh: boolean = false) {
   // 限制并发请求数量，避免过多同时请求
   const MAX_CONCURRENT = 5;
   const results: ApiCheckResult[] = [];
   
   for (let i = 0; i < APIS_TO_CHECK.length; i += MAX_CONCURRENT) {
     const batch = APIS_TO_CHECK.slice(i, i + MAX_CONCURRENT);
-    const batchResults = await Promise.all(batch.map(api => checkApi(api)));
+    const batchResults = await Promise.all(batch.map(async (api) => {
+      // 检查缓存
+      if (!forceRefresh) {
+        const cached = cache.get(api.id);
+        if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+          return cached.data;
+        }
+      }
+      // 缓存过期或强制刷新，重新检查
+      return checkApi(api);
+    }));
     results.push(...batchResults);
   }
   
   return results;
+}
+
+// 获取缓存的结果（如果存在且未过期）
+export function getCachedResult(apiId: string): ApiCheckResult | null {
+  const cached = cache.get(apiId);
+  if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+    return cached.data;
+  }
+  return null;
+}
+
+// 清除所有缓存
+export function clearCache(): void {
+  cache.clear();
 }

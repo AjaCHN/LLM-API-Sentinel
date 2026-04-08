@@ -1,7 +1,7 @@
 // app/page.tsx v2.4.0
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
@@ -24,16 +24,18 @@ export default function Dashboard() {
     setMounted(true);
   }, []);
 
-  const chartData = history.reduce((acc: any[], curr) => {
-    const time = curr.time;
-    let existing = acc.find(a => a.time === time);
-    if (!existing) {
-      existing = { time };
-      acc.push(existing);
-    }
-    existing[curr.apiId] = curr.latency;
-    return acc;
-  }, []);
+  const chartData = React.useMemo(() => {
+    return history.reduce((acc: any[], curr) => {
+      const time = curr.time;
+      let existing = acc.find(a => a.time === time);
+      if (!existing) {
+        existing = { time };
+        acc.push(existing);
+      }
+      existing[curr.apiId] = curr.latency;
+      return acc;
+    }, []);
+  }, [history]);
 
   if (!mounted) return null;
 
