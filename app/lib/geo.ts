@@ -8,7 +8,7 @@ interface GeoInfo {
 
 export const getGeoInfo = async (): Promise<GeoInfo> => {
   // 检查是否在浏览器环境中
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
     // 检查本地存储是否有缓存的地理位置信息
     const cachedGeo = localStorage.getItem('geoInfo');
     if (cachedGeo) {
