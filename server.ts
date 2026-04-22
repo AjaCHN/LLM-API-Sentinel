@@ -1,4 +1,4 @@
-// server.ts v2.0.0
+// server.ts v2.1.0
 import express from 'express';
 import next from 'next';
 import { initializeApp, cert } from 'firebase-admin/app';
@@ -7,9 +7,15 @@ import { parse } from 'url';
 import { performCheck, LATENCY_THRESHOLD } from './app/lib/monitor';
 import fs from 'fs';
 
-// Read firebase config file
-const firebaseConfig = JSON.parse(fs.readFileSync('./firebase-applet-config.json', 'utf8'));
-console.log('Firebase Config:', firebaseConfig);
+// Read firebase config from environment variables or config file
+const firebaseConfig = process.env.FIREBASE_CONFIG ? 
+  JSON.parse(process.env.FIREBASE_CONFIG) : 
+  JSON.parse(fs.readFileSync('./firebase-applet-config.json', 'utf8'));
+
+// Don't log sensitive config in production
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Firebase Config initialized');
+}
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });

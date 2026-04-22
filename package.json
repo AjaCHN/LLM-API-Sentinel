@@ -1,6 +1,6 @@
 {
-  "name": "ai-studio-applet",
-  "version": "0.1.0",
+  "name": "llm-api-sentinel",
+  "version": "2.4.0",
   "type": "module",
   "private": true,
   "scripts": {

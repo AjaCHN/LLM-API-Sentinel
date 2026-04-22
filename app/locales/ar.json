@@ -2,35 +2,62 @@
   "title": "LLM API Sentinel",
   "description": "نظام مراقبة API ذاتي",
   "header": {
-    "title": "LLM Sentinel",
-    "subtitle": "نظام مراقبة API عالمي",
+    "title": "LLM API Sentinel",
+    "subtitle": "نظام مراقبة API العالمي للذكاء الاصطناعي v2.4.0",
     "signIn": "تسجيل الدخول",
     "signOut": "تسجيل الخروج",
-    "alerts": "تنبيهات"
+    "alerts": "تنبيهات",
+    "toggleTheme": "تبديل السمة"
   },
   "status": {
     "title": "الحالة الحالية",
     "sync": "مزامنة",
     "trigger": "تشغيل الفحص",
-    "checking": "جاري الفحص..."
+    "checking": "جاري الفحص...",
+    "runCheck": "تشغيل الفحص",
+    "lastSync": "آخر مزامنة"
   },
   "latency": {
-    "title": "تاريخ التأخير (ms)"
+    "title": "تاريخ التأخير",
+    "unit": "مللي ثانية",
+    "more": "أكثر"
   },
   "alerts": {
     "title": "تنبيه النظام",
-    "viewDetails": "عرض التفاصيل"
+    "viewDetails": "عرض التفاصيل",
+    "activeIssues": "مشكلة(ات) نشطة(ة)",
+    "noAlerts": "لا توجد تنبيهات"
   },
   "footer": {
-    "coverage": "تغطية عالمية",
-    "coverageDesc": "مراقبة مزودي AI الرئيسيين في الولايات المتحدة والصين.",
-    "ui": "واجهة متكيفة",
-    "uiDesc": "محسنة لجميع الأجهزة.",
-    "integrity": "سلامة البيانات",
-    "integrityDesc": "يتم حفظ البيانات التاريخية عبر Firebase."
+    "coverage": {
+      "title": "تغطية عالمية",
+      "desc": "مراقبة بوقت الحالي لواجهات برمجة التطبيقات LLM عبر مناطق متعددة حول العالم"
+    },
+    "ui": {
+      "title": "واجهة مستخدم عصرية",
+      "desc": "تصميم متجاوب مع دعم الوضع الداكن والتحريكات السلسة"
+    },
+    "integrity": {
+      "title": "نزاهة البيانات",
+      "desc": "جمع وتخزين بيانات آمن مع تكامل Firebase"
+    }
   },
   "statusLabels": {
     "online": "متصل",
-    "offline": "غير متصل"
+    "offline": "غير متصل",
+    "unknown": "مجهول"
+  },
+  "apiStatus": {
+    "latency": "التأخير",
+    "uptime": "وقت التشغيل",
+    "lastCheck": "آخر فحص",
+    "responseTime": "وقت الاستجابة"
+  },
+  "user": {
+    "guest": "ضيف",
+    "welcome": "مرحبا"
+  },
+  "location": {
+    "unknown": "موقع غير معروف"
   }
 }
