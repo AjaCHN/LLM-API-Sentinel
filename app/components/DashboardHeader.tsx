@@ -6,7 +6,6 @@ import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, X } from 'lucide-reac
 import { cn } from '../lib/utils';
 import AlertsDropdown, { Alert } from './AlertsDropdown';
 import { User } from 'firebase/auth';
-import { useTranslations } from 'next-intl';
 import LanguageSelector from './LanguageSelector';
 
 interface DashboardHeaderProps {
@@ -34,15 +33,14 @@ function DashboardHeader({
   logout, 
   resolveAlert 
 }: DashboardHeaderProps) {
-  const t = useTranslations();
   
   return (
     <header id="main-header" className="border-b border-border p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 bg-background/80 backdrop-blur-md z-50">
       <div id="brand-section" className="flex items-center gap-3">
         <Activity className="w-8 h-8 text-primary" />
         <div>
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase italic font-serif">{t('header.title')}</h1>
-          <p className="mono-label">{t('header.subtitle')}</p>
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase italic font-serif">LLM API Sentinel</h1>
+          <p className="mono-label">Global AI API Monitoring</p>
         </div>
       </div>
       
@@ -52,7 +50,7 @@ function DashboardHeader({
             <button 
               onClick={() => setShowAlerts(!showAlerts)}
               className="p-2 border border-border hover:bg-foreground hover:text-background transition-colors rounded-md relative"
-              title={t('header.alerts')}
+              title="Alerts"
             >
               <Bell className="w-5 h-5" />
               {alerts.length > 0 && (
@@ -70,7 +68,7 @@ function DashboardHeader({
           <button 
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             className="p-2 border border-border hover:bg-foreground hover:text-background transition-colors rounded-md"
-            title={t('header.toggleTheme')}
+            title="Toggle Theme"
           >
             {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
@@ -93,7 +91,7 @@ function DashboardHeader({
               <button 
                 onClick={logout}
                 className="p-2 border border-border hover:bg-destructive hover:text-destructive-foreground transition-colors rounded-md"
-                title={t('header.signOut')}
+                title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -104,7 +102,7 @@ function DashboardHeader({
               className="flex items-center gap-2 px-4 py-2 border border-border hover:bg-foreground hover:text-background transition-colors uppercase text-[10px] font-bold tracking-widest rounded-md"
             >
               <LogIn className="w-4 h-4" />
-              {t('header.signIn')}
+              Sign In
             </button>
           )}
         </div>

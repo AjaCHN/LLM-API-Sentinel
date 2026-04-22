@@ -4,7 +4,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { format } from 'date-fns';
-import { useTranslations } from 'next-intl';
 import { useDashboardData } from './hooks/useDashboardData';
 import DashboardHeader from './components/DashboardHeader';
 import ApiStatusGrid from './components/ApiStatusGrid';
@@ -18,7 +17,6 @@ export default function Dashboard() {
   const [showAlerts, setShowAlerts] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const t = useTranslations();
 
   useEffect(() => {
     setMounted(true);
@@ -60,20 +58,20 @@ export default function Dashboard() {
             <div className="flex items-center gap-3">
               <AlertTriangle className="w-5 h-5 text-rose-500" />
               <p className="text-xs font-bold text-rose-500 uppercase tracking-wider">
-                {t('alerts.title')}: {alerts.length} {t('alerts.activeIssues')}
+                Alerts: {alerts.length} active issues
               </p>
             </div>
-            <button onClick={() => setShowAlerts(true)} className="text-[10px] font-bold uppercase underline text-rose-500">{t('alerts.viewDetails')}</button>
+            <button onClick={() => setShowAlerts(true)} className="text-[10px] font-bold uppercase underline text-rose-500">View Details</button>
           </div>
         )}
 
         <section id="status-grid-section">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
-            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">{t('status.title')}</h2>
+            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">Status</h2>
             <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
               {lastUpdate && (
                 <span className="text-[10px] font-mono opacity-50">
-                  {t('status.lastSync')}: {format(lastUpdate, 'HH:mm:ss')}
+                  Last Sync: {format(lastUpdate, 'HH:mm:ss')}
                 </span>
               )}
               <button 
@@ -85,7 +83,7 @@ export default function Dashboard() {
                   !user && "opacity-30 cursor-not-allowed"
                 )}
               >
-                {isChecking ? t('status.checking') : t('status.runCheck')}
+                {isChecking ? "Checking..." : "Run Check"}
               </button>
             </div>
           </div>
@@ -94,7 +92,7 @@ export default function Dashboard() {
 
         <section id="history-chart-section" className="border border-border bg-card/50 p-4 md:p-6 rounded-lg">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4">
-            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">{t('latency.title')}</h2>
+            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">Latency</h2>
             <div id="chart-legend" className="flex flex-wrap gap-x-4 gap-y-2 max-w-full">
               {statuses.slice(0, 8).map(s => (
                 <div key={s.id} className="flex items-center gap-1.5">
@@ -102,7 +100,7 @@ export default function Dashboard() {
                   <span className="text-[9px] font-mono opacity-50 uppercase whitespace-nowrap">{s.name}</span>
                 </div>
               ))}
-              {statuses.length > 8 && <span className="text-[9px] font-mono opacity-30 uppercase">+{statuses.length - 8} {t('latency.more')}</span>}
+              {statuses.length > 8 && <span className="text-[9px] font-mono opacity-30 uppercase">+{statuses.length - 8} more</span>}
             </div>
           </div>
           <LatencyHistoryChart chartData={chartData} statuses={statuses} getApiColor={getApiColor} />

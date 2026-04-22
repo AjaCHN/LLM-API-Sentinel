@@ -3,7 +3,6 @@
 
 import React, { memo } from 'react';
 import { ShieldCheck, ShieldAlert, AlertTriangle } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 import { cn } from '../lib/utils';
 
 const LATENCY_THRESHOLD = 1500;
@@ -21,7 +20,6 @@ export interface ApiStatus {
 }
 
 function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
-  const t = useTranslations();
 
   // 按提供商分组
   const statusesByProvider = statuses.reduce((acc, api) => {

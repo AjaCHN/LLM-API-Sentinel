@@ -3,8 +3,6 @@
 
 import React, { useState } from 'react';
 import { Globe, ChevronDown, ChevronUp } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
 import { cn } from '../lib/utils';
 
 interface LanguageOption {
@@ -27,14 +25,12 @@ const languages: LanguageOption[] = [
 ];
 
 export default function LanguageSelector() {
-  const router = useRouter();
-  const currentLocale = useLocale();
   const [isOpen, setIsOpen] = useState(false);
+  const currentLocale = 'en'; // 硬编码为英文
 
   const handleLanguageChange = (langCode: string) => {
-    const currentPath = window.location.pathname;
-    const newPath = currentPath.startsWith('/') ? `/${langCode}${currentPath}` : `/${langCode}`;
-    router.push(newPath);
+    // 暂时禁用语言切换功能
+    console.log('Language change to:', langCode);
     setIsOpen(false);
   };
 
