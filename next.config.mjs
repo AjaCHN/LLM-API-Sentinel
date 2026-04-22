@@ -1,4 +1,4 @@
-// next.config.mjs v2.4.0
+// next.config.mjs v2.4.1
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -19,13 +19,6 @@ const nextConfig = {
   },
   output: 'standalone',
   transpilePackages: ['motion'],
-  experimental: {
-    turbo: false
-  },
-  i18n: {
-    locales: ['en', 'zh-cn', 'zh-tw', 'es', 'ar', 'fr', 'pt-BR', 'de', 'ja', 'ko', 'ru', 'vi', 'tr', 'th', 'sv', 'nl', 'pl', 'it', 'id', 'hi', 'cs'],
-    defaultLocale: 'en',
-  }
 };
 
 export default nextConfig;

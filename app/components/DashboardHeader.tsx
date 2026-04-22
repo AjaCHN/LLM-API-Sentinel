@@ -6,7 +6,6 @@ import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, X } from 'lucide-reac
 import { cn } from '../lib/utils';
 import AlertsDropdown, { Alert } from './AlertsDropdown';
 import { User } from 'firebase/auth';
-import LanguageSelector from './LanguageSelector';
 
 interface DashboardHeaderProps {
   user: User | null;
@@ -78,7 +77,6 @@ function DashboardHeader({
               <span className="text-[10px] font-mono uppercase tracking-tighter">{geo.city}, {geo.country}</span>
             </div>
           )}
-          <LanguageSelector />
         </div>
 
         <div className="flex items-center gap-3">
