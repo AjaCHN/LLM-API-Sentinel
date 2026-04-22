@@ -1,4 +1,4 @@
-// app/components/ApiStatusGrid.tsx v2.4.0
+// app/components/ApiStatusGrid.tsx v2.5.0
 'use client';
 
 import React, { memo } from 'react';
@@ -23,48 +23,74 @@ export interface ApiStatus {
 function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
   const t = useTranslations();
 
-  return (
-    <div id="api-cards-container" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {statuses.length > 0 ? statuses.map((api) => (
-        <div key={api.id} id={`api-card-${api.id}`} className="sentinel-card group cursor-default rounded-lg bg-card text-card-foreground">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <p className="mono-label">{api.provider}</p>
-              <h3 className="font-bold text-base md:text-lg leading-tight">{api.name}</h3>
-            </div>
-            {api.status === 'online' ? (
-              api.latency > LATENCY_THRESHOLD ? (
-                <AlertTriangle className="w-5 h-5 text-amber-500 animate-pulse" />
-              ) : (
-                <ShieldCheck className="w-5 h-5 text-emerald-500" />
-              )
-            ) : (
-              <ShieldAlert className="w-5 h-5 text-rose-500 animate-pulse" />
-            )}
-          </div>
+  // 按提供商分组
+  const statusesByProvider = statuses.reduce((acc, api) => {
+    if (!acc[api.provider]) {
+      acc[api.provider] = [];
+    }
+    acc[api.provider].push(api);
+    return acc;
+  }, {} as Record<string, ApiStatus[]>);
 
-          <div className="space-y-2">
-            <div className="flex justify-between items-center border-t border-border/10 pt-2">
-              <span className="text-[10px] font-mono opacity-50 uppercase">{t('status.title')}</span>
-              <span className={cn(
-                "text-[9px] font-bold uppercase px-1.5 py-0.5 rounded",
-                api.status === 'online' ? (api.latency > LATENCY_THRESHOLD ? "bg-amber-500/10 text-amber-500" : "bg-emerald-500/10 text-emerald-500") : "bg-rose-500/10 text-rose-500"
-              )}>
-                {api.status === 'online' && api.latency > LATENCY_THRESHOLD ? 'degraded' : api.status}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-[10px] font-mono opacity-50 uppercase">{t('apiStatus.latency')}</span>
-              <span className={cn(
-                "text-xs font-mono font-bold",
-                api.latency > LATENCY_THRESHOLD ? "text-amber-500" : ""
-              )}>{api.latency}ms</span>
+  // 获取所有提供商并排序
+  const providers = Object.keys(statusesByProvider).sort();
+
+  return (
+    <div id="api-cards-container">
+      {statuses.length > 0 ? (
+        providers.map(provider => (
+          <div key={provider} className="mb-8">
+            <h3 className="text-xs font-mono uppercase opacity-50 tracking-widest mb-4">{provider}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {statusesByProvider[provider].map((api) => (
+                <div key={api.id} id={`api-card-${api.id}`} className="sentinel-card group cursor-default rounded-lg bg-card text-card-foreground border border-border/30 transition-all hover:shadow-sm">
+                  <div className="p-4">
+                    <div className="flex justify-between items-start mb-4">
+                      <h4 className="font-bold text-base leading-tight">{api.name}</h4>
+                      <div className="flex items-center">
+                        {api.status === 'online' ? (
+                          api.latency > LATENCY_THRESHOLD ? (
+                            <div className="flex items-center gap-1">
+                              <AlertTriangle className="w-4 h-4 text-amber-500" />
+                              <span className="text-xs font-bold text-amber-500">Degraded</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1">
+                              <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                              <span className="text-xs font-bold text-emerald-500">Available</span>
+                            </div>
+                          )
+                        ) : (
+                          <div className="flex items-center gap-1">
+                            <ShieldAlert className="w-4 h-4 text-rose-500" />
+                            <span className="text-xs font-bold text-rose-500">Unavailable</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-mono opacity-50 uppercase">Latency</span>
+                        <span className={cn(
+                          "text-xs font-mono font-bold",
+                          api.latency > LATENCY_THRESHOLD ? "text-amber-500" : ""
+                        )}>{api.latency}ms</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-mono opacity-50 uppercase">Last Checked</span>
+                        <span className="text-xs font-mono">{new Date(api.lastChecked).toLocaleTimeString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      )) : (
-        <div className="col-span-full border border-dashed border-border/30 p-12 text-center rounded-lg">
-          <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest">{t('alerts.noAlerts')}</p>
+        ))
+      ) : (
+        <div className="border border-dashed border-border/30 p-12 text-center rounded-lg">
+          <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest">No API status data available</p>
         </div>
       )}
     </div>

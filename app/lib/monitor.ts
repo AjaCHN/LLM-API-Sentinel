@@ -1,4 +1,4 @@
-// app/lib/monitor.ts v2.1.0
+// app/lib/monitor.ts v2.5.0
 export const APIS_TO_CHECK = [
   // US APIs
   { id: 'openai-gpt-4o', name: 'GPT-4o', provider: 'OpenAI', url: 'https://api.openai.com/v1/models' },
@@ -6,6 +6,11 @@ export const APIS_TO_CHECK = [
   { id: 'google-gemini-1-5', name: 'Gemini 1.5', provider: 'Google', url: 'https://generativelanguage.googleapis.com/v1beta/models' },
   { id: 'meta-llama-3', name: 'Llama 3 (Groq)', provider: 'Meta', url: 'https://api.groq.com/openai/v1/models' },
   { id: 'mistral-large', name: 'Mistral Large', provider: 'Mistral', url: 'https://api.mistral.ai/v1/models' },
+  { id: 'cohere-command', name: 'Command R+', provider: 'Cohere', url: 'https://api.cohere.ai/v1/models' },
+  { id: 'perplexity-llama-3', name: 'Perplexity Llama 3', provider: 'Perplexity', url: 'https://api.perplexity.ai/v1/models' },
+  { id: 'ai21-jurassic-2', name: 'Jurassic-2', provider: 'AI21', url: 'https://api.ai21.com/studio/v1/models' },
+  { id: 'stability-stable-diffusion', name: 'Stable Diffusion', provider: 'Stability AI', url: 'https://api.stability.ai/v1/models' },
+  { id: 'runway-gen-2', name: 'Gen-2', provider: 'Runway ML', url: 'https://api.runwayml.com/v1/models' },
   
   // China APIs
   { id: 'moonshot-v1', name: 'Kimi (Moonshot)', provider: 'Moonshot', url: 'https://api.moonshot.cn/v1/models' },
