@@ -1,10 +1,10 @@
-// server.ts v2.1.0
+// server.ts v2.4.2
 import express from 'express';
 import next from 'next';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
-import { performCheck, LATENCY_THRESHOLD } from './app/lib/monitor';
+import { performCheck, LATENCY_THRESHOLD } from './app/lib/monitor.js';
 import fs from 'fs';
 
 // Read firebase config from environment variables or config file

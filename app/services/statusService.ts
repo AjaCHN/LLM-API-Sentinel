@@ -1,4 +1,4 @@
-// app/services/statusService.ts v1.0.0
+// app/services/statusService.ts v2.4.2
 
 import { collection, setDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';

@@ -1,4 +1,4 @@
-// app/components/ApiStatusGrid.tsx v2.5.0
+// app/components/ApiStatusGrid.tsx v2.4.2
 'use client';
 
 import React, { memo } from 'react';
@@ -20,7 +20,6 @@ export interface ApiStatus {
 }
 
 function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
-
   // 按提供商分组
   const statusesByProvider = statuses.reduce((acc, api) => {
     if (!acc[api.provider]) {
@@ -76,7 +75,7 @@ function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                         )}>{api.latency}ms</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-mono opacity-50 uppercase">Last Checked</span>
+                        <span className="text-[10px] font-mono opacity-50 uppercase">Last Check</span>
                         <span className="text-xs font-mono">{new Date(api.lastChecked).toLocaleTimeString()}</span>
                       </div>
                     </div>
@@ -88,7 +87,7 @@ function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
         ))
       ) : (
         <div className="border border-dashed border-border/30 p-12 text-center rounded-lg">
-          <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest">No API status data available</p>
+          <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest">No data available</p>
         </div>
       )}
     </div>

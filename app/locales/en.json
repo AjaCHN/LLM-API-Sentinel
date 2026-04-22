@@ -3,7 +3,7 @@
   "description": "Autonomous API Monitoring System",
   "header": {
     "title": "LLM API Sentinel",
-    "subtitle": "Global AI API Monitoring System v2.4.0",
+    "subtitle": "Global AI API Monitoring System v2.4.2",
     "signIn": "Sign In",
     "signOut": "Sign Out",
     "alerts": "Alerts",
@@ -15,18 +15,22 @@
     "trigger": "Trigger",
     "checking": "Checking...",
     "runCheck": "Run Check",
-    "lastSync": "Last Sync"
+    "lastSync": "Last Sync",
+    "noData": "No API status data available"
   },
   "latency": {
     "title": "Latency History",
     "unit": "ms",
-    "more": "more"
+    "more": "more",
+    "noData": "No latency history data available"
   },
   "alerts": {
     "title": "System Alert",
     "viewDetails": "View Details",
     "activeIssues": "active issue(s)",
-    "noAlerts": "No Alerts"
+    "noAlerts": "No Alerts",
+    "allOperational": "All systems operational",
+    "resolve": "Resolve"
   },
   "footer": {
     "coverage": {
@@ -59,5 +63,8 @@
   },
   "location": {
     "unknown": "Unknown Location"
+  },
+  "language": {
+    "select": "Change Language"
   }
 }

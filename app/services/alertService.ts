@@ -1,4 +1,4 @@
-// app/services/alertService.ts v1.0.0
+// app/services/alertService.ts v2.4.2
 
 import { collection, addDoc, serverTimestamp, where, query, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';

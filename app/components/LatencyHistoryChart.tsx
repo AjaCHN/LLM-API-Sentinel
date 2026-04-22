@@ -1,4 +1,4 @@
-// app/components/LatencyHistoryChart.tsx v2.5.0
+// app/components/LatencyHistoryChart.tsx v2.4.2
 'use client';
 
 import { memo } from 'react';
@@ -43,7 +43,7 @@ function LatencyHistoryChart({ chartData, statuses, getApiColor }: LatencyHistor
   if (optimizedChartData.length === 0) {
     return (
       <div id="chart-container" className="h-[250px] md:h-[350px] w-full flex items-center justify-center border border-dashed border-border/30 rounded-lg">
-        <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest">No latency history data available</p>
+        <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest">No data available</p>
       </div>
     );
   }

@@ -1,4 +1,4 @@
-// app/components/AlertsDropdown.tsx v2.4.0
+// app/components/AlertsDropdown.tsx v2.4.2
 'use client';
 
 import React from 'react';
@@ -21,7 +21,6 @@ export interface Alert {
 }
 
 export default function AlertsDropdown({ alerts, onClose, onResolve }: { alerts: Alert[], onClose: () => void, onResolve: (id: string) => void }) {
-
   // 根据严重程度获取颜色
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -89,7 +88,7 @@ export default function AlertsDropdown({ alerts, onClose, onResolve }: { alerts:
         )) : (
           <div className="p-8 text-center opacity-30">
             <CheckCircle2 className="w-8 h-8 mx-auto mb-2" />
-            <p className="text-[10px] uppercase font-mono">All systems operational</p>
+            <p className="text-[10px] uppercase font-mono">All Systems Operational</p>
           </div>
         )}
       </div>

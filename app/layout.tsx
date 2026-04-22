@@ -1,4 +1,4 @@
-// app/layout.tsx v2.5.0
+// app/layout.tsx v2.4.2
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import React from 'react';
@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'LLM API Sentinel v2.5.0 | Global AI API Monitoring',
+  title: 'LLM API Sentinel v2.4.2 | Global AI API Monitoring',
   description: 'Real-time monitoring and historical availability tracking for major LLM APIs including OpenAI, Anthropic, Gemini, Kimi, and more.',
   keywords: ['LLM', 'API Monitoring', 'AI Status', 'OpenAI', 'Gemini', 'Claude', 'Kimi', 'DeepSeek'],
   authors: [{ name: 'Sut' }],
@@ -36,7 +36,7 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;

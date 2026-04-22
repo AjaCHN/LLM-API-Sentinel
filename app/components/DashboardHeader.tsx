@@ -1,4 +1,4 @@
-// app/components/DashboardHeader.tsx v2.4.0
+// app/components/DashboardHeader.tsx v2.4.2
 'use client';
 
 import React, { memo } from 'react';
@@ -32,7 +32,6 @@ function DashboardHeader({
   logout, 
   resolveAlert 
 }: DashboardHeaderProps) {
-  
   return (
     <header id="main-header" className="border-b border-border p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 bg-background/80 backdrop-blur-md z-50">
       <div id="brand-section" className="flex items-center gap-3">

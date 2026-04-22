@@ -1,9 +1,10 @@
-// app/components/LanguageSelector.tsx v2.4.0
+// app/components/LanguageSelector.tsx v2.4.2
 'use client';
 
 import React, { useState } from 'react';
 import { Globe, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface LanguageOption {
   code: string;
@@ -27,6 +28,7 @@ const languages: LanguageOption[] = [
 export default function LanguageSelector() {
   const [isOpen, setIsOpen] = useState(false);
   const currentLocale = 'en'; // 硬编码为英文
+  const t = useTranslations();
 
   const handleLanguageChange = (langCode: string) => {
     // 暂时禁用语言切换功能
@@ -41,7 +43,7 @@ export default function LanguageSelector() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 border border-border hover:bg-foreground hover:text-background transition-colors rounded-md text-xs font-mono uppercase"
-        title="Change Language"
+        title={t('language.select')}
       >
         <Globe className="w-4 h-4" />
         <span>{currentLanguage.flag} {currentLanguage.name}</span>

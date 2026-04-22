@@ -1,5 +1,16 @@
 # Features Specification
 
+## 2.5.0
+- **Enhanced API Coverage**: Added Cohere, Perplexity, AI21, Stability AI, and Runway ML to the monitoring list.
+- **Improved Status Display**: Updated API status grid to group by provider and follow Google Cloud Status design principles.
+- **Empty State Handling**: Added friendly empty state messages for API status grid and latency history chart.
+- **Status Visualization**: Improved status indicators with text labels and better color coding.
+
+## 2.4.0
+- **Security Enhancements**: Added authorization to API health check endpoint.
+- **Firebase Configuration**: Improved Firebase config loading to support environment variables.
+- **Internationalization**: Completed translation files for Spanish and Arabic.
+
 ## 2.2.0
 - **Autonomous Monitoring**: Implemented a server-side background task that performs API checks every 5 minutes without user intervention.
 - **Custom Server**: Migrated to a custom Express server to support long-running background tasks.

@@ -1,4 +1,4 @@
-// app/lib/geo.ts v1.0.0
+// app/lib/geo.ts v2.4.2
 
 interface GeoInfo {
   city: string;

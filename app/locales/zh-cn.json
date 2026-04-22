@@ -1,9 +1,9 @@
 {
-  "title": "LLM API Sentinel",
+  "title": "LLM API 哨兵",
   "description": "自主 API 监控系统",
   "header": {
-    "title": "LLM API Sentinel",
-    "subtitle": "全球 AI API 监控系统 v2.4.0",
+    "title": "LLM API 哨兵",
+    "subtitle": "全球 AI API 监控系统 v2.4.2",
     "signIn": "登录",
     "signOut": "退出",
     "alerts": "告警",
@@ -12,21 +12,25 @@
   "status": {
     "title": "当前状态",
     "sync": "同步",
-    "trigger": "触发检测",
-    "checking": "检测中...",
-    "runCheck": "立即检测",
-    "lastSync": "上次同步"
+    "trigger": "触发",
+    "checking": "检查中...",
+    "runCheck": "运行检查",
+    "lastSync": "上次同步",
+    "noData": "暂无 API 状态数据"
   },
   "latency": {
     "title": "延迟历史",
     "unit": "毫秒",
-    "more": "更多"
+    "more": "更多",
+    "noData": "暂无延迟历史数据"
   },
   "alerts": {
     "title": "系统告警",
     "viewDetails": "查看详情",
     "activeIssues": "个活跃问题",
-    "noAlerts": "暂无告警"
+    "noAlerts": "无告警",
+    "allOperational": "所有系统运行正常",
+    "resolve": "解决"
   },
   "footer": {
     "coverage": {
@@ -34,12 +38,12 @@
       "desc": "实时监控全球多个地区的 LLM API"
     },
     "ui": {
-      "title": "现代 UI",
-      "desc": "响应式设计，支持暗黑模式和流畅动画"
+      "title": "现代界面",
+      "desc": "响应式设计，支持深色模式和流畅动画"
     },
     "integrity": {
       "title": "数据完整性",
-      "desc": "通过 Firebase 集成实现安全的数据收集和存储"
+      "desc": "安全的数据收集和存储，集成 Firebase"
     }
   },
   "statusLabels": {
@@ -50,7 +54,7 @@
   "apiStatus": {
     "latency": "延迟",
     "uptime": "可用率",
-    "lastCheck": "上次检测",
+    "lastCheck": "上次检查",
     "responseTime": "响应时间"
   },
   "user": {
@@ -59,5 +63,8 @@
   },
   "location": {
     "unknown": "未知位置"
+  },
+  "language": {
+    "select": "切换语言"
   }
 }

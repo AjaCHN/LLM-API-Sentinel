@@ -1,11 +1,11 @@
-// middleware.ts v2.4.0
-export default function middleware(request: Request) {
-  // 简单的中间件，不做任何国际化处理
-  return;
+// middleware.ts v2.4.2
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next|_vercel|favicon.ico).*)'
-  ]
+  matcher: ['/((?!api|_next|_vercel|favicon.ico).*)']
 };

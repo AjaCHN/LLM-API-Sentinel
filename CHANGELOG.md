@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.4.2]
+### Fixed
+- **Version Sync**: Unified all file version numbers to v2.4.2 for consistency.
+- **i18n Files**: Updated language files with correct version in subtitles.
+
 ## [2.4.1]
 ### Fixed
 - **Build Configuration**: Renamed `next.config.js` to `next.config.mjs` to fix ES module scope error in CI environment.
