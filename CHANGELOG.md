@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.4.0]
+### Added
+- **Security Enhancements**: Added authorization to API health check endpoint.
+- **Firebase Configuration**: Improved Firebase config loading to support environment variables.
+- **Internationalization**: Completed translation files for Spanish and Arabic.
+
+### Changed
+- **Version Sync**: Updated all file version numbers to v2.4.0.
+- **Documentation**: Updated README files with latest features and security information.
+
 ## [2.5.0]
 ### Added
 - **Enhanced API Coverage**: Added Cohere, Perplexity, AI21, Stability AI, and Runway ML to the monitoring list.
