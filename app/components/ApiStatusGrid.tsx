@@ -1,8 +1,9 @@
-// app/components/ApiStatusGrid.tsx v2.4.0
+// app/components/ApiStatusGrid.tsx v2.4.3
 'use client';
 
+import React from 'react';
 import { ShieldCheck, ShieldAlert, AlertTriangle } from 'lucide-react';
-import { cn } from '../lib/utils'; // Assuming utils exists, or I'll need to create it
+import { cn } from '../lib/utils';
 
 const LATENCY_THRESHOLD = 1500;
 

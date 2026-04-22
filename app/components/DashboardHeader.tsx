@@ -1,4 +1,4 @@
-// app/components/DashboardHeader.tsx v2.4.0
+// app/components/DashboardHeader.tsx v2.4.3
 'use client';
 
 import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, X } from 'lucide-react';
@@ -38,7 +38,7 @@ export default function DashboardHeader({
         <Activity className="w-8 h-8 text-primary" />
         <div>
           <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase italic font-serif">LLM API Sentinel</h1>
-          <p className="mono-label">Global AI API Monitoring v2.3.0</p>
+          <p className="mono-label">Global AI API Monitoring</p>
         </div>
       </div>
       

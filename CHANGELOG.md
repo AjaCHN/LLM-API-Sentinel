@@ -1,14 +1,22 @@
 # Changelog
 
-## [2.0.1]
-### Added
-- **Security**: Hardened firestore.rules by restricting write access to admins only.
-- **Robustness**: Fixed build errors related to Firebase Admin imports and FieldValue usage.
-- **Versioning**: Synchronized version numbers across all files.
+## [2.4.3]
+### Fixed
+- **Code Quality**: Comprehensive code review and bug fixes across all components.
+- **i18n Integrity**: Verified and corrected all internationalization language files for complete translation coverage.
+- **Spec Sync**: Synchronized all code functionality details to openspec documentation.
+- **Version Coherence**: Unified all file version numbers to v2.4.3 for consistency.
 
-## [2.0.0]
+## [2.4.1]
+### Fixed
+- **Build Configuration**: Renamed `next.config.js` to `next.config.mjs` to fix ES module scope error in CI environment.
+- **Deprecated Config**: Removed deprecated `i18n` and `experimental.turbo` settings from next.config.mjs.
+
+## [2.4.0]
 ### Added
-- **Internationalization (i18n)**: Implemented multi-language support (ar, cs, en, es, hi, id, it, nl, pl, sv, th, tr, ru, vi, zh-cn, zh-tw) using `next-intl`.
+- **Security Enhancements**: Added authorization to API health check endpoint.
+- **Firebase Configuration**: Improved Firebase config loading to support environment variables.
+- **Internationalization**: Completed translation files for Spanish and Arabic.
 
 ## [2.2.0]
 ### Added
@@ -22,8 +30,15 @@
 - **Alerts UI**: Added a notification bell with dropdown and a global alert banner.
 - **Alert Management**: Authenticated users can resolve active alerts.
 
+## [2.0.1]
+### Added
+- **Security**: Hardened firestore.rules by restricting write access to admins only.
+- **Robustness**: Fixed build errors related to Firebase Admin imports and FieldValue usage.
+- **Versioning**: Synchronized version numbers across all files.
+
 ## [2.0.0]
 ### Added
+- **Internationalization (i18n)**: Implemented multi-language support (ar, cs, en, es, hi, id, it, nl, pl, sv, th, tr, ru, vi, zh-cn, zh-tw) using `next-intl`.
 - **Global API Coverage**: Added major AI providers from China (Moonshot, Zhipu, Baichuan, Alibaba, Tencent, Baidu) and US (Meta/Groq, Mistral).
 - **Dark Mode**: Implemented full dark/light theme support with `next-themes`.
 - **Responsive Design**: Optimized layout for desktop, tablet, and mobile devices.

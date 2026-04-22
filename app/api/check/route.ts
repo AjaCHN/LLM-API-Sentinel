@@ -1,4 +1,4 @@
-// app/api/check/route.ts v2.2.0
+// app/api/check/route.ts v2.4.3
 import { NextResponse } from 'next/server';
 import { performCheck } from '../../lib/monitor';
 

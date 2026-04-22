@@ -1,4 +1,4 @@
-// app/lib/monitor.ts v2.1.0
+// app/lib/monitor.ts v2.4.3
 export const APIS_TO_CHECK = [
   // US APIs
   { id: 'openai-gpt-4o', name: 'GPT-4o', provider: 'OpenAI', url: 'https://api.openai.com/v1/models' },
