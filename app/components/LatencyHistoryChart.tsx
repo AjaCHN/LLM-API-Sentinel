@@ -1,4 +1,4 @@
-// app/components/LatencyHistoryChart.tsx v2.4.0
+// app/components/LatencyHistoryChart.tsx v2.5.0
 'use client';
 
 import { memo } from 'react';
@@ -38,6 +38,15 @@ interface LatencyHistoryChartProps {
 function LatencyHistoryChart({ chartData, statuses, getApiColor }: LatencyHistoryChartProps) {
   // 优化：限制显示的数据点数量，提高渲染性能
   const optimizedChartData = chartData.slice(-50); // 只显示最近50个数据点
+
+  // 处理空数据状态
+  if (optimizedChartData.length === 0) {
+    return (
+      <div id="chart-container" className="h-[250px] md:h-[350px] w-full flex items-center justify-center border border-dashed border-border/30 rounded-lg">
+        <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest">No latency history data available</p>
+      </div>
+    );
+  }
 
   return (
     <div id="chart-container" className="h-[250px] md:h-[350px] w-full">

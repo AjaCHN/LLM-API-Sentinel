@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.5.0]
+### Added
+- **Enhanced API Coverage**: Added Cohere, Perplexity, AI21, Stability AI, and Runway ML to the monitoring list.
+- **Improved Status Display**: Updated API status grid to group by provider and follow Google Cloud Status design principles.
+- **Empty State Handling**: Added friendly empty state messages for API status grid and latency history chart.
+
+### Changed
+- **Status Visualization**: Improved status indicators with text labels and better color coding.
+- **Version Sync**: Updated all component version numbers to v2.5.0.
+
 ## [2.2.0]
 ### Added
 - **Autonomous Monitoring**: Implemented a server-side background task that performs API checks every 5 minutes without user intervention.
