@@ -4,8 +4,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  output: 'standalone',
-  distDir: process.env.NEXT_DIST_DIR || process.env.USERPROFILE + '\\.next'
+  output: 'standalone'
 };
 
 export default nextConfig;

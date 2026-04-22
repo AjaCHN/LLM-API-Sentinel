@@ -4,14 +4,13 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --no-cache --directory \"%USERPROFILE%\\.next\"",
-    "build": "next build --output \"%USERPROFILE%\\.next\"",
+    "dev": "next dev",
+    "build": "next build",
     "start": "node server.ts",
     "lint": "eslint .",
     "clean": "next clean",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "install-global": "echo '请手动全局安装依赖: npm install -g next react react-dom typescript tailwindcss eslint'"
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@google/genai": "^1.17.0",
@@ -26,6 +25,7 @@
     "lucide-react": "^0.553.0",
     "motion": "^12.23.24",
     "next": "^14.2.13",
+    "next-intl": "^4.8.3",
     "next-themes": "^0.4.6",
     "postcss": "^8.5.6",
     "react": "^18.2.0",
