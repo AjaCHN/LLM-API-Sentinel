@@ -1,7 +1,7 @@
 // app/components/LatencyHistoryChart.tsx v2.4.3
 'use client';
 
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { 
   XAxis, 
   YAxis, 

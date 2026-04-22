@@ -1,8 +1,8 @@
 // app/components/DashboardHeader.tsx v2.4.3
 'use client';
 
-import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, X } from 'lucide-react';
-import { cn } from '../lib/utils';
+import React from 'react';
+import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin } from 'lucide-react';
 import AlertsDropdown, { Alert } from './AlertsDropdown';
 import { User } from 'firebase/auth';
 

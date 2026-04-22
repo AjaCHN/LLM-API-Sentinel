@@ -1,6 +1,7 @@
 // app/components/AlertsDropdown.tsx v2.4.3
 'use client';
 
+import React from 'react';
 import { AlertTriangle, X, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '../lib/utils';
