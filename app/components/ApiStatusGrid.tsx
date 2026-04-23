@@ -8,7 +8,6 @@ import { LATENCY_THRESHOLD } from '../constants';
 import { ApiStatus } from '../types';
 
 export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
-  // 按提供商分组
   const statusesByProvider = statuses.reduce((acc, api) => {
     if (!acc[api.provider]) {
       acc[api.provider] = [];
@@ -17,7 +16,6 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
     return acc;
   }, {} as Record<string, ApiStatus[]>);
   
-  // 获取所有提供商并排序
   const providers = Object.keys(statusesByProvider).sort();
 
   return (
@@ -28,11 +26,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
             <h2 className="text-lg font-semibold text-foreground">{provider}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {statusesByProvider[provider].map((api) => (
-                <div 
-                  key={api.id} 
-                  id={`api-card-${api.id}`} 
-                  className="sentinel-card group cursor-default rounded-lg bg-card text-card-foreground border border-border/20 hover:border-border/50 transition-all duration-200 shadow-sm hover:shadow-md"
-                >
+                <div key={api.id} id={`api-card-${api.id}`} className="sentinel-card group cursor-default rounded-lg bg-card text-card-foreground border border-border/20 hover:border-border/50 transition-all duration-200 shadow-sm hover:shadow-md">
                   <div className="p-4">
                     <div className="flex justify-between items-start mb-4">
                       <h3 className="font-bold text-base md:text-lg leading-tight">{api.name}</h3>
