@@ -4,7 +4,8 @@ import next from 'next';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
-import { performCheck, LATENCY_THRESHOLD } from './app/lib/monitor';
+import { performCheck } from './app/lib/monitor';
+import { LATENCY_THRESHOLD } from './app/constants';
 import firebaseConfig from './firebase-applet-config.json' assert { type: 'json' };
 console.log('Firebase Config:', firebaseConfig);
 
