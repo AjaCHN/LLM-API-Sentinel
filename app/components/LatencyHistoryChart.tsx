@@ -11,23 +11,8 @@ import {
   AreaChart,
   Area
 } from 'recharts';
-
-export interface ApiStatus {
-  id: string;
-  name: string;
-  provider: string;
-  url: string;
-  status: 'online' | 'offline';
-  latency: number;
-  lastChecked: string;
-  error?: string;
-  retries?: number;
-}
-
-export interface ChartDataPoint {
-  time: string;
-  [apiId: string]: number | string;
-}
+import { ApiStatus, ChartDataPoint } from '../types';
+import { CHART_DATA_LIMIT } from '../constants';
 
 interface LatencyHistoryChartProps {
   chartData: ChartDataPoint[];
@@ -37,7 +22,7 @@ interface LatencyHistoryChartProps {
 
 function LatencyHistoryChart({ chartData, statuses, getApiColor }: LatencyHistoryChartProps) {
   // 优化：限制显示的数据点数量，提高渲染性能
-  const optimizedChartData = chartData.slice(-50); // 只显示最近50个数据点
+  const optimizedChartData = chartData.slice(-CHART_DATA_LIMIT); // 只显示最近50个数据点
 
   return (
     <div id="chart-container" className="h-[250px] md:h-[350px] w-full">

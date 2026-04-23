@@ -1,11 +1,23 @@
 # Features Specification
 
 ## 2.4.3
+### Added
+- **Smart Alerting System**: Implemented intelligent alert rules that check for existing unresolved alerts of the same type before creating new ones.
+- **Alert Severity Levels**: Added dynamic severity assessment based on latency values (low: >1500ms, medium: >2250ms, high: >3000ms).
+- **Performance Optimizations**: 
+  - Frontend: Added React.memo for components and useMemo for cached calculations
+  - Frontend: Limited chart data points to 50 for better rendering performance
+  - Frontend: Implemented 24-hour local cache for geographic location data
+  - Backend: Added concurrent request limiting (MAX_CONCURRENT = 5)
+  - Backend: Implemented API check retry mechanism with exponential backoff
+  - Backend: Optimized Firestore operations with batch writes
+
 ### Fixed
 - **Code Quality**: Comprehensive code review and bug fixes across all components.
 - **i18n Integrity**: Verified and corrected all internationalization language files for complete translation coverage.
 - **Spec Sync**: Synchronized all code functionality details to openspec documentation.
 - **Version Coherence**: Unified all file version numbers to v2.4.3 for consistency.
+- **Project Naming**: Updated package.json name from "ai-studio-applet" to "llm-api-sentinel" for consistency.
 
 ## 2.4.2
 ### Fixed

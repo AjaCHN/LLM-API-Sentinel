@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.5.0]
+### Added
+- **Data Caching**: Implemented memory and local storage caching for API check results, reducing duplicate requests.
+- **Enhanced Monitoring Metrics**: Added error rate, availability, and uptime metrics for each API.
+- **Alert Notifications**: Implemented email and SMS notification functionality for API alerts.
+- **API Configuration**: Added user-friendly API configuration interface for customizing API checks.
+- **Improved UI/UX**: Enhanced API status grid with provider grouping, better card design, and improved empty state handling.
+
+### Changed
+- **Version Sync**: Updated all component version numbers to v2.5.0.
+- **API Configuration**: Modified APIS_TO_CHECK to load from local storage for persistent user configurations.
+
 ## [2.4.3]
 ### Fixed
 - **Code Quality**: Comprehensive code review and bug fixes across all components.

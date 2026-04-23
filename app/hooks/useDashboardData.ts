@@ -1,56 +1,35 @@
-// app/hooks/useDashboardData.ts v2.4.3
+// app/hooks/useDashboardData.ts v2.5.0
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useCallback } from 'react';
 import { collection, onSnapshot, query, orderBy, limit, setDoc, doc, addDoc, serverTimestamp, where, updateDoc, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
 import { db, auth, googleProvider } from '../lib/firebase';
 import { format } from 'date-fns';
-
-const LATENCY_THRESHOLD = 1500;
-
-interface ApiStatus {
-  id: string;
-  name: string;
-  provider: string;
-  url: string;
-  status: 'online' | 'offline';
-  latency: number;
-  lastChecked: string;
-  error?: string;
-  retries?: number;
-}
-
-interface StatusHistory {
-  apiId: string;
-  status: 'online' | 'offline';
-  latency: number;
-  timestamp: Date;
-  time: string;
-}
-
-interface Alert {
-  id: string;
-  apiId: string;
-  apiName: string;
-  type: 'downtime' | 'latency';
-  severity: 'low' | 'medium' | 'high';
-  message: string;
-  timestamp: any;
-  resolved: boolean;
-  error?: string;
-  retries?: number;
-  latency?: number;
-}
+import { useApiStore } from '../store';
+import { useAuthStore } from '../store/auth';
+import { LATENCY_THRESHOLD, CHECK_INTERVAL, GEO_INFO_EXPIRY } from '../constants';
+import { ApiStatus, StatusHistory, Alert } from '../types';
+import { logError, handleError } from '../lib/error';
+import { sendAlert } from '../lib/notification';
 
 export function useDashboardData() {
-  const [statuses, setStatuses] = useState<ApiStatus[]>([]);
-  const [history, setHistory] = useState<StatusHistory[]>([]);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [user, setUser] = useState<User | null>(null);
-  const [isChecking, setIsChecking] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
-  const [geo, setGeo] = useState<any | null>(null);
+  const {
+    statuses, 
+    history, 
+    alerts, 
+    isChecking, 
+    lastUpdate, 
+    geo,
+    setStatuses, 
+    setHistory, 
+    setAlerts, 
+    setIsChecking, 
+    setLastUpdate, 
+    setGeo
+  } = useApiStore();
+
+  const { user, setUser, setError } = useAuthStore();
 
   // 缓存地理位置信息，避免重复请求
   useEffect(() => {
@@ -60,7 +39,7 @@ export function useDashboardData() {
       try {
         setGeo(JSON.parse(cachedGeo));
       } catch (error) {
-        console.error('Failed to parse cached geo info:', error);
+        logError(error, 'Failed to parse cached geo info');
       }
     }
 
@@ -73,9 +52,12 @@ export function useDashboardData() {
           setGeo(geoData);
           // 缓存地理位置信息，有效期24小时
           localStorage.setItem('geoInfo', JSON.stringify(geoData));
-          localStorage.setItem('geoInfoExpiry', String(Date.now() + 24 * 60 * 60 * 1000));
+          localStorage.setItem('geoInfoExpiry', String(Date.now() + GEO_INFO_EXPIRY));
         })
-        .catch(() => setGeo({ city: 'Unknown', country: 'Global' }));
+        .catch(error => {
+          logError(error, 'Failed to fetch geo info');
+          setGeo({ city: 'Unknown', country: 'Global' });
+        });
     } else {
       // 检查缓存是否过期
       const expiry = localStorage.getItem('geoInfoExpiry');
@@ -84,7 +66,7 @@ export function useDashboardData() {
         localStorage.removeItem('geoInfoExpiry');
       }
     }
-  }, []);
+  }, [setGeo]);
 
   const runCheck = useCallback(async () => {
     if (!auth.currentUser) return;
@@ -117,7 +99,7 @@ export function useDashboardData() {
         // 只有当不存在相同类型的未解决告警时才创建新告警
         if (existingAlerts.length === 0) {
           if (result.status === 'offline') {
-            await addDoc(collection(db, 'alerts'), {
+            const alertData = {
               apiId: result.id,
               apiName: result.name,
               type: 'downtime',
@@ -127,6 +109,12 @@ export function useDashboardData() {
               resolved: false,
               error: result.error,
               retries: result.retries
+            };
+            const alertRef = await addDoc(collection(db, 'alerts'), alertData);
+            // 发送通知
+            await sendAlert({
+              id: alertRef.id,
+              ...alertData
             });
           } else if (result.latency > LATENCY_THRESHOLD) {
             // 根据延迟值设置不同的严重程度
@@ -139,7 +127,7 @@ export function useDashboardData() {
               severity = 'low';
             }
 
-            await addDoc(collection(db, 'alerts'), {
+            const alertData = {
               apiId: result.id,
               apiName: result.name,
               type: 'latency',
@@ -148,25 +136,36 @@ export function useDashboardData() {
               timestamp: serverTimestamp(),
               resolved: false,
               latency: result.latency
+            };
+            const alertRef = await addDoc(collection(db, 'alerts'), alertData);
+            // 发送通知
+            await sendAlert({
+              id: alertRef.id,
+              ...alertData
             });
           }
         }
       }
     } catch (error) {
-      console.error('Check failed:', error);
+      logError(error, 'Check failed');
+      setError(handleError(error));
     } finally {
       setIsChecking(false);
     }
-  }, []);
+  }, [setIsChecking, setError]);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (u) => setUser(u));
     
     const qStatus = query(collection(db, 'api_status'));
     const unsubscribeStatus = onSnapshot(qStatus, (snapshot) => {
-      const data = snapshot.docs.map(doc => doc.data() as ApiStatus);
-      setStatuses(data.sort((a, b) => a.name.localeCompare(b.name)));
-      setLastUpdate(new Date());
+      try {
+        const data = snapshot.docs.map(doc => doc.data() as ApiStatus);
+        setStatuses(data.sort((a, b) => a.name.localeCompare(b.name)));
+        setLastUpdate(new Date());
+      } catch (error) {
+        logError(error, 'Failed to update statuses');
+      }
     });
 
     const qHistory = query(
@@ -175,15 +174,19 @@ export function useDashboardData() {
       limit(100)
     );
     const unsubscribeHistory = onSnapshot(qHistory, (snapshot) => {
-      const data = snapshot.docs.map(doc => {
-        const d = doc.data();
-        return {
-          ...d,
-          time: d.timestamp ? format(d.timestamp.toDate(), 'HH:mm:ss') : '',
-          timestamp: d.timestamp?.toDate()
-        } as StatusHistory;
-      }).reverse();
-      setHistory(data);
+      try {
+        const data = snapshot.docs.map(doc => {
+          const d = doc.data();
+          return {
+            ...d,
+            time: d.timestamp ? format(d.timestamp.toDate(), 'HH:mm:ss') : '',
+            timestamp: d.timestamp?.toDate()
+          } as StatusHistory;
+        }).reverse();
+        setHistory(data);
+      } catch (error) {
+        logError(error, 'Failed to update history');
+      }
     });
 
     const qAlerts = query(
@@ -193,11 +196,15 @@ export function useDashboardData() {
       limit(10)
     );
     const unsubscribeAlerts = onSnapshot(qAlerts, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Alert));
-      setAlerts(data);
+      try {
+        const data = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Alert));
+        setAlerts(data);
+      } catch (error) {
+        logError(error, 'Failed to update alerts');
+      }
     });
 
     let interval: NodeJS.Timeout;
@@ -207,7 +214,7 @@ export function useDashboardData() {
       // 然后每5分钟执行一次
       interval = setInterval(() => {
         runCheck();
-      }, 5 * 60 * 1000);
+      }, CHECK_INTERVAL);
     }
 
     return () => {
@@ -217,23 +224,38 @@ export function useDashboardData() {
       unsubscribeAlerts();
       if (interval) clearInterval(interval);
     };
-  }, [user, runCheck]);
-
-  // 使用 useMemo 缓存计算结果
-  const sortedStatuses = useMemo(() => {
-    return statuses.sort((a, b) => a.name.localeCompare(b.name));
-  }, [statuses]);
+  }, [user, runCheck, setUser, setStatuses, setHistory, setAlerts, setLastUpdate]);
 
   const resolveAlert = async (id: string) => {
     if (!user) return;
-    await updateDoc(doc(db, 'alerts', id), { resolved: true });
+    try {
+      await updateDoc(doc(db, 'alerts', id), { resolved: true });
+    } catch (error) {
+      logError(error, 'Failed to resolve alert');
+      setError(handleError(error));
+    }
   };
 
-  const login = () => signInWithPopup(auth, googleProvider);
-  const logout = () => signOut(auth);
+  const login = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      logError(error, 'Login failed');
+      setError(handleError(error));
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      logError(error, 'Logout failed');
+      setError(handleError(error));
+    }
+  };
 
   return { 
-    statuses: sortedStatuses, 
+    statuses, 
     history, 
     alerts, 
     user, 

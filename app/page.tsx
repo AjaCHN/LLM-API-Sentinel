@@ -1,4 +1,4 @@
-// app/page.tsx v2.4.3
+// app/page.tsx v2.5.0
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,12 +9,15 @@ import DashboardHeader from './components/DashboardHeader';
 import ApiStatusGrid from './components/ApiStatusGrid';
 import LatencyHistoryChart from './components/LatencyHistoryChart';
 import DashboardFooter from './components/DashboardFooter';
+import ApiConfig from './components/ApiConfig';
 import { getApiColor, cn } from './lib/utils';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Settings } from 'lucide-react';
+import { Alert } from './types';
 
 export default function Dashboard() {
   const { statuses, history, alerts, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, login, logout } = useDashboardData();
   const [showAlerts, setShowAlerts] = useState(false);
+  const [showConfig, setShowConfig] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -73,6 +76,15 @@ export default function Dashboard() {
                 </span>
               )}
               <button 
+                onClick={() => setShowConfig(!showConfig)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 border border-border text-[10px] font-bold uppercase tracking-widest transition-all rounded-md hover:bg-foreground hover:text-background"
+                )}
+              >
+                <Settings className="w-3 h-3" />
+                Config
+              </button>
+              <button 
                 onClick={runCheck}
                 disabled={isChecking || !user}
                 className={cn(
@@ -85,6 +97,11 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
+          {showConfig && (
+            <div className="mb-6">
+              <ApiConfig />
+            </div>
+          )}
           <ApiStatusGrid statuses={statuses} />
         </section>
 

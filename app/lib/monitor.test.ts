@@ -1,5 +1,6 @@
 // app/lib/monitor.test.ts v2.4.3
-import { performCheck, APIS_TO_CHECK, LATENCY_THRESHOLD } from './monitor';
+import { performCheck } from './monitor';
+import { APIS_TO_CHECK, LATENCY_THRESHOLD } from '../constants';
 
 // Mock fetch API
 global.fetch = jest.fn();
@@ -18,7 +19,7 @@ describe('monitor', () => {
       });
 
       // Test only the first API to speed up the test
-      const originalAPIs = APIS_TO_CHECK;
+      const originalAPIs = [...APIS_TO_CHECK];
       (APIS_TO_CHECK as any) = [APIS_TO_CHECK[0]];
 
       const results = await performCheck();
@@ -37,7 +38,7 @@ describe('monitor', () => {
       (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
 
       // Test only the first API to speed up the test
-      const originalAPIs = APIS_TO_CHECK;
+      const originalAPIs = [...APIS_TO_CHECK];
       (APIS_TO_CHECK as any) = [APIS_TO_CHECK[0]];
 
       const results = await performCheck();
@@ -59,7 +60,7 @@ describe('monitor', () => {
       });
 
       // Test only the first API to speed up the test
-      const originalAPIs = APIS_TO_CHECK;
+      const originalAPIs = [...APIS_TO_CHECK];
       (APIS_TO_CHECK as any) = [APIS_TO_CHECK[0]];
 
       const results = await performCheck();

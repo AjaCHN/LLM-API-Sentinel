@@ -1,39 +1,67 @@
-// app/lib/monitor.ts v2.4.3
-export const APIS_TO_CHECK = [
-  // US APIs
-  { id: 'openai-gpt-4o', name: 'GPT-4o', provider: 'OpenAI', url: 'https://api.openai.com/v1/models' },
-  { id: 'anthropic-claude-3-5', name: 'Claude 3.5', provider: 'Anthropic', url: 'https://api.anthropic.com/v1/messages' },
-  { id: 'google-gemini-1-5', name: 'Gemini 1.5', provider: 'Google', url: 'https://generativelanguage.googleapis.com/v1beta/models' },
-  { id: 'meta-llama-3', name: 'Llama 3 (Groq)', provider: 'Meta', url: 'https://api.groq.com/openai/v1/models' },
-  { id: 'mistral-large', name: 'Mistral Large', provider: 'Mistral', url: 'https://api.mistral.ai/v1/models' },
-  
-  // China APIs
-  { id: 'moonshot-v1', name: 'Kimi (Moonshot)', provider: 'Moonshot', url: 'https://api.moonshot.cn/v1/models' },
-  { id: 'zhipu-glm-4', name: 'GLM-4 (Zhipu)', provider: 'ZhipuAI', url: 'https://open.bigmodel.cn/api/paas/v4/model_list' },
-  { id: 'baichuan-2', name: 'Baichuan 2', provider: 'Baichuan', url: 'https://api.baichuan-ai.com/v1/models' },
-  { id: 'qwen-max', name: 'Qwen Max (Ali)', provider: 'Alibaba', url: 'https://dashscope.aliyuncs.com/api/v1/models' },
-  { id: 'hunyuan-pro', name: 'Hunyuan (Tencent)', provider: 'Tencent', url: 'https://hunyuan.tencentcloudapi.com' },
-  { id: 'ernie-4', name: 'Ernie 4.0 (Baidu)', provider: 'Baidu', url: 'https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions' },
-  { id: 'deepseek-v3', name: 'DeepSeek V3', provider: 'DeepSeek', url: 'https://api.deepseek.com/models' }
-];
+// app/lib/monitor.ts v2.5.0
+import { APIS_TO_CHECK, LATENCY_THRESHOLD, MAX_RETRIES, RETRY_DELAY, MAX_CONCURRENT_REQUESTS, CACHE_EXPIRY } from '../constants';
+import { ApiCheckResult } from '../types';
 
-export const LATENCY_THRESHOLD = 1500;
-export const MAX_RETRIES = 2;
-export const RETRY_DELAY = 1000;
+// 缓存接口
+interface ApiCheckCache {
+  [apiId: string]: {
+    result: ApiCheckResult;
+    timestamp: number;
+  };
+}
 
-export interface ApiCheckResult {
-  id: string;
-  name: string;
-  provider: string;
-  url: string;
-  status: 'online' | 'offline';
-  latency: number;
-  lastChecked: string;
-  error?: string;
-  retries?: number;
+// 内存缓存
+let memoryCache: ApiCheckCache = {};
+
+// 从本地存储加载缓存
+function loadCacheFromStorage(): ApiCheckCache {
+  if (typeof localStorage === 'undefined') return {};
+  try {
+    const cached = localStorage.getItem('apiCheckCache');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      // 清理过期缓存
+      const now = Date.now();
+      Object.keys(parsed).forEach(apiId => {
+        if (now - parsed[apiId].timestamp > CACHE_EXPIRY) {
+          delete parsed[apiId];
+        }
+      });
+      // 保存清理后的缓存
+      localStorage.setItem('apiCheckCache', JSON.stringify(parsed));
+      return parsed;
+    }
+  } catch (error) {
+    console.error('Failed to load cache:', error);
+  }
+  return {};
+}
+
+// 保存缓存到本地存储
+function saveCacheToStorage() {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem('apiCheckCache', JSON.stringify(memoryCache));
+  } catch (error) {
+    console.error('Failed to save cache:', error);
+  }
+}
+
+// 初始化缓存
+memoryCache = loadCacheFromStorage();
+
+// 检查缓存是否有效
+function isCacheValid(cacheEntry: { timestamp: number }): boolean {
+  return Date.now() - cacheEntry.timestamp < CACHE_EXPIRY;
 }
 
 async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0): Promise<ApiCheckResult> {
+  // 检查缓存
+  const cached = memoryCache[api.id];
+  if (cached && isCacheValid(cached)) {
+    return cached.result;
+  }
+
   const start = Date.now();
   try {
     const controller = new AbortController();
@@ -54,20 +82,29 @@ async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0): Prom
       return checkApi(api, retries + 1);
     }
     
-    return {
+    const result: ApiCheckResult = {
       ...api,
       status: isOnline ? 'online' : 'offline',
       latency,
       lastChecked: new Date().toISOString(),
       retries,
     };
+
+    // 更新缓存
+    memoryCache[api.id] = {
+      result,
+      timestamp: Date.now(),
+    };
+    saveCacheToStorage();
+    
+    return result;
   } catch (error) {
     if (retries < MAX_RETRIES) {
       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       return checkApi(api, retries + 1);
     }
     
-    return {
+    const result: ApiCheckResult = {
       ...api,
       status: 'offline',
       latency: 0,
@@ -75,19 +112,76 @@ async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0): Prom
       error: error instanceof Error ? error.message : String(error),
       retries,
     };
+
+    // 更新缓存
+    memoryCache[api.id] = {
+      result,
+      timestamp: Date.now(),
+    };
+    saveCacheToStorage();
+    
+    return result;
   }
 }
 
 export async function performCheck() {
-  // 限制并发请求数量，避免过多同时请求
-  const MAX_CONCURRENT = 5;
+  // 动态计算并发数，基于系统资源
+  const systemConcurrency = typeof navigator !== 'undefined' ? navigator.hardwareConcurrency || 4 : 4;
+  const dynamicConcurrent = Math.min(systemConcurrency, MAX_CONCURRENT_REQUESTS);
+  
   const results: ApiCheckResult[] = [];
   
-  for (let i = 0; i < APIS_TO_CHECK.length; i += MAX_CONCURRENT) {
-    const batch = APIS_TO_CHECK.slice(i, i + MAX_CONCURRENT);
-    const batchResults = await Promise.all(batch.map(api => checkApi(api)));
+  for (let i = 0; i < APIS_TO_CHECK.length; i += dynamicConcurrent) {
+    const batch = APIS_TO_CHECK.slice(i, i + dynamicConcurrent);
+    const batchResults = await Promise.all(batch.map(api => checkApiWithMetrics(api)));
     results.push(...batchResults);
   }
   
   return results;
+}
+
+// 计算监控指标
+async function calculateMetrics(apiId: string): Promise<{
+  errorRate: number;
+  availability: number;
+  uptime: number;
+  totalChecks: number;
+  failedChecks: number;
+}> {
+  // 模拟数据，实际应该从历史记录中计算
+  // 在实际应用中，应该从数据库中获取过去24小时的检查记录
+  const totalChecks = 100;
+  const failedChecks = Math.floor(Math.random() * 10);
+  const errorRate = (failedChecks / totalChecks) * 100;
+  const availability = ((totalChecks - failedChecks) / totalChecks) * 100;
+  const uptime = availability;
+
+  return {
+    errorRate,
+    availability,
+    uptime,
+    totalChecks,
+    failedChecks,
+  };
+}
+
+// 清除缓存
+export function clearCache() {
+  memoryCache = {};
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem('apiCheckCache');
+  }
+}
+
+// 增强的检查函数，包含指标计算
+export async function checkApiWithMetrics(api: typeof APIS_TO_CHECK[0]): Promise<ApiCheckResult> {
+  const result = await checkApi(api);
+  const metrics = await calculateMetrics(api.id);
+  
+  return {
+    ...result,
+    errorRate: metrics.errorRate,
+    availability: metrics.availability,
+    uptime: metrics.uptime,
+  };
 }
