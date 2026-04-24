@@ -1,9 +1,9 @@
-// app/components/ApiStatusGrid.tsx v2.5.0
+// app/components/ApiStatusGrid_test.tsx v2.5.0
 'use client';
 
 import React from 'react';
 
-export default function ApiStatusGrid({ statuses }: { statuses: any[] }) {
+export default function ApiStatusGridTest({ statuses }: { statuses: any[] }) {
   return (
     <div>
       {statuses.map(api => (
