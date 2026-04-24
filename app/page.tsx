@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { format } from 'date-fns';
 import { useDashboardData } from './hooks/useDashboardData';
 import DashboardHeader from './components/DashboardHeader';
-import ApiStatusGrid from './components/ApiStatusGrid';
+import StatusGrid from './components/StatusGrid';
 import LatencyHistoryChart from './components/LatencyHistoryChart';
 import DashboardFooter from './components/DashboardFooter';
 import ApiConfig from './components/ApiConfig';
@@ -102,7 +102,7 @@ export default function Dashboard() {
               <ApiConfig />
             </div>
           )}
-          <ApiStatusGrid statuses={statuses} />
+          <StatusGrid statuses={statuses} />
         </section>
 
         <section id="history-chart-section" className="border border-border bg-card/50 p-4 md:p-6 rounded-lg">
