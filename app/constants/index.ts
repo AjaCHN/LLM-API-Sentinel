@@ -8,6 +8,11 @@ export const CHECK_INTERVAL = 5 * 60 * 1000;
 export const GEO_INFO_EXPIRY = 24 * 60 * 60 * 1000;
 export const CACHE_EXPIRY = 30 * 1000; // 30秒缓存
 
+// 缓存策略常量
+export const DEFAULT_CACHE_EXPIRY = 30 * 1000; // 默认缓存时间：30秒
+export const MIN_CACHE_EXPIRY = 5 * 1000; // 最小缓存时间：5秒
+export const MAX_CACHE_EXPIRY = 60 * 1000; // 最大缓存时间：1分钟
+
 // 默认 API 配置
 const DEFAULT_APIS = [
   // US APIs
