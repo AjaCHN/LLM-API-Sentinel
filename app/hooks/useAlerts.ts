@@ -27,7 +27,7 @@ export function useAlerts() {
         setAlerts(data);
       } catch (error) {
         logError(error, 'Failed to update alerts');
-        setError(handleError(error));
+        setError(handleError(error).message);
       }
     });
 
@@ -41,7 +41,7 @@ export function useAlerts() {
       await updateDoc(doc(db, 'alerts', id), { resolved: true });
     } catch (error) {
       logError(error, 'Failed to resolve alert');
-      setError(handleError(error));
+      setError(handleError(error).message);
     }
   };
 

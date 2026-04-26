@@ -1,4 +1,4 @@
-// app/lib/error.ts v2.5.0
+// app/lib/error.tsx v2.5.0
 import React from 'react';
 import { AppError } from '../types';
 

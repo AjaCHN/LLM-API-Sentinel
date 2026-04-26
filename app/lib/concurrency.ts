@@ -19,8 +19,8 @@ export class ConcurrencyManager<T> {
   private updateNetworkQuality(): void {
     // 这里可以实现基于网络状况的动态调整
     // 例如，使用 navigator.connection API 或基于请求响应时间
-    if (typeof navigator !== 'undefined' && navigator.connection) {
-      const connection = navigator.connection as any;
+    if (typeof navigator !== 'undefined' && (navigator as any).connection) {
+      const connection = (navigator as any).connection;
       const downlink = connection.downlink || 10;
       const rtt = connection.rtt || 100;
 

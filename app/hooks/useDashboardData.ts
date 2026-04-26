@@ -21,7 +21,7 @@ export function useDashboardData() {
   const { alerts, resolveAlert } = useAlerts();
   const { user, login, logout } = useAuth();
 
-  const { setStatuses, setHistory, setLastUpdate } = useApiStore();
+  const { setStatuses, setHistory, setLastUpdate, lastUpdate } = useApiStore();
 
   // 监听 API 状态变化
   useEffect(() => {

@@ -4,7 +4,7 @@ import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'fire
 import { db } from '../lib/firebase';
 import { useApiStore, useAuthStore } from '../store';
 import { LATENCY_THRESHOLD } from '../constants';
-import { ApiStatus } from '../types';
+import { ApiStatus, Alert } from '../types';
 import { logError, handleError } from '../lib/error';
 import { sendAlert } from '../lib/notification';
 
@@ -39,7 +39,7 @@ export function useApiMonitor() {
         // 只有当不存在相同类型的未解决告警时才创建新告警
         if (existingAlerts.length === 0) {
           if (result.status === 'offline') {
-            const alertData = {
+            const alertData: Omit<Alert, 'id'> = {
               apiId: result.id,
               apiName: result.name,
               type: 'downtime',
@@ -67,7 +67,7 @@ export function useApiMonitor() {
               severity = 'low';
             }
 
-            const alertData = {
+            const alertData: Omit<Alert, 'id'> = {
               apiId: result.id,
               apiName: result.name,
               type: 'latency',
@@ -88,7 +88,7 @@ export function useApiMonitor() {
       }
     } catch (error) {
       logError(error, 'Check failed');
-      setError(handleError(error));
+      setError(handleError(error).message);
     } finally {
       setIsChecking(false);
       setLastUpdate(new Date());

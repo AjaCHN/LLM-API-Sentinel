@@ -58,12 +58,12 @@ export const useErrorStore = create<ErrorStoreState>()((set) => ({
     notifications: [
       {
         id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-        type: 'error',
+        type: 'error' as const,
         message: error.message,
         timestamp: Date.now(),
         duration: 5000,
         dismissible: true,
-      },
+      } as Notification,
       ...state.notifications
     ].slice(0, 5)
   })),
@@ -71,12 +71,12 @@ export const useErrorStore = create<ErrorStoreState>()((set) => ({
     notifications: [
       {
         id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-        type: 'success',
+        type: 'success' as const,
         message,
         timestamp: Date.now(),
         duration: 3000,
         dismissible: true,
-      },
+      } as Notification,
       ...state.notifications
     ].slice(0, 5)
   })),
@@ -84,12 +84,12 @@ export const useErrorStore = create<ErrorStoreState>()((set) => ({
     notifications: [
       {
         id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-        type: 'warning',
+        type: 'warning' as const,
         message,
         timestamp: Date.now(),
         duration: 4000,
         dismissible: true,
-      },
+      } as Notification,
       ...state.notifications
     ].slice(0, 5)
   })),
@@ -97,12 +97,12 @@ export const useErrorStore = create<ErrorStoreState>()((set) => ({
     notifications: [
       {
         id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-        type: 'info',
+        type: 'info' as const,
         message,
         timestamp: Date.now(),
         duration: 3000,
         dismissible: true,
-      },
+      } as Notification,
       ...state.notifications
     ].slice(0, 5)
   })),

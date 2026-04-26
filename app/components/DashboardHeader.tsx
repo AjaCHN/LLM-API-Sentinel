@@ -3,7 +3,8 @@
 
 import React from 'react';
 import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin } from 'lucide-react';
-import AlertsDropdown, { Alert } from './AlertsDropdown';
+import AlertsDropdown from './AlertsDropdown';
+import { Alert } from '../types';
 import { User } from 'firebase/auth';
 
 interface DashboardHeaderProps {
@@ -59,7 +60,7 @@ export default function DashboardHeader({
             </button>
             
             {showAlerts && (
-              <AlertsDropdown alerts={alerts} onClose={() => setShowAlerts(false)} onResolve={resolveAlert} />
+              <AlertsDropdown alerts={alerts} show={showAlerts} onClose={() => setShowAlerts(false)} resolveAlert={resolveAlert} />
             )}
           </div>
 

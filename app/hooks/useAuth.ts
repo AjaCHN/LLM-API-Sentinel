@@ -18,7 +18,7 @@ export function useAuth() {
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
       logError(error, 'Login failed');
-      setError(handleError(error));
+      setError(handleError(error).message);
     }
   };
 
@@ -27,7 +27,7 @@ export function useAuth() {
       await signOut(auth);
     } catch (error) {
       logError(error, 'Logout failed');
-      setError(handleError(error));
+      setError(handleError(error).message);
     }
   };
 
