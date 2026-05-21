@@ -1,16 +1,19 @@
 {
   "name": "ai-studio-applet",
-  "version": "2.4.3",
+  "version": "2.5.0",
   "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node server.ts",
+    "start": "next start",
     "lint": "eslint .",
     "clean": "next clean",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "build:functions": "cd functions && npm run build",
+    "deploy:functions": "cd functions && npm run deploy",
+    "serve:functions": "cd functions && npm run serve"
   },
   "dependencies": {
     "@google/genai": "^1.17.0",

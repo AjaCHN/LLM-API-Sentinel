@@ -4,6 +4,7 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -14,6 +15,8 @@ const nextConfig = {
     ],
   },
   transpilePackages: ['motion'],
+  output: 'export',
+  trailingSlash: true,
 };
 
 export default nextConfig;
