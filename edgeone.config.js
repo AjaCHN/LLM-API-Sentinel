@@ -6,11 +6,6 @@ module.exports = {
       path: '/',
       destination: '/index.html',
     },
-    {
-      path: '/api/check',
-      type: 'rewrite',
-      destination: 'https://us-central1-gen-lang-client-0697781254.cloudfunctions.net/getApiStatus',
-    },
   ],
   headers: [
     {
