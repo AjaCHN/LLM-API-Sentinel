@@ -22,12 +22,6 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "/api/check",
-        "function": "getApiStatus"
-      }
     ]
   },
   "emulators": {

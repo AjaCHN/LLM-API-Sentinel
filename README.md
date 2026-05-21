@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.4.3
+# LLM API Sentinel v2.5.1
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -8,7 +8,7 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 - **Global Monitoring**: Tracks reachability and latency for AI providers in the US (OpenAI, Anthropic, Google, Meta, Mistral) and China (Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek).
 - **Historical Data**: Visualizes performance trends using interactive Area Charts.
 - **Adaptive UI**: Fully responsive design with Dark/Light mode support.
-- **Real-time Updates**: Powered by Firebase Firestore for instant status synchronization.
+- **Real-time Updates**: Powered by Firebase Firestore for instant status synchronization. No API routes required!
 - **Secure Access**: Manual health checks are protected by Google Authentication.
 - **Smart Alerts**: Automatic detection of API downtime and high latency with severity-based notifications.
 - **Autonomous Monitoring**: Background tasks perform API checks every 5 minutes without user intervention.
@@ -19,8 +19,8 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 - **Geographic Location**: Real-time detection of monitoring node location with 24-hour local caching.
 
 ## Tech Stack
-- **Framework**: Next.js 14.2.13 (App Router)
-- **Server**: Express 5.2.1 (for background tasks)
+- **Framework**: Next.js 14.2.13 (App Router, Static Export)
+- **Backend**: Firebase Cloud Functions (Serverless)
 - **Database**: Firebase Firestore
 - **Auth**: Firebase Authentication (Google OAuth)
 - **Styling**: Tailwind CSS 4.1.11
@@ -29,11 +29,35 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 - **Internationalization**: next-intl 4.8.3
 - **Time Processing**: date-fns 4.1.0
 
+## Architecture
+
+This project uses a **Static Frontend + Firebase Backend** architecture:
+
+```
+┌─────────────┐     ┌──────────────────┐     ┌──────────────┐
+│   Next.js   │────▶│  Firebase FS    │◀────│ Cloud Functions│
+│  (Static)   │     │  (Real-time)     │     │  (Monitor)     │
+└─────────────┘     └──────────────────┘     └──────────────┘
+```
+
+- **Frontend**: Static export to `out/` directory, deployable to any static hosting
+- **Real-time Data**: Firestore real-time listeners (no polling)
+- **Backend**: Firebase Cloud Functions for scheduled API checks
+
 ## Getting Started
 1. Configure your Firebase project in `firebase-applet-config.json`.
 2. Deploy Firestore rules using `firestore.rules`.
-3. Sign in with Google to trigger manual health checks.
-4. The system will automatically perform background checks every 5 minutes.
+3. Deploy Firebase Cloud Functions: `pnpm deploy:functions`
+4. Sign in with Google to view monitoring dashboard.
+5. The system will automatically perform background checks every 5 minutes.
+
+## Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions to:
+- **腾讯云 EdgeOne Pages**
+- **Vercel**
+- **Firebase Hosting**
+- **Firebase Cloud Functions**
 
 ## API Monitoring Configuration
 - **Latency Threshold**: 1500ms
