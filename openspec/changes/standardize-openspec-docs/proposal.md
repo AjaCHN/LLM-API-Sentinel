@@ -19,14 +19,17 @@
 
 ### 具体变更
 1. 重写 `features.md` 为中文
-2. 更新 `i18n.md` 移除过时信息
-3. 合并 `project.md` 和 `project-spec.md`
+2. 删除 `i18n.md`（已无国际化框架）
+3. 合并 `project.md` 和 `project-spec.md`，直接删除 `project-spec.md`
 4. 完善现有文档的准确性
 5. 更新 README.md 索引
-6. 保持文档简洁概要（每个文档 1-2 页）
+6. 整理 `.trae/rules/` 目录下的文档
+7. 保持文档简洁概要（每个文档 1-2 页）
 
 ### 范围
-仅涉及 `/workspace/openspec/` 目录下的文档文件，不修改任何生产代码。
+- `/workspace/openspec/` 目录
+- `/workspace/.trae/rules/` 目录
+- 不修改任何生产代码
 
 ## 理由
 

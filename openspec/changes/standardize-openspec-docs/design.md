@@ -13,10 +13,16 @@
 | logic.md | 逻辑与服务（扩展内容） |
 | features.md | 功能规格（重写为中文） |
 | project.md | 项目规范（合并 project.md 和 project-spec.md） |
-| i18n.md | 国际化（更新，移除已废弃信息） |
 
 ### 将删除的文件
-- project-spec.md（与 project.md 合并
+- project-spec.md（与 project.md 合并）
+- i18n.md（已无国际化框架）
+
+### .trae/rules/ 目录整理
+| 文件 | 目的 |
+|------|------|
+| project_rules.md | 项目规范（已有，需检查） |
+| git-commit-message.md | Git 提交规范（已有，需检查） |
 
 ## 内容指南
 
@@ -47,15 +53,15 @@
 - 整理版本历史为简洁的中文
 - 保持功能描述更准确
 
-### i18n.md
-- 移除 next-intl 相关说明（代码已移除国际化）
-- 更新为当前项目当前国际化现状
-- 保留语言文件位置和结构描述
-
 ### project.md
 - 合并 project-spec.md 的内容
 - 保留简洁概要的风格
 - 整合代码规范、开发流程等内容
+
+### .trae/rules/ 文档
+- 检查 project_rules.md 的语言一致性
+- 检查 git-commit-message.md 的语言一致性
+- 确保与 openspec 文档风格统一
 
 ### 其他文档
 - 统一语言为中文
