@@ -1,7 +1,9 @@
-// app/components/StatusGrid.tsx v2.5.0
+// app/components/StatusGrid.tsx v2.5.1
 'use client';
 
-export default function StatusGrid({ statuses }: { statuses: any[] }) {
+import { ApiStatus } from '../types';
+
+export default function StatusGrid({ statuses }: { statuses: ApiStatus[] }) {
   return (
     <div>
       {statuses.map(api => (

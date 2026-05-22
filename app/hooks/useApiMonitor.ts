@@ -1,7 +1,7 @@
 // app/hooks/useApiMonitor.ts v2.5.1
 // 改进：不依赖 API 路由，直接从 Firestore 获取最新状态
 import { useCallback } from 'react';
-import { collection, addDoc, serverTimestamp, query, where, getDocs, getDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useApiStore, useAuthStore } from '../store';
 import { LATENCY_THRESHOLD } from '../constants';

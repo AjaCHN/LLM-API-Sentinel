@@ -1,7 +1,7 @@
-// server.ts v2.4.3
+// server.ts v2.5.1
 import express from 'express';
 import next from 'next';
-import { initializeApp, cert } from 'firebase-admin/app';
+import { initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
 import { performCheck } from './app/lib/monitor';

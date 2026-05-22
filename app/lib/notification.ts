@@ -1,4 +1,4 @@
-// app/lib/notification.ts v2.5.0
+// app/lib/notification.ts v2.5.1
 import { Alert } from '../types';
 
 // 通知配置接口

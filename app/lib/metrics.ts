@@ -1,4 +1,4 @@
-// app/lib/metrics.ts v2.6.0
+// app/lib/metrics.ts v2.5.1
 import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 import { StatusHistory } from '../types';

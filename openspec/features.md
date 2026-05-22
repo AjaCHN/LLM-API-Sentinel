@@ -1,62 +1,83 @@
-# Features Specification
+# 功能规格文档
 
-## 2.4.3
-### Added
-- **Smart Alerting System**: Implemented intelligent alert rules that check for existing unresolved alerts of the same type before creating new ones.
-- **Alert Severity Levels**: Added dynamic severity assessment based on latency values (low: >1500ms, medium: >2250ms, high: >3000ms).
-- **Performance Optimizations**: 
-  - Frontend: Added React.memo for components and useMemo for cached calculations
-  - Frontend: Limited chart data points to 50 for better rendering performance
-  - Frontend: Implemented 24-hour local cache for geographic location data
-  - Backend: Added concurrent request limiting (MAX_CONCURRENT = 5)
-  - Backend: Implemented API check retry mechanism with exponential backoff
-  - Backend: Optimized Firestore operations with batch writes
+## v2.5.1
+### 新增功能
+- **Firestore 直接集成**：前端现在直接从 Firestore 读取 API 状态，不再依赖 API 路由
+- **增强监控钩子**：改进了 useApiMonitor 钩子，增加了智能告警检查功能
+- **缓存系统**：多层缓存（内存 + localStorage + sessionStorage），智能过期时间计算
 
-### Fixed
-- **Code Quality**: Comprehensive code review and bug fixes across all components.
-- **i18n Integrity**: Verified and corrected all internationalization language files for complete translation coverage.
-- **Spec Sync**: Synchronized all code functionality details to openspec documentation.
-- **Version Coherence**: Unified all file version numbers to v2.4.3 for consistency.
-- **Project Naming**: Updated package.json name from "ai-studio-applet" to "llm-api-sentinel" for consistency.
+### 修复
+- **文档清理**：从 README 文件中移除了国际化相关引用
+- **README 清理**：移除了 README.md 中的重复版本部分
+- **版本一致性**：将所有文件版本号统一为 v2.5.1
 
-## 2.4.2
-### Fixed
-- **Version Sync**: Unified all file version numbers to v2.4.2 for consistency.
-- **i18n Files**: Updated language files with correct version in subtitles.
+## v2.5.0
+### 新增功能
+- **数据缓存**：实现了内存和本地存储缓存 API 检查结果，减少重复请求
+- **增强监控指标**：添加了错误率、可用性和正常运行时间等指标
+- **告警通知**：实现了 API 告警的邮件和短信通知功能
+- **API 配置界面**：添加了用户友好的 API 配置界面，允许自定义 API 检查
+- **改进 UI/UX**：增强了 API 状态网格，增加了供应商分组、更好的卡片设计和空状态处理
 
-## 2.4.1
-### Fixed
-- **Build Configuration**: Renamed `next.config.js` to `next.config.mjs` to fix ES module scope error in CI environment.
-- **Deprecated Config**: Removed deprecated `i18n` and `experimental.turbo` settings from next.config.mjs.
+### 变更
+- **版本同步**：将所有组件版本号统一更新为 v2.5.0
+- **API 配置**：修改 APIS_TO_CHECK 从本地存储加载以支持持久化用户配置
 
-## 2.4.0
-### Added
-- **Security Enhancements**: Added authorization to API health check endpoint.
-- **Firebase Configuration**: Improved Firebase config loading to support environment variables.
-- **Internationalization**: Completed translation files for Spanish and Arabic.
+## v2.4.3
+### 修复
+- **代码质量**：全面审查和修复所有组件的问题
+- **国际化完整性**：验证并更正所有多语言翻译文件，确保完整的翻译覆盖
+- **文档同步**：将所有代码功能详情同步到 openspec 文档
+- **版本一致性**：将所有文件版本号统一为 v2.4.3 以保持一致性
+- **项目命名**：将 package.json 名称从 "ai-studio-applet" 更新为 "llm-api-sentinel"
 
-## 2.2.0
-### Added
-- **Autonomous Monitoring**: Implemented a server-side background task that performs API checks every 5 minutes without user intervention.
-- **Custom Server**: Migrated to a custom Express server to support long-running background tasks.
-- **Firebase Admin**: Integrated `firebase-admin` for secure server-side Firestore updates.
+## v2.4.1
+### 修复
+- **构建配置**：将 `next.config.js` 重命名为 `next.config.mjs`，以修复 CI 环境中的 ES 模块作用域错误
+- **废弃配置**：从 next.config.mjs 中移除了废弃的 `i18n` 和 `experimental.turbo` 设置
 
-## 2.1.0
-### Added
-- **Real-time Alerting**: Implemented a notification system for API downtime and high latency (>1500ms).
-- **Alerts UI**: Added a notification bell with dropdown and a global alert banner.
-- **Alert Management**: Authenticated users can resolve active alerts.
+## v2.4.0
+### 新增功能
+- **安全增强**：为 API 健康检查端点添加了授权
+- **Firebase 配置**：改进了 Firebase 配置加载以支持环境变量
+- **国际化**：完成了西班牙语和阿拉伯语的翻译文件
 
-## 2.0.1
-- **Security**: Hardened firestore.rules by restricting write access to admins only.
-- **Robustness**: Fixed build errors related to Firebase Admin imports and FieldValue usage.
-- **Versioning**: Synchronized version numbers across all files.
+## v2.2.0
+### 新增功能
+- **自主监控**：实现了服务器端后台任务，无需用户干预，每 5 分钟执行一次 API 检查
+- **自定义服务器**：迁移到自定义 Express 服务器以支持长时间运行的后台任务
+- **Firebase Admin**：集成了 `firebase-admin` 以实现安全的服务器端 Firestore 更新
 
-## 2.0.0
-- **Global API Coverage**: Added major AI providers from China (Moonshot, Zhipu, Baichuan, Alibaba, Tencent, Baidu) and US (Meta/Groq, Mistral).
-- **Dark Mode**: Implemented full dark/light theme support with `next-themes`.
-- **Responsive Design**: Optimized layout for desktop, tablet, and mobile devices.
-- **GEO Info**: Added real-time geographic location detection for the monitoring node.
-- **SEO Optimization**: Added comprehensive meta tags and OpenGraph support.
-- **Semantic IDs**: Added unique IDs to all major containers for easier debugging.
-- **Documentation**: Created bilingual README files (EN/CN).
+## v2.1.0
+### 新增功能
+- **实时告警**：实现了 API 宕机和高延迟（>1500ms）的通知系统
+- **告警 UI**：添加了带下拉菜单的通知铃铛和全局告警横幅
+- **告警管理**：已认证用户可以解决活跃告警
+
+## v2.0.1
+### 新增功能
+- **安全性**：通过仅允许管理员写入来加强 firestore.rules
+- **健壮性**：修复了与 Firebase Admin 导入和 FieldValue 使用相关的构建错误
+- **版本控制**：跨所有文件同步版本号
+
+## v2.0.0
+### 新增功能
+- **全球 API 覆盖**：添加了来自中国（Moonshot、Zhipu、Baichuan、Alibaba、Tencent、Baidu、DeepSeek）和美国（Meta/Groq、Mistral）的主要 AI 供应商
+- **深色模式**：使用 `next-themes` 实现了完整的深色/浅色主题支持
+- **响应式设计**：针对桌面、平板和移动设备优化了布局
+- **地理位置信息**：添加了监控节点的实时地理位置检测
+- **SEO 优化**：添加了全面的元标签和 OpenGraph 支持
+- **语义化 ID**：为所有主要容器添加了唯一 ID 以便于调试
+- **文档**：创建了双语 README 文件（英文/中文）
+
+### 变更
+- **重构**：将核心逻辑目录（`lib`、`hooks`、`components`）移动到 `app/` 目录下以获得更好的结构
+- **样式**：将页面特定样式提取到 `app/style.css`
+- **头部**：将所有代码文件头部标准化为单行格式
+
+## v1.0.0
+### 新增功能
+- LLM API Sentinel 初始版本
+- 对 OpenAI、Anthropic、Google 和 DeepSeek 的实时状态监控
+- 交互式面积图的历史延迟跟踪
+- 用于数据持久化的 Firebase 集成

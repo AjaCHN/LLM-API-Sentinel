@@ -1,4 +1,4 @@
-// app/store/api.ts v2.5.0
+// app/store/api.ts v2.5.1
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ApiStatus, StatusHistory } from '../types';

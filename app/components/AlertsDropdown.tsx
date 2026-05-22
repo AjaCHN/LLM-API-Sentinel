@@ -1,4 +1,4 @@
-// app/components/AlertsDropdown.tsx v2.4.3
+// app/components/AlertsDropdown.tsx v2.5.1
 'use client';
 
 import React from 'react';

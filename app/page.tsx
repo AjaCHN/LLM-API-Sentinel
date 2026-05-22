@@ -1,4 +1,4 @@
-// app/page.tsx v2.5.0
+// app/page.tsx v2.5.1
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,7 +12,7 @@ import DashboardFooter from './components/DashboardFooter';
 import ApiConfig from './components/ApiConfig';
 import { getApiColor, cn } from './lib/utils';
 import { AlertTriangle, Settings } from 'lucide-react';
-import { Alert } from './types';
+import { ChartDataPoint } from './types';
 
 export default function Dashboard() {
   const { statuses, history, alerts, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, login, logout } = useDashboardData();
@@ -25,8 +25,9 @@ export default function Dashboard() {
     setMounted(true);
   }, []);
 
-  const chartData = history.reduce((acc: any[], curr) => {
+  const chartData = history.reduce((acc: ChartDataPoint[], curr) => {
     const time = curr.time;
+    if (!time) return acc;
     let existing = acc.find(a => a.time === time);
     if (!existing) {
       existing = { time };

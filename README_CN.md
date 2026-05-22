@@ -12,7 +12,11 @@
 - **安全访问**: 手动健康检查受 Google 身份验证保护。
 - **智能告警**: 自动检测 API 宕机和延迟过高，根据严重程度发送通知。
 - **自主监控**: 后台任务每 5 分钟自动执行 API 检查，无需用户干预。
-- **国际化**: 支持 22 种语言，包括英语、中文、西班牙语、阿拉伯语、法语、德语、日语等。
+- **性能优化**:
+  - 前端: React.memo、useMemo 和限制图表数据点以提高性能
+  - 后端: 并发请求限制、API 检查重试机制和批量 Firestore 写入
+- **地理位置**: 实时检测监控节点位置，24 小时本地缓存。
+- **缓存系统**: 多层缓存（内存 + localStorage + sessionStorage），智能过期计算。
 
 ## 技术栈
 - **框架**: Next.js 14.2.13 (App Router, 静态导出)
@@ -22,6 +26,7 @@
 - **样式**: Tailwind CSS 4.1.11
 - **图表**: Recharts 3.8.0
 - **图标**: Lucide React
+- **时间处理**: date-fns 4.1.0
 
 ## 架构设计
 
@@ -53,3 +58,30 @@
 - **Vercel**
 - **Firebase Hosting**
 - **Firebase Cloud Functions**
+
+## API 监控配置
+- **延迟阈值**: 1500ms
+- **最大重试次数**: 2
+- **重试延迟**: 1000ms
+- **最大并发请求**: 5
+- **后台检查间隔**: 5 分钟
+
+## 支持的 API
+### 美国供应商
+- OpenAI GPT-4o
+- Anthropic Claude 3.5
+- Google Gemini 1.5
+- Meta Llama 3 (Groq)
+- Mistral Large
+
+### 中国供应商
+- Moonshot V1 (Kimi)
+- 智谱 GLM-4
+- 百川 2
+- Qwen Max (阿里巴巴)
+- 混元 (腾讯)
+- 文心 4.0 (百度)
+- 深度求索 V3
+
+## 许可证
+MIT

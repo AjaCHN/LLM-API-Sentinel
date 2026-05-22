@@ -144,7 +144,8 @@ export const scheduledMonitor = functions.pubsub
     }
   });
 
-export const getApiStatus = functions.https.onCall(async (data, context) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const getApiStatus = functions.https.onCall(async (_data, _context) => {
   const statusSnapshot = await db.collection('api_status').get();
   const results: ApiCheckResult[] = [];
   
@@ -155,7 +156,8 @@ export const getApiStatus = functions.https.onCall(async (data, context) => {
   return results;
 });
 
-export const manualCheck = functions.https.onCall(async (data, context) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const manualCheck = functions.https.onCall(async (_data, _context) => {
   console.log('[Cloud Functions] Manual check triggered');
   try {
     const results = await performCheck();
