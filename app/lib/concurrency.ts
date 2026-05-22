@@ -146,7 +146,7 @@ export class ConcurrencyManager<T> {
 }
 
 // 创建全局并发管理器实例
-export const concurrencyManager = new ConcurrencyManager();
+export const concurrencyManager = new ConcurrencyManager<unknown>();
 
 // 批量处理函数
 export async function processBatch<T, R>(
@@ -157,7 +157,7 @@ export async function processBatch<T, R>(
   const results: Promise<R>[] = [];
 
   for (const item of items) {
-    results.push(concurrencyManager.add(() => processor(item), options));
+    results.push(concurrencyManager.add(() => processor(item), options) as Promise<R>);
   }
 
   return Promise.all(results);

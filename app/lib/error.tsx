@@ -95,8 +95,9 @@ export function handleError(error: unknown): AppError {
     }
 
     // 处理 Firebase 错误
-    if ('code' in error && typeof (error as Record<string, unknown>).code === 'string' && (error as Record<string, unknown>).code.startsWith('auth/')) {
-      const code = (error as Record<string, unknown>).code as string;
+    const errorRecord = error as unknown as Record<string, unknown>;
+    if ('code' in errorRecord && typeof errorRecord.code === 'string' && errorRecord.code.startsWith('auth/')) {
+      const code = errorRecord.code;
       switch (code) {
         case 'auth/requires-recent-login':
           return createError(ErrorCode.AUTH_EXPIRED);

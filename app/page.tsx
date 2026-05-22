@@ -27,6 +27,7 @@ export default function Dashboard() {
 
   const chartData = history.reduce((acc: ChartDataPoint[], curr) => {
     const time = curr.time;
+    if (!time) return acc;
     let existing = acc.find(a => a.time === time);
     if (!existing) {
       existing = { time };
