@@ -1,4 +1,4 @@
-// app/lib/concurrency.ts v2.5.0
+// app/lib/concurrency.ts v2.5.1
 import { MAX_CONCURRENT_REQUESTS } from '../constants';
 import { RequestOptions, QueueItem, NetworkQuality } from '../types';
 
@@ -19,23 +19,25 @@ export class ConcurrencyManager<T> {
   private updateNetworkQuality(): void {
     // 这里可以实现基于网络状况的动态调整
     // 例如，使用 navigator.connection API 或基于请求响应时间
-    if (typeof navigator !== 'undefined' && (navigator as any).connection) {
-      const connection = (navigator as any).connection;
-      const downlink = connection.downlink || 10;
-      const rtt = connection.rtt || 100;
+    if (typeof navigator !== 'undefined' && 'connection' in navigator) {
+      const connection = (navigator as Navigator & { connection?: { downlink?: number; rtt?: number } }).connection;
+      if (connection) {
+        const downlink = connection.downlink || 10;
+        const rtt = connection.rtt || 100;
 
-      if (downlink >= 10 && rtt < 50) {
-        this.networkQuality = 'excellent';
-        this.concurrencyLimit = Math.min(8, MAX_CONCURRENT_REQUESTS * 2);
-      } else if (downlink >= 5 && rtt < 100) {
-        this.networkQuality = 'good';
-        this.concurrencyLimit = MAX_CONCURRENT_REQUESTS;
-      } else if (downlink >= 2 && rtt < 200) {
-        this.networkQuality = 'fair';
-        this.concurrencyLimit = Math.max(2, Math.floor(MAX_CONCURRENT_REQUESTS / 2));
-      } else {
-        this.networkQuality = 'poor';
-        this.concurrencyLimit = 1;
+        if (downlink >= 10 && rtt < 50) {
+          this.networkQuality = 'excellent';
+          this.concurrencyLimit = Math.min(8, MAX_CONCURRENT_REQUESTS * 2);
+        } else if (downlink >= 5 && rtt < 100) {
+          this.networkQuality = 'good';
+          this.concurrencyLimit = MAX_CONCURRENT_REQUESTS;
+        } else if (downlink >= 2 && rtt < 200) {
+          this.networkQuality = 'fair';
+          this.concurrencyLimit = Math.max(2, Math.floor(MAX_CONCURRENT_REQUESTS / 2));
+        } else {
+          this.networkQuality = 'poor';
+          this.concurrencyLimit = 1;
+        }
       }
     }
   }
@@ -147,16 +149,16 @@ export class ConcurrencyManager<T> {
 export const concurrencyManager = new ConcurrencyManager();
 
 // 批量处理函数
-export async function processBatch<T>(
+export async function processBatch<T, R>(
   items: T[],
-  processor: (item: T) => Promise<any>,
+  processor: (item: T) => Promise<R>,
   options: RequestOptions = {}
-): Promise<any[]> {
-  const results = [];
-  
+): Promise<R[]> {
+  const results: Promise<R>[] = [];
+
   for (const item of items) {
     results.push(concurrencyManager.add(() => processor(item), options));
   }
-  
+
   return Promise.all(results);
 }

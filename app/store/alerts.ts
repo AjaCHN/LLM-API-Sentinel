@@ -1,4 +1,4 @@
-// app/store/alerts.ts v2.5.0
+// app/store/alerts.ts v2.5.1
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Alert } from '../types';
@@ -42,7 +42,7 @@ export const useAlertStore = create<AlertStoreState>()(
     }),
     {
       name: 'alerts-storage',
-      partialize: (state) => ({
+      partialize: () => ({
         // 不持久化告警，因为它们应该从数据库获取
         alerts: []
       }),

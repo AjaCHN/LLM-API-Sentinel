@@ -1,8 +1,8 @@
-// app/hooks/useDashboardData.ts v2.5.0
+// app/hooks/useDashboardData.ts v2.5.1
 'use client';
 
-import { useEffect, useCallback } from 'react';
-import { collection, onSnapshot, query, orderBy, limit, setDoc, doc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useEffect } from 'react';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { format } from 'date-fns';
 import { useApiStore } from '../store';

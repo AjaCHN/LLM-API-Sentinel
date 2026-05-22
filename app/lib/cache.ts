@@ -1,5 +1,5 @@
-// app/lib/cache.ts v2.5.0
-import { CACHE_EXPIRY, DEFAULT_CACHE_EXPIRY, MIN_CACHE_EXPIRY, MAX_CACHE_EXPIRY } from '../constants';
+// app/lib/cache.ts v2.5.1
+import { DEFAULT_CACHE_EXPIRY, MIN_CACHE_EXPIRY, MAX_CACHE_EXPIRY } from '../constants';
 import { ApiCheckResult, ApiCheckCache } from '../types';
 
 // 内存缓存

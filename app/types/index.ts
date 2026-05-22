@@ -1,4 +1,4 @@
-// app/types/index.ts v2.5.0
+// app/types/index.ts v2.5.1
 // API 状态接口
 export interface ApiStatus {
   id: string;
@@ -35,7 +35,7 @@ export interface Alert {
   type: 'downtime' | 'latency' | 'error';
   severity: 'low' | 'medium' | 'high' | 'critical';
   message: string;
-  timestamp: Date | any;
+  timestamp: Date | unknown;
   resolved: boolean;
   error?: string;
   retries?: number;
@@ -51,9 +51,7 @@ export interface ChartDataPoint {
 }
 
 // API 检查结果接口
-export interface ApiCheckResult extends ApiStatus {
-  // 扩展 ApiStatus 接口
-}
+export type ApiCheckResult = ApiStatus;
 
 // API 指标接口
 export interface ApiMetrics {
@@ -102,7 +100,7 @@ export interface QueueItem<T> {
   fn: () => Promise<T>;
   options: RequestOptions;
   resolve: (value: T) => void;
-  reject: (error: any) => void;
+  reject: (error: unknown) => void;
   timestamp: number;
 }
 
@@ -141,7 +139,7 @@ export interface User {
 export interface AppError {
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
   timestamp: number;
 }
 

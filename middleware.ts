@@ -1,4 +1,4 @@
-// middleware.ts v2.4.3
+// middleware.ts v2.5.1
 import { NextResponse } from 'next/server';
 
 export function middleware() {

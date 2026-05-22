@@ -1,4 +1,4 @@
-// app/hooks/useAlerts.ts v2.5.0
+// app/hooks/useAlerts.ts v2.5.1
 import { useEffect } from 'react';
 import { collection, onSnapshot, query, where, orderBy, limit, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';

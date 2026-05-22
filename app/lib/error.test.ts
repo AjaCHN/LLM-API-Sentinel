@@ -1,4 +1,4 @@
-// app/lib/error.test.ts v2.4.3
+// app/lib/error.test.ts v2.5.1
 import { ApiError, FirebaseError, NetworkError, handleError, logError, isNetworkError, isApiError, isFirebaseError } from './error';
 
 // Mock console.error

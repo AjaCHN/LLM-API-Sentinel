@@ -1,6 +1,6 @@
 {
   "name": "llm-api-sentinel",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "type": "module",
   "private": true,
   "scripts": {
@@ -37,6 +37,7 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
     "@tailwindcss/postcss": "4.1.11",
     "@tailwindcss/typography": "^0.5.19",
     "@testing-library/jest-dom": "^6.9.1",

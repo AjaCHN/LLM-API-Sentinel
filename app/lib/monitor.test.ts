@@ -1,4 +1,4 @@
-// app/lib/monitor.test.ts v2.4.3
+// app/lib/monitor.test.ts v2.5.1
 import { performCheck } from './monitor';
 import { APIS_TO_CHECK, LATENCY_THRESHOLD } from '../constants';
 

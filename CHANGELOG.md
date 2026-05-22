@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.5.1]
+### Added
+- **Firestore Direct Integration**: Frontend now directly reads API status from Firestore, eliminating dependency on API routes.
+- **Enhanced Monitoring Hook**: useApiMonitor hook improved with intelligent alert checking.
+- **Caching System**: Multi-layer caching with intelligent expiry calculation.
+
+### Fixed
+- **Documentation**: Removed internationalization references from README files.
+- **README Cleanup**: Removed duplicate version sections from README.md.
+- **Version Consistency**: Unified all file version numbers to v2.5.1.
+
 ## [2.5.0]
 ### Added
 - **Data Caching**: Implemented memory and local storage caching for API check results, reducing duplicate requests.

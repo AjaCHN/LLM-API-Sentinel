@@ -1,4 +1,4 @@
-// app/components/DashboardHeader.tsx v2.4.3
+// app/components/DashboardHeader.tsx v2.5.1
 'use client';
 
 import React from 'react';
@@ -15,7 +15,7 @@ interface DashboardHeaderProps {
   theme: string | undefined;
   setTheme: (theme: string) => void;
   geo: { city: string; country: string; ip?: string } | null;
-  login: () => Promise<any>;
+  login: () => Promise<void>;
   logout: () => Promise<void>;
   resolveAlert: (id: string) => Promise<void>;
 }

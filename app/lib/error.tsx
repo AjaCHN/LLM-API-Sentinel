@@ -1,4 +1,4 @@
-// app/lib/error.tsx v2.5.0
+// app/lib/error.tsx v2.5.1
 import React from 'react';
 import { AppError } from '../types';
 
@@ -18,24 +18,24 @@ export enum ErrorCode {
   NETWORK_TIMEOUT = 'NETWORK_TIMEOUT',
   NETWORK_OFFLINE = 'NETWORK_OFFLINE',
   NETWORK_ERROR = 'NETWORK_ERROR',
-  
+
   // API 错误
   API_UNAVAILABLE = 'API_UNAVAILABLE',
   API_ERROR = 'API_ERROR',
   API_RATE_LIMITED = 'API_RATE_LIMITED',
-  
+
   // 认证错误
   AUTH_REQUIRED = 'AUTH_REQUIRED',
   AUTH_FAILED = 'AUTH_FAILED',
   AUTH_EXPIRED = 'AUTH_EXPIRED',
-  
+
   // Firebase 错误
   FIREBASE_ERROR = 'FIREBASE_ERROR',
   FIRESTORE_ERROR = 'FIRESTORE_ERROR',
-  
+
   // 验证错误
   VALIDATION_ERROR = 'VALIDATION_ERROR',
-  
+
   // 未知错误
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
@@ -46,24 +46,24 @@ const ERROR_MESSAGES: Record<ErrorCode, string> = {
   [ErrorCode.NETWORK_TIMEOUT]: '网络请求超时，请检查您的网络连接',
   [ErrorCode.NETWORK_OFFLINE]: '您当前处于离线状态，请检查网络连接',
   [ErrorCode.NETWORK_ERROR]: '网络连接错误，请稍后重试',
-  
+
   // API 错误
   [ErrorCode.API_UNAVAILABLE]: 'API 服务暂时不可用',
   [ErrorCode.API_ERROR]: 'API 请求失败',
   [ErrorCode.API_RATE_LIMITED]: 'API 请求过于频繁，请稍后重试',
-  
+
   // 认证错误
   [ErrorCode.AUTH_REQUIRED]: '请先登录',
   [ErrorCode.AUTH_FAILED]: '登录失败，请检查您的凭据',
   [ErrorCode.AUTH_EXPIRED]: '登录已过期，请重新登录',
-  
+
   // Firebase 错误
   [ErrorCode.FIREBASE_ERROR]: 'Firebase 服务错误',
   [ErrorCode.FIRESTORE_ERROR]: '数据库操作失败',
-  
+
   // 验证错误
   [ErrorCode.VALIDATION_ERROR]: '输入数据验证失败',
-  
+
   // 未知错误
   [ErrorCode.UNKNOWN_ERROR]: '发生未知错误，请稍后重试',
 };
@@ -72,7 +72,7 @@ const ERROR_MESSAGES: Record<ErrorCode, string> = {
 export function createError(
   code: ErrorCode,
   message?: string,
-  details?: any
+  details?: unknown
 ): AppError {
   return {
     code,
@@ -83,63 +83,59 @@ export function createError(
 }
 
 // 处理错误
-export function handleError(error: any): AppError {
+export function handleError(error: unknown): AppError {
   // 处理网络错误
-  if (error.name === 'AbortError') {
-    return createError(ErrorCode.NETWORK_TIMEOUT);
-  }
-  
-  if (error.message && error.message.includes('Network')) {
-    return createError(ErrorCode.NETWORK_ERROR, error.message);
-  }
-  
-  // 处理 Firebase 错误
-  if (error.code && error.code.startsWith('auth/')) {
-    switch (error.code) {
-      case 'auth/requires-recent-login':
-        return createError(ErrorCode.AUTH_EXPIRED);
-      case 'auth/user-not-found':
-      case 'auth/wrong-password':
-        return createError(ErrorCode.AUTH_FAILED);
-      default:
-        return createError(ErrorCode.AUTH_FAILED, error.message);
+  if (error instanceof Error) {
+    if (error.name === 'AbortError') {
+      return createError(ErrorCode.NETWORK_TIMEOUT);
     }
-  }
-  
-  // 处理 API 错误
-  if (error.response) {
-    const status = error.response.status;
-    if (status === 401) {
-      return createError(ErrorCode.AUTH_REQUIRED);
-    } else if (status === 429) {
-      return createError(ErrorCode.API_RATE_LIMITED);
-    } else if (status >= 500) {
-      return createError(ErrorCode.API_UNAVAILABLE);
-    } else {
-      return createError(ErrorCode.API_ERROR, error.message);
+
+    if (error.message && error.message.includes('Network')) {
+      return createError(ErrorCode.NETWORK_ERROR, error.message);
     }
+
+    // 处理 Firebase 错误
+    if ('code' in error && typeof (error as Record<string, unknown>).code === 'string' && (error as Record<string, unknown>).code.startsWith('auth/')) {
+      const code = (error as Record<string, unknown>).code as string;
+      switch (code) {
+        case 'auth/requires-recent-login':
+          return createError(ErrorCode.AUTH_EXPIRED);
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+          return createError(ErrorCode.AUTH_FAILED);
+        default:
+          return createError(ErrorCode.AUTH_FAILED, error.message);
+      }
+    }
+
+    // 处理其他错误
+    return createError(
+      ErrorCode.UNKNOWN_ERROR,
+      error.message || '发生未知错误',
+      error
+    );
   }
-  
+
   // 处理其他错误
   return createError(
     ErrorCode.UNKNOWN_ERROR,
-    error.message || '发生未知错误',
+    '发生未知错误',
     error
   );
 }
 
 // 记录错误
-export function logError(error: any, context: string): void {
+export function logError(error: unknown, context: string): void {
   const appError = handleError(error);
-  
+
   // 在开发环境中打印详细错误信息
   if (process.env.NODE_ENV === 'development') {
     console.error(`[${context}] Error:`, appError);
-    if (error.stack) {
+    if (error instanceof Error && error.stack) {
       console.error(error.stack);
     }
   }
-  
+
   // 在生产环境中可以发送错误到错误监控服务
   if (process.env.NODE_ENV === 'production') {
     // 这里可以集成错误监控服务，如 Sentry、LogRocket 等
@@ -157,12 +153,13 @@ export class ErrorBoundary extends React.Component<
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: any): { hasError: boolean; error: AppError } {
+  static getDerivedStateFromError(error: unknown): { hasError: boolean; error: AppError } {
     const appError = handleError(error);
     return { hasError: true, error: appError };
   }
 
-  componentDidCatch(error: any, errorInfo: React.ErrorInfo): void {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  componentDidCatch(error: unknown, _errorInfo: React.ErrorInfo): void {
     logError(error, 'ErrorBoundary');
   }
 

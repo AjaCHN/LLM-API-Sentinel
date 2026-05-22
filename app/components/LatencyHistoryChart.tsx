@@ -1,4 +1,4 @@
-// app/components/LatencyHistoryChart.tsx v2.4.3
+// app/components/LatencyHistoryChart.tsx v2.5.1
 'use client';
 
 import React, { memo } from 'react';

@@ -1,4 +1,4 @@
-// app/types.ts v2.5.0
+// app/types.ts v2.5.1
 
 // API 状态类型
 export interface ApiStatus {
@@ -29,7 +29,7 @@ export interface Alert {
   type: 'downtime' | 'latency';
   severity: 'low' | 'medium' | 'high';
   message: string;
-  timestamp: any;
+  timestamp: Date | unknown;
   resolved: boolean;
   error?: string;
   retries?: number;
@@ -85,7 +85,7 @@ export interface RequestOptions {
   timeout?: number;
   retries?: number;
   retryDelay?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // 队列项类型
@@ -93,7 +93,7 @@ export interface QueueItem<T> {
   fn: () => Promise<T>;
   options: RequestOptions;
   resolve: (value: T) => void;
-  reject: (reason: any) => void;
+  reject: (reason: unknown) => void;
   timestamp: number;
 }
 
@@ -109,7 +109,7 @@ export interface ConcurrencyStatus {
 export interface AppError {
   code: string;
   message: string;
-  details?: any;
+  details?: unknown;
   timestamp: number;
 }
 

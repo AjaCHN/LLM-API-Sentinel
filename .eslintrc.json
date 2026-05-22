@@ -1,0 +1,11 @@
+{
+  "ignorePatterns": ["node_modules/", "out/", ".next/", "jest.setup.cjs"],
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "**/*_test.ts", "**/*_test.tsx"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    }
+  ]
+}
