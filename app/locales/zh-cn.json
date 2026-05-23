@@ -1,0 +1,58 @@
+{
+  "errors": {
+    "networkTimeout": "网络请求超时，请检查您的网络连接",
+    "networkOffline": "您当前处于离线状态，请检查网络连接",
+    "networkError": "网络连接错误，请稍后重试",
+    "apiUnavailable": "API 服务暂时不可用",
+    "apiError": "API 请求失败",
+    "apiRateLimited": "API 请求过于频繁，请稍后重试",
+    "authRequired": "请先登录",
+    "authFailed": "登录失败，请检查您的凭据",
+    "authExpired": "登录已过期，请重新登录",
+    "firebaseError": "Firebase 服务错误",
+    "firestoreError": "数据库操作失败",
+    "validationError": "输入数据验证失败",
+    "unknownError": "发生未知错误，请稍后重试",
+    "errorOccurred": "发生错误",
+    "refreshPage": "刷新页面"
+  },
+  "alerts": {
+    "activeAlerts": "活动告警",
+    "noActiveAlerts": "暂无活动告警",
+    "resolve": "解决",
+    "error": "错误",
+    "latency": "延迟"
+  },
+  "api": {
+    "online": "在线",
+    "offline": "离线",
+    "latency": "延迟",
+    "errorRate": "错误率",
+    "availability": "可用性",
+    "lastChecked": "最后检查",
+    "retries": "重试",
+    "noApiConfigured": "未配置 API 端点",
+    "addApiHint": "添加 API 端点以监控其状态和性能"
+  },
+  "dashboard": {
+    "globalAIApiMonitoring": "全球 AI API 监控",
+    "monitoringFrom": "监控来源",
+    "refresh": "刷新",
+    "checkNow": "立即检查",
+    "checking": "检查中..."
+  },
+  "history": {
+    "performanceHistory": "性能历史",
+    "noHistory": "暂无历史数据"
+  },
+  "config": {
+    "apiConfiguration": "API 配置",
+    "addApi": "添加 API",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "name": "名称",
+    "provider": "提供商",
+    "url": "地址"
+  }
+}

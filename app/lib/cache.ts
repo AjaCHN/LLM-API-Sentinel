@@ -2,10 +2,28 @@
 import { DEFAULT_CACHE_EXPIRY, MIN_CACHE_EXPIRY, MAX_CACHE_EXPIRY } from '../constants';
 import { ApiCheckResult, ApiCheckCache } from '../types';
 
-// 内存缓存
 let memoryCache: ApiCheckCache = {};
 
-// 从本地存储加载缓存
+function isValidCacheEntry(entry: unknown): entry is { result: ApiCheckResult; timestamp: number; expiry: number } {
+  if (!entry || typeof entry !== 'object') return false;
+  const obj = entry as Record<string, unknown>;
+  if (!obj.result || typeof obj.result !== 'object') return false;
+  if (typeof obj.timestamp !== 'number') return false;
+  if (typeof obj.expiry !== 'number') return false;
+  return true;
+}
+
+function isValidCache(data: unknown): data is ApiCheckCache {
+  if (!data || typeof data !== 'object') return false;
+  const cache = data as Record<string, unknown>;
+  for (const key of Object.keys(cache)) {
+    if (!isValidCacheEntry(cache[key])) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export function loadCacheFromStorage(): ApiCheckCache {
   const cache: ApiCheckCache = {};
   
@@ -15,26 +33,33 @@ export function loadCacheFromStorage(): ApiCheckCache {
       const cached = localStorage.getItem('apiCheckCache');
       if (cached) {
         const parsed = JSON.parse(cached);
+        if (!isValidCache(parsed)) {
+          localStorage.removeItem('apiCheckCache');
+          return cache;
+        }
         const now = Date.now();
         Object.keys(parsed).forEach(apiId => {
           if (now - parsed[apiId].timestamp < parsed[apiId].expiry) {
             cache[apiId] = parsed[apiId];
           }
         });
-        // 保存清理后的缓存
         localStorage.setItem('apiCheckCache', JSON.stringify(cache));
       }
     } catch (error) {
       console.error('Failed to load cache from localStorage:', error);
+      localStorage.removeItem('apiCheckCache');
     }
   }
   
-  // 从会话存储加载（临时数据）
   if (typeof sessionStorage !== 'undefined') {
     try {
       const cached = sessionStorage.getItem('apiCheckCache');
       if (cached) {
         const parsed = JSON.parse(cached);
+        if (!isValidCache(parsed)) {
+          sessionStorage.removeItem('apiCheckCache');
+          return cache;
+        }
         const now = Date.now();
         Object.keys(parsed).forEach(apiId => {
           if (!cache[apiId] && now - parsed[apiId].timestamp < parsed[apiId].expiry) {
@@ -44,6 +69,7 @@ export function loadCacheFromStorage(): ApiCheckCache {
       }
     } catch (error) {
       console.error('Failed to load cache from sessionStorage:', error);
+      sessionStorage.removeItem('apiCheckCache');
     }
   }
   
@@ -86,20 +112,15 @@ export function calculateCacheExpiry(apiId: string, status: string, latency: num
   
   // 根据状态调整
   if (status === 'offline') {
-    // 离线状态缓存时间较短
     baseExpiry = MIN_CACHE_EXPIRY;
   } else if (status === 'online') {
-    // 根据延迟调整
     if (latency < 100) {
-      // 响应快的 API 可以缓存更长时间
       baseExpiry = Math.min(MAX_CACHE_EXPIRY, baseExpiry * 2);
     } else if (latency > 1000) {
-      // 响应慢的 API 缓存时间较短
       baseExpiry = Math.max(MIN_CACHE_EXPIRY, baseExpiry / 2);
     }
   }
   
-  // 根据 API ID 调整（可以为特定 API 设置不同的缓存策略）
   const apiSpecificExpiry = getApiSpecificExpiry(apiId);
   if (apiSpecificExpiry) {
     return apiSpecificExpiry;
@@ -110,12 +131,7 @@ export function calculateCacheExpiry(apiId: string, status: string, latency: num
 
 // 获取特定 API 的缓存过期时间
 export function getApiSpecificExpiry(apiId: string): number | null {
-  // 这里可以为特定 API 设置不同的缓存策略
-  const apiExpiryMap: { [apiId: string]: number } = {
-    // 示例：为特定 API 设置不同的缓存时间
-    // 'openai': 60000, // 1分钟
-    // 'anthropic': 30000, // 30秒
-  };
+  const apiExpiryMap: Record<string, number> = {};
   
   return apiExpiryMap[apiId] || null;
 }
@@ -225,10 +241,9 @@ export function getCurrentCache(): ApiCheckCache {
   return memoryCache;
 }
 
-// 预热缓存
+// 预热缓存}
+
 export function prewarmCache(apiIds: string[]): void {
-  // 可以在这里实现缓存预热逻辑
-  // 例如，预加载常用 API 的缓存
   console.log('Prewarming cache for APIs:', apiIds);
 }
 

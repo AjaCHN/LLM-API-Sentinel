@@ -1,22 +1,24 @@
 // app/components/ApiStatusGrid.tsx v2.5.1
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ShieldCheck, ShieldAlert, AlertTriangle, BarChart3, Clock, Server } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { LATENCY_THRESHOLD } from '../constants';
 import { ApiStatus } from '../types';
 
 export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
-  const statusesByProvider = statuses.reduce((acc, api) => {
-    if (!acc[api.provider]) {
-      acc[api.provider] = [];
-    }
-    acc[api.provider].push(api);
-    return acc;
-  }, {} as Record<string, ApiStatus[]>);
+  const statusesByProvider = useMemo(() => {
+    return statuses.reduce((acc, api) => {
+      if (!acc[api.provider]) {
+        acc[api.provider] = [];
+      }
+      acc[api.provider].push(api);
+      return acc;
+    }, {} as Record<string, ApiStatus[]>);
+  }, [statuses]);
   
-  const providers = Object.keys(statusesByProvider).sort();
+  const providers = useMemo(() => Object.keys(statusesByProvider).sort(), [statusesByProvider]);
 
   return (
     <div id="api-cards-container" className="space-y-6">

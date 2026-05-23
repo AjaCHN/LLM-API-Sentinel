@@ -7,12 +7,15 @@ import { parse } from 'url';
 import { performCheck } from './app/lib/monitor';
 import { LATENCY_THRESHOLD } from './app/constants';
 import firebaseConfig from './firebase-applet-config.json' assert { type: 'json' };
-console.log('Firebase Config:', firebaseConfig);
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
-const port = 3000;
+const port = parseInt(process.env.PORT || '3000', 10);
+
+if (dev) {
+  console.log('[Server] Running in development mode');
+}
 
 // Initialize Firebase Admin
 const appAdmin = initializeApp({
