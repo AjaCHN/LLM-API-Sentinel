@@ -66,7 +66,7 @@ export function useApiMonitor() {
           apiName: result.name,
           type: 'downtime',
           severity: 'high',
-          message: `${result.name} is currently offline.',
+          message: result.name + " is currently offline.",
           timestamp: serverTimestamp(),
           resolved: false,
           error: result.error,
@@ -92,7 +92,7 @@ export function useApiMonitor() {
           apiName: result.name,
           type: 'latency',
           severity,
-          message: `${result.name} latency is high: ${result.latency}ms.',
+          message: result.name + " latency is high: " + result.latency + "ms.",
           timestamp: serverTimestamp(),
           resolved: false,
           latency: result.latency
