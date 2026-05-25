@@ -1,4 +1,4 @@
-// app/components/ApiStatusGrid.tsx v2.5.1
+// app/components/ApiStatusGrid.tsx v2.6.0
 'use client';
 
 import React, { useMemo } from 'react';
@@ -6,8 +6,10 @@ import { ShieldCheck, ShieldAlert, AlertTriangle, BarChart3, Clock, Server } fro
 import { cn } from '../lib/utils';
 import { LATENCY_THRESHOLD } from '../constants';
 import { ApiStatus } from '../types';
+import { useI18n } from '../hooks/useI18n';
 
 export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
+  const { t } = useI18n();
   const statusesByProvider = useMemo(() => {
     return statuses.reduce((acc, api) => {
       if (!acc[api.provider]) {
@@ -55,12 +57,12 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                         {api.status === 'online' ? (
                           <>
                             <ShieldCheck className="h-3 w-3" />
-                            <span>Online</span>
+                            <span>{t('api.online')}</span>
                           </>
                         ) : (
                           <>
                             <ShieldAlert className="h-3 w-3" />
-                            <span>Offline</span>
+                            <span>{t('api.offline')}</span>
                           </>
                         )}
                       </div>
@@ -69,7 +71,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                     <div className="space-y-3">
                       <div className="space-y-1">
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>Latency</span>
+                          <span>{t('api.latency')}</span>
                           <span 
                             className={cn(
                               'font-medium',
@@ -95,7 +97,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                       {api.errorRate !== undefined && (
                         <div className="space-y-1">
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>Error Rate</span>
+                            <span>{t('api.errorRate')}</span>
                             <span className="font-medium text-foreground">
                               {api.errorRate}%
                             </span>
@@ -112,7 +114,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                       {api.availability !== undefined && (
                         <div className="space-y-1">
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>Availability</span>
+                            <span>{t('api.availability')}</span>
                             <span className="font-medium text-foreground">
                               {api.availability}%
                             </span>
@@ -130,12 +132,12 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                     <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4">
                       <div className="flex items-center space-x-2">
                         <Clock className="h-3 w-3" />
-                        <span>Last checked: {new Date(api.lastChecked).toLocaleString()}</span>
+                        <span>{t('api.lastChecked')}: {new Date(api.lastChecked).toLocaleString()}</span>
                       </div>
                       {api.retries && api.retries > 0 && (
                         <div className="flex items-center space-x-1 text-amber-600">
                           <AlertTriangle className="h-3 w-3" />
-                          <span>{api.retries} retries</span>
+                          <span>{api.retries} {t('api.retries')}</span>
                         </div>
                       )}
                     </div>
@@ -150,9 +152,9 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <BarChart3 className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="mt-4 text-lg font-medium text-foreground">No API endpoints configured</h3>
+          <h3 className="mt-4 text-lg font-medium text-foreground">{t('api.noApiConfigured')}</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Add API endpoints to monitor their status and performance
+            {t('api.addApiHint')}
           </p>
         </div>
       )}

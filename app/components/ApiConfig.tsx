@@ -1,9 +1,10 @@
-// app/components/ApiConfig.tsx v2.5.1
+// app/components/ApiConfig.tsx v2.6.0
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Save, X, Edit } from 'lucide-react';
 import { APIS_TO_CHECK } from '../constants';
+import { useI18n } from '../hooks/useI18n';
 
 interface ApiConfigItem {
   id: string;
@@ -13,6 +14,7 @@ interface ApiConfigItem {
 }
 
 export default function ApiConfig() {
+  const { t } = useI18n();
   const [config, setConfig] = useState<ApiConfigItem[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [newApi, setNewApi] = useState<Omit<ApiConfigItem, 'id'>>({
@@ -64,7 +66,7 @@ export default function ApiConfig() {
   return (
     <div id="api-config-container" className="bg-card rounded-lg border border-border/20 p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold">API Configuration</h2>
+        <h2 className="text-lg font-semibold">{t('config.apiConfiguration')}</h2>
         {isEditing ? (
           <div className="flex space-x-2">
             <button
@@ -72,14 +74,14 @@ export default function ApiConfig() {
               className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
             >
               <Save className="w-3 h-3 mr-1" />
-              Save
+              {t('config.save')}
             </button>
             <button
               onClick={() => setIsEditing(false)}
               className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-muted text-muted-foreground hover:bg-muted/80"
             >
               <X className="w-3 h-3 mr-1" />
-              Cancel
+              {t('config.cancel')}
             </button>
           </div>
         ) : (
@@ -88,7 +90,7 @@ export default function ApiConfig() {
             className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-muted text-muted-foreground hover:bg-muted/80"
           >
             <Edit className="w-3 h-3 mr-1" />
-            Edit
+            {t('config.edit') || 'Edit'}
           </button>
         )}
       </div>
@@ -114,10 +116,10 @@ export default function ApiConfig() {
 
         {isEditing && (
           <div className="border-2 border-dashed border-border/30 rounded-md p-4">
-            <h3 className="text-sm font-medium mb-3">Add New API</h3>
+            <h3 className="text-sm font-medium mb-3">{t('config.addApi')}</h3>
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-medium mb-1">API Name</label>
+                <label className="block text-xs font-medium mb-1">{t('config.name')}</label>
                 <input
                   type="text"
                   value={newApi.name}
@@ -127,7 +129,7 @@ export default function ApiConfig() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium mb-1">Provider</label>
+                <label className="block text-xs font-medium mb-1">{t('config.provider')}</label>
                 <input
                   type="text"
                   value={newApi.provider}
@@ -137,7 +139,7 @@ export default function ApiConfig() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium mb-1">API URL</label>
+                <label className="block text-xs font-medium mb-1">{t('config.url')}</label>
                 <input
                   type="url"
                   value={newApi.url}
@@ -151,7 +153,7 @@ export default function ApiConfig() {
                 className="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Add API
+                {t('config.addApi')}
               </button>
             </div>
           </div>
@@ -162,7 +164,7 @@ export default function ApiConfig() {
             onClick={resetToDefault}
             className="text-xs text-muted-foreground hover:text-foreground"
           >
-            Reset to default configuration
+            {t('config.reset') || 'Reset to default configuration'}
           </button>
         )}
       </div>

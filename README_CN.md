@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.5.1
+# LLM API Sentinel v2.6.0
 
 [English](README.md) | [中文](README_CN.md)
 

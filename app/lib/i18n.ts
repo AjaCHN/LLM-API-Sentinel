@@ -1,4 +1,4 @@
-// app/lib/i18n.ts v2.5.1
+// app/lib/i18n.ts v2.6.0
 import en from '../locales/en.json';
 import zhCN from '../locales/zh-cn.json';
 

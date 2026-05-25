@@ -20,8 +20,14 @@
     "activeAlerts": "Active Alerts",
     "noActiveAlerts": "No active alerts",
     "resolve": "Resolve",
+    "downtime": "Downtime",
     "error": "Error",
-    "latency": "Latency"
+    "latency": "Latency",
+    "viewDetails": "View Details",
+    "alertsLabel": "Alerts",
+    "activeIssues": "active issue",
+    "activeIssuesPlural": "active issues",
+    "detected": "detected"
   },
   "api": {
     "online": "Online",
@@ -29,17 +35,31 @@
     "latency": "Latency",
     "errorRate": "Error Rate",
     "availability": "Availability",
+    "uptime": "Uptime",
+    "averageLatency": "Avg Latency",
+    "maxLatency": "Max Latency",
+    "minLatency": "Min Latency",
     "lastChecked": "Last checked",
     "retries": "retries",
     "noApiConfigured": "No API endpoints configured",
-    "addApiHint": "Add API endpoints to monitor their status and performance"
+    "addApiHint": "Add API endpoints to monitor their status and performance",
+    "status": "Status"
   },
   "dashboard": {
+    "title": "LLM API Sentinel",
     "globalAIApiMonitoring": "Global AI API Monitoring",
     "monitoringFrom": "Monitoring from",
     "refresh": "Refresh",
     "checkNow": "Check Now",
-    "checking": "Checking..."
+    "checking": "Checking...",
+    "lastSync": "Last Sync",
+    "status": "Status",
+    "latencyHistory": "Latency History",
+    "more": "more",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "toggleTheme": "Toggle Theme",
+    "config": "Config"
   },
   "history": {
     "performanceHistory": "Performance History",
@@ -53,6 +73,11 @@
     "delete": "Delete",
     "name": "Name",
     "provider": "Provider",
-    "url": "URL"
+    "url": "URL",
+    "edit": "Edit",
+    "reset": "Reset to default configuration"
+  },
+  "general": {
+    "and": "and"
   }
 }

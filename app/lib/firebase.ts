@@ -1,4 +1,4 @@
-// app/lib/firebase.ts v2.5.1
+// app/lib/firebase.ts v2.6.0
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';

@@ -1,4 +1,4 @@
-// app/hooks/useApiMonitor.ts v2.5.1
+// app/hooks/useApiMonitor.ts v2.6.0
 // 改进：使用本地 API 检查，同时支持从 Firestore 同步数据
 import { useCallback, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
