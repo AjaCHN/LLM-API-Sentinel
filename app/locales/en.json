@@ -1,0 +1,58 @@
+{
+  "errors": {
+    "networkTimeout": "Network request timed out. Please check your connection.",
+    "networkOffline": "You are currently offline. Please check your network.",
+    "networkError": "Network connection error. Please try again later.",
+    "apiUnavailable": "API service is temporarily unavailable.",
+    "apiError": "API request failed.",
+    "apiRateLimited": "API requests are being rate limited. Please try again later.",
+    "authRequired": "Please sign in first.",
+    "authFailed": "Sign in failed. Please check your credentials.",
+    "authExpired": "Your session has expired. Please sign in again.",
+    "firebaseError": "Firebase service error.",
+    "firestoreError": "Database operation failed.",
+    "validationError": "Input data validation failed.",
+    "unknownError": "An unknown error occurred. Please try again later.",
+    "errorOccurred": "An error occurred",
+    "refreshPage": "Refresh page"
+  },
+  "alerts": {
+    "activeAlerts": "Active Alerts",
+    "noActiveAlerts": "No active alerts",
+    "resolve": "Resolve",
+    "error": "Error",
+    "latency": "Latency"
+  },
+  "api": {
+    "online": "Online",
+    "offline": "Offline",
+    "latency": "Latency",
+    "errorRate": "Error Rate",
+    "availability": "Availability",
+    "lastChecked": "Last checked",
+    "retries": "retries",
+    "noApiConfigured": "No API endpoints configured",
+    "addApiHint": "Add API endpoints to monitor their status and performance"
+  },
+  "dashboard": {
+    "globalAIApiMonitoring": "Global AI API Monitoring",
+    "monitoringFrom": "Monitoring from",
+    "refresh": "Refresh",
+    "checkNow": "Check Now",
+    "checking": "Checking..."
+  },
+  "history": {
+    "performanceHistory": "Performance History",
+    "noHistory": "No historical data available"
+  },
+  "config": {
+    "apiConfiguration": "API Configuration",
+    "addApi": "Add API",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "name": "Name",
+    "provider": "Provider",
+    "url": "URL"
+  }
+}
