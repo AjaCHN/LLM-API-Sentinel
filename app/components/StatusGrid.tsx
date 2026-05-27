@@ -1,4 +1,4 @@
-// app/components/StatusGrid.tsx v2.5.1
+// app/components/StatusGrid.tsx v2.6.0
 'use client';
 
 import ApiStatusGrid from './ApiStatusGrid';

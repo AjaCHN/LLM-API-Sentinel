@@ -1,4 +1,4 @@
-// app/page.tsx v2.5.1
+// app/page.tsx v2.6.0
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -13,6 +13,7 @@ import ApiConfig from './components/ApiConfig';
 import { getApiColor, cn } from './lib/utils';
 import { AlertTriangle, Settings } from 'lucide-react';
 import { ChartDataPoint } from './types';
+import { useI18n } from './hooks/useI18n';
 
 export default function Dashboard() {
   const { statuses, history, alerts, user, isChecking, lastUpdate, geo, runCheck, resolveAlert, login, logout } = useDashboardData();
@@ -20,6 +21,7 @@ export default function Dashboard() {
   const [showConfig, setShowConfig] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     setMounted(true);
@@ -60,20 +62,20 @@ export default function Dashboard() {
             <div className="flex items-center gap-3">
               <AlertTriangle className="w-5 h-5 text-rose-500" />
               <p className="text-xs font-bold text-rose-500 uppercase tracking-wider">
-                Alerts: {alerts.length} active issue{alerts.length > 1 ? 's' : ''} detected
+                {t('alerts.alertsLabel')}: {alerts.length} {alerts.length > 1 ? t('alerts.activeIssuesPlural') : t('alerts.activeIssues')} {t('alerts.detected')}
               </p>
             </div>
-            <button onClick={() => setShowAlerts(true)} className="text-[10px] font-bold uppercase underline text-rose-500">View Details</button>
+            <button onClick={() => setShowAlerts(true)} className="text-[10px] font-bold uppercase underline text-rose-500">{t('alerts.viewDetails')}</button>
           </div>
         )}
 
         <section id="status-grid-section">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
-            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">Status</h2>
+            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">{t('dashboard.status')}</h2>
             <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
               {lastUpdate && (
                 <span className="text-[10px] font-mono opacity-50">
-                  Last Sync: {format(lastUpdate, 'HH:mm:ss')}
+                  {t('dashboard.lastSync')}: {format(lastUpdate, 'HH:mm:ss')}
                 </span>
               )}
               <button 
@@ -83,7 +85,7 @@ export default function Dashboard() {
                 )}
               >
                 <Settings className="w-3 h-3" />
-                Config
+                {t('dashboard.config')}
               </button>
               <button 
                 onClick={runCheck}
@@ -94,7 +96,7 @@ export default function Dashboard() {
                   !user && "opacity-30 cursor-not-allowed"
                 )}
               >
-                {isChecking ? "Checking..." : "Run Check"}
+                {isChecking ? t('dashboard.checking') : t('dashboard.checkNow')}
               </button>
             </div>
           </div>
@@ -108,7 +110,7 @@ export default function Dashboard() {
 
         <section id="history-chart-section" className="border border-border bg-card/50 p-4 md:p-6 rounded-lg">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4">
-            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">Latency History</h2>
+            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">{t('dashboard.latencyHistory')}</h2>
             <div id="chart-legend" className="flex flex-wrap gap-x-4 gap-y-2 max-w-full">
               {statuses.slice(0, 8).map(s => (
                 <div key={s.id} className="flex items-center gap-1.5">
@@ -116,7 +118,7 @@ export default function Dashboard() {
                   <span className="text-[9px] font-mono opacity-50 uppercase whitespace-nowrap">{s.name}</span>
                 </div>
               ))}
-              {statuses.length > 8 && <span className="text-[9px] font-mono opacity-30 uppercase">+{statuses.length - 8} more</span>}
+              {statuses.length > 8 && <span className="text-[9px] font-mono opacity-30 uppercase">+{statuses.length - 8} {t('dashboard.more')}</span>}
             </div>
           </div>
           <LatencyHistoryChart chartData={chartData} statuses={statuses} getApiColor={getApiColor} />
