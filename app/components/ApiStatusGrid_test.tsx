@@ -1,4 +1,4 @@
-// app/components/ApiStatusGrid_test.tsx v2.5.1
+// app/components/ApiStatusGrid_test.tsx v2.6.0
 'use client';
 
 import React from 'react';
