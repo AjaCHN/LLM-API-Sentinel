@@ -1,5 +1,5 @@
 // app/lib/monitor.test.ts v2.6.0
-import { APIS_TO_CHECK, LATENCY_THRESHOLD } from '../constants';
+import { APIS_TO_CHECK, LATENCY_THRESHOLD, DEGRADED_THRESHOLD } from '../constants';
 
 interface ApiConfig {
   id: string;
