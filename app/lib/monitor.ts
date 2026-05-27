@@ -1,5 +1,5 @@
 // app/lib/monitor.ts v2.5.1
-import { APIS_TO_CHECK, MAX_RETRIES, RETRY_DELAY, LATENCY_THRESHOLD, DEGRADED_THRESHOLD } from '../constants';
+import { APIS_TO_CHECK, MAX_RETRIES, RETRY_DELAY, DEGRADED_THRESHOLD } from '../constants';
 import { ApiCheckResult } from '../types';
 import { getCache, setCache, initializeCache } from './cache';
 import { concurrencyManager, processBatch } from './concurrency';
@@ -12,7 +12,7 @@ interface HistoricalMetrics {
   minLatency: number;
 }
 
-let metricsCache: Map<string, HistoricalMetrics> = new Map();
+const metricsCache: Map<string, HistoricalMetrics> = new Map();
 
 function calculateRealMetrics(
   apiId: string,
@@ -31,7 +31,7 @@ function calculateRealMetrics(
       minLatency: isOnline ? currentLatency : Number.MAX_SAFE_INTEGER
     };
     metricsCache.set(apiId, initialMetrics);
-    return calculateFromMetrics(initialMetrics, currentLatency, isOnline);
+    return calculateFromMetrics(initialMetrics, currentLatency);
   }
   
   const updatedMetrics: HistoricalMetrics = {
@@ -43,10 +43,10 @@ function calculateRealMetrics(
   };
   
   metricsCache.set(apiId, updatedMetrics);
-  return calculateFromMetrics(updatedMetrics, currentLatency, isOnline);
+  return calculateFromMetrics(updatedMetrics, currentLatency);
 }
 
-function calculateFromMetrics(metrics: HistoricalMetrics, currentLatency: number, isOnline: boolean) {
+function calculateFromMetrics(metrics: HistoricalMetrics, currentLatency: number) {
   const errorRate = metrics.totalChecks > 0 
     ? (metrics.failedChecks / metrics.totalChecks) * 100 
     : 0;
@@ -160,7 +160,7 @@ async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0): Prom
   }
 }
 
-export async function performCheck() {
+export async function performCheck(): Promise<ApiCheckResult[]> {
   // 使用并发管理器处理请求
   const results = await processBatch(
     APIS_TO_CHECK,
