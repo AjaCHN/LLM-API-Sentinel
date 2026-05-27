@@ -15,6 +15,12 @@ describe('monitor constants', () => {
     });
   });
 
+  describe('DEGRADED_THRESHOLD', () => {
+    it('should be set to 1000ms', () => {
+      expect(DEGRADED_THRESHOLD).toBe(1000);
+    });
+  });
+
   describe('APIS_TO_CHECK', () => {
     it('should contain both US and China APIs', () => {
       expect(APIS_TO_CHECK).toHaveLength(12);

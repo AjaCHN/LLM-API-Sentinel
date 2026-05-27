@@ -241,9 +241,21 @@ export function getCurrentCache(): ApiCheckCache {
   return memoryCache;
 }
 
-// 预热缓存}
-
+// 预热缓存 - 预先加载指定 API 的缓存数据
 export function prewarmCache(apiIds: string[]): void {
   console.log('Prewarming cache for APIs:', apiIds);
+  
+  const apisToPrewarm = apiIds.length > 0 
+    ? apiIds 
+    : Object.keys(memoryCache);
+  
+  apisToPrewarm.forEach(apiId => {
+    const cached = memoryCache[apiId];
+    if (cached && !isCacheValid(cached)) {
+      delete memoryCache[apiId];
+    }
+  });
+  
+  console.log('Cache prewarm completed. APIs in cache:', Object.keys(memoryCache).length);
 }
 

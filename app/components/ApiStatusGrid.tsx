@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { ShieldCheck, ShieldAlert, AlertTriangle, BarChart3, Clock, Server } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, AlertTriangle, BarChart3, Clock, Server, Activity } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { LATENCY_THRESHOLD } from '../constants';
 import { ApiStatus } from '../types';
@@ -21,6 +21,48 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
   }, [statuses]);
   
   const providers = useMemo(() => Object.keys(statusesByProvider).sort(), [statusesByProvider]);
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'online':
+        return (
+          <div className="flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-800 border border-green-200">
+            <ShieldCheck className="h-3 w-3" />
+            <span>Online</span>
+          </div>
+        );
+      case 'degraded':
+        return (
+          <div className="flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
+            <Activity className="h-3 w-3" />
+            <span>Degraded</span>
+          </div>
+        );
+      case 'offline':
+        return (
+          <div className="flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-800 border border-red-200">
+            <ShieldAlert className="h-3 w-3" />
+            <span>Offline</span>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const getLatencyColor = (latency: number, status: string) => {
+    if (status === 'offline') return 'text-red-600';
+    if (status === 'degraded') return 'text-amber-600';
+    if (latency > LATENCY_THRESHOLD) return 'text-amber-600';
+    return 'text-foreground';
+  };
+
+  const getProgressBarColor = (latency: number, status: string) => {
+    if (status === 'offline') return 'bg-red-500';
+    if (status === 'degraded') return 'bg-amber-500';
+    if (latency > LATENCY_THRESHOLD) return 'bg-amber-500';
+    return 'bg-primary';
+  };
 
   return (
     <div id="api-cards-container" className="space-y-6">
@@ -85,7 +127,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                           <div 
                             className={cn(
                               'h-full rounded-full transition-all duration-500 ease-out',
-                              api.latency < LATENCY_THRESHOLD ? 'bg-primary' : 'bg-amber-500'
+                              getProgressBarColor(api.latency, api.status)
                             )}
                             style={{ 
                               width: `${Math.min((api.latency / LATENCY_THRESHOLD) * 100, 100)}%` 

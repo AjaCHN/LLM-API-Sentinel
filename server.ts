@@ -6,6 +6,7 @@ import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
 import { performCheck } from './app/lib/monitor';
 import { LATENCY_THRESHOLD } from './app/constants';
+import type { ApiCheckResult } from './app/types';
 import firebaseConfig from './firebase-applet-config.json' assert { type: 'json' };
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -17,17 +18,32 @@ if (dev) {
   console.log('[Server] Running in development mode');
 }
 
-// Initialize Firebase Admin
 const appAdmin = initializeApp({
   projectId: firebaseConfig.projectId,
 });
 
 const db = getFirestore(appAdmin, firebaseConfig.firestoreDatabaseId);
 
+async function hasExistingAlert(apiId: string, alertType: string): Promise<boolean> {
+  try {
+    const alertsSnapshot = await db
+      .collection('alerts')
+      .where('apiId', '==', apiId)
+      .where('type', '==', alertType)
+      .where('resolved', '==', false)
+      .limit(1)
+      .get();
+    return !alertsSnapshot.empty;
+  } catch (error) {
+    console.error('[Server] Failed to check existing alerts:', error);
+    return false;
+  }
+}
+
 async function runBackgroundMonitor() {
   console.log('[Monitor] Starting background check...');
   try {
-    const results = await performCheck();
+    const results = await performCheck() as ApiCheckResult[];
     const batch = db.batch();
 
     for (const result of results) {
@@ -42,27 +58,32 @@ async function runBackgroundMonitor() {
         timestamp: FieldValue.serverTimestamp(),
       });
 
-      // Alert Logic
       if (result.status === 'offline') {
-        const alertRef = db.collection('alerts').doc();
-        batch.set(alertRef, {
-          apiId: result.id,
-          apiName: result.name,
-          type: 'downtime',
-          message: `${result.name} is currently offline. (Auto-detected)`,
-          timestamp: FieldValue.serverTimestamp(),
-          resolved: false
-        });
+        const hasExisting = await hasExistingAlert(result.id, 'downtime');
+        if (!hasExisting) {
+          const alertRef = db.collection('alerts').doc();
+          batch.set(alertRef, {
+            apiId: result.id,
+            apiName: result.name,
+            type: 'downtime',
+            message: `${result.name} is currently offline. (Auto-detected)`,
+            timestamp: FieldValue.serverTimestamp(),
+            resolved: false
+          });
+        }
       } else if (result.latency > LATENCY_THRESHOLD) {
-        const alertRef = db.collection('alerts').doc();
-        batch.set(alertRef, {
-          apiId: result.id,
-          apiName: result.name,
-          type: 'latency',
-          message: `${result.name} latency is high: ${result.latency}ms. (Auto-detected)`,
-          timestamp: FieldValue.serverTimestamp(),
-          resolved: false
-        });
+        const hasExisting = await hasExistingAlert(result.id, 'latency');
+        if (!hasExisting) {
+          const alertRef = db.collection('alerts').doc();
+          batch.set(alertRef, {
+            apiId: result.id,
+            apiName: result.name,
+            type: 'latency',
+            message: `${result.name} latency is high: ${result.latency}ms. (Auto-detected)`,
+            timestamp: FieldValue.serverTimestamp(),
+            resolved: false
+          });
+        }
       }
     }
 
