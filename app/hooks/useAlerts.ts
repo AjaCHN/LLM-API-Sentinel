@@ -4,7 +4,7 @@ import { collection, onSnapshot, query, where, orderBy, limit, updateDoc, doc } 
 import { db } from '../lib/firebase';
 import { useAlertStore, useAuthStore } from '../store';
 import { Alert } from '../types';
-import { logError, handleError } from '../lib/error';
+import { logError, handleError } from '../lib/error-handler';
 
 export function useAlerts() {
   const { alerts, setAlerts } = useAlertStore();

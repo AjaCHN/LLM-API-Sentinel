@@ -6,7 +6,7 @@ import { db } from '../lib/firebase';
 import { useApiStore, useAuthStore } from '../store';
 import { LATENCY_THRESHOLD, APIS_TO_CHECK } from '../constants';
 import { ApiStatus, Alert, StatusHistory } from '../types';
-import { logError, handleError } from '../lib/error';
+import { logError, handleError } from '../lib/error-handler';
 import { performCheck } from '../lib/monitor';
 import { sendAlert } from '../lib/notification';
 

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 import { useAuthStore } from '../store/auth';
-import { logError, handleError } from '../lib/error';
+import { logError, handleError } from '../lib/error-handler';
 
 export function useAuth() {
   const { user, setUser, setError } = useAuthStore();

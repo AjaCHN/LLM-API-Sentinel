@@ -1,7 +1,7 @@
 // app/hooks/useGeoLocation.ts v2.6.0
 import { useEffect } from 'react';
 import { GEO_INFO_EXPIRY } from '../constants';
-import { logError } from '../lib/error';
+import { logError } from '../lib/error-handler';
 import { useGeoStore, GeoLocation } from '../store';
 
 export function useGeoLocation() {

@@ -1,5 +1,10 @@
-// app/lib/error.test.ts v2.5.1
-import { ApiError, FirebaseError, NetworkError, handleError, logError, isNetworkError, isApiError, isFirebaseError } from './error';
+// app/lib/error.test.ts v2.6.0
+import { createError, handleError, logError, ErrorCode } from './error-handler';
+
+// Mock i18n
+jest.mock('./i18n', () => ({
+  t: jest.fn((key: string) => key),
+}));
 
 // Mock console.error
 global.console.error = jest.fn();
@@ -9,103 +14,78 @@ describe('error handling', () => {
     jest.clearAllMocks();
   });
 
-  describe('ApiError', () => {
-    it('should create an ApiError with correct properties', () => {
-      const error = new ApiError('API error message', 'API_ERROR', 400);
-      expect(error).toBeInstanceOf(Error);
-      expect(error.name).toBe('ApiError');
-      expect(error.message).toBe('API error message');
-      expect(error.code).toBe('API_ERROR');
-      expect(error.status).toBe(400);
+  describe('createError', () => {
+    it('should create an error with code and default message', () => {
+      const error = createError(ErrorCode.NETWORK_TIMEOUT);
+      expect(error.code).toBe(ErrorCode.NETWORK_TIMEOUT);
+      expect(error.message).toBe('errors.networkTimeout');
+      expect(error.timestamp).toBeDefined();
     });
-  });
 
-  describe('FirebaseError', () => {
-    it('should create a FirebaseError with correct properties', () => {
-      const error = new FirebaseError('Firebase error message', 'FIREBASE_ERROR');
-      expect(error).toBeInstanceOf(Error);
-      expect(error.name).toBe('FirebaseError');
-      expect(error.message).toBe('Firebase error message');
-      expect(error.code).toBe('FIREBASE_ERROR');
+    it('should create an error with custom message', () => {
+      const error = createError(ErrorCode.API_ERROR, 'Custom API error');
+      expect(error.code).toBe(ErrorCode.API_ERROR);
+      expect(error.message).toBe('Custom API error');
     });
-  });
 
-  describe('NetworkError', () => {
-    it('should create a NetworkError with correct properties', () => {
-      const error = new NetworkError('Network error message', 500);
-      expect(error).toBeInstanceOf(Error);
-      expect(error.name).toBe('NetworkError');
-      expect(error.message).toBe('Network error message');
-      expect(error.status).toBe(500);
+    it('should create an error with details', () => {
+      const details = { field: 'test' };
+      const error = createError(ErrorCode.VALIDATION_ERROR, 'Validation failed', details);
+      expect(error.code).toBe(ErrorCode.VALIDATION_ERROR);
+      expect(error.details).toEqual(details);
     });
   });
 
   describe('handleError', () => {
-    it('should handle ApiError', () => {
-      const error = new ApiError('API error message', 'API_ERROR', 400);
-      const result = handleError(error);
-      expect(result).toBe('API Error (API_ERROR): API error message');
+    it('should handle AbortError as NETWORK_TIMEOUT', () => {
+      const abortError = new DOMException('Aborted', 'AbortError');
+      const result = handleError(abortError);
+      expect(result.code).toBe(ErrorCode.NETWORK_TIMEOUT);
     });
 
-    it('should handle FirebaseError', () => {
-      const error = new FirebaseError('Firebase error message', 'FIREBASE_ERROR');
-      const result = handleError(error);
-      expect(result).toBe('Firebase Error (FIREBASE_ERROR): Firebase error message');
+    it('should handle Error with Network message', () => {
+      const networkError = new Error('Network request failed');
+      const result = handleError(networkError);
+      expect(result.code).toBe(ErrorCode.NETWORK_ERROR);
+      expect(result.message).toBe('Network request failed');
     });
 
-    it('should handle NetworkError', () => {
-      const error = new NetworkError('Network error message', 500);
-      const result = handleError(error);
-      expect(result).toBe('Network Error (500): Network error message');
+    it('should handle auth/requires-recent-login as AUTH_EXPIRED', () => {
+      const authError = new Error('auth/requires-recent-login');
+      const result = handleError(authError);
+      expect(result.code).toBe(ErrorCode.AUTH_EXPIRED);
     });
 
-    it('should handle generic Error', () => {
+    it('should handle auth/user-not-found as AUTH_FAILED', () => {
+      const authError = new Error('auth/user-not-found');
+      const result = handleError(authError);
+      expect(result.code).toBe(ErrorCode.AUTH_FAILED);
+    });
+
+    it('should handle generic Error as UNKNOWN_ERROR', () => {
       const error = new Error('Generic error message');
       const result = handleError(error);
-      expect(result).toBe('Error: Generic error message');
+      expect(result.code).toBe(ErrorCode.UNKNOWN_ERROR);
     });
 
     it('should handle unknown error', () => {
-      const error = 'Unknown error';
+      const error = 'Unknown error string';
       const result = handleError(error);
-      expect(result).toBe('Unknown error occurred');
+      expect(result.code).toBe(ErrorCode.UNKNOWN_ERROR);
     });
   });
 
   describe('logError', () => {
-    it('should log error with context', () => {
+    it('should log error with context in development', () => {
+      const originalEnv = process.env.NODE_ENV;
+      (process.env as Record<string, string>).NODE_ENV = 'development';
+
       const error = new Error('Test error');
       logError(error, 'Test context');
-      expect(console.error).toHaveBeenCalledWith('Test context: Error: Test error');
-    });
 
-    it('should log error without context', () => {
-      const error = new Error('Test error');
-      logError(error);
-      expect(console.error).toHaveBeenCalledWith('Error: Test error');
-    });
-  });
+      expect(console.error).toHaveBeenCalled();
 
-  describe('type guards', () => {
-    it('should identify NetworkError', () => {
-      const networkError = new NetworkError('Network error', 500);
-      const apiError = new ApiError('API error', 'API_ERROR', 400);
-      expect(isNetworkError(networkError)).toBe(true);
-      expect(isNetworkError(apiError)).toBe(false);
-    });
-
-    it('should identify ApiError', () => {
-      const apiError = new ApiError('API error', 'API_ERROR', 400);
-      const networkError = new NetworkError('Network error', 500);
-      expect(isApiError(apiError)).toBe(true);
-      expect(isApiError(networkError)).toBe(false);
-    });
-
-    it('should identify FirebaseError', () => {
-      const firebaseError = new FirebaseError('Firebase error', 'FIREBASE_ERROR');
-      const networkError = new NetworkError('Network error', 500);
-      expect(isFirebaseError(firebaseError)).toBe(true);
-      expect(isFirebaseError(networkError)).toBe(false);
+      (process.env as Record<string, string>).NODE_ENV = originalEnv || 'test';
     });
   });
 });
