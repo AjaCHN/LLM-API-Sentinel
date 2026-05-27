@@ -2,10 +2,11 @@
 import express from 'express';
 import next from 'next';
 import { initializeApp } from 'firebase-admin/app';
-import { getFirestore, FieldValue, query as firestoreQuery, where, getDocs, limit } from 'firebase-admin/firestore';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { parse } from 'url';
 import { performCheck } from './app/lib/monitor';
 import { LATENCY_THRESHOLD } from './app/constants';
+import type { ApiCheckResult } from './app/types';
 import firebaseConfig from './firebase-applet-config.json' assert { type: 'json' };
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -25,15 +26,14 @@ const db = getFirestore(appAdmin, firebaseConfig.firestoreDatabaseId);
 
 async function hasExistingAlert(apiId: string, alertType: string): Promise<boolean> {
   try {
-    const alertsQuery = firestoreQuery(
-      db.collection('alerts'),
-      where('apiId', '==', apiId),
-      where('type', '==', alertType),
-      where('resolved', '==', false),
-      limit(1)
-    );
-    const snapshot = await getDocs(alertsQuery);
-    return !snapshot.empty;
+    const alertsSnapshot = await db
+      .collection('alerts')
+      .where('apiId', '==', apiId)
+      .where('type', '==', alertType)
+      .where('resolved', '==', false)
+      .limit(1)
+      .get();
+    return !alertsSnapshot.empty;
   } catch (error) {
     console.error('[Server] Failed to check existing alerts:', error);
     return false;
@@ -43,7 +43,7 @@ async function hasExistingAlert(apiId: string, alertType: string): Promise<boole
 async function runBackgroundMonitor() {
   console.log('[Monitor] Starting background check...');
   try {
-    const results = await performCheck();
+    const results = await performCheck() as ApiCheckResult[];
     const batch = db.batch();
 
     for (const result of results) {
@@ -71,7 +71,7 @@ async function runBackgroundMonitor() {
             resolved: false
           });
         }
-      } else if (result.status === 'degraded' && result.latency > LATENCY_THRESHOLD) {
+      } else if (result.latency > LATENCY_THRESHOLD) {
         const hasExisting = await hasExistingAlert(result.id, 'latency');
         if (!hasExisting) {
           const alertRef = db.collection('alerts').doc();

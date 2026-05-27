@@ -4,7 +4,7 @@
 import React, { useMemo } from 'react';
 import { ShieldCheck, ShieldAlert, AlertTriangle, BarChart3, Clock, Server, Activity } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { LATENCY_THRESHOLD, DEGRADED_THRESHOLD } from '../constants';
+import { LATENCY_THRESHOLD } from '../constants';
 import { ApiStatus } from '../types';
 
 export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
