@@ -75,14 +75,7 @@ body {
 
 /* Custom styles for the sentinel app */
 .sentinel-card {
-  border: 1px solid var(--border);
-  padding: 1rem;
-  transition: all 0.2s ease;
-}
-
-.sentinel-card:hover {
-  background-color: var(--foreground);
-  color: var(--background);
+  /* Removed styles that were interfering with grid and hover states */
 }
 
 .mono-label {
@@ -91,4 +84,35 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   opacity: 0.6;
+}
+
+/* Custom grid styles for API status cards */
+.api-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  width: 100%;
+  background-color: red;
+}
+
+.api-card-item {
+  min-width: 280px;
+}
+
+@media (min-width: 640px) {
+  .api-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .api-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .api-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

@@ -35,12 +35,14 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
         providers.map((provider) => (
           <div key={provider} className="space-y-3">
             <h2 className="text-lg font-semibold text-foreground">{provider}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div 
+              className="api-grid"
+            >
               {statusesByProvider[provider].map((api) => (
                 <div 
                   key={api.id} 
                   id={`api-card-${api.id}`} 
-                  className="sentinel-card group cursor-default rounded-lg bg-card text-card-foreground border border-border/20 hover:border-border/50 transition-all duration-200 shadow-sm hover:shadow-md"
+                  className="api-card-item group cursor-default rounded-lg bg-card text-card-foreground border border-border/20 hover:border-border/50 transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   <div className="p-4 space-y-4">
                     <div className="flex items-start justify-between">
@@ -57,14 +59,21 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                         className={cn(
                           'flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium',
                           api.status === 'online' 
-                            ? 'bg-green-50 text-green-800 border border-green-200'
-                            : 'bg-red-50 text-red-800 border border-red-200'
+                            ? 'bg-green-500/10 text-green-500 border border-green-500/20'
+                            : api.status === 'degraded'
+                            ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+                            : 'bg-red-500/10 text-red-500 border border-red-500/20'
                         )}
                       >
                         {api.status === 'online' ? (
                           <>
                             <ShieldCheck className="h-3 w-3" />
                             <span>{t('api.online')}</span>
+                          </>
+                        ) : api.status === 'degraded' ? (
+                          <>
+                            <AlertTriangle className="h-3 w-3" />
+                            <span>{t('api.degraded')}</span>
                           </>
                         ) : (
                           <>
