@@ -1,4 +1,4 @@
-// app/components/DashboardHeader.tsx v2.5.1
+// app/components/DashboardHeader.tsx v2.6.0
 'use client';
 
 import React from 'react';
@@ -6,6 +6,7 @@ import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin } from 'lucide-react';
 import AlertsDropdown from './AlertsDropdown';
 import { Alert } from '../types';
 import { User } from 'firebase/auth';
+import { useI18n } from '../hooks/useI18n';
 
 interface DashboardHeaderProps {
   user: User | null;
@@ -32,14 +33,15 @@ export default function DashboardHeader({
   logout, 
   resolveAlert 
 }: DashboardHeaderProps) {
+  const { t } = useI18n();
   
   return (
     <div id="main-header" className="border-b border-border p-3 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sticky top-0 bg-background/80 backdrop-blur-md z-50">
       <div id="brand-section" className="flex items-center gap-3 w-full md:w-auto">
         <Activity className="w-6 h-6 md:w-8 md:h-8 text-primary" />
         <div>
-          <h1 className="text-lg md:text-xl md:text-2xl font-bold tracking-tight uppercase italic font-serif">LLM API Sentinel</h1>
-          <p className="mono-label">Global AI API Monitoring</p>
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase italic font-serif">{t('dashboard.title')}</h1>
+          <p className="mono-label">{t('dashboard.globalAIApiMonitoring')}</p>
         </div>
       </div>
       
@@ -48,8 +50,8 @@ export default function DashboardHeader({
           <div className="relative">
             <button 
               onClick={() => setShowAlerts(!showAlerts)}
-              className="p-1.5 md:p-2 border border-border hover:bg-foreground hover:text-background transition-colors rounded-md relative"
-              title="Alerts"
+              className="p-2 border border-border hover:bg-foreground hover:text-background transition-colors rounded-md relative"
+              title={t('alerts.alertsLabel')}
             >
               <Bell className="w-4 h-4 md:w-5 md:h-5" />
               {alerts.length > 0 && (
@@ -66,8 +68,8 @@ export default function DashboardHeader({
 
           <button 
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-1.5 md:p-2 border border-border hover:bg-foreground hover:text-background transition-colors rounded-md"
-            title="Toggle Theme"
+            className="p-2 border border-border hover:bg-foreground hover:text-background transition-colors rounded-md"
+            title={t('dashboard.toggleTheme')}
           >
             {theme === 'dark' ? <Sun className="w-4 h-4 md:w-5 md:h-5" /> : <Moon className="w-4 h-4 md:w-5 md:h-5" />}
           </button>
@@ -98,8 +100,8 @@ export default function DashboardHeader({
               onClick={login}
               className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 border border-border hover:bg-foreground hover:text-background transition-colors uppercase text-[9px] md:text-[10px] font-bold tracking-widest rounded-md"
             >
-              <LogIn className="w-3.5 h-3.5 md:w-4 md:h-4" />
-              <span className="hidden sm:inline">Sign In</span>
+              <LogIn className="w-4 h-4" />
+              {t('dashboard.signIn')}
             </button>
           )}
         </div>

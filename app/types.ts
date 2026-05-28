@@ -1,4 +1,4 @@
-// app/types.ts v2.5.1
+// app/types.ts v2.6.0
 
 // API 状态类型
 export interface ApiStatus {

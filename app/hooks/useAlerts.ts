@@ -1,10 +1,10 @@
-// app/hooks/useAlerts.ts v2.5.1
+// app/hooks/useAlerts.ts v2.6.0
 import { useEffect } from 'react';
 import { collection, onSnapshot, query, where, orderBy, limit, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAlertStore, useAuthStore } from '../store';
 import { Alert } from '../types';
-import { logError, handleError } from '../lib/error';
+import { logError, handleError } from '../lib/error-handler';
 
 export function useAlerts() {
   const { alerts, setAlerts } = useAlertStore();

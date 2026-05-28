@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.6.0]
+### Added
+- **Complete Internationalization System**: Implemented full i18n support with English and Chinese translations, integrated into all components.
+- **Comprehensive Translation Files**: Added missing translation keys and updated all user-facing text to use the translation system.
+
+### Improved
+- **Component Localization**: Updated all UI components to use the i18n system for all text elements.
+- **Version Consistency**: Unified all file version numbers to v2.6.0.
+
+### Fixed
+- **Code Quality**: Reviewed and fixed minor issues across the codebase.
+
 ## [2.5.1]
 ### Added
 - **Firestore Direct Integration**: Frontend now directly reads API status from Firestore, eliminating dependency on API routes.

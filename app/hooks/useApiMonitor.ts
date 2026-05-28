@@ -1,4 +1,4 @@
-// app/hooks/useApiMonitor.ts v2.5.1
+// app/hooks/useApiMonitor.ts v2.6.0
 // 改进：使用本地 API 检查，同时支持从 Firestore 同步数据
 import { useCallback, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
@@ -6,7 +6,7 @@ import { db } from '../lib/firebase';
 import { useApiStore, useAuthStore } from '../store';
 import { LATENCY_THRESHOLD, APIS_TO_CHECK } from '../constants';
 import { ApiStatus, Alert, StatusHistory } from '../types';
-import { logError, handleError } from '../lib/error';
+import { logError, handleError } from '../lib/error-handler';
 import { performCheck } from '../lib/monitor';
 import { sendAlert } from '../lib/notification';
 

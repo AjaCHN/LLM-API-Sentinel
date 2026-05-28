@@ -1,4 +1,4 @@
-// app/components/LatencyHistoryChart.tsx v2.5.1
+// app/components/LatencyHistoryChart.tsx v2.6.0
 'use client';
 
 import React, { memo } from 'react';
@@ -25,9 +25,9 @@ function LatencyHistoryChart({ chartData, statuses, getApiColor }: LatencyHistor
   const optimizedChartData = chartData.slice(-CHART_DATA_LIMIT); // 只显示最近50个数据点
 
   return (
-    <div id="chart-container" className="h-[250px] md:h-[350px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={optimizedChartData}>
+    <div id="chart-container" className="h-[250px] md:h-[350px] w-full min-h-[200px] min-w-[300px]">
+      <ResponsiveContainer width="100%" height="100%" minWidth={300} minHeight={200}>
+        <AreaChart data={optimizedChartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <defs>
             {statuses.map(s => (
               <linearGradient key={`grad-${s.id}`} id={`color-${s.id}`} x1="0" y1="0" x2="0" y2="1">
