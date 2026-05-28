@@ -22,6 +22,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 - **图表**：Recharts 3.8.0
 - **图标**：Lucide React
 - **状态管理**：Zustand 5.0.12
+- **国际化**：自定义 i18n 系统（支持中英文）
 
 ### 1.3 系统架构
 ```
@@ -61,8 +62,10 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   ├── lib/
 │   │   ├── cache.ts              # 缓存逻辑
 │   │   ├── concurrency.ts        # 并发控制
-│   │   ├── error.ts              # 错误处理
+│   │   ├── error-handler.ts      # 错误处理
+│   │   ├── error.tsx             # 错误边界和通知组件
 │   │   ├── firebase.ts           # Firebase 客户端配置
+│   │   ├── i18n.ts               # 国际化系统
 │   │   ├── metrics.ts            # 指标计算
 │   │   ├── monitor.ts            # API 监控逻辑
 │   │   ├── notification.ts       # 通知处理
@@ -199,7 +202,7 @@ interface ApiStatus {
   name: string;
   provider: string;
   url: string;
-  status: 'online' | 'offline';
+  status: 'online' | 'offline' | 'degraded';
   latency: number;
   lastChecked: string;
   error?: string;
@@ -216,11 +219,16 @@ interface Alert {
   id: string;
   apiId: string;
   apiName: string;
-  type: 'downtime' | 'latency';
-  severity: 'low' | 'medium' | 'high';
+  type: 'downtime' | 'latency' | 'error';
+  severity: 'low' | 'medium' | 'high' | 'critical';
   message: string;
   timestamp: any;
   resolved: boolean;
+  error?: string;
+  retries?: number;
+  latency?: number;
+  resolvedAt?: Date;
+  resolvedBy?: string;
 }
 ```
 
