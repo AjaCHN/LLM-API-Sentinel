@@ -6,13 +6,17 @@ export interface ApiStatus {
   name: string;
   provider: string;
   url: string;
-  status: 'online' | 'offline';
+  status: 'online' | 'offline' | 'degraded';
   latency: number;
   lastChecked: string;
   error?: string;
   retries?: number;
   errorRate?: number;
   availability?: number;
+  uptime?: number;
+  averageLatency?: number;
+  maxLatency?: number;
+  minLatency?: number;
 }
 
 // 图表数据点类型

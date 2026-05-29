@@ -29,6 +29,19 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
     return 'bg-primary';
   };
 
+  const getStatusBadgeClass = (status: ApiStatus['status']) => {
+    switch (status) {
+      case 'online':
+        return 'bg-green-500/10 text-green-500 border border-green-500/20';
+      case 'degraded':
+        return 'bg-amber-500/10 text-amber-500 border border-amber-500/20';
+      case 'offline':
+        return 'bg-red-500/10 text-red-500 border border-red-500/20';
+      default:
+        return 'bg-red-500/10 text-red-500 border border-red-500/20';
+    }
+  };
+
   return (
     <div id="api-cards-container" className="space-y-6">
       {providers.length > 0 ? (
@@ -55,16 +68,10 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                           <span className="truncate max-w-[180px]">{api.url}</span>
                         </div>
                       </div>
-                      <div 
-                        className={cn(
-                          'flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium',
-                          api.status === 'online' 
-                            ? 'bg-green-500/10 text-green-500 border border-green-500/20'
-                            : api.status === 'degraded'
-                            ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
-                            : 'bg-red-500/10 text-red-500 border border-red-500/20'
-                        )}
-                      >
+                      <div className={cn(
+                        'flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium',
+                        getStatusBadgeClass(api.status)
+                      )}>
                         {api.status === 'online' ? (
                           <>
                             <ShieldCheck className="h-3 w-3" />
