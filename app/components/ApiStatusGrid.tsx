@@ -36,13 +36,13 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
           <div key={provider} className="space-y-3">
             <h2 className="text-lg font-semibold text-foreground">{provider}</h2>
             <div 
-              className="api-grid"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full"
             >
               {statusesByProvider[provider].map((api) => (
                 <div 
                   key={api.id} 
                   id={`api-card-${api.id}`} 
-                  className="api-card-item group cursor-default rounded-lg bg-card text-card-foreground border border-border/20 hover:border-border/50 transition-all duration-200 shadow-sm hover:shadow-md"
+                  className="group cursor-default rounded-lg bg-card text-card-foreground border border-border/20 hover:border-border/50 transition-all duration-200 shadow-sm hover:shadow-md min-w-[280px]"
                 >
                   <div className="p-4 space-y-4">
                     <div className="flex items-start justify-between">
