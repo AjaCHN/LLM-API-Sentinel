@@ -12,7 +12,7 @@ import DashboardFooter from './components/DashboardFooter';
 import ApiConfig from './components/ApiConfig';
 import { getApiColor, cn } from './lib/utils';
 import { AlertTriangle, Settings } from 'lucide-react';
-import { ChartDataPoint } from './types';
+import { ChartDataPoint } from './types/index';
 import { useI18n } from './hooks/useI18n';
 
 export default function Dashboard() {

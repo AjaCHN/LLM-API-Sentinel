@@ -20,11 +20,14 @@ export interface ApiStatus {
 
 // 状态历史记录接口
 export interface StatusHistory {
+  id?: string;
   apiId: string;
   status: 'online' | 'offline' | 'degraded';
   latency: number;
   timestamp: Date;
   time: string;
+  error?: string;
+  retries?: number;
 }
 
 // 告警接口
@@ -55,13 +58,13 @@ export type ApiCheckResult = ApiStatus;
 
 // API 指标接口
 export interface ApiMetrics {
-  apiId: string;
+  apiId?: string;
   errorRate: number;
   availability: number;
   uptime: number;
   totalChecks: number;
   failedChecks: number;
-  lastUpdated: string;
+  lastUpdated?: string;
   averageLatency: number;
   maxLatency: number;
   minLatency: number;
@@ -93,6 +96,7 @@ export interface RequestOptions {
   timeout?: number;
   retries?: number;
   retryDelay?: number;
+  [key: string]: unknown;
 }
 
 // 队列项接口
@@ -152,4 +156,3 @@ export interface Notification {
   duration?: number;
   dismissible?: boolean;
 }
-
