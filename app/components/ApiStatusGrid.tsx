@@ -171,7 +171,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
           </div>
         ))
       ) : (
-        <div className="col-span-full border border-dashed border-border/30 p-16 text-center rounded-lg">
+        <div className="w-full border border-dashed border-border/30 p-8 md:p-16 text-center rounded-lg">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <BarChart3 className="h-8 w-8 text-muted-foreground" />
           </div>

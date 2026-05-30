@@ -1,6 +1,5 @@
 // app/types.ts v2.6.0
-
-// API 状态类型
+// API 状态接口
 export interface ApiStatus {
   id: string;
   name: string;
@@ -19,59 +18,60 @@ export interface ApiStatus {
   minLatency?: number;
 }
 
-// 图表数据点类型
-export interface ChartDataPoint {
+// 状态历史记录接口
+export interface StatusHistory {
+  id?: string;
+  apiId: string;
+  status: 'online' | 'offline' | 'degraded';
+  latency: number;
+  timestamp: Date;
   time: string;
-  [apiId: string]: number | string;
+  error?: string;
+  retries?: number;
 }
 
-// 告警类型
+// 告警接口
 export interface Alert {
   id: string;
   apiId: string;
   apiName: string;
-  type: 'downtime' | 'latency';
-  severity: 'low' | 'medium' | 'high';
+  type: 'downtime' | 'latency' | 'error';
+  severity: 'low' | 'medium' | 'high' | 'critical';
   message: string;
   timestamp: Date | unknown;
   resolved: boolean;
   error?: string;
   retries?: number;
   latency?: number;
+  resolvedAt?: Date;
+  resolvedBy?: string;
 }
 
-// 状态历史类型
-export interface StatusHistory {
-  id: string;
-  apiId: string;
-  status: 'online' | 'offline';
-  latency: number;
-  timestamp: Date | string;
-  time?: string;
-  error?: string;
-  retries?: number;
+// 图表数据点接口
+export interface ChartDataPoint {
+  time: string;
+  [apiId: string]: number | string;
 }
 
-// API 检查结果类型
-export interface ApiCheckResult {
-  id: string;
-  name: string;
-  provider: string;
-  url: string;
-  status: 'online' | 'offline';
-  latency: number;
-  lastChecked: string;
-  error?: string;
-  retries?: number;
-  errorRate?: number;
-  availability?: number;
-  uptime?: number;
-  averageLatency?: number;
-  maxLatency?: number;
-  minLatency?: number;
+// API 检查结果接口
+export type ApiCheckResult = ApiStatus;
+
+// API 指标接口
+export interface ApiMetrics {
+  apiId?: string;
+  errorRate: number;
+  availability: number;
+  uptime: number;
+  totalChecks: number;
+  failedChecks: number;
+  lastUpdated?: string;
+  averageLatency: number;
+  maxLatency: number;
+  minLatency: number;
+  responseTimeTrend?: number[];
 }
 
-// API 检查缓存类型
+// 缓存接口
 export interface ApiCheckCache {
   [apiId: string]: {
     result: ApiCheckResult;
@@ -80,28 +80,38 @@ export interface ApiCheckCache {
   };
 }
 
-// 网络质量类型
-export type NetworkQuality = 'excellent' | 'good' | 'fair' | 'poor';
+// 地理位置接口
+export interface GeoLocation {
+  city: string;
+  country: string;
+  ip?: string;
+  region?: string;
+  latitude?: number;
+  longitude?: number;
+}
 
-// 请求选项类型
+// 并发请求选项接口
 export interface RequestOptions {
-  priority?: 'high' | 'medium' | 'low';
+  priority?: 'low' | 'medium' | 'high';
   timeout?: number;
   retries?: number;
   retryDelay?: number;
   [key: string]: unknown;
 }
 
-// 队列项类型
+// 队列项接口
 export interface QueueItem<T> {
   fn: () => Promise<T>;
   options: RequestOptions;
   resolve: (value: T) => void;
-  reject: (reason: unknown) => void;
+  reject: (error: unknown) => void;
   timestamp: number;
 }
 
-// 并发状态类型
+// 网络质量接口
+export type NetworkQuality = 'excellent' | 'good' | 'fair' | 'poor';
+
+// 并发状态接口
 export interface ConcurrencyStatus {
   queueLength: number;
   activeRequests: number;
@@ -109,7 +119,27 @@ export interface ConcurrencyStatus {
   networkQuality: NetworkQuality;
 }
 
-// 应用错误类型
+// API 配置接口
+export interface ApiConfig {
+  id: string;
+  name: string;
+  provider: string;
+  url: string;
+  enabled?: boolean;
+  checkInterval?: number;
+  timeout?: number;
+}
+
+// 用户接口
+export interface User {
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+  providerId?: string;
+}
+
+// 错误接口
 export interface AppError {
   code: string;
   message: string;
@@ -117,12 +147,12 @@ export interface AppError {
   timestamp: number;
 }
 
-// 通知类型
+// 通知接口
 export interface Notification {
   id: string;
   type: 'success' | 'error' | 'warning' | 'info';
   message: string;
   timestamp: number;
-  duration: number;
-  dismissible: boolean;
+  duration?: number;
+  dismissible?: boolean;
 }
