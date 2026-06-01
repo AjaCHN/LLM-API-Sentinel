@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { ShieldCheck, ShieldAlert, AlertTriangle, BarChart3, Clock, Server } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, BarChart3, Clock } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { LATENCY_THRESHOLD } from '../constants';
 import { ApiStatus } from '../types';
@@ -26,38 +26,38 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
     if (status === 'offline') return 'bg-red-500';
     if (status === 'degraded') return 'bg-amber-500';
     if (latency > LATENCY_THRESHOLD) return 'bg-amber-500';
-    return 'bg-primary';
+    return 'bg-green-500';
   };
+
+  let cardIndex = 0;
 
   return (
     <div id="api-cards-container" className="space-y-6">
       {providers.length > 0 ? (
         providers.map((provider) => (
           <div key={provider} className="space-y-3">
-            <h2 className="text-lg font-semibold text-foreground">{provider}</h2>
+            <h3 className="text-lg font-semibold text-foreground">{provider}</h3>
             <div 
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
             >
-              {statusesByProvider[provider].map((api) => (
-                <div 
-                  key={api.id} 
-                  id={`api-card-${api.id}`} 
-                  className="group cursor-default rounded-lg bg-card text-card-foreground border border-border/20 hover:border-border/50 transition-all duration-200 shadow-sm hover:shadow-md min-w-[280px]"
-                >
-                  <div className="p-4 space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2">
-                        <h3 className="font-medium text-foreground group-hover:text-primary transition-colors duration-200">
-                          {api.name}
-                        </h3>
-                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                          <Server className="h-4 w-4" />
-                          <span className="truncate max-w-[180px]">{api.url}</span>
-                        </div>
+              {statusesByProvider[provider].map((api) => {
+                const animationDelay = `${cardIndex * 0.1}s`;
+                cardIndex++;
+                return (
+                  <div 
+                    key={api.id} 
+                    id={`api-card-${api.id}`} 
+                    className="group bg-card border border-border/20 hover:border-border/50 transition-all duration-200 shadow-sm hover:shadow-md rounded-lg p-4 animate-fade-in"
+                    style={{ animationDelay }}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h4 className="font-medium text-foreground group-hover:text-primary transition-colors">{api.name}</h4>
+                        <p className="text-xs text-muted-foreground mt-1">{api.provider}</p>
                       </div>
-                      <div 
+                      <span 
                         className={cn(
-                          'flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium',
+                          'flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium',
                           api.status === 'online' 
                             ? 'bg-green-500/10 text-green-500 border border-green-500/20'
                             : api.status === 'degraded'
@@ -67,7 +67,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                       >
                         {api.status === 'online' ? (
                           <>
-                            <ShieldCheck className="h-3 w-3" />
+                            <CheckCircle2 className="h-3 w-3" />
                             <span>{t('api.online')}</span>
                           </>
                         ) : api.status === 'degraded' ? (
@@ -77,50 +77,46 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                           </>
                         ) : (
                           <>
-                            <ShieldAlert className="h-3 w-3" />
+                            <XCircle className="h-3 w-3" />
                             <span>{t('api.offline')}</span>
                           </>
                         )}
-                      </div>
+                      </span>
                     </div>
 
                     <div className="space-y-3">
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                           <span>{t('api.latency')}</span>
-                          <span 
-                            className={cn(
-                              'font-medium',
-                              api.latency < LATENCY_THRESHOLD ? 'text-foreground' : 'text-amber-600'
-                            )}
-                          >
-                            {api.latency}ms
+                          <span className={cn(
+                            'font-medium',
+                            api.latency >= LATENCY_THRESHOLD && api.status !== 'offline' ? 'text-amber-500' : 'text-foreground'
+                          )}>
+                            {api.status === 'offline' ? t('api.timeout') : `${api.latency}ms`}
                           </span>
                         </div>
-                        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                           <div 
                             className={cn(
-                              'h-full rounded-full transition-all duration-500 ease-out',
+                              'h-full rounded-full transition-all duration-500',
                               getProgressBarColor(api.latency, api.status)
                             )}
                             style={{ 
-                              width: `${Math.min((api.latency / LATENCY_THRESHOLD) * 100, 100)}%` 
+                              width: api.status === 'offline' ? '100%' : `${Math.min((api.latency / LATENCY_THRESHOLD) * 100, 100)}%` 
                             }}
                           />
                         </div>
                       </div>
 
                       {api.errorRate !== undefined && (
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <div>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                             <span>{t('api.errorRate')}</span>
-                            <span className="font-medium text-foreground">
-                              {api.errorRate}%
-                            </span>
+                            <span className="font-medium text-foreground">{api.errorRate}%</span>
                           </div>
-                          <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                             <div 
-                              className="h-full bg-amber-500 rounded-full transition-all duration-500 ease-out"
+                              className="h-full bg-amber-500 rounded-full transition-all duration-500"
                               style={{ width: `${api.errorRate}%` }}
                             />
                           </div>
@@ -128,16 +124,14 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                       )}
 
                       {api.availability !== undefined && (
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <div>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                             <span>{t('api.availability')}</span>
-                            <span className="font-medium text-foreground">
-                              {api.availability}%
-                            </span>
+                            <span className="font-medium text-foreground">{api.availability}%</span>
                           </div>
-                          <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                             <div 
-                              className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                              className="h-full bg-primary rounded-full transition-all duration-500"
                               style={{ width: `${api.availability}%` }}
                             />
                           </div>
@@ -145,21 +139,24 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4">
-                      <div className="flex items-center space-x-2">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-3 mt-4">
+                      <div className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        <span>{t('api.lastChecked')}: {new Date(api.lastChecked).toLocaleString()}</span>
+                        <span>{t('api.lastChecked')}: {new Date(api.lastChecked).toLocaleTimeString()}</span>
                       </div>
                       {api.retries && api.retries > 0 && (
-                        <div className="flex items-center space-x-1 text-amber-600">
+                        <div className={cn(
+                          'flex items-center gap-1',
+                          api.status === 'offline' ? 'text-red-500' : 'text-amber-500'
+                        )}>
                           <AlertTriangle className="h-3 w-3" />
                           <span>{api.retries} {t('api.retries')}</span>
                         </div>
                       )}
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ))
