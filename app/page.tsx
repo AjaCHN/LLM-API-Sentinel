@@ -70,8 +70,8 @@ export default function Dashboard() {
         )}
 
         <section id="status-grid-section">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
-            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">{t('dashboard.status')}</h2>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-4">
+            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic">{t('dashboard.status')}</h2>
             <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
               {lastUpdate && (
                 <span className="text-[10px] font-mono opacity-50">
@@ -81,7 +81,7 @@ export default function Dashboard() {
               <button 
                 onClick={() => setShowConfig(!showConfig)}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 border border-border text-[10px] font-bold uppercase tracking-widest transition-all rounded-md hover:bg-foreground hover:text-background"
+                  "flex items-center gap-1.5 px-3 py-1.5 border border-border/50 text-[10px] font-bold uppercase tracking-widest transition-all rounded-md hover:bg-foreground hover:text-background"
                 )}
               >
                 <Settings className="w-3 h-3" />
@@ -108,10 +108,10 @@ export default function Dashboard() {
           <StatusGrid statuses={statuses} />
         </section>
 
-        <section id="history-chart-section" className="border border-border bg-card/50 p-4 md:p-6 rounded-lg">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4">
-            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic font-serif">{t('dashboard.latencyHistory')}</h2>
-            <div id="chart-legend" className="flex flex-wrap gap-x-4 gap-y-2 max-w-full">
+        <section id="history-chart-section" className="border border-border/20 bg-card/50 p-4 md:p-6 rounded-lg">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-6 gap-4">
+            <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic">{t('dashboard.latencyHistory')}</h2>
+            <div id="chart-legend" className="flex flex-wrap gap-x-4 gap-y-2 max-w-full scrollbar-hide">
               {statuses.slice(0, 8).map(s => (
                 <div key={s.id} className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: getApiColor(s.id) }} />

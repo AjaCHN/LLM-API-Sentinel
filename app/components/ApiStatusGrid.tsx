@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { ShieldCheck, ShieldAlert, AlertTriangle, BarChart3, Clock } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, BarChart3, Clock } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { LATENCY_THRESHOLD } from '../constants';
 import { ApiStatus } from '../types';
@@ -67,7 +67,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                       >
                         {api.status === 'online' ? (
                           <>
-                            <ShieldCheck className="h-3 w-3" />
+                            <CheckCircle2 className="h-3 w-3" />
                             <span>{t('api.online')}</span>
                           </>
                         ) : api.status === 'degraded' ? (
@@ -77,7 +77,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                           </>
                         ) : (
                           <>
-                            <ShieldAlert className="h-3 w-3" />
+                            <XCircle className="h-3 w-3" />
                             <span>{t('api.offline')}</span>
                           </>
                         )}
