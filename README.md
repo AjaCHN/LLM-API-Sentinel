@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.6.0
+# LLM API Sentinel v2.6.1
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -17,6 +17,10 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
   - Backend: Concurrent request limiting, API check retry mechanism, and batch Firestore writes
 - **Geographic Location**: Real-time detection of monitoring node location with 24-hour local caching.
 - **Caching System**: Multi-layer caching (memory + localStorage + sessionStorage) with intelligent expiry calculation.
+### 原型演示
+[在线原型](./prototype.html)
+### Prototype Demo
+[Live Prototype](./prototype.html)
 
 ## Tech Stack
 - **Framework**: Next.js 14.2.13 (App Router, Static Export)

@@ -1,0 +1,82 @@
+<!-- prototype.html v0.1.0 -->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LLM API Sentinel Prototype v0.1.0</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Enable dark mode based on prefers-color-scheme
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+  <style>
+    /* Custom gradient background for premium feel */
+    body {
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .dark .glass {
+      background: rgba(0, 0, 0, 0.4);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col text-gray-100">
+  <!-- Header -->
+  <header class="flex items-center justify-between p-4 glass" id="header">
+    <h1 class="text-2xl font-bold">LLM API Sentinel</h1>
+    <div class="flex items-center space-x-4">
+      <button id="themeToggle" class="p-2 rounded hover:bg-white/20 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-9.66l-.71.71M4.05 19.95l-.71-.71M21 12h-1M4 12H3m15.66 5.66l-.71-.71M4.05 4.05l-.71.71"/></svg>
+      </button>
+      <button id="loginBtn" class="p-2 rounded hover:bg-white/20 transition">Login</button>
+    </div>
+  </header>
+
+  <!-- Main Dashboard -->
+  <main class="flex-1 p-4 grid grid-cols-1 lg:grid-cols-3 gap-4" id="dashboard">
+    <!-- API List (left) -->
+    <section class="lg:col-span-1 space-y-2 glass p-4 overflow-y-auto" id="apiList">
+      <h2 class="text-xl font-semibold mb-2">API 状态</h2>
+      <!-- Example card -->
+      <div class="p-3 rounded bg-white/10 hover:bg-white/20 transition cursor-pointer" data-api-id="openai-gpt-4o">
+        <div class="flex justify-between items-center">
+          <span class="font-medium">OpenAI GPT‑4o</span>
+          <span class="text-green-400">Online</span>
+        </div>
+        <div class="text-sm mt-1">延迟: <span class="font-mono">120ms</span></div>
+      </div>
+      <!-- Repeat cards for other APIs (placeholder) -->
+    </section>
+
+    <!-- Chart (center) -->
+    <section class="lg:col-span-2 glass p-4" id="chartContainer">
+      <h2 class="text-xl font-semibold mb-2">延迟历史</h2>
+      <div class="w-full h-64 bg-gray-800/30 flex items-center justify-center text-gray-400">
+        <!-- Placeholder for Recharts AreaChart -->
+        <span>Chart placeholder</span>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="p-4 text-center glass" id="footer">
+    <span>© 2026 LLM API Sentinel – v0.1.0</span>
+  </footer>
+
+  <script>
+    // Theme toggle logic
+    const toggle = document.getElementById('themeToggle');
+    toggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+  </script>
+</body>
+</html>
