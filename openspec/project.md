@@ -12,6 +12,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 - **安全访问**：手动健康检查受 Google 身份验证保护
 - **智能告警**：自动检测 API 宕机和延迟过高，并生成告警通知
 - **数据缓存**：内存和本地存储缓存机制，减少重复请求
+- **地理位置**：实时检测监控节点位置，24小时本地缓存
 
 ### 1.2 技术栈
 | 类别 | 技术 | 版本 |
@@ -93,13 +94,8 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   ├── style.css                 # 主题样式
 │   ├── layout.tsx                # 根布局
 │   └── page.tsx                  # 主页面
-├── functions/                    # Firebase Cloud Functions (可选)
 ├── openspec/                     # 项目规范文档
-├── .trae/
-│   ├── rules/                    # Trae IDE 规则
-│   └── skills/                   # 自定义技能
-├── server.ts                     # Express 自定义服务器
-├── middleware.ts                 # Next.js 中间件
+├── server.ts                     # Express 自定义服务器（含后台监控）
 └── package.json
 ```
 
