@@ -1,4 +1,4 @@
-// server.ts v2.6.0
+// server.ts v2.6.1
 import express from 'express';
 import next from 'next';
 import { initializeApp } from 'firebase-admin/app';

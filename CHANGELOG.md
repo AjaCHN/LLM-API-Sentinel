@@ -7,7 +7,7 @@
 
 ### Improved
 - **Component Localization**: Updated all UI components to use the i18n system for all text elements.
-- **Version Consistency**: Unified all file version numbers to v2.6.0.
+- **Version Consistency**: Unified all file version numbers to v2.6.1.
 
 ### Fixed
 - **Code Quality**: Reviewed and fixed minor issues across the codebase.
