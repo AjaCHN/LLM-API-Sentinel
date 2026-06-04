@@ -1,6 +1,24 @@
 # Changelog
 
-## [2.6.0]
+## [2.6.2]
+### Changed
+- **Supabase Migration**: Replaced Firebase with Supabase for data storage and authentication.
+  - Replaced Firebase Firestore with Supabase PostgreSQL
+  - Replaced Firebase Authentication with Supabase Auth
+  - Added Supabase Realtime subscriptions for live alert updates
+- **Database Schema**: Created new PostgreSQL schema with tables for api_status, status_history, alerts, and user_profiles.
+- **Security**: Implemented Row Level Security (RLS) policies for database access control.
+- **Dependencies**: Updated package.json to include @supabase/supabase-js and removed Firebase dependencies.
+
+### Added
+- **Database Migration Script**: Added supabase/schema.sql with complete database setup.
+- **Environment Configuration**: Created .env.example with Supabase configuration variables.
+
+### Removed
+- Firebase client and admin SDKs
+- Legacy firebase.ts file (no longer imported)
+
+## [2.6.1]
 ### Added
 - **Complete Internationalization System**: Implemented full i18n support with English and Chinese translations, integrated into all components.
 - **Comprehensive Translation Files**: Added missing translation keys and updated all user-facing text to use the translation system.

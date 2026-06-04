@@ -1,6 +1,6 @@
 {
   "name": "llm-api-sentinel",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "type": "module",
   "private": true,
   "scripts": {
@@ -18,13 +18,12 @@
   "dependencies": {
     "@google/genai": "^1.17.0",
     "@hookform/resolvers": "^5.2.1",
+    "@supabase/supabase-js": "^2.107.0",
     "autoprefixer": "^10.4.21",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "express": "^5.2.1",
-    "firebase": "^12.10.0",
-    "firebase-admin": "^13.7.0",
     "lucide-react": "^0.553.0",
     "motion": "^12.23.24",
     "next": "^14.2.13",
@@ -49,7 +48,6 @@
     "@types/react-dom": "^18.2.22",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.13",
-    "firebase-tools": "^15.0.0",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
     "tailwindcss": "4.1.11",
