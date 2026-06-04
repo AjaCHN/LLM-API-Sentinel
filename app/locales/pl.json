@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "Upłygnął limit czasu żądania sieciowego. Sprawdź połączenie.",
+    "networkOffline": "Jesteś aktualnie offline. Sprawdź sieć.",
+    "networkError": "Błąd połączenia sieciowego. Spróbuj ponownie później.",
+    "apiUnavailable": "Usługa API jest tymczasowo niedostępna.",
+    "apiError": "Żądanie API nie powiodło się.",
+    "apiRateLimited": "Żądania API są ograniczane. Spróbuj ponownie później.",
+    "authRequired": "Najpierw się zaloguj.",
+    "authFailed": "Logowanie nie powiodło. Sprawdź dane logowania.",
+    "authExpired": "Twoja sesja wygasła. Zaloguj się ponownie.",
+    "firebaseError": "Błąd usługi Firebase.",
+    "firestoreError": "Operacja bazy danych nie powiodła się.",
+    "validationError": "Walidacja danych wejściowych nie powiodła.",
+    "unknownError": "Wystąpił nieznany błąd. Spróbuj ponownie później.",
+    "errorOccurred": "Wystąpił błąd",
+    "refreshPage": "Odśwież stronę"
+  },
+  "alerts": {
+    "activeAlerts": "Aktywne Alerty",
+    "noActiveAlerts": "Brak aktywnych alertów",
+    "resolve": "Rozwiąż",
+    "downtime": "Przestój",
+    "error": "Błąd",
+    "latency": "Opóźnienie",
+    "viewDetails": "Zobacz Szczegóły",
+    "alertsLabel": "Alerty",
+    "activeIssues": "aktywny problem",
+    "activeIssuesPlural": "aktywne problemy",
+    "detected": "wykryto"
+  },
+  "api": {
+    "online": "Online",
+    "offline": "Offline",
+    "degraded": "Zdegradowany",
+    "latency": "Opóźnienie",
+    "errorRate": "Wskaźnik błędów",
+    "availability": "Dostępność",
+    "uptime": "Czas pracy",
+    "averageLatency": "Średnie opóźnienie",
+    "maxLatency": "Maksymalne opóźnienie",
+    "minLatency": "Minimalne opóźnienie",
+    "lastChecked": "Ostatnio sprawdzono",
+    "retries": "ponownych prób",
+    "noApiConfigured": "Nie skonfigurowano punktów końcowych API",
+    "addApiHint": "Dodaj punkty końcowe API, aby monitorować ich stan i wydajność",
+    "status": "Status"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "Globalne Monitorowanie API AI",
+    "monitoringFrom": "Monitorowanie z",
+    "refresh": "Odśwież",
+    "checkNow": "Sprawdź Teraz",
+    "checking": "Sprawdzanie...",
+    "lastSync": "Ostatnia Synchronizacja",
+    "status": "Status",
+    "latencyHistory": "Historia Opóźnień",
+    "more": "więcej",
+    "signIn": "Zaloguj się",
+    "signOut": "Wyloguj się",
+    "toggleTheme": "Zmień Motyw",
+    "config": "Konfiguracja"
+  },
+  "history": {
+    "performanceHistory": "Historia Wydajności",
+    "noHistory": "Brak dostępnych danych historycznych"
+  },
+  "config": {
+    "apiConfiguration": "Konfiguracja API",
+    "addApi": "Dodaj API",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "name": "Nazwa",
+    "provider": "Dostawca",
+    "url": "URL",
+    "edit": "Edytuj",
+    "reset": "Resetuj do konfiguracji domyślnej"
+  },
+  "general": {
+    "and": "i"
+  }
+}

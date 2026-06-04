@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "Ağ isteği zaman aşımına uğradı. Lütfen bağlantınızı kontrol edin.",
+    "networkOffline": "Şu anda çevrimdışısınız. Lütfen ağı kontrol edin.",
+    "networkError": "Ağ bağlantısı hatası. Lütfen daha sonra tekrar deneyin.",
+    "apiUnavailable": "API hizmeti geçici olarak kullanılamıyor.",
+    "apiError": "API isteği başarısız oldu.",
+    "apiRateLimited": "API istekleri sınırlanıyor. Lütfen daha sonra tekrar deneyin.",
+    "authRequired": "Lütfen önce giriş yapın.",
+    "authFailed": "Giriş başarısız. Lütfen kimlik bilgilerinizi kontrol edin.",
+    "authExpired": "Oturumunuz süresi doldu. Lütfen tekrar giriş yapın.",
+    "firebaseError": "Firebase hizmet hatası.",
+    "firestoreError": "Veritabanı işlemi başarısız oldu.",
+    "validationError": "Girdi verisi doğrulaması başarısız oldu.",
+    "unknownError": "Bilinmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+    "errorOccurred": "Bir hata oluştu",
+    "refreshPage": "Sayfayı yenile"
+  },
+  "alerts": {
+    "activeAlerts": "Aktif Uyarılar",
+    "noActiveAlerts": "Aktif uyarı yok",
+    "resolve": "Çöz",
+    "downtime": "Kesinti",
+    "error": "Hata",
+    "latency": "Gecikme",
+    "viewDetails": "Detayları Görüntüle",
+    "alertsLabel": "Uyarılar",
+    "activeIssues": "aktif sorun",
+    "activeIssuesPlural": "aktif sorun",
+    "detected": "tespit edildi"
+  },
+  "api": {
+    "online": "Çevrimiçi",
+    "offline": "Çevrimdışı",
+    "degraded": "Bozulmuş",
+    "latency": "Gecikme",
+    "errorRate": "Hata Oranı",
+    "availability": "Kullanılabilirlik",
+    "uptime": "Çalışma Süresi",
+    "averageLatency": "Ortalama Gecikme",
+    "maxLatency": "Maksimum Gecikme",
+    "minLatency": "Minimum Gecikme",
+    "lastChecked": "Son kontrol",
+    "retries": "yeniden deneme",
+    "noApiConfigured": "Yapılandırılmış API uç noktası yok",
+    "addApiHint": "Durumlarını ve performanslarını izlemek için API uç noktaları ekleyin",
+    "status": "Durum"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "Küresel AI API İzleme",
+    "monitoringFrom": "İzleme kaynağı",
+    "refresh": "Yenile",
+    "checkNow": "Şimdi Kontrol Et",
+    "checking": "Kontrol ediliyor...",
+    "lastSync": "Son Senkronizasyon",
+    "status": "Durum",
+    "latencyHistory": "Geçmiş Gecikme",
+    "more": "daha",
+    "signIn": "Giriş Yap",
+    "signOut": "Çıkış Yap",
+    "toggleTheme": "Temayı Değiştir",
+    "config": "Yapılandırma"
+  },
+  "history": {
+    "performanceHistory": "Performans Geçmişi",
+    "noHistory": "Kullanılabilir geçmiş veri yok"
+  },
+  "config": {
+    "apiConfiguration": "API Yapılandırması",
+    "addApi": "API Ekle",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "name": "Ad",
+    "provider": "Sağlayıcı",
+    "url": "URL",
+    "edit": "Düzenle",
+    "reset": "Varsayılan yapılandırmaya sıfırla"
+  },
+  "general": {
+    "and": "ve"
+  }
+}

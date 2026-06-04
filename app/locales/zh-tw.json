@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "網路請求超時，請檢查您的連線",
+    "networkOffline": "您目前離線，請檢查網路",
+    "networkError": "網路連線錯誤，請稍後重試",
+    "apiUnavailable": "API 服務暫時無法使用",
+    "apiError": "API 請求失敗",
+    "apiRateLimited": "API 請求被限制，請稍後重試",
+    "authRequired": "請先登入",
+    "authFailed": "登入失敗，請檢查您的憑證",
+    "authExpired": "您的連線已過期，請重新登入",
+    "firebaseError": "Firebase 服務錯誤",
+    "firestoreError": "資料庫操作失敗",
+    "validationError": "輸入資料驗證失敗",
+    "unknownError": "發生未知錯誤，請稍後重試",
+    "errorOccurred": "發生錯誤",
+    "refreshPage": "重新整理頁面"
+  },
+  "alerts": {
+    "activeAlerts": "活躍警報",
+    "noActiveAlerts": "沒有活躍警報",
+    "resolve": "解決",
+    "downtime": "停機",
+    "error": "錯誤",
+    "latency": "延遲",
+    "viewDetails": "查看詳情",
+    "alertsLabel": "警報",
+    "activeIssues": "活躍問題",
+    "activeIssuesPlural": "活躍問題",
+    "detected": "已偵測"
+  },
+  "api": {
+    "online": "線上",
+    "offline": "離線",
+    "degraded": "降級",
+    "latency": "延遲",
+    "errorRate": "錯誤率",
+    "availability": "可用性",
+    "uptime": "運行時間",
+    "averageLatency": "平均延遲",
+    "maxLatency": "最大延遲",
+    "minLatency": "最小延遲",
+    "lastChecked": "最後檢查",
+    "retries": "重試",
+    "noApiConfigured": "未設定 API 端點",
+    "addApiHint": "新增 API 端點以監控其狀態和效能",
+    "status": "狀態"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "全球 AI API 監控",
+    "monitoringFrom": "監控來源",
+    "refresh": "重新整理",
+    "checkNow": "立即檢查",
+    "checking": "檢查中...",
+    "lastSync": "最後同步",
+    "status": "狀態",
+    "latencyHistory": "延遲歷史",
+    "more": "更多",
+    "signIn": "登入",
+    "signOut": "登出",
+    "toggleTheme": "切換主題",
+    "config": "設定"
+  },
+  "history": {
+    "performanceHistory": "效能歷史",
+    "noHistory": "暫無歷史資料"
+  },
+  "config": {
+    "apiConfiguration": "API 設定",
+    "addApi": "新增 API",
+    "save": "儲存",
+    "cancel": "取消",
+    "delete": "刪除",
+    "name": "名稱",
+    "provider": "供應商",
+    "url": "網址",
+    "edit": "編輯",
+    "reset": "重設為預設設定"
+  },
+  "general": {
+    "and": "和"
+  }
+}

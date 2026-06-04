@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "La richiesta di rete è scaduta. Controlla la tua connessione.",
+    "networkOffline": "Sei attualmente offline. Controlla la rete.",
+    "networkError": "Errore di connessione di rete. Riprova più tardi.",
+    "apiUnavailable": "Il servizio API è temporaneamente non disponibile.",
+    "apiError": "La richiesta API non è riuscita.",
+    "apiRateLimited": "Le richieste API sono limitate. Riprova più tardi.",
+    "authRequired": "Effettua prima l'accesso.",
+    "authFailed": "Accesso non riuscito. Controlla le tue credenziali.",
+    "authExpired": "La tua sessione è scaduta. Effettua nuovamente l'accesso.",
+    "firebaseError": "Errore del servizio Firebase.",
+    "firestoreError": "Operazione del database non riuscita.",
+    "validationError": "Validazione dei dati di input non riuscita.",
+    "unknownError": "Si è verificato un errore sconosciuto. Riprova più tardi.",
+    "errorOccurred": "Si è verificato un errore",
+    "refreshPage": "Aggiorna pagina"
+  },
+  "alerts": {
+    "activeAlerts": "Avvisi Attivi",
+    "noActiveAlerts": "Nessun avviso attivo",
+    "resolve": "Risolvi",
+    "downtime": "Disservizio",
+    "error": "Errore",
+    "latency": "Latenza",
+    "viewDetails": "Vedi Dettagli",
+    "alertsLabel": "Avvisi",
+    "activeIssues": "problema attivo",
+    "activeIssuesPlural": "problemi attivi",
+    "detected": "rilevato"
+  },
+  "api": {
+    "online": "Online",
+    "offline": "Offline",
+    "degraded": "Degradato",
+    "latency": "Latenza",
+    "errorRate": "Tasso di Errore",
+    "availability": "Disponibilità",
+    "uptime": "Tempo di attività",
+    "averageLatency": "Latenza Media",
+    "maxLatency": "Latenza Massima",
+    "minLatency": "Latenza Minima",
+    "lastChecked": "Ultimo controllo",
+    "retries": "ritentativi",
+    "noApiConfigured": "Nessun endpoint API configurato",
+    "addApiHint": "Aggiungi endpoint API per monitorare il loro stato e le prestazioni",
+    "status": "Stato"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "Monitoraggio API AI Globale",
+    "monitoringFrom": "Monitoraggio da",
+    "refresh": "Aggiorna",
+    "checkNow": "Controlla Ora",
+    "checking": "Controllando...",
+    "lastSync": "Ultima Sincronizzazione",
+    "status": "Stato",
+    "latencyHistory": "Storico Latenza",
+    "more": "altro",
+    "signIn": "Accedi",
+    "signOut": "Esci",
+    "toggleTheme": "Cambia Tema",
+    "config": "Configurazione"
+  },
+  "history": {
+    "performanceHistory": "Storico Prestazioni",
+    "noHistory": "Nessun dato storico disponibile"
+  },
+  "config": {
+    "apiConfiguration": "Configurazione API",
+    "addApi": "Aggiungi API",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "name": "Nome",
+    "provider": "Provider",
+    "url": "URL",
+    "edit": "Modifica",
+    "reset": "Ripristina alla configurazione predefinita"
+  },
+  "general": {
+    "and": "e"
+  }
+}

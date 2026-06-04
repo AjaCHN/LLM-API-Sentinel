@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "Yêu cầu mạng đã hết thời gian. Vui lòng kiểm tra kết nối của bạn.",
+    "networkOffline": "Bạn hiện đang offline. Vui lòng kiểm tra mạng.",
+    "networkError": "Lỗi kết nối mạng. Vui lòng thử lại sau.",
+    "apiUnavailable": "Dịch vụ API tạm thời không khả dụng.",
+    "apiError": "Yêu cầu API thất bại.",
+    "apiRateLimited": "Yêu cầu API đang bị giới hạn. Vui lòng thử lại sau.",
+    "authRequired": "Vui lòng đăng nhập trước.",
+    "authFailed": "Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập.",
+    "authExpired": "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại.",
+    "firebaseError": "Lỗi dịch vụ Firebase.",
+    "firestoreError": "Thao tác cơ sở dữ liệu thất bại.",
+    "validationError": "Xác thực dữ liệu đầu vào thất bại.",
+    "unknownError": "Đã xảy ra lỗi không xác định. Vui lòng thử lại sau.",
+    "errorOccurred": "Đã xảy ra lỗi",
+    "refreshPage": "Làm mới trang"
+  },
+  "alerts": {
+    "activeAlerts": "Cảnh Báo Đang Hoạt Động",
+    "noActiveAlerts": "Không có cảnh báo đang hoạt động",
+    "resolve": "Giải quyết",
+    "downtime": "Ngừng hoạt động",
+    "error": "Lỗi",
+    "latency": "Độ trễ",
+    "viewDetails": "Xem Chi Tiết",
+    "alertsLabel": "Cảnh Báo",
+    "activeIssues": "vấn đề đang hoạt động",
+    "activeIssuesPlural": "vấn đề đang hoạt động",
+    "detected": "đã phát hiện"
+  },
+  "api": {
+    "online": "Trực tuyến",
+    "offline": "Ngoại tuyến",
+    "degraded": "Suy giảm",
+    "latency": "Độ trễ",
+    "errorRate": "Tỷ lệ lỗi",
+    "availability": "Khả dụng",
+    "uptime": "Thời gian hoạt động",
+    "averageLatency": "Độ trễ trung bình",
+    "maxLatency": "Độ trễ tối đa",
+    "minLatency": "Độ trễ tối thiểu",
+    "lastChecked": "Kiểm tra lần cuối",
+    "retries": "lần thử lại",
+    "noApiConfigured": "Không có điểm cuối API nào được định cấu hình",
+    "addApiHint": "Thêm điểm cuối API để giám sát trạng thái và hiệu suất của chúng",
+    "status": "Trạng thái"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "Giám sát API AI Toàn cầu",
+    "monitoringFrom": "Giám sát từ",
+    "refresh": "Làm mới",
+    "checkNow": "Kiểm tra Ngay",
+    "checking": "Đang kiểm tra...",
+    "lastSync": "Đồng bộ cuối",
+    "status": "Trạng thái",
+    "latencyHistory": "Lịch sử Độ trễ",
+    "more": "thêm",
+    "signIn": "Đăng nhập",
+    "signOut": "Đăng xuất",
+    "toggleTheme": "Chuyển đổi Giao diện",
+    "config": "Cấu hình"
+  },
+  "history": {
+    "performanceHistory": "Lịch sử Hiệu suất",
+    "noHistory": "Không có dữ liệu lịch sử"
+  },
+  "config": {
+    "apiConfiguration": "Cấu hình API",
+    "addApi": "Thêm API",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "name": "Tên",
+    "provider": "Nhà cung cấp",
+    "url": "URL",
+    "edit": "Sửa",
+    "reset": "Đặt lại về cấu hình mặc định"
+  },
+  "general": {
+    "and": "và"
+  }
+}
