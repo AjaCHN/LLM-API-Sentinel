@@ -1,4 +1,4 @@
-// app/components/LatencyHistoryChart.tsx v2.6.0
+// app/components/LatencyHistoryChart.tsx v2.6.1
 'use client';
 
 import React, { memo } from 'react';
@@ -25,40 +25,44 @@ function LatencyHistoryChart({ chartData, statuses, getApiColor }: LatencyHistor
   const optimizedChartData = chartData.slice(-CHART_DATA_LIMIT); // 只显示最近50个数据点
 
   return (
-    <div id="chart-container" className="h-[250px] md:h-[350px] w-full min-h-[200px] min-w-[300px]">
+    <div id="chart-container" className="h-[280px] md:h-[380px] w-full min-h-[200px] min-w-[300px] bg-card/30 rounded-xl p-4 border border-border/10">
       <ResponsiveContainer width="100%" height="100%" minWidth={300} minHeight={200}>
-        <AreaChart data={optimizedChartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <AreaChart data={optimizedChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             {statuses.map(s => (
               <linearGradient key={`grad-${s.id}`} id={`color-${s.id}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={getApiColor(s.id)} stopOpacity={0.1}/>
+                <stop offset="5%" stopColor={getApiColor(s.id)} stopOpacity={0.2}/>
                 <stop offset="95%" stopColor={getApiColor(s.id)} stopOpacity={0}/>
               </linearGradient>
             ))}
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.05} vertical={false} />
+          <CartesianGrid strokeDasharray="4 4" stroke="currentColor" opacity={0.08} vertical={false} />
           <XAxis 
             dataKey="time" 
-            axisLine={{ stroke: 'currentColor', opacity: 0.1 }}
+            axisLine={{ stroke: 'currentColor', opacity: 0.15 }}
             tickLine={false}
-            tick={{ fontSize: 9, fontFamily: 'monospace', fill: 'currentColor', opacity: 0.4 }}
+            tick={{ fontSize: 10, fontFamily: 'monospace', fill: 'currentColor', opacity: 0.5 }}
             interval={optimizedChartData.length > 20 ? 'preserveStartEnd' : 0}
+            dy={10}
           />
           <YAxis 
-            axisLine={{ stroke: 'currentColor', opacity: 0.1 }}
+            axisLine={{ stroke: 'currentColor', opacity: 0.15 }}
             tickLine={false}
-            tick={{ fontSize: 9, fontFamily: 'monospace', fill: 'currentColor', opacity: 0.4 }}
+            tick={{ fontSize: 10, fontFamily: 'monospace', fill: 'currentColor', opacity: 0.5 }}
+            label={{ value: 'ms', angle: -90, position: 'insideLeft', style: { fontSize: '10px', fontFamily: 'monospace', opacity: 0.5 } }}
           />
           <Tooltip 
             contentStyle={{ 
               backgroundColor: 'var(--card)', 
               border: '1px solid var(--border)',
-              borderRadius: '4px',
+              borderRadius: '12px',
               fontFamily: 'monospace',
-              fontSize: '9px',
-              color: 'var(--foreground)'
+              fontSize: '11px',
+              color: 'var(--foreground)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}
-            itemStyle={{ padding: '0px' }}
+            itemStyle={{ padding: '4px 0' }}
+            labelStyle={{ marginBottom: '6px', fontWeight: 'bold' }}
             filterNull={true}
           />
           {statuses.map(s => (
@@ -69,9 +73,10 @@ function LatencyHistoryChart({ chartData, statuses, getApiColor }: LatencyHistor
               stroke={getApiColor(s.id)}
               fillOpacity={1}
               fill={`url(#color-${s.id})`}
-              strokeWidth={1.5}
+              strokeWidth={2}
               dot={false}
-              activeDot={{ r: 3, strokeWidth: 0 }}
+              activeDot={{ r: 4, strokeWidth: 0 }}
+              animationDuration={1000}
             />
           ))}
         </AreaChart>

@@ -1,4 +1,4 @@
-// app/lib/monitor.ts v2.6.0
+// app/lib/monitor.ts v2.6.1
 import { APIS_TO_CHECK, MAX_RETRIES, RETRY_DELAY, DEGRADED_THRESHOLD } from '../constants';
 import { ApiCheckResult } from '../types';
 import { getCache, setCache, initializeCache } from './cache';

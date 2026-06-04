@@ -1,4 +1,4 @@
-// app/components/DashboardHeader.tsx v2.6.0
+// app/components/DashboardHeader.tsx v2.6.1
 'use client';
 
 import React from 'react';
@@ -36,10 +36,10 @@ export default function DashboardHeader({
   const { t } = useI18n();
   
   return (
-    <header id="main-header" className="border-b border-border/20 p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sticky top-0 bg-background/80 backdrop-blur-md z-50">
+    <header id="main-header" className="border-b border-border/20 p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sticky top-0 bg-background/85 backdrop-blur-xl z-50">
       <div id="brand-section" className="flex items-center gap-3">
-        <div className="w-8 h-8 flex items-center justify-center">
-          <Activity className="w-8 h-8 text-primary" />
+        <div className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl">
+          <Activity className="w-6 h-6 text-primary" />
         </div>
         <div>
           <h1 className="text-xl md:text-2xl font-bold tracking-tight uppercase italic">{t('dashboard.title')}</h1>
@@ -47,16 +47,16 @@ export default function DashboardHeader({
         </div>
       </div>
       
-      <div id="controls-section" className="flex items-center gap-4">
+      <div id="controls-section" className="flex items-center gap-2 sm:gap-3">
         <div className="relative">
           <button 
             onClick={() => setShowAlerts(!showAlerts)}
-            className="p-2 border border-border/50 hover:bg-foreground hover:text-background transition-colors rounded-md relative"
+            className="p-2.5 border border-border/50 hover:bg-foreground hover:text-background transition-all duration-200 rounded-xl relative"
             title={t('alerts.alertsLabel')}
           >
             <Bell className="w-5 h-5" />
             {alerts.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[8px] font-bold flex items-center justify-center rounded-full animate-pulse-slow">
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full animate-pulse-slow shadow-lg shadow-rose-500/20">
                 {alerts.length}
               </span>
             )}
@@ -69,38 +69,38 @@ export default function DashboardHeader({
 
         <button 
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="p-2 border border-border/50 hover:bg-foreground hover:text-background transition-colors rounded-md"
+          className="p-2.5 border border-border/50 hover:bg-foreground hover:text-background transition-all duration-200 rounded-xl"
           title={t('dashboard.toggleTheme')}
         >
           {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
         </button>
 
         {geo && (
-          <div className="hidden lg:flex items-center gap-2 px-3 py-2 border border-border/50 rounded-md bg-muted/30">
-            <MapPin className="w-3 h-3 opacity-50" />
-            <span className="text-[10px] font-mono uppercase tracking-tighter">{geo.city}, {geo.country}</span>
+          <div className="hidden lg:flex items-center gap-2 px-3.5 py-2.5 border border-border/50 rounded-xl bg-muted/30">
+            <MapPin className="w-3.5 h-3.5 opacity-50" />
+            <span className="text-[10px] font-mono uppercase tracking-tighter font-medium">{geo.city}, {geo.country}</span>
           </div>
         )}
 
         {user ? (
           <div className="flex items-center gap-3">
             <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-bold leading-none">{user.displayName}</p>
-              <p className="text-[9px] opacity-50 font-mono leading-none">{user.email}</p>
+              <p className="text-[11px] font-bold leading-none">{user.displayName}</p>
+              <p className="text-[10px] opacity-50 font-mono leading-none">{user.email}</p>
             </div>
             <button 
               onClick={logout}
-              className="p-2 border border-border/50 hover:bg-destructive hover:text-destructive-foreground transition-colors rounded-md"
+              className="p-2.5 border border-border/50 hover:bg-destructive hover:text-destructive-foreground transition-all duration-200 rounded-xl"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4.5 h-4.5" />
             </button>
           </div>
         ) : (
           <button 
             onClick={login}
-            className="flex items-center gap-2 px-4 py-2 border border-border/50 hover:bg-foreground hover:text-background transition-colors uppercase text-[10px] font-bold tracking-widest rounded-md"
+            className="flex items-center gap-2 px-5 py-2.5 border border-border/50 hover:bg-foreground hover:text-background transition-all duration-200 uppercase text-[10px] font-bold tracking-widest rounded-xl"
           >
-            <LogIn className="w-4 h-4" />
+            <LogIn className="w-4.5 h-4.5" />
             {t('dashboard.signIn')}
           </button>
         )}

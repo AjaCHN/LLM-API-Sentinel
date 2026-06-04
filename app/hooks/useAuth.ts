@@ -1,4 +1,4 @@
-// app/hooks/useAuth.ts v2.6.0
+// app/hooks/useAuth.ts v2.6.1
 import { useEffect } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';

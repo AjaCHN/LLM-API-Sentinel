@@ -1,4 +1,4 @@
-// app/store/geo.ts v2.6.0
+// app/store/geo.ts v2.6.1
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 

@@ -1,4 +1,4 @@
-// app/store/alerts.ts v2.6.0
+// app/store/alerts.ts v2.6.1
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Alert } from '../types';

@@ -1,7 +1,7 @@
 // app/layout.tsx v2.6.1
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
-import './globals.css';
+import './style.css';
 import { ThemeProvider } from './components/ThemeProvider';
 
 const inter = Inter({

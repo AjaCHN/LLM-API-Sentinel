@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "La solicitud de red ha expirado. Por favor, compruebe su conexión.",
+    "networkOffline": "Actualmente está sin conexión. Por favor, compruebe la red.",
+    "networkError": "Error de conexión de red. Por favor, inténtelo más tarde.",
+    "apiUnavailable": "El servicio API está temporalmente no disponible.",
+    "apiError": "La solicitud API ha fallado.",
+    "apiRateLimited": "Las solicitudes API están siendo limitadas. Por favor, inténtelo más tarde.",
+    "authRequired": "Por favor, inicie sesión primero.",
+    "authFailed": "Error de inicio de sesión. Por favor, compruebe sus credenciales.",
+    "authExpired": "Su sesión ha expirado. Por favor, inicie sesión de nuevo.",
+    "firebaseError": "Error del servicio Firebase.",
+    "firestoreError": "La operación de base de datos ha fallado.",
+    "validationError": "La validación de datos de entrada ha fallado.",
+    "unknownError": "Ha ocurrido un error desconocido. Por favor, inténtelo más tarde.",
+    "errorOccurred": "Ha ocurrido un error",
+    "refreshPage": "Actualizar página"
+  },
+  "alerts": {
+    "activeAlerts": "Alertas Activas",
+    "noActiveAlerts": "Sin alertas activas",
+    "resolve": "Resolver",
+    "downtime": "Tiempo de inactividad",
+    "error": "Error",
+    "latency": "Latencia",
+    "viewDetails": "Ver Detalles",
+    "alertsLabel": "Alertas",
+    "activeIssues": "problema activo",
+    "activeIssuesPlural": "problemas activos",
+    "detected": "detectado"
+  },
+  "api": {
+    "online": "En línea",
+    "offline": "Fuera de línea",
+    "degraded": "Degradado",
+    "latency": "Latencia",
+    "errorRate": "Tasa de Error",
+    "availability": "Disponibilidad",
+    "uptime": "Tiempo de actividad",
+    "averageLatency": "Latencia Promedio",
+    "maxLatency": "Latencia Máxima",
+    "minLatency": "Latencia Mínima",
+    "lastChecked": "Última comprobación",
+    "retries": "reintentos",
+    "noApiConfigured": "No hay puntos finales API configurados",
+    "addApiHint": "Añada puntos finales API para monitorizar su estado y rendimiento",
+    "status": "Estado"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "Monitoreo Global de API de IA",
+    "monitoringFrom": "Monitoreando desde",
+    "refresh": "Actualizar",
+    "checkNow": "Verificar Ahora",
+    "checking": "Verificando...",
+    "lastSync": "Última Sincronización",
+    "status": "Estado",
+    "latencyHistory": "Historial de Latencia",
+    "more": "más",
+    "signIn": "Iniciar Sesión",
+    "signOut": "Cerrar Sesión",
+    "toggleTheme": "Cambiar Tema",
+    "config": "Configuración"
+  },
+  "history": {
+    "performanceHistory": "Historial de Rendimiento",
+    "noHistory": "No hay datos históricos disponibles"
+  },
+  "config": {
+    "apiConfiguration": "Configuración de API",
+    "addApi": "Añadir API",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "name": "Nombre",
+    "provider": "Proveedor",
+    "url": "URL",
+    "edit": "Editar",
+    "reset": "Restablecer a la configuración predeterminada"
+  },
+  "general": {
+    "and": "y"
+  }
+}

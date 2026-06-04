@@ -9,3 +9,4 @@
 - [逻辑与服务](logic.md)
 - [项目规范](project.md)
 - [功能规格](features.md)
+- [原型设计](prototype.html)
