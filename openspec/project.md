@@ -13,6 +13,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 - **智能告警**：自动检测 API 宕机和延迟过高，并生成告警通知
 - **数据缓存**：内存和本地存储缓存机制，减少重复请求
 - **地理位置**：实时检测监控节点位置，24小时本地缓存
+- **多语言支持**：16 种语言国际化，自动检测浏览器语言
 
 ### 1.2 技术栈
 | 类别 | 技术 | 版本 |
@@ -89,8 +90,21 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   └── index.ts
 │   ├── locales/                  # 国际化翻译文件
 │   │   ├── en.json               # 英文
-│   │   └── zh-cn.json            # 中文
-│   ├── globals.css               # 全局样式
+│   │   ├── zh-cn.json            # 简体中文
+│   │   ├── zh-tw.json            # 繁体中文
+│   │   ├── ar.json               # 阿拉伯语
+│   │   ├── cs.json               # 捷克语
+│   │   ├── es.json               # 西班牙语
+│   │   ├── hi.json               # 印地语
+│   │   ├── id.json               # 印度尼西亚语
+│   │   ├── it.json               # 意大利语
+│   │   ├── nl.json               # 荷兰语
+│   │   ├── pl.json               # 波兰语
+│   │   ├── sv.json               # 瑞典语
+│   │   ├── th.json               # 泰语
+│   │   ├── tr.json               # 土耳其语
+│   │   ├── ru.json               # 俄语
+│   │   └── vi.json               # 越南语
 │   ├── style.css                 # 主题样式
 │   ├── layout.tsx                # 根布局
 │   └── page.tsx                  # 主页面
@@ -128,11 +142,11 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 
 ### 2.5 版本控制
 - 使用 SemVer 2.0.0 版本规范
-- 版本号格式：`主版本.次版本.修订号`（如 `2.6.0`）
+- 版本号格式：`主版本.次版本.修订号`（如 `2.6.1`）
 - 每次发布时更新以下文件：
   1. 文件头部版本号（所有代码文件）
   2. HTML Title 标签版本号（`app/layout.tsx`）
-  3. `metadata.json` 中的版本信息
+  3. `package.json` 中的版本信息
   4. `CHANGELOG.md` 中的版本记录
 
 ## 3. API 接口文档
@@ -600,13 +614,67 @@ main 分支更新 → GitHub Actions → 构建 → Firebase 部署
 - 单元测试：`*.test.ts`
 - 组件测试：`*.test.tsx`
 
-## 14. 部署
+## 15. 国际化 (i18n)
 
-### 14.1 环境配置
+### 15.1 支持的语言
+| 语言代码 | 语言名称 | 本地名称 |
+|---------|---------|--------|
+| en | English | English |
+| zh-cn | 简体中文 | 简体中文 |
+| zh-tw | 繁体中文 | 繁體中文 |
+| ar | 阿拉伯语 | العربية |
+| cs | 捷克语 | Čeština |
+| es | 西班牙语 | Español |
+| hi | 印地语 | हिन्दी |
+| id | 印度尼西亚语 | Bahasa Indonesia |
+| it | 意大利语 | Italiano |
+| nl | 荷兰语 | Nederlands |
+| pl | 波兰语 | Polski |
+| sv | 瑞典语 | Svenska |
+| th | 泰语 | ไทย |
+| tr | 土耳其语 | Türkçe |
+| ru | 俄语 | Русский |
+| vi | 越南语 | Tiếng Việt |
+
+### 15.2 语言检测与切换
+- **自动检测**：系统自动检测浏览器语言设置
+- **持久化**：用户语言选择保存到 localStorage
+- **回退机制**：未找到语言时回退到英文
+- **翻译格式**：使用点分隔的翻译键（如 `dashboard.title`）
+
+### 15.3 翻译文件格式
+```json
+{
+  "errors": {
+    "networkTimeout": "超时信息"
+  },
+  "dashboard": {
+    "title": "标题"
+  }
+}
+```
+
+### 15.4 API 使用方式
+```typescript
+import { t, setLocale, getLocale, initLocale } from '@/lib/i18n';
+
+// 获取翻译
+const title = t('dashboard.title');
+
+// 设置语言
+setLocale('es');
+
+// 初始化（自动检测）
+initLocale();
+```
+
+## 16. 部署
+
+### 16.1 环境配置
 - Firebase 项目配置：`firebase-applet-config.json`
 - Firestore 数据库 ID：在配置文件中指定
 
-### 14.2 启动命令
+### 16.2 启动命令
 | 命令 | 用途 |
 |-----|------|
 | `npm run dev` | 开发模式 |
