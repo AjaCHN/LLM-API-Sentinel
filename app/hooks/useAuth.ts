@@ -1,21 +1,61 @@
-// app/hooks/useAuth.ts v2.6.1
+// app/hooks/useAuth.ts v2.6.2
 import { useEffect } from 'react';
-import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
-import { auth, googleProvider } from '../lib/firebase';
+import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/auth';
 import { logError, handleError } from '../lib/error-handler';
+import type { User } from '../types';
 
 export function useAuth() {
   const { user, setUser, setError } = useAuthStore();
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (u) => setUser(u));
-    return () => unsubscribeAuth();
+    const getInitialSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          setUser({
+            uid: session.user.id,
+            displayName: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+            email: session.user.email,
+            photoURL: session.user.user_metadata?.avatar_url || null,
+            providerId: session.user.app_metadata?.provider || 'email'
+          });
+        }
+      } catch (error) {
+        logError(error, 'Failed to get initial session');
+      }
+    };
+
+    getInitialSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser({
+          uid: session.user.id,
+          displayName: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+          email: session.user.email,
+          photoURL: session.user.user_metadata?.avatar_url || null,
+          providerId: session.user.app_metadata?.provider || 'email'
+        });
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [setUser]);
 
   const login = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined
+        }
+      });
+      if (error) throw error;
     } catch (error) {
       logError(error, 'Login failed');
       setError(handleError(error).message);
@@ -24,7 +64,8 @@ export function useAuth() {
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
     } catch (error) {
       logError(error, 'Logout failed');
       setError(handleError(error).message);
