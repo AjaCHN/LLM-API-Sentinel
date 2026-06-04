@@ -143,8 +143,24 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控系统，提供�
 **功能描述**：支持多语言切换
 
 **支持语言**：
-- 英文 (en)
-- 中文 (zh-CN)
+| 语言代码 | 语言名称 | 本地名称 |
+|---------|---------|--------|
+| en | English | English |
+| zh-cn | 简体中文 | 简体中文 |
+| zh-tw | 繁体中文 | 繁體中文 |
+| ar | 阿拉伯语 | العربية |
+| cs | 捷克语 | Čeština |
+| es | 西班牙语 | Español |
+| hi | 印地语 | हिन्दी |
+| id | 印度尼西亚语 | Bahasa Indonesia |
+| it | 意大利语 | Italiano |
+| nl | 荷兰语 | Nederlands |
+| pl | 波兰语 | Polski |
+| sv | 瑞典语 | Svenska |
+| th | 泰语 | ไทย |
+| tr | 土耳其语 | Türkçe |
+| ru | 俄语 | Русский |
+| vi | 越南语 | Tiếng Việt |
 
 **翻译范围**：
 - 页面标题和描述
@@ -422,7 +438,8 @@ sequenceDiagram
 ### 7.7 国际化支持
 
 **验收标准**：
-- [ ] 支持英文和中文
+- [ ] 支持 16 种语言（en/zh-cn/zh-tw/ar/cs/es/hi/id/it/nl/pl/sv/th/tr/ru/vi）
+- [ ] 自动检测浏览器语言
 - [ ] 语言切换即时生效
 - [ ] 所有用户可见文本都已翻译
 
