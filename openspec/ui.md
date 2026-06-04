@@ -355,11 +355,46 @@ interface AlertsDropdownProps {
 
 ```
 locales/
-├── en.json    # 英文
-└── zh-cn.json # 中文
+├── en.json       # English
+├── zh-cn.json    # 简体中文
+├── zh-tw.json    # 繁體中文
+├── ar.json       # العربية
+├── cs.json       # Čeština
+├── es.json       # Español
+├── hi.json       # हिन्दी
+├── id.json       # Bahasa Indonesia
+├── it.json       # Italiano
+├── nl.json       # Nederlands
+├── pl.json       # Polski
+├── sv.json       # Svenska
+├── th.json       # ไทย
+├── tr.json       # Türkçe
+├── ru.json       # Русский
+└── vi.json       # Tiếng Việt
 ```
 
-### 6.2 翻译 Key 命名
+### 6.2 支持的语言
+
+| 语言代码 | 语言名称 | 本地名称 |
+|---------|---------|--------|
+| en | English | English |
+| zh-cn | 简体中文 | 简体中文 |
+| zh-tw | 繁体中文 | 繁體中文 |
+| ar | 阿拉伯语 | العربية |
+| cs | 捷克语 | Čeština |
+| es | 西班牙语 | Español |
+| hi | 印地语 | हिन्दी |
+| id | 印度尼西亚语 | Bahasa Indonesia |
+| it | 意大利语 | Italiano |
+| nl | 荷兰语 | Nederlands |
+| pl | 波兰语 | Polski |
+| sv | 瑞典语 | Svenska |
+| th | 泰语 | ไทย |
+| tr | 土耳其语 | Türkçe |
+| ru | 俄语 | Русский |
+| vi | 越南语 | Tiếng Việt |
+
+### 6.3 翻译 Key 命名
 
 | 前缀 | 用途 |
 |-----|------|
@@ -369,14 +404,17 @@ locales/
 | `config.` | 配置相关 |
 | `errors.` | 错误信息 |
 | `history.` | 历史数据相关 |
+| `language.` | 语言选择相关 |
 
-### 6.3 翻译最佳实践
+### 6.4 翻译最佳实践
 
 - 保持翻译 Key 简洁
 - 使用点分隔层级
 - 支持复数形式
 - 避免硬编码字符串
 - 使用模板字符串支持动态内容
+- 自动检测浏览器语言
+- 语言选择持久化到 localStorage
 
 ## 7. 可访问性规范
 
