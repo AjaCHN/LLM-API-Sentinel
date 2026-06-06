@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "คำขอเครือข่ายหมดเวลา โปรดตรวจสอบการเชื่อมต่อของคุณ",
+    "networkOffline": "คุณออฟไลน์อยู่ในขณะนี้ โปรดตรวจสอบเครือข่าย",
+    "networkError": "เกิดข้อผิดพลาดการเชื่อมต่อเครือข่าย โปรดลองอีกครั้งในภายหลัง",
+    "apiUnavailable": "บริการ API หยุดให้บริการชั่วคราว",
+    "apiError": "คำขอ API ล้มเหลว",
+    "apiRateLimited": "คำขอ API ถูกจำกัดอัตรา โปรดลองอีกครั้งในภายหลัง",
+    "authRequired": "โปรดเข้าสู่ระบบก่อน",
+    "authFailed": "เข้าสู่ระบบล้มเหลว โปรดตรวจสอบข้อมูลรับรองของคุณ",
+    "authExpired": "เซสชันของคุณหมดอายุ โปรดเข้าสู่ระบบอีกครั้ง",
+    "firebaseError": "เกิดข้อผิดพลาดของบริการ Firebase",
+    "firestoreError": "การดำเนินการฐานข้อมูลล้มเหลว",
+    "validationError": "การตรวจสอบข้อมูลอินพุตล้มเหลว",
+    "unknownError": "เกิดข้อผิดพลาดที่ไม่รู้จัก โปรดลองอีกครั้งในภายหลัง",
+    "errorOccurred": "เกิดข้อผิดพลาด",
+    "refreshPage": "รีเฟรชหน้า"
+  },
+  "alerts": {
+    "activeAlerts": "การแจ้งเตือนที่ใช้งานอยู่",
+    "noActiveAlerts": "ไม่มีการแจ้งเตือนที่ใช้งานอยู่",
+    "resolve": "แก้ไข",
+    "downtime": "การหยุดทำงาน",
+    "error": "ข้อผิดพลาด",
+    "latency": "เวลาแฝง",
+    "viewDetails": "ดูรายละเอียด",
+    "alertsLabel": "การแจ้งเตือน",
+    "activeIssues": "ปัญหาที่ใช้งานอยู่",
+    "activeIssuesPlural": "ปัญหาที่ใช้งานอยู่",
+    "detected": "ตรวจพบ"
+  },
+  "api": {
+    "online": "ออนไลน์",
+    "offline": "ออฟไลน์",
+    "degraded": "เสื่อมลง",
+    "latency": "เวลาแฝง",
+    "errorRate": "อัตราข้อผิดพลาด",
+    "availability": "ความพร้อมใช้งาน",
+    "uptime": "เวลาทำงาน",
+    "averageLatency": "เวลาแฝงเฉลี่ย",
+    "maxLatency": "เวลาแฝงสูงสุด",
+    "minLatency": "เวลาแฝงต่ำสุด",
+    "lastChecked": "ตรวจสอบครั้งล่าสุด",
+    "retries": "การลองใหม่",
+    "noApiConfigured": "ไม่มีจุดสิ้นสุด API ที่กำหนดค่าไว้",
+    "addApiHint": "เพิ่มจุดสิ้นสุด API เพื่อตรวจสอบสถานะและประสิทธิภาพ",
+    "status": "สถานะ"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "การตรวจสอบ API ของ AI ทั่วโลก",
+    "monitoringFrom": "การตรวจสอบจาก",
+    "refresh": "รีเฟรช",
+    "checkNow": "ตรวจสอบเดี๋ยวนี้",
+    "checking": "กำลังตรวจสอบ...",
+    "lastSync": "การซิงโครไนซ์ล่าสุด",
+    "status": "สถานะ",
+    "latencyHistory": "ประวัติเวลาแฝง",
+    "more": "เพิ่มเติม",
+    "signIn": "เข้าสู่ระบบ",
+    "signOut": "ออกจากระบบ",
+    "toggleTheme": "สลับธีม",
+    "config": "การกำหนดค่า"
+  },
+  "history": {
+    "performanceHistory": "ประวัติประสิทธิภาพ",
+    "noHistory": "ไม่มีข้อมูลประวัติ"
+  },
+  "config": {
+    "apiConfiguration": "การกำหนดค่า API",
+    "addApi": "เพิ่ม API",
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "name": "ชื่อ",
+    "provider": "ผู้ให้บริการ",
+    "url": "URL",
+    "edit": "แก้ไข",
+    "reset": "รีเซ็ตเป็นการกำหนดค่าเริ่มต้น"
+  },
+  "general": {
+    "and": "และ"
+  }
+}

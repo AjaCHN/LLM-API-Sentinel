@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "Время запроса истекло. Проверьте подключение.",
+    "networkOffline": "Вы сейчас офлайн. Проверьте сеть.",
+    "networkError": "Ошибка сетевого подключения. Попробуйте позже.",
+    "apiUnavailable": "API сервис временно недоступен.",
+    "apiError": "Запрос API не удался.",
+    "apiRateLimited": "Запросы API ограничены. Попробуйте позже.",
+    "authRequired": "Пожалуйста, войдите сначала.",
+    "authFailed": "Ошибка входа. Проверьте учётные данные.",
+    "authExpired": "Сессия истекла. Войдите снова.",
+    "firebaseError": "Ошибка сервиса Firebase.",
+    "firestoreError": "Операция с базой данных не удалась.",
+    "validationError": "Валидация входных данных не удалась.",
+    "unknownError": "Произошла неизвестная ошибка. Попробуйте позже.",
+    "errorOccurred": "Произошла ошибка",
+    "refreshPage": "Обновить страницу"
+  },
+  "alerts": {
+    "activeAlerts": "Активные оповещения",
+    "noActiveAlerts": "Нет активных оповещений",
+    "resolve": "Решить",
+    "downtime": "Простой",
+    "error": "Ошибка",
+    "latency": "Задержка",
+    "viewDetails": "Подробнее",
+    "alertsLabel": "Оповещения",
+    "activeIssues": "активная проблема",
+    "activeIssuesPlural": "активных проблем",
+    "detected": "обнаружено"
+  },
+  "api": {
+    "online": "Онлайн",
+    "offline": "Офлайн",
+    "degraded": "Снижение",
+    "latency": "Задержка",
+    "errorRate": "Частота ошибок",
+    "availability": "Доступность",
+    "uptime": "Время работы",
+    "averageLatency": "Средняя задержка",
+    "maxLatency": "Макс. задержка",
+    "minLatency": "Мин. задержка",
+    "lastChecked": "Последняя проверка",
+    "retries": "повторов",
+    "noApiConfigured": "Конечные точки API не настроены",
+    "addApiHint": "Добавьте конечные точки API для мониторинга их состояния и производительности",
+    "status": "Статус"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "Глобальный мониторинг AI API",
+    "monitoringFrom": "Мониторинг из",
+    "refresh": "Обновить",
+    "checkNow": "Проверить сейчас",
+    "checking": "Проверка...",
+    "lastSync": "Последняя синхронизация",
+    "status": "Статус",
+    "latencyHistory": "История задержек",
+    "more": "ещё",
+    "signIn": "Войти",
+    "signOut": "Выйти",
+    "toggleTheme": "Сменить тему",
+    "config": "Настройка"
+  },
+  "history": {
+    "performanceHistory": "История производительности",
+    "noHistory": "Нет исторических данных"
+  },
+  "config": {
+    "apiConfiguration": "Настройка API",
+    "addApi": "Добавить API",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "name": "Название",
+    "provider": "Провайдер",
+    "url": "URL",
+    "edit": "Редактировать",
+    "reset": "Сбросить к настройкам по умолчанию"
+  },
+  "general": {
+    "and": "и"
+  }
+}

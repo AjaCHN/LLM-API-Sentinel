@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "Netwerkverzoek time-out. Controleer uw verbinding.",
+    "networkOffline": "U bent momenteel offline. Controleer het netwerk.",
+    "networkError": "Netwerkverbindingsfout. Probeer later opnieuw.",
+    "apiUnavailable": "API-service is tijdelijk niet beschikbaar.",
+    "apiError": "API-verzoek mislukt.",
+    "apiRateLimited": "API-verzoeken worden beperkt. Probeer later opnieuw.",
+    "authRequired": "Meld u eerst aan.",
+    "authFailed": "Aanmelden mislukt. Controleer uw gegevens.",
+    "authExpired": "Uw sessie is verlopen. Meld u opnieuw aan.",
+    "firebaseError": "Firebase-servicefout.",
+    "firestoreError": "Databasebewerking mislukt.",
+    "validationError": "Validatie van invoergegevens mislukt.",
+    "unknownError": "Er is een onbekende fout opgetreden. Probeer later opnieuw.",
+    "errorOccurred": "Er is een fout opgetreden",
+    "refreshPage": "Pagina vernieuwen"
+  },
+  "alerts": {
+    "activeAlerts": "Actieve Meldingen",
+    "noActiveAlerts": "Geen actieve meldingen",
+    "resolve": "Oplossen",
+    "downtime": "Storing",
+    "error": "Fout",
+    "latency": "Latentie",
+    "viewDetails": "Details Bekijken",
+    "alertsLabel": "Meldingen",
+    "activeIssues": "actief probleem",
+    "activeIssuesPlural": "actieve problemen",
+    "detected": "gedetecteerd"
+  },
+  "api": {
+    "online": "Online",
+    "offline": "Offline",
+    "degraded": "Verlaagd",
+    "latency": "Latentie",
+    "errorRate": "Foutpercentage",
+    "availability": "Beschikbaarheid",
+    "uptime": "Uptime",
+    "averageLatency": "Gemiddelde Latentie",
+    "maxLatency": "Maximale Latentie",
+    "minLatency": "Minimale Latentie",
+    "lastChecked": "Laatst gecontroleerd",
+    "retries": "herhalingen",
+    "noApiConfigured": "Geen API-eindpunten geconfigureerd",
+    "addApiHint": "Voeg API-eindpunten toe om hun status en prestaties te bewaken",
+    "status": "Status"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "Wereldwijd AI API Monitoring",
+    "monitoringFrom": "Monitoring vanaf",
+    "refresh": "Vernieuwen",
+    "checkNow": "Nu Controleren",
+    "checking": "Controleren...",
+    "lastSync": "Laatste Synchronisatie",
+    "status": "Status",
+    "latencyHistory": "Latentiegeschiedenis",
+    "more": "meer",
+    "signIn": "Inloggen",
+    "signOut": "Uitloggen",
+    "toggleTheme": "Thema Wisselen",
+    "config": "Configuratie"
+  },
+  "history": {
+    "performanceHistory": "Prestatiegeschiedenis",
+    "noHistory": "Geen historische gegevens beschikbaar"
+  },
+  "config": {
+    "apiConfiguration": "API Configuratie",
+    "addApi": "API Toevoegen",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "name": "Naam",
+    "provider": "Provider",
+    "url": "URL",
+    "edit": "Bewerken",
+    "reset": "Reset naar standaardconfiguratie"
+  },
+  "general": {
+    "and": "en"
+  }
+}

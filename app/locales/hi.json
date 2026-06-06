@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "नेटवर्क अनुरोध का समय समाप्त हो गया। कृपया अपना कनेक्शन जांचें।",
+    "networkOffline": "आप वर्तमान में ऑफ़लाइन हैं। कृपया नेटवर्क जांचें।",
+    "networkError": "नेटवर्क कनेक्शन त्रुटि। कृपया बाद में पुनः प्रयास करें।",
+    "apiUnavailable": "API सेवा अस्थायी रूप से अनुपलब्ध है।",
+    "apiError": "API अनुरोध विफल।",
+    "apiRateLimited": "API अनुरोधों को दर-सीमित किया जा रहा है। कृपया बाद में पुनः प्रयास करें।",
+    "authRequired": "कृपया पहले साइन इन करें।",
+    "authFailed": "साइन इन विफल। कृपया अपने क्रेडेंशियल्स जांचें।",
+    "authExpired": "आपका सत्र समाप्त हो गया है। कृपया फिर से साइन इन करें।",
+    "firebaseError": "Firebase सेवा त्रुटि।",
+    "firestoreError": "डेटाबेस ऑपरेशन विफल।",
+    "validationError": "इनपुट डेटा सत्यापन विफल।",
+    "unknownError": "एक अज्ञात त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
+    "errorOccurred": "एक त्रुटि हुई",
+    "refreshPage": "पेज रिफ्रेश करें"
+  },
+  "alerts": {
+    "activeAlerts": "सक्रिय अलर्ट",
+    "noActiveAlerts": "कोई सक्रिय अलर्ट नहीं",
+    "resolve": "हल करें",
+    "downtime": "डाउनटाइम",
+    "error": "त्रुटि",
+    "latency": "विलंब",
+    "viewDetails": "विवरण देखें",
+    "alertsLabel": "अलर्ट",
+    "activeIssues": "सक्रिय समस्या",
+    "activeIssuesPlural": "सक्रिय समस्याएं",
+    "detected": "पता चला"
+  },
+  "api": {
+    "online": "ऑनलाइन",
+    "offline": "ऑफ़लाइन",
+    "degraded": "खराब",
+    "latency": "विलंब",
+    "errorRate": "त्रुटि दर",
+    "availability": "उपलब्धता",
+    "uptime": "अपटाइम",
+    "averageLatency": "औसत विलंब",
+    "maxLatency": "अधिकतम विलंब",
+    "minLatency": "न्यूनतम विलंब",
+    "lastChecked": "अंतिम बार जांचा",
+    "retries": "पुनः प्रयास",
+    "noApiConfigured": "कोई API एंडपॉइंट कॉन्फ़िगर नहीं",
+    "addApiHint": "उनकी स्थिति और प्रदर्शन की निगरानी के लिए API एंडपॉइंट जोड़ें",
+    "status": "स्थिति"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "वैश्विक AI API निगरानी",
+    "monitoringFrom": "से निगरानी",
+    "refresh": "रीफ्रेश",
+    "checkNow": "अभी जांचें",
+    "checking": "जांच रहा है...",
+    "lastSync": "अंतिम सिंक",
+    "status": "स्थिति",
+    "latencyHistory": "विलंब इतिहास",
+    "more": "और",
+    "signIn": "साइन इन",
+    "signOut": "साइन आउट",
+    "toggleTheme": "थीम बदलें",
+    "config": "कॉन्फ़िगरेशन"
+  },
+  "history": {
+    "performanceHistory": "प्रदर्शन इतिहास",
+    "noHistory": "कोई ऐतिहासिक डेटा उपलब्ध नहीं"
+  },
+  "config": {
+    "apiConfiguration": "API कॉन्फ़िगरेशन",
+    "addApi": "API जोड़ें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "name": "नाम",
+    "provider": "प्रदाता",
+    "url": "URL",
+    "edit": "संपादित करें",
+    "reset": "डिफ़ॉल्ट कॉन्फ़िगरेशन पर रीसेट करें"
+  },
+  "general": {
+    "and": "और"
+  }
+}

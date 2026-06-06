@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "Permintaan jaringan habis waktu. Silakan periksa koneksi Anda.",
+    "networkOffline": "Anda sedang offline. Silakan periksa jaringan.",
+    "networkError": "Kesalahan koneksi jaringan. Silakan coba lagi nanti.",
+    "apiUnavailable": "Layanan API sementara tidak tersedia.",
+    "apiError": "Permintaan API gagal.",
+    "apiRateLimited": "Permintaan API sedang dibatasi. Silakan coba lagi nanti.",
+    "authRequired": "Silakan masuk terlebih dahulu.",
+    "authFailed": "Masuk gagal. Silakan periksa kredensial Anda.",
+    "authExpired": "Sesi Anda telah kedaluwarsa. Silakan masuk lagi.",
+    "firebaseError": "Kesalahan layanan Firebase.",
+    "firestoreError": "Operasi basis data gagal.",
+    "validationError": "Validasi data input gagal.",
+    "unknownError": "Terjadi kesalahan yang tidak diketahui. Silakan coba lagi nanti.",
+    "errorOccurred": "Terjadi kesalahan",
+    "refreshPage": "Segarkan halaman"
+  },
+  "alerts": {
+    "activeAlerts": "Peringatan Aktif",
+    "noActiveAlerts": "Tidak ada peringatan aktif",
+    "resolve": "Selesaikan",
+    "downtime": "Pemadaman",
+    "error": "Kesalahan",
+    "latency": "Latensi",
+    "viewDetails": "Lihat Detail",
+    "alertsLabel": "Peringatan",
+    "activeIssues": "masalah aktif",
+    "activeIssuesPlural": "masalah aktif",
+    "detected": "terdeteksi"
+  },
+  "api": {
+    "online": "Online",
+    "offline": "Offline",
+    "degraded": "Degradasi",
+    "latency": "Latensi",
+    "errorRate": "Tingkat Kesalahan",
+    "availability": "Ketersediaan",
+    "uptime": "Waktu aktif",
+    "averageLatency": "Latensi Rata-rata",
+    "maxLatency": "Latensi Maksimum",
+    "minLatency": "Latensi Minimum",
+    "lastChecked": "Terakhir diperiksa",
+    "retries": "percobaan ulang",
+    "noApiConfigured": "Tidak ada titik akhir API dikonfigurasi",
+    "addApiHint": "Tambahkan titik akhir API untuk memantau status dan kinerjanya",
+    "status": "Status"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "Pemantauan API AI Global",
+    "monitoringFrom": "Memantau dari",
+    "refresh": "Segarkan",
+    "checkNow": "Periksa Sekarang",
+    "checking": "Memeriksa...",
+    "lastSync": "Sinkronisasi Terakhir",
+    "status": "Status",
+    "latencyHistory": "Riwayat Latensi",
+    "more": "lebih",
+    "signIn": "Masuk",
+    "signOut": "Keluar",
+    "toggleTheme": "Ganti Tema",
+    "config": "Konfigurasi"
+  },
+  "history": {
+    "performanceHistory": "Riwayat Kinerja",
+    "noHistory": "Tidak ada data historis tersedia"
+  },
+  "config": {
+    "apiConfiguration": "Konfigurasi API",
+    "addApi": "Tambah API",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "name": "Nama",
+    "provider": "Penyedia",
+    "url": "URL",
+    "edit": "Edit",
+    "reset": "Atur ulang ke konfigurasi default"
+  },
+  "general": {
+    "and": "dan"
+  }
+}

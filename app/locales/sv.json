@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "Nätverksbegäran time out. Kontrollera din anslutning.",
+    "networkOffline": "Du är för närvarande offline. Kontrollera nätverket.",
+    "networkError": "Nätverksanslutningsfel. Försök igen senare.",
+    "apiUnavailable": "API-tjänsten är tillfälligt otillgänglig.",
+    "apiError": "API-begäran misslyckades.",
+    "apiRateLimited": "API-begäranden begränsas. Försök igen senare.",
+    "authRequired": "Logga in först.",
+    "authFailed": "Inloggningen misslyckades. Kontrollera dina uppgifter.",
+    "authExpired": "Din session har gått ut. Logga in igen.",
+    "firebaseError": "Firebase-tjänstefel.",
+    "firestoreError": "Databasoperation misslyckades.",
+    "validationError": "Validering av indata misslyckades.",
+    "unknownError": "Ett okänt fel inträffade. Försök igen senare.",
+    "errorOccurred": "Ett fel inträffade",
+    "refreshPage": "Uppdatera sidan"
+  },
+  "alerts": {
+    "activeAlerts": "Aktiva Larm",
+    "noActiveAlerts": "Inga aktiva larm",
+    "resolve": "Lös",
+    "downtime": "Driftstopp",
+    "error": "Fel",
+    "latency": "Latens",
+    "viewDetails": "Visa Detaljer",
+    "alertsLabel": "Larm",
+    "activeIssues": "aktivt problem",
+    "activeIssuesPlural": "aktiva problem",
+    "detected": "detekterad"
+  },
+  "api": {
+    "online": "Online",
+    "offline": "Offline",
+    "degraded": "Försämrad",
+    "latency": "Latens",
+    "errorRate": "Felfrekvens",
+    "availability": "Tillgänglighet",
+    "uptime": "Drifttid",
+    "averageLatency": "Genomsnittlig Latens",
+    "maxLatency": "Maximal Latens",
+    "minLatency": "Minimal Latens",
+    "lastChecked": "Senast kontrollerad",
+    "retries": "försök",
+    "noApiConfigured": "Inga API-slutpunkter konfigurerade",
+    "addApiHint": "Lägg till API-slutpunkter för att övervaka deras status och prestanda",
+    "status": "Status"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "Global AI API-övervakning",
+    "monitoringFrom": "Övervakning från",
+    "refresh": "Uppdatera",
+    "checkNow": "Kontrollera Nu",
+    "checking": "Kontrollerar...",
+    "lastSync": "Senaste Synkronisering",
+    "status": "Status",
+    "latencyHistory": "Latenshistorik",
+    "more": "mer",
+    "signIn": "Logga In",
+    "signOut": "Logga Ut",
+    "toggleTheme": "Byt Tema",
+    "config": "Konfiguration"
+  },
+  "history": {
+    "performanceHistory": "Prestandahistorik",
+    "noHistory": "Ingen historisk data tillgänglig"
+  },
+  "config": {
+    "apiConfiguration": "API-konfiguration",
+    "addApi": "Lägg till API",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "delete": "Ta Bort",
+    "name": "Namn",
+    "provider": "Leverantör",
+    "url": "URL",
+    "edit": "Redigera",
+    "reset": "Återställ till standardkonfiguration"
+  },
+  "general": {
+    "and": "och"
+  }
+}

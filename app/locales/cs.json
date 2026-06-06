@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "Síťový požadavek vypršel. Zkontrolujte prosím připojení.",
+    "networkOffline": "Jste aktuálně offline. Zkontrolujte prosím síť.",
+    "networkError": "Chyba síťového připojení. Zkuste to prosím později.",
+    "apiUnavailable": "Služba API je dočasně nedostupná.",
+    "apiError": "Požadavek API selhal.",
+    "apiRateLimited": "Požadavky API jsou omezovány. Zkuste to prosím později.",
+    "authRequired": "Nejprve se prosím přihlaste.",
+    "authFailed": "Přihlášení selhalo. Zkontrolujte prosím přihlašovací údaje.",
+    "authExpired": "Vaše relace vypršela. Prosím, přihlaste se znovu.",
+    "firebaseError": "Chyba služby Firebase.",
+    "firestoreError": "Operace databáze selhala.",
+    "validationError": "Ověření vstupních dat selhalo.",
+    "unknownError": "Vyskytla se neznámá chyba. Zkuste to prosím později.",
+    "errorOccurred": "Vyskytla se chyba",
+    "refreshPage": "Obnovit stránku"
+  },
+  "alerts": {
+    "activeAlerts": "Aktivní upozornění",
+    "noActiveAlerts": "Žádná aktivní upozornění",
+    "resolve": "Vyřešit",
+    "downtime": "Výpadek",
+    "error": "Chyba",
+    "latency": "Latence",
+    "viewDetails": "Zobrazit podrobnosti",
+    "alertsLabel": "Upozornění",
+    "activeIssues": "aktivní problém",
+    "activeIssuesPlural": "aktivní problémy",
+    "detected": "detekováno"
+  },
+  "api": {
+    "online": "Online",
+    "offline": "Offline",
+    "degraded": "Degradováno",
+    "latency": "Latence",
+    "errorRate": "Míra chyb",
+    "availability": "Dostupnost",
+    "uptime": "Doba provozu",
+    "averageLatency": "Průměrná latence",
+    "maxLatency": "Maximální latence",
+    "minLatency": "Minimální latence",
+    "lastChecked": "Naposledy kontrolováno",
+    "retries": "opakovaných pokusů",
+    "noApiConfigured": "Nejsou nakonfigurovány žádné koncové body API",
+    "addApiHint": "Přidejte koncové body API pro sledování jejich stavu a výkonu",
+    "status": "Stav"
+  },
+  "dashboard": {
+    "title": "LLM API Sentinel",
+    "globalAIApiMonitoring": "Globální monitorování AI API",
+    "monitoringFrom": "Monitorování z",
+    "refresh": "Obnovit",
+    "checkNow": "Zkontrolovat nyní",
+    "checking": "Kontroluji...",
+    "lastSync": "Poslední synchronizace",
+    "status": "Stav",
+    "latencyHistory": "Historie latence",
+    "more": "více",
+    "signIn": "Přihlásit se",
+    "signOut": "Odhlásit se",
+    "toggleTheme": "Přepnout téma",
+    "config": "Konfigurace"
+  },
+  "history": {
+    "performanceHistory": "Historie výkonu",
+    "noHistory": "Historická data nejsou k dispozici"
+  },
+  "config": {
+    "apiConfiguration": "Konfigurace API",
+    "addApi": "Přidat API",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "delete": "Smazat",
+    "name": "Název",
+    "provider": "Poskytovatel",
+    "url": "URL",
+    "edit": "Upravit",
+    "reset": "Obnovit výchozí konfiguraci"
+  },
+  "general": {
+    "and": "a"
+  }
+}

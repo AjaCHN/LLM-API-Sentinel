@@ -1,0 +1,84 @@
+{
+  "errors": {
+    "networkTimeout": "انتهت مهلة طلب الشبكة. يرجى التحقق من اتصالك.",
+    "networkOffline": "أنت غير متصل حاليًا. يرجى التحقق من الشبكة.",
+    "networkError": "خطأ في الاتصال بالشبكة. يرجى المحاولة لاحقًا.",
+    "apiUnavailable": "خدمة API غير متاحة مؤقتًا.",
+    "apiError": "فشل طلب API.",
+    "apiRateLimited": "يتم تقييد طلبات API. يرجى المحاولة لاحقًا.",
+    "authRequired": "يرجى تسجيل الدخول أولاً.",
+    "authFailed": "فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد.",
+    "authExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى.",
+    "firebaseError": "خطأ في خدمة Firebase.",
+    "firestoreError": "فشلت عملية قاعدة البيانات.",
+    "validationError": "فشل التحقق من صحة بيانات الإدخال.",
+    "unknownError": "حدث خطأ غير معروف. يرجى المحاولة لاحقًا.",
+    "errorOccurred": "حدث خطأ",
+    "refreshPage": "تحديث الصفحة"
+  },
+  "alerts": {
+    "activeAlerts": "التنبيهات النشطة",
+    "noActiveAlerts": "لا توجد تنبيهات نشطة",
+    "resolve": "حل",
+    "downtime": "توقف",
+    "error": "خطأ",
+    "latency": "التأخير",
+    "viewDetails": "عرض التفاصيل",
+    "alertsLabel": "التنبيهات",
+    "activeIssues": "مشكلة نشطة",
+    "activeIssuesPlural": "مشاكل نشطة",
+    "detected": "تم الكشف"
+  },
+  "api": {
+    "online": "متصل",
+    "offline": "غير متصل",
+    "degraded": "متدهور",
+    "latency": "التأخير",
+    "errorRate": "معدل الخطأ",
+    "availability": "التوفر",
+    "uptime": "وقت التشغيل",
+    "averageLatency": "متوسط التأخير",
+    "maxLatency": "أقصى تأخير",
+    "minLatency": "أقل تأخير",
+    "lastChecked": "آخر فحص",
+    "retries": "إعادة المحاولة",
+    "noApiConfigured": "لم يتم تكوين نقاط API",
+    "addApiHint": "أضف نقاط API لمراقبة حالتها وأدائها",
+    "status": "الحالة"
+  },
+  "dashboard": {
+    "title": "حارس واجهة برمجة تطبيقات LLM",
+    "globalAIApiMonitoring": "مراقبة واجهة برمجة تطبيقات الذكاء الاصطناعي العالمية",
+    "monitoringFrom": "المراقبة من",
+    "refresh": "تحديث",
+    "checkNow": "تحقق الآن",
+    "checking": "جارٍ التحقق...",
+    "lastSync": "آخر مزامنة",
+    "status": "الحالة",
+    "latencyHistory": "سجل التأخير",
+    "more": "المزيد",
+    "signIn": "تسجيل الدخول",
+    "signOut": "تسجيل الخروج",
+    "toggleTheme": "تبديل المظهر",
+    "config": "الإعدادات"
+  },
+  "history": {
+    "performanceHistory": "سجل الأداء",
+    "noHistory": "لا توجد بيانات تاريخية متاحة"
+  },
+  "config": {
+    "apiConfiguration": "إعدادات API",
+    "addApi": "إضافة API",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "name": "الاسم",
+    "provider": "المزود",
+    "url": "الرابط",
+    "edit": "تعديل",
+    "reset": "إعادة التعيين إلى الإعدادات الافتراضية"
+  },
+  "general": {
+    "and": "و"
+  }
+}
