@@ -1,11 +1,10 @@
-// app/components/DashboardHeader.tsx v2.6.1
+// app/components/DashboardHeader.tsx v2.6.2
 'use client';
 
 import React from 'react';
 import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin } from 'lucide-react';
 import AlertsDropdown from './AlertsDropdown';
-import { Alert } from '../types';
-import { User } from 'firebase/auth';
+import type { Alert, User } from '../types';
 import { useI18n } from '../hooks/useI18n';
 
 interface DashboardHeaderProps {

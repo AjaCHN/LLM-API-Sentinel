@@ -1,7 +1,6 @@
-// app/lib/metrics.ts v2.6.1
-import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
-import { db } from './firebase';
-import { StatusHistory } from '../types';
+// app/lib/metrics.ts v2.6.2
+import { supabase } from './supabase';
+import type { StatusHistory } from '../types';
 
 export interface ApiMetrics {
   errorRate: number;
@@ -19,29 +18,36 @@ async function _fetchStatusHistory(
   timeWindow: number = 24 * 60 * 60 * 1000,
   maxResults: number = 1000
 ): Promise<StatusHistory[]> {
-  const cutoffTime = new Date(Date.now() - timeWindow);
+  const cutoffTime = new Date(Date.now() - timeWindow).toISOString();
 
-  const queryConstraints = [
-    where('timestamp', '>=', cutoffTime),
-    orderBy('timestamp', 'desc'),
-    limit(maxResults)
-  ];
+  let query = supabase
+    .from('status_history')
+    .select('*')
+    .gte('timestamp', cutoffTime)
+    .order('timestamp', { ascending: false })
+    .limit(maxResults);
 
   if (apiId) {
-    queryConstraints.unshift(where('apiId', '==', apiId));
+    query = query.eq('api_id', apiId);
   }
 
-  const q = query(collection(db, 'status_history'), ...queryConstraints);
-  const snapshot = await getDocs(q);
+  const { data, error } = await query;
 
-  return snapshot.docs.map(doc => {
-    const data = doc.data();
-    return {
-      ...data,
-      timestamp: data.timestamp?.toDate(),
-      time: data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString() : ''
-    } as StatusHistory;
-  });
+  if (error) {
+    console.error('Failed to fetch status history:', error);
+    return [];
+  }
+
+  return (data || []).map(doc => ({
+    id: doc.id,
+    apiId: doc.api_id,
+    status: doc.status,
+    latency: doc.latency,
+    timestamp: new Date(doc.timestamp),
+    time: new Date(doc.timestamp).toLocaleTimeString(),
+    error: doc.error,
+    retries: doc.retries
+  })) as StatusHistory[];
 }
 
 function _calculateMetricsFromHistory(history: StatusHistory[]): ApiMetrics {
