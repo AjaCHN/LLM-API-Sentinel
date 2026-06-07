@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.6.1
+# LLM API Sentinel v2.6.0
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -56,11 +56,13 @@ This project uses a **Static Frontend + Firebase Backend** architecture:
 
 ## Deployment
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions to:
+The project can be deployed to various static hosting platforms:
 - **腾讯云 EdgeOne Pages**
 - **Vercel**
 - **Firebase Hosting**
 - **Firebase Cloud Functions**
+
+For detailed deployment instructions, please refer to the project documentation.
 
 ## API Monitoring Configuration
 - **Latency Threshold**: 1500ms

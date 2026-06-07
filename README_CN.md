@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.6.1
+# LLM API Sentinel v2.6.0
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -53,11 +53,13 @@
 
 ## 部署指南
 
-详细部署说明请参阅 [DEPLOYMENT.md](DEPLOYMENT.md)：
+项目可部署到以下静态托管平台：
 - **腾讯云 EdgeOne Pages**
 - **Vercel**
 - **Firebase Hosting**
 - **Firebase Cloud Functions**
+
+详细部署说明请参阅项目文档。
 
 ## API 监控配置
 - **延迟阈值**: 1500ms
