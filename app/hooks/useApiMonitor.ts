@@ -1,7 +1,8 @@
-// app/hooks/useApiMonitor.ts v2.6.2
-// 改进：使用本地 API 检查，同时支持从 Supabase 同步数据
+// app/hooks/useApiMonitor.ts v2.6.0
+// 改进：使用本地 API 检查，同时支持从 Firestore 同步数据
 import { useCallback, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import { useApiStore, useAuthStore } from '../store';
 import { LATENCY_THRESHOLD, APIS_TO_CHECK } from '../constants';
 import { ApiStatus, Alert, StatusHistory } from '../types';
@@ -21,107 +22,61 @@ export function useApiMonitor() {
   } = useApiStore();
   const { setError } = useAuthStore();
 
-  // 同步 API 状态到 Supabase
-  const syncToSupabase = useCallback(async (results: ApiStatus[]) => {
+  // 同步 API 状态到 Firestore
+  const syncToFirestore = useCallback(async (results: ApiStatus[]) => {
     try {
-      const upsertData = results.map(result => ({
-        id: result.id,
-        name: result.name,
-        provider: result.provider,
-        url: result.url,
-        status: result.status,
-        latency: result.latency,
-        last_checked: result.lastChecked,
-        error: result.error || null,
-        retries: result.retries || 0,
-        error_rate: result.errorRate || 0,
-        availability: result.availability || 100,
-        uptime: result.uptime || 100,
-        average_latency: result.averageLatency || null,
-        max_latency: result.maxLatency || null,
-        min_latency: result.minLatency || null,
-        updated_at: new Date().toISOString()
-      }));
-
-      const { error: upsertError } = await supabase
-        .from('api_status')
-        .upsert(upsertData, { onConflict: 'id' });
-
-      if (upsertError) {
-        throw upsertError;
-      }
-
-      // 添加历史记录
-      const historyData = results.map(result => ({
-        api_id: result.id,
-        status: result.status,
-        latency: result.latency,
-        error: result.error || null,
-        retries: result.retries || 0,
-        timestamp: new Date().toISOString()
-      }));
-
-      const { error: historyError } = await supabase
-        .from('status_history')
-        .insert(historyData);
-
-      if (historyError) {
-        logError(historyError, 'Failed to insert history records');
+      for (const result of results) {
+        const docRef = doc(db, 'api_status', result.id);
+        await setDoc(docRef, result);
+        
+        // 添加历史记录
+        const historyDoc = doc(collection(db, 'status_history'));
+        await setDoc(historyDoc, {
+          apiId: result.id,
+          status: result.status,
+          latency: result.latency,
+          timestamp: serverTimestamp()
+        });
       }
     } catch (err) {
-      logError(err, 'Failed to sync to Supabase');
+      logError(err, 'Failed to sync to Firestore');
     }
   }, []);
 
   // 智能告警检查函数
   const checkAndCreateAlert = useCallback(async (result: ApiStatus) => {
     try {
-      // 检查是否已有未解决的同类告警
-      const { data: existingAlerts } = await supabase
-        .from('alerts')
-        .select('id')
-        .eq('api_id', result.id)
-        .eq('type', result.status === 'offline' ? 'downtime' : 'latency')
-        .eq('resolved', false)
-        .limit(1);
+      const existingAlertsQuery = query(
+        collection(db, 'alerts'),
+        where('apiId', '==', result.id),
+        where('type', '==', result.status === 'offline' ? 'downtime' : 'latency'),
+        where('resolved', '==', false)
+      );
 
-      if (existingAlerts && existingAlerts.length > 0) {
+      const existingAlertsSnapshot = await getDocs(existingAlertsQuery);
+      const existingAlerts = existingAlertsSnapshot.docs;
+
+      if (existingAlerts.length > 0) {
         return; // 已有未解决的同类告警，跳过
       }
 
       if (result.status === 'offline') {
-        const alertData = {
-          api_id: result.id,
-          api_name: result.name,
+        const alertData: Omit<Alert, 'id'> = {
+          apiId: result.id,
+          apiName: result.name,
           type: 'downtime',
           severity: 'high',
-          message: `${result.name} is currently offline.`,
-          timestamp: new Date().toISOString(),
+          message: result.name + " is currently offline.",
+          timestamp: serverTimestamp(),
           resolved: false,
-          error: result.error || null,
-          retries: result.retries || 0
+          error: result.error,
+          retries: result.retries
         };
-
-        const { data, error } = await supabase
-          .from('alerts')
-          .insert(alertData)
-          .select('id')
-          .single();
-
-        if (!error && data) {
-          await sendAlert({
-            id: data.id,
-            apiId: result.id,
-            apiName: result.name,
-            type: 'downtime',
-            severity: 'high',
-            message: `${result.name} is currently offline.`,
-            timestamp: new Date(),
-            resolved: false,
-            error: result.error,
-            retries: result.retries
-          });
-        }
+        const alertRef = await addDoc(collection(db, 'alerts'), alertData);
+        await sendAlert({
+          id: alertRef.id,
+          ...alertData
+        });
       } else if (result.latency > LATENCY_THRESHOLD) {
         let severity: 'low' | 'medium' | 'high' = 'medium';
         if (result.latency > LATENCY_THRESHOLD * 2) {
@@ -132,36 +87,21 @@ export function useApiMonitor() {
           severity = 'low';
         }
 
-        const alertData = {
-          api_id: result.id,
-          api_name: result.name,
+        const alertData: Omit<Alert, 'id'> = {
+          apiId: result.id,
+          apiName: result.name,
           type: 'latency',
           severity,
-          message: `${result.name} latency is high: ${result.latency}ms.`,
-          timestamp: new Date().toISOString(),
+          message: result.name + " latency is high: " + result.latency + "ms.",
+          timestamp: serverTimestamp(),
           resolved: false,
           latency: result.latency
         };
-
-        const { data, error } = await supabase
-          .from('alerts')
-          .insert(alertData)
-          .select('id')
-          .single();
-
-        if (!error && data) {
-          await sendAlert({
-            id: data.id,
-            apiId: result.id,
-            apiName: result.name,
-            type: 'latency',
-            severity,
-            message: `${result.name} latency is high: ${result.latency}ms.`,
-            timestamp: new Date(),
-            resolved: false,
-            latency: result.latency
-          });
-        }
+        const alertRef = await addDoc(collection(db, 'alerts'), alertData);
+        await sendAlert({
+          id: alertRef.id,
+          ...alertData
+        });
       }
     } catch (err) {
       logError(err, 'Failed to check and create alert');
@@ -197,12 +137,12 @@ export function useApiMonitor() {
         await checkAndCreateAlert(result);
       }
 
-      // 尝试同步到 Supabase（可选）
+      // 尝试同步到 Firestore（可选）
       try {
-        await syncToSupabase(results);
+        await syncToFirestore(results);
       } catch (err) {
-        // 如果 Supabase 同步失败，只记录错误，不影响用户体验
-        logError(err, 'Supabase sync failed');
+        // 如果 Firestore 同步失败，只记录错误，不影响用户体验
+        logError(err, 'Firestore sync failed');
       }
 
     } catch (err) {
@@ -211,39 +151,18 @@ export function useApiMonitor() {
     } finally {
       setIsChecking(false);
     }
-  }, [setIsChecking, setLastUpdate, setError, setStatuses, addHistoryEntry, checkAndCreateAlert, syncToSupabase]);
+  }, [setIsChecking, setLastUpdate, setError, setStatuses, addHistoryEntry, checkAndCreateAlert, syncToFirestore]);
 
-  // 初始化时尝试从 Supabase 加载（可选），否则使用本地模拟数据
+  // 初始化时尝试从 Firestore 加载（可选），否则使用本地模拟数据
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        const { data, error } = await supabase
-          .from('api_status')
-          .select('*');
-
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-          const mappedData: ApiStatus[] = data.map(doc => ({
-            id: doc.id,
-            name: doc.name,
-            provider: doc.provider,
-            url: doc.url,
-            status: doc.status,
-            latency: doc.latency,
-            lastChecked: doc.last_checked,
-            error: doc.error,
-            retries: doc.retries,
-            errorRate: doc.error_rate,
-            availability: doc.availability,
-            uptime: doc.uptime,
-            averageLatency: doc.average_latency,
-            maxLatency: doc.max_latency,
-            minLatency: doc.min_latency
-          }));
-          setStatuses(mappedData.sort((a, b) => a.name.localeCompare(b.name)));
+        const snapshot = await getDocs(collection(db, 'api_status'));
+        if (snapshot.docs.length > 0) {
+          const data = snapshot.docs.map(doc => doc.data() as ApiStatus);
+          setStatuses(data.sort((a, b) => a.name.localeCompare(b.name)));
         } else {
-          // 如果 Supabase 中没有数据，生成模拟数据
+          // 如果 Firestore 中没有数据，生成模拟数据
           const mockData = APIS_TO_CHECK.map((api: any) => ({
             ...api,
             status: Math.random() > 0.1 ? 'online' : 'offline',
@@ -259,7 +178,7 @@ export function useApiMonitor() {
           setStatuses(mockData);
         }
       } catch {
-        // 如果 Supabase 加载失败，生成模拟数据
+        // 如果 Firestore 加载失败，生成模拟数据
         const mockData = APIS_TO_CHECK.map((api: any) => ({
           ...api,
           status: Math.random() > 0.1 ? 'online' : 'offline',

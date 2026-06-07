@@ -1,4 +1,4 @@
-// app/hooks/useGeoLocation.ts v2.6.1
+// app/hooks/useGeoLocation.ts v2.6.0
 import { useEffect } from 'react';
 import { GEO_INFO_EXPIRY } from '../constants';
 import { logError } from '../lib/error-handler';

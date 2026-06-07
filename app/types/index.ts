@@ -1,4 +1,4 @@
-// app/types/index.ts v2.6.1
+// app/types/index.ts v2.6.0
 // API 状态接口
 export interface ApiStatus {
   id: string;

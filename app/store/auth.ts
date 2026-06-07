@@ -1,4 +1,4 @@
-// app/store/auth.ts v2.6.1
+// app/store/auth.ts v2.6.0
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from 'firebase/auth';

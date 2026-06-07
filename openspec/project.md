@@ -12,17 +12,14 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 - **安全访问**：手动健康检查受 Google 身份验证保护
 - **智能告警**：自动检测 API 宕机和延迟过高，并生成告警通知
 - **数据缓存**：内存和本地存储缓存机制，减少重复请求
-- **地理位置**：实时检测监控节点位置，24小时本地缓存
-- **多语言支持**：16 种语言国际化，自动检测浏览器语言
 
 ### 1.2 技术栈
 | 类别 | 技术 | 版本 |
 |-----|------|------|
 | 前端框架 | Next.js 14.2.13 (App Router) | 14.2.13 |
 | 后端服务器 | Express 5.2.1 | 5.2.1 |
-| 数据库 | Supabase PostgreSQL | - |
-| 身份验证 | Supabase Auth (Google OAuth) | - |
-| 实时订阅 | Supabase Realtime | - |
+| 数据库 | Firebase Firestore | - |
+| 身份验证 | Firebase Authentication (Google OAuth) | - |
 | 样式 | Tailwind CSS 4.1.11 | 4.1.11 |
 | 图表 | Recharts 3.8.0 | 3.8.0 |
 | 图标 | Lucide React | - |
@@ -33,8 +30,8 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 ### 1.3 系统架构
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Next.js App   │────▶│     Supabase     │◀────│  Express Server │
-│   (Client)      │     │  (Auth + PostgreSQL) │   │  (Background)   │
+│   Next.js App   │────▶│      Firebase      │◀────│  Express Server │
+│   (Client)      │     │  (Auth + Firestore) │     │  (Background)   │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
                                                          │
                                                          ▼
@@ -71,11 +68,11 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   ├── concurrency.ts        # 并发控制
 │   │   ├── error-handler.ts      # 错误处理
 │   │   ├── error.tsx             # 错误边界和通知组件
+│   │   ├── firebase.ts           # Firebase 客户端配置
 │   │   ├── i18n.ts               # 国际化系统
 │   │   ├── metrics.ts            # 指标计算
 │   │   ├── monitor.ts            # API 监控逻辑
 │   │   ├── notification.ts       # 通知处理
-│   │   ├── supabase.ts           # Supabase 客户端配置
 │   │   └── utils.ts              # 工具函数
 │   ├── store/                    # Zustand 状态管理
 │   │   ├── alerts.ts             # 告警状态
@@ -91,26 +88,18 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   └── index.ts
 │   ├── locales/                  # 国际化翻译文件
 │   │   ├── en.json               # 英文
-│   │   ├── zh-cn.json            # 简体中文
-│   │   ├── zh-tw.json            # 繁体中文
-│   │   ├── ar.json               # 阿拉伯语
-│   │   ├── cs.json               # 捷克语
-│   │   ├── es.json               # 西班牙语
-│   │   ├── hi.json               # 印地语
-│   │   ├── id.json               # 印度尼西亚语
-│   │   ├── it.json               # 意大利语
-│   │   ├── nl.json               # 荷兰语
-│   │   ├── pl.json               # 波兰语
-│   │   ├── sv.json               # 瑞典语
-│   │   ├── th.json               # 泰语
-│   │   ├── tr.json               # 土耳其语
-│   │   ├── ru.json               # 俄语
-│   │   └── vi.json               # 越南语
+│   │   └── zh-cn.json            # 中文
+│   ├── globals.css               # 全局样式
 │   ├── style.css                 # 主题样式
 │   ├── layout.tsx                # 根布局
 │   └── page.tsx                  # 主页面
+├── functions/                    # Firebase Cloud Functions (可选)
 ├── openspec/                     # 项目规范文档
-├── server.ts                     # Express 自定义服务器（含后台监控）
+├── .trae/
+│   ├── rules/                    # Trae IDE 规则
+│   └── skills/                   # 自定义技能
+├── server.ts                     # Express 自定义服务器
+├── middleware.ts                 # Next.js 中间件
 └── package.json
 ```
 
@@ -143,11 +132,11 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 
 ### 2.5 版本控制
 - 使用 SemVer 2.0.0 版本规范
-- 版本号格式：`主版本.次版本.修订号`（如 `2.6.2`）
+- 版本号格式：`主版本.次版本.修订号`（如 `2.6.0`）
 - 每次发布时更新以下文件：
   1. 文件头部版本号（所有代码文件）
   2. HTML Title 标签版本号（`app/layout.tsx`）
-  3. `package.json` 中的版本信息
+  3. `metadata.json` 中的版本信息
   4. `CHANGELOG.md` 中的版本记录
 
 ## 3. API 接口文档
@@ -385,13 +374,12 @@ interface AlertsDropdownProps {
 
 ## 7. 数据模型
 
-### 7.1 Supabase 表结构
-| 表名 | 用途 | 说明 |
+### 7.1 Firestore 集合
+| 集合路径 | 用途 | 权限 |
 |---------|------|------|
-| `api_status` | API 当前状态 | 所有人可读，所有人可写入 |
-| `status_history` | 历史性能数据 | 所有人可读，所有人可写入 |
-| `alerts` | 系统告警 | 所有人可读写 |
-| `user_profiles` | 用户资料 | 关联 Supabase Auth 用户 |
+| `/api_status/{apiId}` | API 当前状态 | 所有人可读，仅管理员可写 |
+| `/status_history/{historyId}` | 历史性能数据 | 所有人可读，仅管理员可写 |
+| `/alerts/{alertId}` | 系统告警 | 所有人可读，仅管理员可写 |
 
 ### 7.2 数据结构
 
@@ -461,8 +449,8 @@ interface Alert {
 | 认证错误 | `AUTH_REQUIRED` | 需要登录 |
 | 认证错误 | `AUTH_FAILED` | 登录失败 |
 | 认证错误 | `AUTH_EXPIRED` | 会话过期 |
-| Supabase 错误 | `SUPABASE_ERROR` | Supabase 服务错误 |
-| Supabase 错误 | `DATABASE_ERROR` | 数据库操作失败 |
+| Firebase 错误 | `FIREBASE_ERROR` | Firebase 服务错误 |
+| Firebase 错误 | `FIRESTORE_ERROR` | 数据库操作失败 |
 | 验证错误 | `VALIDATION_ERROR` | 输入验证失败 |
 | 未知错误 | `UNKNOWN_ERROR` | 未知错误 |
 
@@ -510,29 +498,48 @@ interface Alert {
 ## 10. 安全措施
 
 ### 10.1 认证
-- 使用 Supabase Auth (Google OAuth)
+- 使用 Firebase Authentication (Google OAuth)
 - 敏感操作（如手动检查）需要用户登录
-- 会话管理由 Supabase 自动处理
+- 会话管理由 Firebase 自动处理
 
-### 10.2 Row Level Security (RLS) 策略
-```sql
--- API 状态：所有人可读，可写入
-CREATE POLICY "api_status_read_all" ON api_status FOR SELECT USING (true);
-CREATE POLICY "api_status_insert_all" ON api_status FOR INSERT WITH CHECK (true);
-CREATE POLICY "api_status_update_all" ON api_status FOR UPDATE USING (true);
+### 10.2 Firestore 规则
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
 
--- 告警：所有人可读写
-CREATE POLICY "alerts_read_all" ON alerts FOR SELECT USING (true);
-CREATE POLICY "alerts_update_resolve" ON alerts FOR UPDATE USING (true);
-CREATE POLICY "alerts_insert_all" ON alerts FOR INSERT WITH CHECK (true);
+    function isAdmin() {
+      return isAuthenticated() &&
+        (request.auth.token.email == "admin@example.com" && 
+         request.auth.token.email_verified == true);
+    }
+
+    match /api_status/{apiId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /status_history/{historyId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /alerts/{alertId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
 ```
 
 ### 10.3 安全最佳实践
 - 代码/日志中不存储密钥
 - 输入验证防止 XSS 攻击
 - 使用 HTTPS 进行通信
-- 最小权限原则配置 RLS 策略
-- 服务端使用 Service Role Key，前端使用 Anon Key
+- 最小权限原则配置 Firestore 规则
 
 ## 11. 性能优化
 
@@ -597,117 +604,13 @@ main 分支更新 → GitHub Actions → 构建 → Firebase 部署
 - 单元测试：`*.test.ts`
 - 组件测试：`*.test.tsx`
 
-## 15. 国际化 (i18n)
+## 14. 部署
 
-### 15.1 支持的语言
-| 语言代码 | 语言名称 | 本地名称 |
-|---------|---------|--------|
-| en | English | English |
-| zh-cn | 简体中文 | 简体中文 |
-| zh-tw | 繁体中文 | 繁體中文 |
-| ar | 阿拉伯语 | العربية |
-| cs | 捷克语 | Čeština |
-| es | 西班牙语 | Español |
-| hi | 印地语 | हिन्दी |
-| id | 印度尼西亚语 | Bahasa Indonesia |
-| it | 意大利语 | Italiano |
-| nl | 荷兰语 | Nederlands |
-| pl | 波兰语 | Polski |
-| sv | 瑞典语 | Svenska |
-| th | 泰语 | ไทย |
-| tr | 土耳其语 | Türkçe |
-| ru | 俄语 | Русский |
-| vi | 越南语 | Tiếng Việt |
+### 14.1 环境配置
+- Firebase 项目配置：`firebase-applet-config.json`
+- Firestore 数据库 ID：在配置文件中指定
 
-### 15.2 语言检测与切换
-- **自动检测**：系统自动检测浏览器语言设置
-- **持久化**：用户语言选择保存到 localStorage
-- **回退机制**：未找到语言时回退到英文
-- **翻译格式**：使用点分隔的翻译键（如 `dashboard.title`）
-
-### 15.3 翻译文件格式
-```json
-{
-  "errors": {
-    "networkTimeout": "超时信息"
-  },
-  "dashboard": {
-    "title": "标题"
-  }
-}
-```
-
-### 15.4 API 使用方式
-```typescript
-import { t, setLocale, getLocale, initLocale } from '@/lib/i18n';
-
-// 获取翻译
-const title = t('dashboard.title');
-
-// 设置语言
-setLocale('es');
-
-// 初始化（自动检测）
-initLocale();
-```
-
-## 17. Supabase 配置
-
-### 17.1 客户端配置
-```typescript
-// app/lib/supabase.ts
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-```
-
-### 17.2 服务端配置
-```typescript
-// server.ts
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
-```
-
-### 17.3 数据表说明
-| 表名 | 说明 |
-|------|------|
-| `api_status` | 存储 API 当前状态 |
-| `status_history` | 存储历史性能数据 |
-| `alerts` | 存储系统告警 |
-| `user_profiles` | 用户资料表，自动关联 Auth 用户 |
-
-### 17.4 实时订阅
-Supabase 支持实时数据订阅，用于告警更新：
-```typescript
-const channel = supabase
-  .channel('alerts_changes')
-  .on('postgres_changes', {
-    event: '*',
-    schema: 'public',
-    table: 'alerts'
-  }, (payload) => {
-    console.log('Alert changed:', payload);
-  })
-  .subscribe();
-```
-
-## 16. 部署
-
-### 16.1 环境配置
-- Supabase 项目配置：在 `.env.local` 文件中配置以下环境变量：
-  - `NEXT_PUBLIC_SUPABASE_URL`: Supabase 项目 URL
-  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase Anon Key（前端使用）
-  - `SUPABASE_SERVICE_ROLE_KEY`: Supabase Service Role Key（服务端使用）
-- 数据库迁移：运行 `supabase/schema.sql` 中的 SQL 脚本
-
-### 16.2 启动命令
+### 14.2 启动命令
 | 命令 | 用途 |
 |-----|------|
 | `npm run dev` | 开发模式 |

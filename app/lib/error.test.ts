@@ -1,4 +1,4 @@
-// app/lib/error.test.ts v2.6.1
+// app/lib/error.test.ts v2.6.0
 import { createError, handleError, logError, ErrorCode } from './error-handler';
 
 // Mock i18n

@@ -1,4 +1,4 @@
-// app/hooks/useI18n.ts v2.6.1
+// app/hooks/useI18n.ts v2.6.0
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
