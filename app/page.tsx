@@ -56,42 +56,46 @@ export default function Dashboard() {
         resolveAlert={resolveAlert} 
       />
 
-      <main id="main-content" className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+      <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
         {alerts.length > 0 && (
-          <div id="alerts-banner" className="bg-rose-500/10 border border-rose-500/20 p-5 rounded-xl flex items-center justify-between animate-slide-in-from-top shadow-sm">
-            <div className="flex items-center gap-3.5">
-              <div className="p-2 bg-rose-500/10 rounded-lg">
-                <AlertTriangle className="w-5 h-5 text-rose-500" />
+          <div id="alerts-banner" className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-rose-500/15 via-rose-500/5 to-transparent border border-rose-500/20 p-6 animate-fade-up">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-float"></div>
+            <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-rose-500/15 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-rose-500" />
+                </div>
+                <div>
+                  <p className="text-base font-bold text-rose-500">
+                    {alerts.length} {alerts.length > 1 ? t('alerts.activeIssuesPlural') : t('alerts.activeIssues')} {t('alerts.detected')}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {alerts.some(a => a.status === 'offline') ? '1 service offline' : ''} {alerts.some(a => a.status === 'degraded') ? '• 2 high latency alerts' : ''}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-bold text-rose-500 uppercase tracking-wider">
-                  {t('alerts.alertsLabel')}: {alerts.length} {alerts.length > 1 ? t('alerts.activeIssuesPlural') : t('alerts.activeIssues')} {t('alerts.detected')}
-                </p>
-              </div>
+              <button onClick={() => setShowAlerts(true)} className="w-full sm:w-auto px-5 py-2.5 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 text-sm font-semibold transition-all border border-rose-500/30">
+                {t('alerts.viewDetails')}
+              </button>
             </div>
-            <button onClick={() => setShowAlerts(true)} className="text-xs font-bold uppercase underline text-rose-500 hover:no-underline transition-colors">
-              {t('alerts.viewDetails')} →
-            </button>
           </div>
         )}
 
         <section id="status-grid-section">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-4">
             <div>
-              <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic">{t('dashboard.status')}</h2>
-              <p className="text-sm text-muted-foreground mt-1">Real-time API health monitoring</p>
+              <h2 className="mono-label mb-1.5">{t('dashboard.status')}</h2>
+              <p className="text-2xl font-semibold tracking-tight">Real-time API Monitoring</p>
             </div>
-            <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
               {lastUpdate && (
-                <span className="text-[10px] font-mono opacity-50 bg-muted/30 px-2.5 py-1.5 rounded-lg">
+                <span className="text-[11px] font-mono opacity-40 hidden sm:block">
                   {t('dashboard.lastSync')}: {format(lastUpdate, 'HH:mm:ss')}
                 </span>
               )}
               <button 
                 onClick={() => setShowConfig(!showConfig)}
-                className={cn(
-                  "flex items-center gap-1.5 px-3.5 py-2 border border-border/50 text-[10px] font-bold uppercase tracking-widest transition-all rounded-xl hover:bg-foreground hover:text-background"
-                )}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-[11px] font-semibold btn-ghost flex-shrink-0"
               >
                 <Settings className="w-3.5 h-3.5" />
                 {t('dashboard.config')}
@@ -100,9 +104,8 @@ export default function Dashboard() {
                 onClick={runCheck}
                 disabled={isChecking || !user}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 border border-border text-[10px] font-bold uppercase tracking-widest transition-all rounded-xl",
-                  isChecking ? "opacity-50 cursor-not-allowed" : "hover:bg-foreground hover:text-background",
-                  !user && "opacity-30 cursor-not-allowed"
+                  "flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-[11px] font-semibold transition-all flex-shrink-0",
+                  !user || isChecking ? "opacity-30 cursor-not-allowed" : ""
                 )}
               >
                 {isChecking ? t('dashboard.checking') : t('dashboard.checkNow')}
@@ -110,7 +113,7 @@ export default function Dashboard() {
             </div>
           </div>
           {showConfig && (
-            <div className="mb-6 animate-scale-in">
+            <div className="mb-6 animate-fade-up">
               <ApiConfig />
             </div>
           )}
@@ -118,22 +121,24 @@ export default function Dashboard() {
         </section>
 
         <section id="history-chart-section">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-6 gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-4">
             <div>
-              <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic">{t('dashboard.latencyHistory')}</h2>
-              <p className="text-sm text-muted-foreground mt-1">Performance trends over time</p>
+              <h2 className="mono-label mb-1.5">{t('dashboard.latencyHistory')}</h2>
+              <p className="text-2xl font-semibold tracking-tight">Performance Trends</p>
             </div>
-            <div id="chart-legend" className="flex flex-wrap gap-x-3 gap-y-2 max-w-full scrollbar-hide">
+            <div id="chart-legend" className="flex flex-wrap gap-x-3 gap-y-2 justify-center">
               {statuses.slice(0, 8).map(s => (
-                <div key={s.id} className="flex items-center gap-1.5 bg-muted/30 px-2.5 py-1.5 rounded-lg">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: getApiColor(s.id) }} />
-                  <span className="text-[9px] font-mono opacity-70 uppercase whitespace-nowrap font-medium">{s.name}</span>
+                <div key={s.id} className="flex items-center gap-2.5">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getApiColor(s.id) }} />
+                  <span className="text-xs text-muted-foreground">{s.name}</span>
                 </div>
               ))}
-              {statuses.length > 8 && <span className="text-[9px] font-mono opacity-50 uppercase bg-muted/20 px-2 py-1 rounded-lg">+{statuses.length - 8} {t('dashboard.more')}</span>}
+              {statuses.length > 8 && <span className="text-xs text-muted-foreground">+{statuses.length - 8} {t('dashboard.more')}</span>}
             </div>
           </div>
-          <LatencyHistoryChart chartData={chartData} statuses={statuses} getApiColor={getApiColor} />
+          <div className="bg-card border border-border/60 rounded-3xl p-5 md:p-6">
+            <LatencyHistoryChart chartData={chartData} statuses={statuses} getApiColor={getApiColor} />
+          </div>
         </section>
 
         <DashboardFooter />
