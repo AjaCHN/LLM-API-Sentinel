@@ -1,4 +1,4 @@
-// app/components/ApiStatusGrid.tsx v2.6.2
+// app/components/ApiStatusGrid.tsx v3.0.0 - Apple Style
 'use client';
 
 import React, { useMemo } from 'react';
@@ -22,96 +22,90 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
   
   const providers = useMemo(() => Object.keys(statusesByProvider).sort(), [statusesByProvider]);
 
-  const getProgressBarColor = (latency: number, status: string) => {
-    if (status === 'offline') return 'bg-red-500';
-    if (status === 'degraded') return 'bg-amber-500';
-    if (latency > LATENCY_THRESHOLD) return 'bg-amber-500';
-    return 'bg-green-500';
+  const getStatusColor = (status: string) => {
+    if (status === 'online') return 'text-success';
+    if (status === 'degraded') return 'text-warning';
+    return 'text-error';
+  };
+
+  const getStatusBg = (status: string) => {
+    if (status === 'online') return 'bg-success/10';
+    if (status === 'degraded') return 'bg-warning/10';
+    return 'bg-error/10';
+  };
+
+  const getLatencyColor = (latency: number, status: string) => {
+    if (status === 'offline') return 'bg-error';
+    if (status === 'degraded') return 'bg-warning';
+    if (latency > LATENCY_THRESHOLD) return 'bg-warning';
+    return 'bg-success';
   };
 
   let cardIndex = 0;
 
   return (
-    <div id="api-cards-container" className="space-y-6">
+    <div id="api-cards-container" className="space-y-10">
       {providers.length > 0 ? (
         providers.map((provider) => (
-          <div key={provider} className="space-y-3">
+          <div key={provider} className="space-y-5">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground">{provider}</h3>
-              <span className="text-xs font-mono opacity-50">
+              <h3 className="text-xl font-semibold">{provider}</h3>
+              <span className="text-xs font-medium text-muted-foreground">
                 {statusesByProvider[provider].length} APIs
               </span>
             </div>
             <div 
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
             >
               {statusesByProvider[provider].map((api) => {
-                const animationDelay = `${cardIndex * 0.05}s`;
+                const staggerClass = `stagger-${(cardIndex % 8) + 1}`;
                 cardIndex++;
                 return (
                   <div 
                     key={api.id} 
                     id={`api-card-${api.id}`} 
-                    className="group bg-card border border-border/20 hover:border-border/50 transition-all duration-300 shadow-sm hover:shadow-lg rounded-xl p-5 animate-fade-in relative overflow-hidden"
-                    style={{ animationDelay }}
+                    className={cn(
+                      'apple-card bg-card border border-border/40 rounded-3xl p-6 opacity-0 animate-fade-in-up',
+                      staggerClass
+                    )}
                   >
-                    {/* 状态指示器装饰线 */}
-                    <div className={cn(
-                      'absolute top-0 left-0 w-1 h-full transition-colors',
-                      api.status === 'online' ? 'bg-green-500' :
-                      api.status === 'degraded' ? 'bg-amber-500' : 'bg-red-500'
-                    )} />
-                    
-                    <div className="flex items-start justify-between mb-5">
+                    <div className="flex items-start justify-between mb-6">
                       <div>
-                        <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors">{api.name}</h4>
+                        <h4 className="text-lg font-semibold">{api.name}</h4>
                         <p className="text-xs text-muted-foreground mt-1">{api.provider}</p>
                       </div>
-                      <span 
-                        className={cn(
-                          'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold',
-                          api.status === 'online' 
-                            ? 'bg-green-500/10 text-green-500 border border-green-500/30'
-                            : api.status === 'degraded'
-                            ? 'bg-amber-500/10 text-amber-500 border border-amber-500/30'
-                            : 'bg-red-500/10 text-red-500 border border-red-500/30'
-                        )}
-                      >
-                        {api.status === 'online' ? (
-                          <>
-                            <CheckCircle2 className="h-3.5 w-3.5" />
-                            <span>{t('api.online')}</span>
-                          </>
-                        ) : api.status === 'degraded' ? (
-                          <>
-                            <AlertTriangle className="h-3.5 w-3.5" />
-                            <span>{t('api.degraded')}</span>
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="h-3.5 w-3.5" />
-                            <span>{t('api.offline')}</span>
-                          </>
-                        )}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <div className={cn(
+                          'w-2.5 h-2.5 rounded-full status-dot',
+                          api.status === 'online' ? 'bg-success' :
+                          api.status === 'degraded' ? 'bg-warning' : 'bg-error'
+                        )} />
+                        <span className={cn(
+                          'text-xs font-medium',
+                          getStatusColor(api.status)
+                        )}>
+                          {api.status === 'online' ? t('api.online') :
+                           api.status === 'degraded' ? t('api.degraded') : t('api.offline')}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-5">
                       <div>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                          <span className="font-medium">{t('api.latency')}</span>
+                        <div className="flex items-center justify-between text-sm mb-3">
+                          <span className="text-muted-foreground">{t('api.latency')}</span>
                           <span className={cn(
-                            'font-bold text-sm',
-                            api.latency >= LATENCY_THRESHOLD && api.status !== 'offline' ? 'text-amber-500' : 'text-foreground'
+                            'text-xl font-semibold',
+                            api.latency >= LATENCY_THRESHOLD && api.status !== 'offline' ? 'text-warning' : 'text-foreground'
                           )}>
                             {api.status === 'offline' ? t('api.timeout') : `${api.latency}ms`}
                           </span>
                         </div>
-                        <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                           <div 
                             className={cn(
                               'h-full rounded-full transition-all duration-700 ease-out',
-                              getProgressBarColor(api.latency, api.status)
+                              getLatencyColor(api.latency, api.status)
                             )}
                             style={{ 
                               width: api.status === 'offline' ? '100%' : `${Math.min((api.latency / LATENCY_THRESHOLD) * 100, 100)}%` 
@@ -121,16 +115,16 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                       </div>
 
                       {(api.errorRate !== undefined || api.availability !== undefined) && (
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-4">
                           {api.errorRate !== undefined && (
-                            <div className="bg-muted/30 rounded-lg p-2.5">
-                              <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
+                            <div className="bg-secondary rounded-2xl p-4">
+                              <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
                                 <span className="uppercase tracking-wide">{t('api.errorRate')}</span>
                                 <span className="font-semibold text-foreground">{api.errorRate}%</span>
                               </div>
                               <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                                 <div 
-                                  className="h-full bg-amber-500 rounded-full"
+                                  className="h-full bg-warning rounded-full"
                                   style={{ width: `${Math.min(api.errorRate, 100)}%` }}
                                 />
                               </div>
@@ -138,14 +132,14 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                           )}
 
                           {api.availability !== undefined && (
-                            <div className="bg-muted/30 rounded-lg p-2.5">
-                              <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
+                            <div className="bg-secondary rounded-2xl p-4">
+                              <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
                                 <span className="uppercase tracking-wide">{t('api.availability')}</span>
                                 <span className="font-semibold text-foreground">{api.availability}%</span>
                               </div>
                               <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                                 <div 
-                                  className="h-full bg-primary rounded-full"
+                                  className="h-full bg-success rounded-full"
                                   style={{ width: `${api.availability}%` }}
                                 />
                               </div>
@@ -155,17 +149,17 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between text-[10px] text-muted-foreground border-t border-border/15 pt-3.5 mt-5">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border/30 pt-4 mt-6">
                       <div className="flex items-center gap-1.5">
-                        <Clock className="h-3 w-3" />
+                        <Clock className="w-3.5 h-3.5" />
                         <span>{t('api.lastChecked')}: {new Date(api.lastChecked).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                       </div>
                       {api.retries && api.retries > 0 && (
                         <div className={cn(
-                          'flex items-center gap-1.5 px-2 py-0.5 rounded-full',
-                          api.status === 'offline' ? 'bg-red-500/10 text-red-500' : 'bg-amber-500/10 text-amber-500'
+                          'flex items-center gap-1.5 px-3 py-1 rounded-full',
+                          api.status === 'offline' ? getStatusBg('offline') : getStatusBg('degraded')
                         )}>
-                          <AlertTriangle className="h-3 w-3" />
+                          <AlertTriangle className="w-3.5 h-3.5" />
                           <span className="font-medium">{api.retries} {t('api.retries')}</span>
                         </div>
                       )}
@@ -177,12 +171,12 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
           </div>
         ))
       ) : (
-        <div className="w-full border border-dashed border-border/30 p-8 md:p-16 text-center rounded-xl bg-card/30">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-muted">
-            <BarChart3 className="h-10 w-10 text-muted-foreground" />
+        <div className="w-full border border-dashed border-border/40 p-12 md:p-20 text-center rounded-3xl bg-card/30">
+          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-secondary">
+            <BarChart3 className="h-12 w-12 text-muted-foreground" />
           </div>
-          <h3 className="mt-6 text-xl font-semibold text-foreground">{t('api.noApiConfigured')}</h3>
-          <p className="mt-3 text-sm text-muted-foreground max-w-md mx-auto">
+          <h3 className="mt-8 text-2xl font-semibold">{t('api.noApiConfigured')}</h3>
+          <p className="mt-4 text-base text-muted-foreground max-w-md mx-auto">
             {t('api.addApiHint')}
           </p>
         </div>

@@ -1,4 +1,4 @@
-/* app/style.css v2.0.0 */
+/* app/style.css v3.0.0 - Apple Style */
 @import "tailwindcss";
 
 @theme {
@@ -22,121 +22,164 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   
-  --color-green-500: #22C55E;
-  --color-green-500-10: rgba(34, 197, 94, 0.1);
-  --color-green-500-20: rgba(34, 197, 94, 0.2);
+  /* Apple-style status colors */
+  --color-success: #34C759;
+  --color-warning: #FF9500;
+  --color-error: #FF3B30;
   
-  --color-amber-500: #F59E0B;
-  --color-amber-500-10: rgba(245, 158, 11, 0.1);
-  --color-amber-500-20: rgba(245, 158, 11, 0.2);
-  
-  --color-rose-500: #EF4444;
-  --color-rose-500-10: rgba(239, 68, 68, 0.1);
-  --color-rose-500-20: rgba(239, 68, 68, 0.2);
-  
-  --color-red-500: #EF4444;
-  --color-red-500-10: rgba(239, 68, 68, 0.1);
-  --color-red-500-20: rgba(239, 68, 68, 0.2);
+  --color-success-10: rgba(52, 199, 89, 0.1);
+  --color-warning-10: rgba(255, 149, 0, 0.1);
+  --color-error-10: rgba(255, 59, 48, 0.1);
 }
 
 :root {
-  --background: #E4E3E0;
-  --foreground: #141414;
+  /* Apple-style light theme */
+  --background: #FFFFFF;
+  --foreground: #000000;
   --card: #FFFFFF;
-  --card-foreground: #141414;
+  --card-foreground: #000000;
   --popover: #FFFFFF;
-  --popover-foreground: #141414;
-  --primary: #141414;
-  --primary-foreground: #E4E3E0;
-  --secondary: #F4F4F5;
-  --secondary-foreground: #18181B;
-  --muted: #F4F4F5;
-  --muted-foreground: #71717A;
-  --accent: #F4F4F5;
-  --accent-foreground: #18181B;
-  --destructive: #EF4444;
-  --destructive-foreground: #FAFAFA;
-  --border: #141414;
-  --input: #141414;
-  --ring: #141414;
+  --popover-foreground: #000000;
+  --primary: #007AFF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F5F7;
+  --secondary-foreground: #000000;
+  --muted: #F5F5F7;
+  --muted-foreground: #86868B;
+  --accent: #F5F5F7;
+  --accent-foreground: #000000;
+  --destructive: #FF3B30;
+  --destructive-foreground: #FFFFFF;
+  --border: #D1D1D6;
+  --input: #D1D1D6;
+  --ring: #007AFF;
 }
 
 .dark {
-  --background: #0C0C0C;
-  --foreground: #E4E3E0;
-  --card: #141414;
-  --card-foreground: #E4E3E0;
-  --popover: #141414;
-  --popover-foreground: #E4E3E0;
-  --primary: #E4E3E0;
-  --primary-foreground: #141414;
-  --secondary: #27272A;
-  --secondary-foreground: #FAFAFA;
-  --muted: #27272A;
-  --muted-foreground: #A1A1AA;
-  --accent: #27272A;
-  --accent-foreground: #FAFAFA;
-  --destructive: #7F1D1D;
-  --destructive-foreground: #FAFAFA;
-  --border: #E4E3E0;
-  --input: #E4E3E0;
-  --ring: #D4D4D8;
+  /* Apple-style dark theme */
+  --background: #000000;
+  --foreground: #FFFFFF;
+  --card: #1C1C1E;
+  --card-foreground: #FFFFFF;
+  --popover: #1C1C1E;
+  --popover-foreground: #FFFFFF;
+  --primary: #0A84FF;
+  --primary-foreground: #000000;
+  --secondary: #1C1C1E;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1C1C1E;
+  --muted-foreground: #98989D;
+  --accent: #1C1C1E;
+  --accent-foreground: #FFFFFF;
+  --destructive: #FF453A;
+  --destructive-foreground: #000000;
+  --border: #38383A;
+  --input: #38383A;
+  --ring: #0A84FF;
 }
 
-@keyframes pulse-slow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+/* Apple-style animations */
+@keyframes pulse-gentle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
 }
 
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slide-in-from-top {
-  from { transform: translateY(-10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+@keyframes slide-in-right {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
-@keyframes scale-in {
-  from { transform: scale(0.95); opacity: 0; }
+@keyframes scale-in-gentle {
+  from { transform: scale(0.96); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom styles for the sentinel app */
-.sentinel-card {
-  /* Removed styles that were interfering with grid and hover states */
+/* Apple-style card hover */
+.apple-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
+.apple-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Apple-style button */
+.apple-button {
+  transition: all 0.2s ease-out;
+}
+
+.apple-button:active {
+  transform: scale(0.97);
+}
+
+/* Status indicator dot */
+.status-dot {
+  position: relative;
+}
+
+.status-dot::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.3;
+  animation: pulse-gentle 2s ease-in-out infinite;
+}
+
+/* Mono label for Apple style */
 .mono-label {
   font-family: var(--font-mono);
   font-size: 0.625rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  opacity: 0.6;
+  letter-spacing: 0.12em;
+  opacity: 0.5;
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.animate-pulse-gentle {
+  animation: pulse-gentle 2s ease-in-out infinite;
 }
 
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out;
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
-.animate-slide-in-from-top {
-  animation: slide-in-from-top 0.5s ease-out;
+.animate-slide-in-right {
+  animation: slide-in-right 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
-.animate-scale-in {
-  animation: scale-in 0.3s ease-out;
+.animate-scale-in-gentle {
+  animation: scale-in-gentle 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
+
+/* Staggered animation delays */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+.stagger-7 { animation-delay: 0.35s; }
+.stagger-8 { animation-delay: 0.4s; }
 
 .scrollbar-hide {
   -ms-overflow-style: none;

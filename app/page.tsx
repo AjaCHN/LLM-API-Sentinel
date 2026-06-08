@@ -1,4 +1,4 @@
-// app/page.tsx v2.6.2
+// app/page.tsx v3.0.0 - Apple Style
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -56,53 +56,58 @@ export default function Dashboard() {
         resolveAlert={resolveAlert} 
       />
 
-      <main id="main-content" className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+      <main id="main-content" className="px-6 md:px-10 py-10 max-w-7xl mx-auto space-y-12">
+        {/* Hero Section */}
+        <div className="text-center space-y-4 animate-fade-in-up">
+          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">{t('dashboard.title')}</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t('dashboard.globalAIApiMonitoring')} — Real-time health monitoring for all your AI services</p>
+        </div>
+
+        {/* Alerts Banner */}
         {alerts.length > 0 && (
-          <div id="alerts-banner" className="bg-rose-500/10 border border-rose-500/20 p-5 rounded-xl flex items-center justify-between animate-slide-in-from-top shadow-sm">
-            <div className="flex items-center gap-3.5">
-              <div className="p-2 bg-rose-500/10 rounded-lg">
-                <AlertTriangle className="w-5 h-5 text-rose-500" />
+          <div id="alerts-banner" className="bg-error/10 border border-error/20 p-6 rounded-3xl flex items-center justify-between animate-fade-in-up">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-error/15 rounded-2xl">
+                <AlertTriangle className="w-6 h-6 text-error" />
               </div>
-              <div>
-                <p className="text-sm font-bold text-rose-500 uppercase tracking-wider">
+              <div className="text-left">
+                <p className="text-base font-semibold">
                   {t('alerts.alertsLabel')}: {alerts.length} {alerts.length > 1 ? t('alerts.activeIssuesPlural') : t('alerts.activeIssues')} {t('alerts.detected')}
                 </p>
               </div>
             </div>
-            <button onClick={() => setShowAlerts(true)} className="text-xs font-bold uppercase underline text-rose-500 hover:no-underline transition-colors">
-              {t('alerts.viewDetails')} →
+            <button onClick={() => setShowAlerts(true)} className="apple-button px-5 py-3 bg-error text-white rounded-2xl text-sm font-medium hover:opacity-90">
+              {t('alerts.viewDetails')}
             </button>
           </div>
         )}
 
-        <section id="status-grid-section">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-4">
+        {/* API Status Grid Section */}
+        <section id="status-grid-section" className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
             <div>
-              <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic">{t('dashboard.status')}</h2>
-              <p className="text-sm text-muted-foreground mt-1">Real-time API health monitoring</p>
+              <h2 className="text-2xl font-semibold">{t('dashboard.status')}</h2>
+              <p className="text-sm text-muted-foreground mt-2">Real-time API health monitoring</p>
             </div>
-            <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
               {lastUpdate && (
-                <span className="text-[10px] font-mono opacity-50 bg-muted/30 px-2.5 py-1.5 rounded-lg">
+                <span className="text-xs font-medium text-muted-foreground bg-secondary px-4 py-2 rounded-2xl">
                   {t('dashboard.lastSync')}: {format(lastUpdate, 'HH:mm:ss')}
                 </span>
               )}
               <button 
                 onClick={() => setShowConfig(!showConfig)}
-                className={cn(
-                  "flex items-center gap-1.5 px-3.5 py-2 border border-border/50 text-[10px] font-bold uppercase tracking-widest transition-all rounded-xl hover:bg-foreground hover:text-background"
-                )}
+                className="apple-button flex items-center gap-2 px-4 py-3 bg-secondary hover:bg-muted rounded-2xl text-sm font-medium"
               >
-                <Settings className="w-3.5 h-3.5" />
+                <Settings className="w-4 h-4" />
                 {t('dashboard.config')}
               </button>
               <button 
                 onClick={runCheck}
                 disabled={isChecking || !user}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 border border-border text-[10px] font-bold uppercase tracking-widest transition-all rounded-xl",
-                  isChecking ? "opacity-50 cursor-not-allowed" : "hover:bg-foreground hover:text-background",
-                  !user && "opacity-30 cursor-not-allowed"
+                  "apple-button flex items-center gap-2.5 px-5 py-3 bg-primary text-primary-foreground rounded-2xl text-sm font-medium",
+                  (isChecking || !user) && "opacity-50 cursor-not-allowed"
                 )}
               >
                 {isChecking ? t('dashboard.checking') : t('dashboard.checkNow')}
@@ -110,27 +115,28 @@ export default function Dashboard() {
             </div>
           </div>
           {showConfig && (
-            <div className="mb-6 animate-scale-in">
+            <div className="animate-scale-in-gentle">
               <ApiConfig />
             </div>
           )}
           <ApiStatusGrid statuses={statuses} />
         </section>
 
-        <section id="history-chart-section">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-6 gap-4">
+        {/* Latency History Chart Section */}
+        <section id="history-chart-section" className="space-y-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
             <div>
-              <h2 className="text-xs font-mono uppercase opacity-50 tracking-widest italic">{t('dashboard.latencyHistory')}</h2>
-              <p className="text-sm text-muted-foreground mt-1">Performance trends over time</p>
+              <h2 className="text-2xl font-semibold">{t('dashboard.latencyHistory')}</h2>
+              <p className="text-sm text-muted-foreground mt-2">Performance trends over time</p>
             </div>
             <div id="chart-legend" className="flex flex-wrap gap-x-3 gap-y-2 max-w-full scrollbar-hide">
               {statuses.slice(0, 8).map(s => (
-                <div key={s.id} className="flex items-center gap-1.5 bg-muted/30 px-2.5 py-1.5 rounded-lg">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: getApiColor(s.id) }} />
-                  <span className="text-[9px] font-mono opacity-70 uppercase whitespace-nowrap font-medium">{s.name}</span>
+                <div key={s.id} className="flex items-center gap-2 bg-secondary px-3 py-2 rounded-2xl">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getApiColor(s.id) }} />
+                  <span className="text-xs font-medium text-muted-foreground">{s.name}</span>
                 </div>
               ))}
-              {statuses.length > 8 && <span className="text-[9px] font-mono opacity-50 uppercase bg-muted/20 px-2 py-1 rounded-lg">+{statuses.length - 8} {t('dashboard.more')}</span>}
+              {statuses.length > 8 && <span className="text-xs text-muted-foreground bg-secondary/50 px-3 py-2 rounded-2xl">+{statuses.length - 8} {t('dashboard.more')}</span>}
             </div>
           </div>
           <LatencyHistoryChart chartData={chartData} statuses={statuses} getApiColor={getApiColor} />
