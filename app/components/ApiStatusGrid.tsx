@@ -1,4 +1,4 @@
-// app/components/ApiStatusGrid.tsx v2.6.1
+// app/components/ApiStatusGrid.tsx v2.6.2
 'use client';
 
 import React, { useMemo } from 'react';

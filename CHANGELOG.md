@@ -1,6 +1,7 @@
 # Changelog
 
-## [2.6.2]
+## [2.6.2] - 2024-12-08
+
 ### Changed
 - **Supabase Migration**: Replaced Firebase with Supabase for data storage and authentication.
   - Replaced Firebase Firestore with Supabase PostgreSQL
@@ -9,14 +10,23 @@
 - **Database Schema**: Created new PostgreSQL schema with tables for api_status, status_history, alerts, and user_profiles.
 - **Security**: Implemented Row Level Security (RLS) policies for database access control.
 - **Dependencies**: Updated package.json to include @supabase/supabase-js and removed Firebase dependencies.
+- **Documentation**: Updated README files to reflect Supabase migration and new features.
+
+### Fixed
+- **Type Safety**: Fixed TypeScript error in useAuth.ts where `session.user.email` could be undefined.
+- **Build Configuration**: Removed unused firebase.ts file that was causing build errors.
+- **Supabase Client**: Fixed graceful handling of missing environment variables for Supabase client.
+- **Code Quality**: Removed unused imports (Alert in useApiMonitor.ts, User in useAuth.ts).
 
 ### Added
 - **Database Migration Script**: Added supabase/schema.sql with complete database setup.
 - **Environment Configuration**: Created .env.example with Supabase configuration variables.
+- **Version Consistency**: Unified all file version numbers to v2.6.2.
 
 ### Removed
 - Firebase client and admin SDKs
 - Legacy firebase.ts file (no longer imported)
+- Firebase configuration files from main codebase
 
 ## [2.6.1]
 ### Added

@@ -16,7 +16,7 @@ export function useAuth() {
           setUser({
             uid: session.user.id,
             displayName: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-            email: session.user.email,
+            email: session.user.email ?? null,
             photoURL: session.user.user_metadata?.avatar_url || null,
             providerId: session.user.app_metadata?.provider || 'email'
           });
@@ -33,7 +33,7 @@ export function useAuth() {
         setUser({
           uid: session.user.id,
           displayName: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-          email: session.user.email,
+          email: session.user.email ?? null,
           photoURL: session.user.user_metadata?.avatar_url || null,
           providerId: session.user.app_metadata?.provider || 'email'
         });
