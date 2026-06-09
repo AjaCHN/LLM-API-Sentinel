@@ -10,10 +10,7 @@
     "lint": "eslint .",
     "clean": "next clean",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "build:functions": "cd functions && npm run build",
-    "deploy:functions": "cd functions && npm run deploy",
-    "serve:functions": "cd functions && npm run serve"
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@google/genai": "^1.17.0",
