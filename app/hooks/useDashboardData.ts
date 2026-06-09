@@ -1,4 +1,4 @@
-// app/hooks/useDashboardData.ts v2.6.1
+// app/hooks/useDashboardData.ts v2.6.2
 'use client';
 
 import { useApiStore } from '../store';

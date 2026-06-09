@@ -1,4 +1,4 @@
-// app/store/index.ts v2.6.1
+// app/store/index.ts v2.6.2
 // 导出模块化 store 结构
 export * from './store';
 export * from './api';

@@ -26,16 +26,16 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控系统，提供�
 | 区域 | API | Provider | 状态 |
 |-----|-----|----------|------|
 | 美国 | GPT-4o | OpenAI | ✅ |
-| 美国 | Claude 3.5 Sonnet | Anthropic | ✅ |
-| 美国 | Gemini 1.5 Pro | Google | ✅ |
-| 美国 | Llama 3 | Meta (Groq) | ✅ |
+| 美国 | Claude 3.5 | Anthropic | ✅ |
+| 美国 | Gemini 1.5 | Google | ✅ |
+| 美国 | Llama 3 (Groq) | Meta | ✅ |
 | 美国 | Mistral Large | Mistral | ✅ |
-| 中国 | Kimi | Moonshot | ✅ |
-| 中国 | GLM-4 | ZhipuAI | ✅ |
+| 中国 | Kimi (Moonshot) | Moonshot | ✅ |
+| 中国 | GLM-4 (Zhipu) | ZhipuAI | ✅ |
 | 中国 | Baichuan 2 | Baichuan | ✅ |
-| 中国 | Qwen Max | Alibaba | ✅ |
-| 中国 | Hunyuan | Tencent | ✅ |
-| 中国 | Ernie 4.0 | Baidu | ✅ |
+| 中国 | Qwen Max (Ali) | Alibaba | ✅ |
+| 中国 | Hunyuan (Tencent) | Tencent | ✅ |
+| 中国 | Ernie 4.0 (Baidu) | Baidu | ✅ |
 | 中国 | DeepSeek V3 | DeepSeek | ✅ |
 
 **监控指标**：
@@ -276,7 +276,7 @@ timeline
         "数据缓存" : 2024-05
         "API 配置" : 2024-05
         "指标计算" : 2024-05
-    section v2.6.1
+    section v2.6.2
         "组件优化" : 2024-06
         "错误处理增强" : 2024-06
 ```

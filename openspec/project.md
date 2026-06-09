@@ -354,14 +354,14 @@ interface AlertsDropdownProps {
 | 美国 | GPT-4o | OpenAI | https://api.openai.com/v1/models |
 | 美国 | Claude 3.5 | Anthropic | https://api.anthropic.com/v1/messages |
 | 美国 | Gemini 1.5 | Google | https://generativelanguage.googleapis.com/v1beta/models |
-| 美国 | Llama 3 | Meta (Groq) | https://api.groq.com/openai/v1/models |
+| 美国 | Llama 3 (Groq) | Meta | https://api.groq.com/openai/v1/models |
 | 美国 | Mistral Large | Mistral | https://api.mistral.ai/v1/models |
-| 中国 | Kimi | Moonshot | https://api.moonshot.cn/v1/models |
-| 中国 | GLM-4 | ZhipuAI | https://open.bigmodel.cn/api/paas/v4/model_list |
+| 中国 | Kimi (Moonshot) | Moonshot | https://api.moonshot.cn/v1/models |
+| 中国 | GLM-4 (Zhipu) | ZhipuAI | https://open.bigmodel.cn/api/paas/v4/model_list |
 | 中国 | Baichuan 2 | Baichuan | https://api.baichuan-ai.com/v1/models |
-| 中国 | Qwen Max | Alibaba | https://dashscope.aliyuncs.com/api/v1/models |
-| 中国 | Hunyuan | Tencent | https://hunyuan.tencentcloudapi.com |
-| 中国 | Ernie 4.0 | Baidu | https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions |
+| 中国 | Qwen Max (Ali) | Alibaba | https://dashscope.aliyuncs.com/api/v1/models |
+| 中国 | Hunyuan (Tencent) | Tencent | https://hunyuan.tencentcloudapi.com |
+| 中国 | Ernie 4.0 (Baidu) | Baidu | https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions |
 | 中国 | DeepSeek V3 | DeepSeek | https://api.deepseek.com/models |
 
 ### 6.2 监控配置

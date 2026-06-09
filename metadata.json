@@ -1,5 +1,5 @@
 {
-  "name": "LLM API Sentinel v2.6.1",
+  "name": "LLM API Sentinel v2.6.2",
   "description": "Autonomous LLM API monitoring system with 24/7 background checks, real-time alerts, historical performance tracking, and geographic location detection.",
   "requestFramePermissions": []
 }
