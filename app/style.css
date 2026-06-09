@@ -1,4 +1,3 @@
-/* app/style.css v3.0.0 - Apple Style */
 @import "tailwindcss";
 
 @theme {
@@ -22,7 +21,6 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   
-  /* Apple-style status colors */
   --color-success: #34C759;
   --color-warning: #FF9500;
   --color-error: #FF3B30;
@@ -33,21 +31,20 @@
 }
 
 :root {
-  /* Apple-style light theme */
-  --background: #FFFFFF;
-  --foreground: #000000;
+  --background: #F5F5F7;
+  --foreground: #1D1D1F;
   --card: #FFFFFF;
-  --card-foreground: #000000;
+  --card-foreground: #1D1D1F;
   --popover: #FFFFFF;
-  --popover-foreground: #000000;
+  --popover-foreground: #1D1D1F;
   --primary: #007AFF;
   --primary-foreground: #FFFFFF;
-  --secondary: #F5F5F7;
-  --secondary-foreground: #000000;
+  --secondary: #FFFFFF;
+  --secondary-foreground: #1D1D1F;
   --muted: #F5F5F7;
   --muted-foreground: #86868B;
   --accent: #F5F5F7;
-  --accent-foreground: #000000;
+  --accent-foreground: #1D1D1F;
   --destructive: #FF3B30;
   --destructive-foreground: #FFFFFF;
   --border: #D1D1D6;
@@ -56,7 +53,6 @@
 }
 
 .dark {
-  /* Apple-style dark theme */
   --background: #000000;
   --foreground: #FFFFFF;
   --card: #1C1C1E;
@@ -78,14 +74,13 @@
   --ring: #0A84FF;
 }
 
-/* Apple-style animations */
 @keyframes pulse-gentle {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.05); }
+  50% { opacity: 0.5; transform: scale(1.1); }
 }
 
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -112,26 +107,23 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Apple-style card hover */
 .apple-card {
-  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .apple-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
-/* Apple-style button */
 .apple-button {
   transition: all 0.2s ease-out;
 }
 
 .apple-button:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
-/* Status indicator dot */
 .status-dot {
   position: relative;
 }
@@ -139,19 +131,18 @@ body {
 .status-dot::before {
   content: '';
   position: absolute;
-  inset: -4px;
+  inset: -6px;
   border-radius: 50%;
   background: inherit;
-  opacity: 0.3;
+  opacity: 0.25;
   animation: pulse-gentle 2s ease-in-out infinite;
 }
 
-/* Mono label for Apple style */
 .mono-label {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.15em;
   opacity: 0.5;
 }
 
@@ -160,7 +151,7 @@ body {
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  animation: fade-in-up 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 .animate-slide-in-right {
@@ -171,7 +162,6 @@ body {
   animation: scale-in-gentle 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
-/* Staggered animation delays */
 .stagger-1 { animation-delay: 0.05s; }
 .stagger-2 { animation-delay: 0.1s; }
 .stagger-3 { animation-delay: 0.15s; }
@@ -188,4 +178,8 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.hero-gradient {
+  background: linear-gradient(180deg, rgba(0, 122, 255, 0.03) 0%, transparent 100%);
 }
