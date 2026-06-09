@@ -2,15 +2,15 @@
 
 ## 1. 架构概览
 
-LLM API Sentinel 采用**静态前端 + Firebase 后端**架构，无需自定义 API 路由。前端直接与 Firebase Firestore 进行实时数据同步，后端通过 Express 服务器执行定时监控任务。
+LLM API Sentinel 采用**静态前端 + Supabase 后端**架构，无需自定义 API 路由。前端直接与 Supabase PostgreSQL 进行实时数据同步，后端通过 Express 服务器执行定时监控任务。
 
 ### 1.1 技术栈
 | 类别 | 技术 | 版本 |
 |-----|------|------|
 | 前端框架 | Next.js 14.2.13 (App Router) | 14.2.13 |
 | 后端服务器 | Express 5.2.1 | 5.2.1 |
-| 数据库 | Firebase Firestore | - |
-| 身份验证 | Firebase Authentication (Google OAuth) | - |
+| 数据库 | Supabase PostgreSQL | - |
+| 身份验证 | Supabase Auth (Google OAuth) | - |
 | 样式 | Tailwind CSS 4.1.11 | 4.1.11 |
 | 图表 | Recharts 3.8.0 | 3.8.0 |
 | 图标 | Lucide React | - |
@@ -29,10 +29,9 @@ graph TD
         Lib[Utility Functions]
     end
 
-    subgraph Backend [Firebase]
-        Auth[Firebase Auth]
-        DB[(Firestore)]
-        Functions[Cloud Functions]
+    subgraph Backend [Supabase]
+        Auth[Supabase Auth]
+        DB[(PostgreSQL)]
     end
 
     subgraph Background [Express Server]
@@ -125,30 +124,31 @@ graph TD
     end
 
     subgraph External [External Data Sources]
-        Firestore[(Firestore)]
+        Supabase[(Supabase)]
         GeoAPI[Geo Location API]
-        AuthAPI[Firebase Auth]
+        AuthAPI[Supabase Auth]
     end
 
+    useDashboard --> API
     useDashboard --> API
     useDashboard --> Auth
     useDashboard --> Alerts
     useDashboard --> Geo
     
     useApi --> API
-    useApi --> Firestore
+    useApi --> Supabase
     
     useAuthHook --> Auth
     useAuthHook --> AuthAPI
     
     useAlertsHook --> Alerts
-    useAlertsHook --> Firestore
+    useAlertsHook --> Supabase
     
     useGeo --> Geo
     useGeo --> GeoAPI
     
-    Firestore -->|Realtime| API
-    Firestore -->|Realtime| Alerts
+    Supabase -->|Realtime| API
+    Supabase -->|Realtime| Alerts
 ```
 
 ### 2.4 状态管理模块
@@ -156,8 +156,8 @@ graph TD
 | Store | 职责 | 持久化 |
 |-----|------|--------|
 | **api.ts** | 管理 API 状态和历史数据 | 部分（statuses） |
-| **auth.ts** | 管理用户认证状态 | 无（从 Firebase 获取） |
-| **alerts.ts** | 管理告警列表 | 无（从 Firestore 获取） |
+| **auth.ts** | 管理用户认证状态 | 无（从 Supabase 获取） |
+| **alerts.ts** | 管理告警列表 | 无（从 Supabase 获取） |
 | **geo.ts** | 管理地理位置信息 | 是 |
 | **error.ts** | 管理错误和通知 | 无 |
 
@@ -171,7 +171,7 @@ flowchart TD
     B --> C[执行首次检查]
     C --> D{检查成功?}
     
-    D -->|是| E[批量写入 Firestore]
+    D -->|是| E[批量写入 Supabase]
     D -->|否| F[记录错误日志]
     
     E --> G[等待 5 分钟]
@@ -265,20 +265,20 @@ flowchart TD
 ```mermaid
 sequenceDiagram
     participant Client as Next.js Client
-    participant Auth as Firebase Auth
-    participant Firestore as Firestore
+    participant Auth as Supabase Auth
+    participant Supabase as Supabase
     participant Monitor as Express Monitor
     
     Client->>Auth: 用户登录请求
     Auth-->>Client: 返回用户信息
     
-    Client->>Firestore: 订阅 api_status 集合
-    Client->>Firestore: 订阅 alerts 集合
+    Client->>Supabase: 订阅 api_status 表
+    Client->>Supabase: 订阅 alerts 表
     
     Note over Monitor: 每 5 分钟执行一次
     Monitor->>Monitor: 执行 API 检查
-    Monitor->>Firestore: 批量写入检查结果
-    Firestore-->>Client: 实时推送更新
+    Monitor->>Supabase: 批量写入检查结果
+    Supabase-->>Client: 实时推送更新
     
     Client->>Client: 更新 Zustand Store
     Client->>Client: 重新渲染组件
@@ -291,7 +291,7 @@ sequenceDiagram
     participant User as 用户
     participant Client as Next.js Client
     participant Monitor as Monitor Logic
-    participant Firestore as Firestore
+    participant Supabase as Supabase
     
     User->>Client: 点击"立即检查"按钮
     Client->>Client: 检查用户是否已登录
@@ -299,8 +299,8 @@ sequenceDiagram
     alt 用户已登录
         Client->>Monitor: 调用 runCheck()
         Monitor->>Monitor: 执行批量 API 检查
-        Monitor->>Firestore: 写入检查结果
-        Firestore-->>Client: 实时同步更新
+        Monitor->>Supabase: 写入检查结果
+        Supabase-->>Client: 实时同步更新
         Client->>Client: 更新界面显示
     else 用户未登录
         Client->>Client: 显示登录提示
@@ -312,10 +312,10 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant Client as Next.js Client
-    participant Firestore as Firestore
+    participant Supabase as Supabase
     participant Notification as Notification Service
     
-    Firestore-->>Client: 推送新告警
+    Supabase-->>Client: 推送新告警
     Client->>Client: 更新告警状态
     Client->>Client: 显示告警横幅/铃铛
     
@@ -323,13 +323,13 @@ sequenceDiagram
     Client->>Client: 打开告警下拉菜单
     
     User->>Client: 点击"解决"按钮
-    Client->>Firestore: 更新告警 resolved=true
-    Firestore-->>Client: 同步更新
+    Client->>Supabase: 更新告警 resolved=true
+    Supabase-->>Client: 同步更新
     
     Client->>Client: 从界面移除告警
     
     Note over Notification: 可选：发送邮件/短信通知
-    Firestore->>Notification: 新告警触发
+    Supabase->>Notification: 新告警触发
     Notification->>Notification: 根据配置发送通知
 ```
 
@@ -391,14 +391,13 @@ graph TD
 graph TD
     subgraph Deployment
         Vercel[Vercel / EdgeOne Pages]
-        Firebase[Firebase Hosting]
-        CloudFunctions[Firebase Cloud Functions]
+        Supabase[Supabase]
         Express[Express Server]
     end
     
     subgraph Database
-        Firestore[(Firestore)]
-        Auth[Firebase Auth]
+        PostgreSQL[(PostgreSQL)]
+        Auth[Supabase Auth]
     end
     
     subgraph CDN
@@ -407,11 +406,10 @@ graph TD
     
     User[用户] --> Static
     User --> Vercel
-    Vercel --> Firestore
+    Vercel --> PostgreSQL
     Vercel --> Auth
     
-    Express --> Firestore
-    CloudFunctions --> Firestore
+    Express --> PostgreSQL
 ```
 
 ### 6.2 部署选项对比
@@ -419,7 +417,7 @@ graph TD
 | 选项 | 适用场景 | 优势 | 劣势 |
 |-----|---------|------|------|
 | **Vercel** | 纯静态前端 | 自动 SSL、全球 CDN、无缝 Next.js 集成 | 无后端支持 |
-| **Firebase Hosting** | 全栈应用 | 与 Firestore/Auth 深度集成 | 部署配置较复杂 |
+| **Supabase** | 全栈应用 | 与 PostgreSQL/Auth 深度集成、实时订阅 | 需配置 RLS 策略 |
 | **EdgeOne Pages** | 中国区部署 | 国内加速、低成本 | 功能相对简单 |
 | **Express Server** | 后台任务 | 可控性强、支持定时任务 | 需要服务器维护 |
 
@@ -431,7 +429,7 @@ graph TD
 graph TD
     subgraph SecurityLayers
         AuthLayer[认证层]
-        FirestoreRules[数据库规则层]
+        RLSRules[RLS 策略层]
         ClientValidation[客户端验证层]
         HTTPS[传输层]
     end
@@ -445,17 +443,17 @@ graph TD
     User --> AuthLayer
     Admin --> AuthLayer
     
-    AuthLayer -->|认证用户| FirestoreRules
+    AuthLayer -->|认证用户| RLSRules
     AuthLayer -->|未认证| Deny[拒绝]
     
-    FirestoreRules -->|读取| AllowRead[允许读取]
-    FirestoreRules -->|写入| AdminCheck[管理员检查]
+    RLSRules -->|读取| AllowRead[允许读取]
+    RLSRules -->|写入| AdminCheck[管理员检查]
     
     AdminCheck -->|管理员| AllowWrite[允许写入]
     AdminCheck -->|非管理员| Deny
     
-    Monitor -->|服务器端| FirestoreRules
-    Monitor -->|Admin SDK| AllowWrite
+    Monitor -->|服务器端| RLSRules
+    Monitor -->|Service Role| AllowWrite
     
     HTTPS -->|加密传输| SecurityLayers
 ```
@@ -513,6 +511,6 @@ graph TD
 |-----|---------|------|
 | **并发控制** | 限制最大并发数为 5 | 避免请求过多被限流 |
 | **重试机制** | 指数退避策略 | 提高成功率 |
-| **批量写入** | Firestore 批量操作 | 减少网络往返 |
+| **批量写入** | Supabase 批量操作 | 减少网络往返 |
 | **智能缓存** | 根据状态动态调整过期时间 | 减少不必要请求 |
 | **超时控制** | 6 秒请求超时 | 防止长时间阻塞 |

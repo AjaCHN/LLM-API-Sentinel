@@ -342,7 +342,7 @@ Dashboard
 
 ### v2.6.2
 - 🐛 修复构建错误
-- 📦 Firebase 移除
+- 📦 Supabase 迁移
 - 🎨 配色微调
 
 ### v2.6.1

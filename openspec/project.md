@@ -8,7 +8,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 - **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta, Mistral）和中国（Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek）主流 AI 供应商的连通性与延迟
 - **历史数据**：使用交互式面积图可视化性能趋势
 - **自适应 UI**：全响应式设计，支持深色/浅色模式切换
-- **实时更新**：基于 Firebase Firestore 实现状态即时同步
+- **实时更新**：基于 Supabase Realtime 实现状态即时同步
 - **安全访问**：手动健康检查受 Google 身份验证保护
 - **智能告警**：自动检测 API 宕机和延迟过高，并生成告警通知
 - **数据缓存**：内存和本地存储缓存机制，减少重复请求
@@ -380,7 +380,7 @@ interface AlertsDropdownProps {
 1. Express 服务器启动后 10 秒执行首次检查
 2. 每 5 分钟自动执行一次后台检查
 3. 使用并发管理器控制请求数量（最大 5 个并发）
-4. 检查结果批量写入 Firestore
+4. 检查结果批量写入 Supabase
 5. 根据状态生成智能告警
 
 ## 7. 数据模型
@@ -550,7 +550,7 @@ CREATE POLICY "alerts_insert_all" ON alerts FOR INSERT WITH CHECK (true);
 |-------|---------|
 | 并发控制 | 限制最大并发请求数（5 个） |
 | 重试机制 | 指数退避重试策略 |
-| 批量写入 | 批量更新 Firestore |
+| 批量写入 | 批量更新 Supabase |
 | 缓存策略 | 智能过期时间计算 |
 
 ## 12. CI/CD 流程
@@ -571,7 +571,7 @@ CREATE POLICY "alerts_insert_all" ON alerts FOR INSERT WITH CHECK (true);
 
 ### 12.3 部署流程
 ```
-main 分支更新 → GitHub Actions → 构建 → Firebase 部署
+main 分支更新 → GitHub Actions → 构建 → Supabase 部署
 ```
 
 ### 12.4 部署命令

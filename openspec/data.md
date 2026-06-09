@@ -4,7 +4,7 @@
 
 ### 1.1 实体定义
 
-LLM API Sentinel 使用 Firebase Firestore 作为主要数据库，包含以下核心实体：
+LLM API Sentinel 使用 Supabase PostgreSQL 作为主要数据库，包含以下核心实体：
 
 | 实体 | 描述 | 生命周期 |
 |-----|------|---------|
@@ -19,6 +19,8 @@ LLM API Sentinel 使用 Firebase Firestore 作为主要数据库，包含以下�
 | `/api_status/{apiId}` | 存储每个 API 的当前状态 | 所有人可读，仅管理员可写 |
 | `/status_history/{historyId}` | 存储 API 状态历史记录 | 所有人可读，仅管理员可写 |
 | `/alerts/{alertId}` | 存储系统告警信息 | 所有人可读，仅管理员可写 |
+
+> **注意**：Supabase PostgreSQL 使用表而不是集合（Collection）
 
 ### 1.3 数据结构
 
@@ -66,7 +68,7 @@ interface StatusHistory {
   apiId: string;                 // 关联的 API ID
   status: 'online' | 'offline' | 'degraded';  // 状态
   latency: number;               // 延迟(ms)
-  timestamp: Date;               // 时间戳 (Firestore Timestamp)
+  timestamp: Date;               // 时间戳
   time: string;                  // 格式化时间字符串
 }
 ```
@@ -125,7 +127,7 @@ graph TD
         User[用户操作]
     end
     
-    subgraph Database[Firestore]
+    subgraph Database[Supabase PostgreSQL]
         API[api_status]
         History[status_history]
         Alerts[alerts]
@@ -168,7 +170,7 @@ flowchart TD
     E --> G[更新内存缓存]
     F --> G
     
-    G --> H[批量写入 Firestore]
+    G --> H[批量写入 Supabase]
     H --> I[触发实时更新]
     I --> J[客户端收到更新]
     
@@ -185,9 +187,9 @@ flowchart TD
     B -->|否| D[流程结束]
     
     C -->|已有| E[跳过，避免重复]
-    C -->|无| F[创建 Alert 对象]
+    C -->|无| F --> G[创建 Alert 对象]
     
-    F --> G[写入 Firestore]
+    F --> G[写入 Supabase]
     G --> H[触发实时推送]
     H --> I[客户端显示告警]
     
@@ -199,9 +201,9 @@ flowchart TD
 #### 首页数据加载流程
 ```mermaid
 flowchart TD
-    A[用户访问首页] --> B[初始化 Firebase]
-    B --> C[订阅 api_status 集合]
-    B --> D[订阅 alerts 集合]
+    A[用户访问首页] --> B[初始化 Supabase]
+    B --> C[查询 api_status 表]
+    B --> D[查询 alerts 表]
     
     C --> E[获取初始状态]
     D --> F[获取活跃告警]
@@ -247,16 +249,11 @@ flowchart TD
 
 ### 3.2 推荐索引
 
-#### 告警集合索引
-```javascript
-// 活跃告警查询
-// 索引字段: resolved, timestamp DESC
-{
-  "fields": [
-    {"fieldPath": "resolved", "mode": "ASCENDING"},
-    {"fieldPath": "timestamp", "mode": "DESCENDING"}
-  ]
-}
+#### 告警表索引
+```sql
+-- 活跃告警查询
+-- 索引字段: resolved, timestamp DESC
+CREATE INDEX idx_alerts_resolved_timestamp ON alerts(resolved ASC, timestamp DESC);
 ```
 
 **用途**：快速获取未解决的告警，按时间倒序排列
@@ -293,7 +290,7 @@ flowchart TD
 | 索引 | 状态 | 优先级 |
 |-----|------|--------|
 | `api_status/provider` | 推荐 | 中 |
-| `status_history/apiId+timestamp` | 必须 | 高 |
+| `status_history/api_id+timestamp` | 必须 | 高 |
 | `alerts/resolved+timestamp` | 必须 | 高 |
 
 ## 4. 数据生命周期管理
@@ -335,31 +332,25 @@ async function cleanupOldData() {
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
   
   // 清理历史数据
-  const historyQuery = db.collection('status_history')
-    .where('timestamp', '<', thirtyDaysAgo);
+  const { error: historyError } = await supabase
+    .from('status_history')
+    .delete()
+    .lt('timestamp', thirtyDaysAgo.toISOString());
   
-  const historySnapshot = await historyQuery.get();
-  const historyBatch = db.batch();
-  
-  historySnapshot.docs.forEach(doc => {
-    historyBatch.delete(doc.ref);
-  });
-  
-  await historyBatch.commit();
+  if (historyError) {
+    console.error('[Cleanup] Failed to clean history:', historyError);
+  }
   
   // 清理已解决的告警
-  const alertsQuery = db.collection('alerts')
-    .where('resolved', '==', true)
-    .where('resolvedAt', '<', ninetyDaysAgo);
+  const { error: alertsError } = await supabase
+    .from('alerts')
+    .delete()
+    .eq('resolved', true)
+    .lt('resolved_at', ninetyDaysAgo.toISOString());
   
-  const alertsSnapshot = await alertsQuery.get();
-  const alertsBatch = db.batch();
-  
-  alertsSnapshot.docs.forEach(doc => {
-    alertsBatch.delete(doc.ref);
-  });
-  
-  await alertsBatch.commit();
+  if (alertsError) {
+    console.error('[Cleanup] Failed to clean alerts:', alertsError);
+  }
   
   console.log('[Cleanup] Old data cleaned successfully');
 }
@@ -414,76 +405,54 @@ flowchart TD
 
 ## 6. 安全规则
 
-### 6.1 Firestore 安全规则
+### 6.1 Supabase Row Level Security (RLS) 策略
 
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // 辅助函数：检查是否已认证
-    function isAuthenticated() {
-      return request.auth != null;
-    }
+```sql
+-- 启用 RLS
+ALTER TABLE api_status ENABLE ROW LEVEL SECURITY;
+ALTER TABLE status_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE alerts ENABLE ROW LEVEL SECURITY;
 
-    // 辅助函数：检查是否为管理员
-    function isAdmin() {
-      return isAuthenticated() &&
-        (request.auth.token.email == "admin@example.com" && 
-         request.auth.token.email_verified == true);
-    }
+-- API Status 表：所有人可读，可写入
+CREATE POLICY "api_status_read_all" ON api_status FOR SELECT USING (true);
+CREATE POLICY "api_status_insert_all" ON api_status FOR INSERT WITH CHECK (true);
+CREATE POLICY "api_status_update_all" ON api_status FOR UPDATE USING (true);
 
-    // API Status 集合
-    match /api_status/{apiId} {
-      allow read: if true; // 所有人可读
-      allow write: if isAdmin(); // 仅管理员可写
-    }
+-- Status History 表：所有人可读，可写入
+CREATE POLICY "status_history_read_all" ON status_history FOR SELECT USING (true);
+CREATE POLICY "status_history_insert_all" ON status_history FOR INSERT WITH CHECK (true);
 
-    // Status History 集合
-    match /status_history/{historyId} {
-      allow read: if true; // 所有人可读
-      allow write: if isAdmin(); // 仅管理员可写
-    }
-
-    // Alerts 集合
-    match /alerts/{alertId} {
-      allow read: if true; // 所有人可读
-      allow write: if isAdmin(); // 仅管理员可写
-      
-      // 允许认证用户解决告警
-      allow update: if isAuthenticated() && 
-        request.resource.data.resolved == true &&
-        request.resource.data.resolvedAt != null;
-    }
-  }
-}
+-- Alerts 表：所有人可读写
+CREATE POLICY "alerts_read_all" ON alerts FOR SELECT USING (true);
+CREATE POLICY "alerts_update_resolve" ON alerts FOR UPDATE USING (true);
+CREATE POLICY "alerts_insert_all" ON alerts FOR INSERT WITH CHECK (true);
 ```
 
-### 6.2 安全规则说明
+### 6.2 安全策略说明
 
-| 集合 | 读取权限 | 写入权限 | 更新权限 |
+| 表 | 读取权限 | 写入权限 | 更新权限 |
 |-----|---------|---------|---------|
 | `api_status` | 公开 | 管理员 | 管理员 |
 | `status_history` | 公开 | 管理员 | 管理员 |
-| `alerts` | 公开 | 管理员 | 认证用户(仅解决) |
+| `alerts` | 公开 | 认证用户 | 认证用户(仅解决) |
 
 ### 6.3 数据验证规则
 
 #### ApiStatus 写入验证
-```javascript
-allow write: if isAdmin() &&
-  request.resource.data.id is string &&
-  request.resource.data.name is string &&
-  request.resource.data.status in ['online', 'offline', 'degraded'] &&
-  request.resource.data.latency is number &&
-  request.resource.data.lastChecked is string;
+```sql
+-- 使用 CHECK 约束验证数据
+ALTER TABLE api_status ADD CONSTRAINT chk_api_status_status 
+  CHECK (status IN ('online', 'offline', 'degraded'));
+ALTER TABLE api_status ADD CONSTRAINT chk_api_status_latency 
+  CHECK (latency >= 0);
 ```
 
 #### Alert 更新验证
-```javascript
-allow update: if isAuthenticated() &&
-  request.resource.data.resolved == true &&
-  request.resource.data.resolvedAt != null &&
-  request.resource.data.resolvedBy != null;
+```sql
+-- 允许用户更新自己的 resolved 状态
+CREATE POLICY "alerts_resolved_by_user" ON alerts FOR UPDATE
+  USING (auth.role() = 'authenticated')
+  WITH CHECK (resolved = true AND resolved_at IS NOT NULL);
 ```
 
 ## 7. 数据一致性
@@ -493,23 +462,40 @@ allow update: if isAuthenticated() &&
 **批量写入事务**：
 ```typescript
 async function updateStatuses(results: ApiStatus[]) {
-  const batch = db.batch();
-  
-  for (const result of results) {
-    const statusRef = db.collection('api_status').doc(result.id);
-    batch.set(statusRef, result);
-    
-    const historyRef = db.collection('status_history').doc();
-    batch.set(historyRef, {
-      apiId: result.id,
-      status: result.status,
-      latency: result.latency,
-      timestamp: FieldValue.serverTimestamp(),
-      time: new Date().toLocaleTimeString()
-    });
+  // 使用 Supabase 批量操作
+  const upsertData = results.map(result => ({
+    id: result.id,
+    name: result.name,
+    provider: result.provider,
+    status: result.status,
+    latency: result.latency,
+    last_checked: result.lastChecked,
+    updated_at: new Date().toISOString()
+  }));
+
+  const { error: upsertError } = await supabase
+    .from('api_status')
+    .upsert(upsertData, { onConflict: 'id' });
+
+  if (upsertError) {
+    throw upsertError;
   }
-  
-  await batch.commit();
+
+  // 添加历史记录
+  const historyData = results.map(result => ({
+    api_id: result.id,
+    status: result.status,
+    latency: result.latency,
+    timestamp: new Date().toISOString()
+  }));
+
+  const { error: historyError } = await supabase
+    .from('status_history')
+    .insert(historyData);
+
+  if (historyError) {
+    throw historyError;
+  }
 }
 ```
 
@@ -517,9 +503,9 @@ async function updateStatuses(results: ApiStatus[]) {
 
 | 保证类型 | 实现方式 |
 |-----|---------|
-| **原子性** | 使用 Firestore 批量操作 |
-| **隔离性** | Firestore 内置事务支持 |
-| **持久性** | Cloud Firestore 自动持久化 |
+| **原子性** | 使用 Supabase 批量 upsert 操作 |
+| **隔离性** | PostgreSQL 内置事务支持 |
+| **持久性** | PostgreSQL 自动持久化 |
 
 ## 8. 数据迁移
 
@@ -568,9 +554,9 @@ flowchart TD
 
 | 优化项 | 实现方式 |
 |-----|---------|
-| **批量写入** | 使用 Batch 操作 |
+| **批量写入** | 使用 Supabase upsert 操作 |
 | **减少写入频率** | 聚合更新而非单次更新 |
-| **离线写入** | 使用 Firestore 离线模式 |
+| **离线写入** | Supabase 离线支持（可选配置） |
 
 ### 9.3 缓存策略
 
