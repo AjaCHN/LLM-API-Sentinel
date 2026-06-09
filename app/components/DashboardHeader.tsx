@@ -1,4 +1,3 @@
-// app/components/DashboardHeader.tsx v3.0.0 - Apple Style
 'use client';
 
 import React from 'react';
@@ -35,74 +34,78 @@ export default function DashboardHeader({
   const { t } = useI18n();
   
   return (
-    <header id="main-header" className="border-b border-border/30 px-6 md:px-10 py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 sticky top-0 bg-background/80 backdrop-blur-xl z-50">
-      <div id="brand-section" className="flex items-center gap-4">
-        <div className="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-2xl">
-          <Activity className="w-7 h-7 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{t('dashboard.title')}</h1>
-          <p className="mono-label">{t('dashboard.globalAIApiMonitoring')}</p>
-        </div>
-      </div>
-      
-      <div id="controls-section" className="flex items-center gap-3">
-        <div className="relative">
-          <button 
-            onClick={() => setShowAlerts(!showAlerts)}
-            className="apple-button p-3 bg-secondary hover:bg-muted rounded-2xl relative"
-            title={t('alerts.alertsLabel')}
-          >
-            <Bell className="w-5 h-5" />
-            {alerts.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-6 h-6 bg-error text-white text-[11px] font-semibold flex items-center justify-center rounded-full shadow-md">
-                {alerts.length}
-              </span>
-            )}
-          </button>
-          
-          {showAlerts && (
-            <AlertsDropdown alerts={alerts} show={showAlerts} onClose={() => setShowAlerts(false)} resolveAlert={resolveAlert} />
-          )}
-        </div>
-
-        <button 
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="apple-button p-3 bg-secondary hover:bg-muted rounded-2xl"
-          title={t('dashboard.toggleTheme')}
-        >
-          {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </button>
-
-        {geo && (
-          <div className="hidden lg:flex items-center gap-2 px-4 py-3 bg-secondary rounded-2xl">
-            <MapPin className="w-4 h-4 text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground">{geo.city}, {geo.country}</span>
-          </div>
-        )}
-
-        {user ? (
-          <div className="flex items-center gap-4">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium">{user.displayName}</p>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
+    <header id="main-header" className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/20">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 h-16 md:h-18">
+        <div className="flex items-center justify-between">
+          <div id="brand-section" className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Activity className="w-7 h-7 text-primary" />
             </div>
-            <button 
-              onClick={logout}
-              className="apple-button p-3 bg-secondary hover:bg-muted rounded-2xl"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
+            <div>
+              <h1 className="text-lg md:text-xl font-semibold tracking-tight">{t('dashboard.title')}</h1>
+              <p className="mono-label hidden md:block">{t('dashboard.globalAIApiMonitoring')}</p>
+            </div>
           </div>
-        ) : (
-          <button 
-            onClick={login}
-            className="apple-button flex items-center gap-2.5 px-6 py-3 bg-primary text-primary-foreground rounded-2xl text-sm font-medium"
-          >
-            <LogIn className="w-4.5 h-4.5" />
-            {t('dashboard.signIn')}
-          </button>
-        )}
+          
+          <div id="controls-section" className="flex items-center gap-3">
+            <div className="relative">
+              <button 
+                onClick={() => setShowAlerts(!showAlerts)}
+                className="apple-button relative p-3 bg-secondary hover:bg-muted rounded-2xl"
+                title={t('alerts.alertsLabel')}
+              >
+                <Bell className="w-5 h-5" />
+                {alerts.length > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-error text-white text-[10px] font-semibold flex items-center justify-center rounded-full">
+                    {alerts.length}
+                  </span>
+                )}
+              </button>
+              
+              {showAlerts && (
+                <AlertsDropdown alerts={alerts} show={showAlerts} onClose={() => setShowAlerts(false)} resolveAlert={resolveAlert} />
+              )}
+            </div>
+
+            <button 
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="apple-button p-3 bg-secondary hover:bg-muted rounded-2xl"
+              title={t('dashboard.toggleTheme')}
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+
+            {geo && (
+              <div className="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-secondary">
+                <MapPin className="w-4 h-4 text-muted-foreground" />
+                <span className="text-xs font-medium text-muted-foreground">{geo.city}, {geo.country}</span>
+              </div>
+            )}
+
+            {user ? (
+              <div className="flex items-center gap-4">
+                <div className="text-right hidden sm:block">
+                  <p className="text-sm font-medium">{user.displayName}</p>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
+                </div>
+                <button 
+                  onClick={logout}
+                  className="apple-button p-3 bg-secondary hover:bg-muted rounded-2xl"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={login}
+                className="apple-button flex items-center gap-2.5 px-5 py-2.5 bg-primary text-primary-foreground rounded-2xl text-sm font-semibold hover:opacity-90"
+              >
+                <LogIn className="w-4.5 h-4.5" />
+                {t('dashboard.signIn')}
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </header>
   );

@@ -3,179 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LLM API Sentinel v2.6.2 | 全球AI API监控系统 - 原型设计</title>
+  <title>LLM API Sentinel | 全球AI API监控系统</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --font-sans: 'Inter', system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      
-      /* Light Theme */
-      --background: #E4E3E0;
-      --foreground: #141414;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --background: #F5F5F7;
+      --foreground: #1D1D1F;
       --card: #FFFFFF;
-      --card-foreground: #141414;
-      --primary: #141414;
-      --primary-foreground: #E4E3E0;
-      --muted: #F4F4F5;
-      --muted-foreground: #71717A;
-      --border: #141414;
-      --border-light: rgba(20, 20, 20, 0.1);
-      --destructive: #EF4444;
-      --success: #22C55E;
-      --warning: #F59E0B;
+      --primary: #007AFF;
+      --success: #34C759;
+      --warning: #FF9500;
+      --error: #FF3B30;
+      --secondary: #F5F5F7;
+      --muted-foreground: #86868B;
+      --border: #D1D1D6;
     }
 
     .dark {
-      /* Dark Theme */
-      --background: #0C0C0C;
-      --foreground: #E4E3E0;
-      --card: #141414;
-      --card-foreground: #E4E3E0;
-      --primary: #E4E3E0;
-      --primary-foreground: #141414;
-      --muted: #27272A;
-      --muted-foreground: #A1A1AA;
-      --border: #E4E3E0;
-      --border-light: rgba(228, 227, 224, 0.1);
-      --destructive: #7F1D1D;
-      --success: #166534;
-      --warning: #92400E;
-    }
-
-    * {
-      box-sizing: border-box;
+      --background: #000000;
+      --foreground: #FFFFFF;
+      --card: #1C1C1E;
+      --primary: #0A84FF;
+      --success: #30D158;
+      --warning: #FF9F0A;
+      --error: #FF453A;
+      --secondary: #1C1C1E;
+      --muted-foreground: #98989D;
+      --border: #38383A;
     }
 
     body {
       font-family: var(--font-sans);
       background-color: var(--background);
       color: var(--foreground);
-      transition: background-color 0.3s ease, color 0.3s ease;
-      line-height: 1.5;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    .mono-label {
-      font-family: var(--font-mono);
-      font-size: 0.625rem;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      opacity: 0.6;
-    }
-
-    /* Animations */
-    @keyframes pulse-ring {
-      0% { transform: scale(0.95); opacity: 1; }
-      50% { transform: scale(1.1); opacity: 0.5; }
-      100% { transform: scale(0.95); opacity: 1; }
+    @keyframes pulse-gentle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.1); }
     }
 
     @keyframes fade-in-up {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes slide-in-from-right {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+    .animate-fade-in-up { animation: fade-in-up 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards; }
+    .animate-pulse-gentle { animation: pulse-gentle 2s ease-in-out infinite; }
+
+    .status-dot {
+      position: relative;
     }
 
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-
-    .animate-pulse-ring {
-      animation: pulse-ring 2s ease-in-out infinite;
-    }
-
-    .animate-fade-in-up {
-      animation: fade-in-up 0.6s ease-out forwards;
-    }
-
-    .animate-slide-in {
-      animation: slide-in-from-right 0.3s ease-out forwards;
-    }
-
-    .animate-shimmer {
-      background: linear-gradient(90deg, var(--muted) 25%, var(--card) 50%, var(--muted) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-    }
-
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: var(--muted);
-      border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--muted-foreground);
-      border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--foreground);
-    }
-
-    /* Card hover effects */
-    .card-hover {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .card-hover:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
-    }
-
-    /* Status indicator pulse */
-    .status-online::before {
+    .status-dot::before {
       content: '';
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100%;
-      height: 100%;
+      inset: -6px;
       border-radius: 50%;
-      background: var(--success);
-      opacity: 0;
-      animation: pulse-ring 2s ease-out infinite;
+      background: inherit;
+      opacity: 0.25;
+      animation: pulse-gentle 2s ease-in-out infinite;
     }
 
-    /* Glass effect */
-    .glass {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+    .apple-card {
+      transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
     }
 
-    /* Gradient text */
-    .gradient-text {
-      background: linear-gradient(135deg, var(--foreground) 0%, var(--muted-foreground) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .apple-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
     }
 
-    /* Mobile-first responsive utilities */
-    @media (max-width: 640px) {
-      .hide-mobile { display: none !important; }
-    }
-
-    @media (min-width: 641px) and (max-width: 768px) {
-      .hide-tablet { display: none !important; }
-    }
-
-    @media (min-width: 769px) {
-      .hide-desktop { display: none !important; }
-    }
+    .apple-button:active { transform: scale(0.96); }
+    .mono-label { font-family: monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.5; }
+    .hero-gradient { background: linear-gradient(180deg, rgba(0, 122, 255, 0.03) 0%, transparent 100%); }
   </style>
   <script>
     tailwind.config = {
@@ -186,75 +92,22 @@
             background: 'var(--background)',
             foreground: 'var(--foreground)',
             card: 'var(--card)',
-            'card-foreground': 'var(--card-foreground)',
             primary: 'var(--primary)',
-            'primary-foreground': 'var(--primary-foreground)',
-            muted: 'var(--muted)',
-            'muted-foreground': 'var(--muted-foreground)',
-            border: 'var(--border)',
-            destructive: 'var(--destructive)',
             success: 'var(--success)',
             warning: 'var(--warning)',
-            green: {
-              50: '#f0fdf4',
-              100: '#dcfce7',
-              200: '#bbf7d0',
-              300: '#86efac',
-              400: '#4ade80',
-              500: '#22C55E',
-              600: '#16a34a',
-              700: '#15803d',
-              800: '#166534',
-              900: '#14532d',
-            },
-            amber: {
-              50: '#fffbeb',
-              100: '#fef3c7',
-              200: '#fde68a',
-              300: '#fcd34d',
-              400: '#fbbf24',
-              500: '#F59E0B',
-              600: '#d97706',
-              700: '#b45309',
-              800: '#92400e',
-              900: '#78350f',
-            },
-            rose: {
-              50: '#fff1f2',
-              100: '#ffe4e6',
-              200: '#fecdd3',
-              300: '#fda4af',
-              400: '#fb7185',
-              500: '#EF4444',
-              600: '#e11d48',
-              700: '#be123c',
-              800: '#9f1239',
-              900: '#881337',
-            },
+            error: 'var(--error)',
+            secondary: 'var(--secondary)',
+            'muted-foreground': 'var(--muted-foreground)',
+            border: 'var(--border)',
           },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          borderRadius: {
-            'xl': '12px',
-            '2xl': '16px',
-            '3xl': '24px',
-          },
-          boxShadow: {
-            'soft': '0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 4px 16px -4px rgba(0, 0, 0, 0.1)',
-            'medium': '0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 8px 24px -4px rgba(0, 0, 0, 0.12)',
-            'large': '0 8px 24px -4px rgba(0, 0, 0, 0.1), 0 16px 48px -8px rgba(0, 0, 0, 0.15)',
-          },
+          borderRadius: { '3xl': '28px', '4xl': '32px' },
         },
       }
     }
   </script>
 </head>
 <body class="min-h-screen">
-  <!-- Theme & Interaction Scripts -->
   <script>
-    // Theme Management
     function toggleTheme() {
       const isDark = document.documentElement.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -263,1067 +116,656 @@
 
     function updateThemeIcon() {
       const isDark = document.documentElement.classList.contains('dark');
-      const themeIcon = document.getElementById('theme-icon');
-      if (themeIcon) {
-        themeIcon.innerHTML = isDark 
-          ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`
-          : `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
-      }
+      document.getElementById('theme-icon').innerHTML = isDark 
+        ? `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
     }
 
-    // Alerts Dropdown
-    function toggleAlerts() {
-      const dropdown = document.getElementById('alerts-dropdown');
-      const isHidden = dropdown.classList.contains('hidden');
-      dropdown.classList.toggle('hidden');
-      if (isHidden) {
-        dropdown.classList.add('animate-slide-in');
-      }
-    }
-
-    function closeAlerts() {
-      const dropdown = document.getElementById('alerts-dropdown');
-      dropdown.classList.add('hidden');
-    }
-
-    // API Config Panel
-    function toggleConfig() {
-      const config = document.getElementById('api-config-panel');
-      config.classList.toggle('hidden');
-    }
-
-    // Language Selector
-    function toggleLanguage() {
-      const langDropdown = document.getElementById('language-dropdown');
-      langDropdown.classList.toggle('hidden');
-    }
-
-    function selectLanguage(lang) {
-      document.getElementById('current-lang').textContent = lang.toUpperCase();
-      document.getElementById('language-dropdown').classList.add('hidden');
-    }
-
-    // Initialize
     document.addEventListener('DOMContentLoaded', () => {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
       }
       updateThemeIcon();
     });
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', (e) => {
-      const alertsDropdown = document.getElementById('alerts-dropdown');
-      const langDropdown = document.getElementById('language-dropdown');
-      const alertsBtn = document.getElementById('alerts-btn');
-      const langBtn = document.getElementById('lang-btn');
-      
-      if (!alertsBtn?.contains(e.target) && !alertsDropdown?.contains(e.target)) {
-        alertsDropdown?.classList.add('hidden');
-      }
-      if (!langBtn?.contains(e.target) && !langDropdown?.contains(e.target)) {
-        langDropdown?.classList.add('hidden');
-      }
-    });
   </script>
 
-  <!-- ==================== HEADER ==================== -->
-  <header class="sticky top-0 z-50 border-b border-border/10 backdrop-blur-xl bg-background/80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 sm:h-20 gap-4">
-        
-        <!-- Brand Section -->
-        <div class="flex items-center gap-3 flex-shrink-0">
-          <div class="relative">
-            <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary-foreground">
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-              </svg>
-            </div>
-            <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background animate-pulse-ring"></div>
+  <header class="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/20">
+    <div class="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 h-16 md:h-18">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-primary">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+            </svg>
           </div>
           <div>
-            <h1 class="text-lg sm:text-xl font-bold tracking-tight uppercase italic">LLM API Sentinel</h1>
-            <p class="mono-label hidden sm:block">全球AI API监控系统 v2.6.2</p>
+            <h1 class="text-lg md:text-xl font-semibold tracking-tight">LLM API Sentinel</h1>
+            <p class="mono-label hidden md:block">Global AI API Monitoring</p>
           </div>
         </div>
 
-        <!-- Control Buttons -->
-        <div class="flex items-center gap-2 sm:gap-3">
-          <!-- Language Selector -->
-          <div class="relative">
-            <button onclick="toggleLanguage()" id="lang-btn" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 border border-border/20 rounded-lg hover:bg-primary/10 transition-colors text-xs font-medium">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-              </svg>
-              <span id="current-lang" class="font-mono text-[10px]">ZH</span>
-            </button>
-            <div id="language-dropdown" class="hidden absolute right-0 top-12 w-40 bg-card border border-border/20 rounded-xl shadow-large overflow-hidden z-50">
-              <div class="p-2">
-                <p class="text-[10px] font-mono text-muted-foreground px-3 py-2 uppercase tracking-wider">语言 / Language</p>
-                <button onclick="selectLanguage('en')" class="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors flex items-center gap-2">
-                  <span class="w-6 h-4 bg-amber-500 rounded-sm flex items-center justify-center text-[8px] font-bold text-white">EN</span>
-                  English
-                </button>
-                <button onclick="selectLanguage('zh')" class="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-lg transition-colors flex items-center gap-2">
-                  <span class="w-6 h-4 bg-red-500 rounded-sm flex items-center justify-center text-[8px] font-bold text-white">中</span>
-                  简体中文
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Alerts Button -->
-          <div class="relative">
-            <button onclick="toggleAlerts()" id="alerts-btn" class="relative p-2.5 border border-border/20 rounded-xl hover:bg-primary/10 transition-colors" title="告警">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a9 9 0 0 1-8.73-9 9 9 0 0 1 15.66-3"></path>
-              </svg>
-              <span class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full shadow-sm animate-pulse-ring">3</span>
-            </button>
-          </div>
-
-          <!-- Theme Toggle -->
-          <button onclick="toggleTheme()" class="p-2.5 border border-border/20 rounded-xl hover:bg-primary/10 transition-colors" title="切换主题">
-            <span id="theme-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-              </svg>
-            </span>
+        <div class="flex items-center gap-3">
+          <button class="relative p-3 rounded-2xl bg-secondary hover:bg-muted transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a9 9 0 0 1-8.73-9 9 9 0 0 1 15.66-3"></path>
+            </svg>
+            <span class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-error text-white text-[10px] font-semibold flex items-center justify-center rounded-full">3</span>
           </button>
 
-          <!-- Geo Location -->
-          <div class="hidden lg:flex items-center gap-2 px-3 py-2 border border-border/20 rounded-xl bg-muted/30">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground">
+          <button onclick="toggleTheme()" class="p-3 rounded-2xl bg-secondary hover:bg-muted transition-colors">
+            <span id="theme-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+          </button>
+
+          <div class="hidden lg:flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted-foreground">
               <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
               <circle cx="12" cy="10" r="3"></circle>
             </svg>
-            <span class="text-xs font-mono">Shanghai, CN</span>
+            <span class="text-xs font-medium text-muted-foreground">Shanghai</span>
           </div>
 
-          <!-- Sign In -->
-          <button class="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-all text-xs font-semibold uppercase tracking-wider shadow-soft">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-2xl text-sm font-semibold hover:opacity-90 transition-opacity">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
             </svg>
-            <span class="hidden sm:inline">登录</span>
+            登录
           </button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- ==================== ALERTS DROPDOWN ==================== -->
-  <div id="alerts-dropdown" class="hidden fixed right-4 top-24 w-80 sm:w-96 bg-card border border-border/20 rounded-2xl shadow-large overflow-hidden z-50">
-    <div class="p-4 border-b border-border/10 flex justify-between items-center bg-muted/30">
-      <div class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-rose-500">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-          <path d="M13.73 21a9 9 0 0 1-8.73-9 9 9 0 0 1 15.66-3"></path>
-        </svg>
-        <h3 class="text-sm font-bold">活跃告警</h3>
-        <span class="px-1.5 py-0.5 bg-rose-500/10 text-rose-500 text-[10px] font-bold rounded-full">3</span>
-      </div>
-      <button onclick="closeAlerts()" class="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
+  <section class="hero-gradient pt-16 md:pt-24 pb-12 md:pb-20">
+    <div class="max-w-4xl mx-auto px-6 md:px-10 lg:px-16 text-center">
+      <p class="mono-label mb-4 text-primary">全球 AI API 监控系统</p>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight mb-6">
+        实时监控您的 <span class="text-primary">AI 服务</span>
+      </h1>
+      <p class="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+        全天候监控全球主流 AI API 服务状态，毫秒级延迟检测，智能告警通知
+      </p>
     </div>
-    <div class="max-h-80 overflow-y-auto">
-      <!-- Critical Alert -->
-      <div class="p-4 border-b border-border/10 hover:bg-muted/30 transition-colors">
-        <div class="flex items-start gap-3">
-          <div class="w-8 h-8 rounded-full bg-rose-500/10 flex items-center justify-center flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <p class="text-sm font-semibold truncate">Qwen Max</p>
-              <span class="px-1.5 py-0.5 bg-rose-500/10 text-rose-500 text-[9px] font-bold rounded uppercase">严重</span>
-            </div>
-            <p class="text-xs text-muted-foreground mt-1">API服务离线，已重试2次</p>
-            <p class="text-[10px] text-muted-foreground/60 mt-1.5 font-mono">10分钟前</p>
-          </div>
-          <button class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider border border-border/20 rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors">
-            解决
-          </button>
-        </div>
-      </div>
-      <!-- High Alert -->
-      <div class="p-4 border-b border-border/10 hover:bg-muted/30 transition-colors">
-        <div class="flex items-start gap-3">
-          <div class="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M12 9v4M12 17h.01"/></svg>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <p class="text-sm font-semibold truncate">Gemini 1.5 Pro</p>
-              <span class="px-1.5 py-0.5 bg-amber-500/10 text-amber-500 text-[9px] font-bold rounded uppercase">高</span>
-            </div>
-            <p class="text-xs text-muted-foreground mt-1">检测到高延迟: 1,156ms</p>
-            <p class="text-[10px] text-muted-foreground/60 mt-1.5 font-mono">5分钟前</p>
-          </div>
-          <button class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider border border-border/20 rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors">
-            解决
-          </button>
-        </div>
-      </div>
-      <!-- Medium Alert -->
-      <div class="p-4 hover:bg-muted/30 transition-colors">
-        <div class="flex items-start gap-3">
-          <div class="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M12 9v4M12 17h.01"/></svg>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <p class="text-sm font-semibold truncate">DeepSeek V3</p>
-              <span class="px-1.5 py-0.5 bg-amber-500/10 text-amber-500 text-[9px] font-bold rounded uppercase">中</span>
-            </div>
-            <p class="text-xs text-muted-foreground mt-1">检测到高延迟: 892ms</p>
-            <p class="text-[10px] text-muted-foreground/60 mt-1.5 font-mono">2分钟前</p>
-          </div>
-          <button class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider border border-border/20 rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors">
-            解决
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="p-3 border-t border-border/10 bg-muted/30">
-      <button class="w-full py-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
-        查看全部告警历史 →
-      </button>
-    </div>
-  </div>
+  </section>
 
-  <!-- ==================== MAIN CONTENT ==================== -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
-
-    <!-- ==================== ALERTS BANNER ==================== -->
-    <div class="bg-gradient-to-r from-rose-500/10 to-amber-500/10 border border-rose-500/20 p-4 sm:p-5 rounded-2xl flex items-center justify-between animate-fade-in-up">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-rose-500">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-            <path d="M13.73 21a9 9 0 0 1-8.73-9 9 9 0 0 1 15.66-3"></path>
-          </svg>
+  <section class="px-6 md:px-10 lg:px-16 -mt-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="bg-error/8 border border-error/20 rounded-3xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-fade-in-up">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-error/15 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-error">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a9 9 0 0 1-8.73-9 9 9 0 0 1 15.66-3"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="text-base md:text-lg font-semibold">检测到 3 个活跃问题</p>
+            <p class="text-sm text-muted-foreground mt-0.5">1 个服务离线 · 2 个高延迟告警</p>
+          </div>
         </div>
+        <button class="px-6 py-3 bg-error text-white rounded-2xl text-sm font-semibold hover:opacity-90 transition-opacity whitespace-nowrap">
+          查看详情
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-6 md:px-10 lg:px-16 py-12 md:py-16">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
         <div>
-          <p class="text-sm font-bold text-foreground">检测到3个活跃问题</p>
-          <p class="text-xs text-muted-foreground mt-0.5">1个服务离线 · 2个高延迟告警 · 上次更新: 14:32:15</p>
+          <h2 class="text-2xl md:text-3xl font-semibold">API 状态监控</h2>
+          <p class="text-muted-foreground mt-2">实时监控全球 12 个主流 AI API 服务健康状态</p>
         </div>
-      </div>
-      <button onclick="toggleAlerts()" class="px-4 py-2 bg-rose-500 text-white text-xs font-bold rounded-xl hover:bg-rose-600 transition-colors shadow-soft">
-        查看详情
-      </button>
-    </div>
-
-    <!-- ==================== API STATUS SECTION ==================== -->
-    <section>
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div class="flex items-center gap-3">
-          <h2 class="text-lg sm:text-xl font-bold tracking-tight">API状态监控</h2>
-          <span class="px-2 py-1 bg-green-500/10 text-green-600 text-[10px] font-bold rounded-full uppercase tracking-wider">实时</span>
-        </div>
-        <div class="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
-          <span class="text-xs font-mono text-muted-foreground hide-mobile">最后同步: 14:32:15</span>
-          <button onclick="toggleConfig()" class="flex items-center gap-2 px-3 sm:px-4 py-2 border border-border/20 rounded-xl hover:bg-primary/10 transition-colors text-xs font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <span class="text-xs font-medium text-muted-foreground bg-secondary px-4 py-2 rounded-2xl">
+            最后同步: 14:32:15
+          </span>
+          <button class="flex items-center gap-2 px-4 py-3 bg-secondary hover:bg-muted rounded-2xl text-sm font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
             配置
           </button>
-          <button class="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-all text-xs font-semibold shadow-soft disabled:opacity-50" disabled>
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="23 4 23 10 17 10"></polyline>
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-            </svg>
+          <button class="px-5 py-3 bg-primary text-white rounded-2xl text-sm font-semibold hover:opacity-90 transition-opacity">
             立即检查
           </button>
         </div>
       </div>
 
-      <!-- API Config Panel -->
-      <div id="api-config-panel" class="hidden mb-6 p-5 border border-border/20 bg-card/50 backdrop-blur-sm rounded-2xl">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-bold flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-            API 配置管理
-          </h3>
-          <span class="text-[10px] font-mono text-muted-foreground">Supabase PostgreSQL</span>
-        </div>
-        <p class="text-xs text-muted-foreground mb-4">自定义API端点和监控设置。配置将保存在本地存储中。</p>
-        <div class="flex flex-wrap gap-2">
-          <button class="px-4 py-2 text-xs font-semibold border border-border/20 rounded-xl hover:bg-muted transition-colors">
-            重置为默认
-          </button>
-          <button class="px-4 py-2 text-xs font-semibold bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-all">
-            保存更改
-          </button>
-        </div>
-      </div>
-
-      <!-- ==================== US PROVIDERS ==================== -->
-      <div class="space-y-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+      <div class="space-y-12">
+        <div>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
             </div>
-            <h3 class="text-base sm:text-lg font-semibold">美国供应商</h3>
+            <h3 class="text-lg font-semibold">美国供应商</h3>
+            <span class="text-xs font-medium text-muted-foreground bg-secondary px-3 py-1 rounded-xl">5 APIs</span>
           </div>
-          <span class="text-xs font-mono text-muted-foreground">5 APIs</span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div class="apple-card bg-card rounded-3xl p-6 border border-border/20 animate-fade-in-up" style="animation-delay: 0s">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h4 class="text-lg font-semibold">GPT-4o</h4>
+                  <p class="text-xs text-muted-foreground mt-1">OpenAI</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-success" />
+                  <span class="text-xs font-medium text-success">在线</span>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold">128ms</span>
+                </div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 25%"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">可用性</p>
+                  <p class="text-lg font-semibold">99.9%</p>
+                </div>
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">错误率</p>
+                  <p class="text-lg font-semibold text-success">0.1%</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>2 分钟前更新</span>
+              </div>
+            </div>
+
+            <div class="apple-card bg-card rounded-3xl p-6 border border-border/20 animate-fade-in-up" style="animation-delay: 0.05s">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h4 class="text-lg font-semibold">Claude 3.5</h4>
+                  <p class="text-xs text-muted-foreground mt-1">Anthropic</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-success" />
+                  <span class="text-xs font-medium text-success">在线</span>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold">89ms</span>
+                </div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 17%"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">可用性</p>
+                  <p class="text-lg font-semibold">100%</p>
+                </div>
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">错误率</p>
+                  <p class="text-lg font-semibold text-success">0%</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>2 分钟前更新</span>
+              </div>
+            </div>
+
+            <div class="apple-card bg-card rounded-3xl p-6 border border-warning/30 animate-fade-in-up" style="animation-delay: 0.1s">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h4 class="text-lg font-semibold">Gemini 1.5</h4>
+                  <p class="text-xs text-muted-foreground mt-1">Google</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-warning" />
+                  <span class="text-xs font-medium text-warning">降级</span>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold text-warning">1,156ms</span>
+                </div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full" style="width: 77%"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">可用性</p>
+                  <p class="text-lg font-semibold">97.7%</p>
+                </div>
+                <div class="bg-warning/10 rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">错误率</p>
+                  <p class="text-lg font-semibold text-warning">2.3%</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>2 分钟前更新</span>
+                <span class="flex items-center gap-1 px-2.5 py-1 bg-warning/10 text-warning rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/></svg>
+                  1 次重试
+                </span>
+              </div>
+            </div>
+
+            <div class="apple-card bg-card rounded-3xl p-6 border border-border/20 animate-fade-in-up" style="animation-delay: 0.15s">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h4 class="text-lg font-semibold">Llama 3</h4>
+                  <p class="text-xs text-muted-foreground mt-1">Meta (Groq)</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-success" />
+                  <span class="text-xs font-medium text-success">在线</span>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold">45ms</span>
+                </div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 9%"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">可用性</p>
+                  <p class="text-lg font-semibold">100%</p>
+                </div>
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">错误率</p>
+                  <p class="text-lg font-semibold text-success">0%</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>2 分钟前更新</span>
+              </div>
+            </div>
+
+            <div class="apple-card bg-card rounded-3xl p-6 border border-border/20 animate-fade-in-up" style="animation-delay: 0.2s">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h4 class="text-lg font-semibold">Mistral Large</h4>
+                  <p class="text-xs text-muted-foreground mt-1">Mistral AI</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-success" />
+                  <span class="text-xs font-medium text-success">在线</span>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold">156ms</span>
+                </div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 31%"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">可用性</p>
+                  <p class="text-lg font-semibold">99.7%</p>
+                </div>
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">错误率</p>
+                  <p class="text-lg font-semibold text-success">0.3%</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>2 分钟前更新</span>
+              </div>
+            </div>
+          </div>
         </div>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-          
-          <!-- GPT-4o Card -->
-          <div class="group bg-card border border-border/10 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up" style="animation-delay: 0s">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="relative">
-                  <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                    <span class="text-sm font-bold text-blue-600">GP</span>
-                  </div>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-blue-600 transition-colors">GPT-4o</h4>
-                  <p class="text-xs text-muted-foreground">OpenAI</p>
-                </div>
-              </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-500/10 text-green-600 border border-green-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                在线
-              </span>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-foreground">128ms</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-700" style="width: 12%"></div>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">可用性</span>
-                  </div>
-                  <div class="text-lg font-bold text-foreground">99.9%</div>
-                </div>
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">错误率</span>
-                  </div>
-                  <div class="text-lg font-bold text-green-600">0.1%</div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>2分钟前</span>
-              </div>
-            </div>
-          </div>
 
-          <!-- Claude 3.5 Card -->
-          <div class="group bg-card border border-border/10 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up" style="animation-delay: 0.05s">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
-                  <span class="text-sm font-bold text-orange-600">AN</span>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-orange-600 transition-colors">Claude 3.5</h4>
-                  <p class="text-xs text-muted-foreground">Anthropic</p>
-                </div>
-              </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-500/10 text-green-600 border border-green-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                在线
-              </span>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-foreground">89ms</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-700" style="width: 8%"></div>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">可用性</span>
-                  </div>
-                  <div class="text-lg font-bold text-foreground">100%</div>
-                </div>
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">错误率</span>
-                  </div>
-                  <div class="text-lg font-bold text-green-600">0%</div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>2分钟前</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Gemini 1.5 Card -->
-          <div class="group bg-card border border-amber-500/20 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up" style="animation-delay: 0.1s">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                  <span class="text-sm font-bold text-blue-600">GO</span>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-blue-600 transition-colors">Gemini 1.5</h4>
-                  <p class="text-xs text-muted-foreground">Google</p>
-                </div>
-              </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-600 border border-amber-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                降级
-              </span>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-amber-600">1,156ms</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full transition-all duration-700" style="width: 77%"></div>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">可用性</span>
-                  </div>
-                  <div class="text-lg font-bold text-foreground">97.7%</div>
-                </div>
-                <div class="bg-amber-500/10 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">错误率</span>
-                  </div>
-                  <div class="text-lg font-bold text-amber-600">2.3%</div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>2分钟前</span>
-              </div>
-              <span class="flex items-center gap-1 px-2 py-0.5 bg-amber-500/10 text-amber-600 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/></svg>
-                1次重试
-              </span>
-            </div>
-          </div>
-
-          <!-- Llama 3 Card -->
-          <div class="group bg-card border border-border/10 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up" style="animation-delay: 0.15s">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                  <span class="text-sm font-bold text-purple-600">ME</span>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-purple-600 transition-colors">Llama 3</h4>
-                  <p class="text-xs text-muted-foreground">Meta (Groq)</p>
-                </div>
-              </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-500/10 text-green-600 border border-green-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                在线
-              </span>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-foreground">45ms</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-700" style="width: 4%"></div>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">可用性</span>
-                  </div>
-                  <div class="text-lg font-bold text-foreground">100%</div>
-                </div>
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">错误率</span>
-                  </div>
-                  <div class="text-lg font-bold text-green-600">0%</div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>2分钟前</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Mistral Large Card -->
-          <div class="group bg-card border border-border/10 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up" style="animation-delay: 0.2s">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                  <span class="text-sm font-bold text-purple-600">MI</span>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-purple-600 transition-colors">Mistral Large</h4>
-                  <p class="text-xs text-muted-foreground">Mistral AI</p>
-                </div>
-              </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-500/10 text-green-600 border border-green-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                在线
-              </span>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-foreground">156ms</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-700" style="width: 15%"></div>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">可用性</span>
-                  </div>
-                  <div class="text-lg font-bold text-foreground">99.7%</div>
-                </div>
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">错误率</span>
-                  </div>
-                  <div class="text-lg font-bold text-green-600">0.3%</div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>2分钟前</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ==================== CHINA PROVIDERS ==================== -->
-      <div class="mt-10 space-y-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+        <div>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-8 h-8 rounded-xl bg-red-500/10 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
             </div>
-            <h3 class="text-base sm:text-lg font-semibold">中国供应商</h3>
-          </div>
-          <span class="text-xs font-mono text-muted-foreground">7 APIs</span>
-        </div>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-          
-          <!-- Kimi Card -->
-          <div class="group bg-card border border-border/10 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up" style="animation-delay: 0s">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                  <span class="text-sm font-bold text-blue-600">MO</span>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-blue-600 transition-colors">Kimi</h4>
-                  <p class="text-xs text-muted-foreground">Moonshot AI</p>
-                </div>
-              </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-500/10 text-green-600 border border-green-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                在线
-              </span>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-foreground">234ms</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-700" style="width: 23%"></div>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">可用性</span>
-                  </div>
-                  <div class="text-lg font-bold text-foreground">99.8%</div>
-                </div>
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">错误率</span>
-                  </div>
-                  <div class="text-lg font-bold text-green-600">0.2%</div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>2分钟前</span>
-              </div>
-            </div>
+            <h3 class="text-lg font-semibold">中国供应商</h3>
+            <span class="text-xs font-medium text-muted-foreground bg-secondary px-3 py-1 rounded-xl">7 APIs</span>
           </div>
 
-          <!-- GLM-4 Card -->
-          <div class="group bg-card border border-border/10 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up" style="animation-delay: 0.05s">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
-                  <span class="text-sm font-bold text-cyan-600">ZH</span>
-                </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div class="apple-card bg-card rounded-3xl p-6 border border-border/20 animate-fade-in-up" style="animation-delay: 0s">
+              <div class="flex items-start justify-between mb-6">
                 <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-cyan-600 transition-colors">GLM-4</h4>
-                  <p class="text-xs text-muted-foreground">ZhipuAI</p>
+                  <h4 class="text-lg font-semibold">Kimi</h4>
+                  <p class="text-xs text-muted-foreground mt-1">Moonshot AI</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-success" />
+                  <span class="text-xs font-medium text-success">在线</span>
                 </div>
               </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-500/10 text-green-600 border border-green-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                在线
-              </span>
-            </div>
-            <div class="space-y-4">
               <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-foreground">167ms</span>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold">234ms</span>
                 </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-700" style="width: 16%"></div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 47%"></div>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">可用性</span>
-                  </div>
-                  <div class="text-lg font-bold text-foreground">99.9%</div>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">可用性</p>
+                  <p class="text-lg font-semibold">99.8%</p>
                 </div>
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">错误率</span>
-                  </div>
-                  <div class="text-lg font-bold text-green-600">0.1%</div>
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">错误率</p>
+                  <p class="text-lg font-semibold text-success">0.2%</p>
                 </div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>2 分钟前更新</span>
               </div>
             </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>2分钟前</span>
+
+            <div class="apple-card bg-card rounded-3xl p-6 border border-border/20 animate-fade-in-up" style="animation-delay: 0.05s">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h4 class="text-lg font-semibold">GLM-4</h4>
+                  <p class="text-xs text-muted-foreground mt-1">ZhipuAI</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-success" />
+                  <span class="text-xs font-medium text-success">在线</span>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold">167ms</span>
+                </div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 33%"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">可用性</p>
+                  <p class="text-lg font-semibold">99.9%</p>
+                </div>
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">错误率</p>
+                  <p class="text-lg font-semibold text-success">0.1%</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>2 分钟前更新</span>
+              </div>
+            </div>
+
+            <div class="apple-card bg-card rounded-3xl p-6 border border-error/30 animate-fade-in-up" style="animation-delay: 0.1s">
+              <div class="absolute top-0 left-0 w-1.5 h-full bg-error rounded-l-3xl"></div>
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h4 class="text-lg font-semibold">Qwen Max</h4>
+                  <p class="text-xs text-muted-foreground mt-1">Alibaba</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-error animate-pulse-gentle" />
+                  <span class="text-xs font-medium text-error">离线</span>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold text-error">超时</span>
+                </div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-error rounded-full" style="width: 100%"></div>
+                </div>
+              </div>
+              <div class="bg-error/10 rounded-2xl p-4 mt-5">
+                <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">重试次数</p>
+                <p class="text-lg font-semibold text-error">2 次</p>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>10 分钟前更新</span>
+                <span class="flex items-center gap-1 px-2.5 py-1 bg-error/10 text-error rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+                  需要关注
+                </span>
+              </div>
+            </div>
+
+            <div class="apple-card bg-card rounded-3xl p-6 border border-border/20 animate-fade-in-up" style="animation-delay: 0.15s">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h4 class="text-lg font-semibold">Hunyuan</h4>
+                  <p class="text-xs text-muted-foreground mt-1">Tencent</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-success" />
+                  <span class="text-xs font-medium text-success">在线</span>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold">312ms</span>
+                </div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 62%"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">可用性</p>
+                  <p class="text-lg font-semibold">99.5%</p>
+                </div>
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">错误率</p>
+                  <p class="text-lg font-semibold text-success">0.5%</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>2 分钟前更新</span>
+              </div>
+            </div>
+
+            <div class="apple-card bg-card rounded-3xl p-6 border border-border/20 animate-fade-in-up" style="animation-delay: 0.2s">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h4 class="text-lg font-semibold">Ernie 4.0</h4>
+                  <p class="text-xs text-muted-foreground mt-1">Baidu</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-success" />
+                  <span class="text-xs font-medium text-success">在线</span>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold">287ms</span>
+                </div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 57%"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">可用性</p>
+                  <p class="text-lg font-semibold">99.7%</p>
+                </div>
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">错误率</p>
+                  <p class="text-lg font-semibold text-success">0.3%</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>2 分钟前更新</span>
+              </div>
+            </div>
+
+            <div class="apple-card bg-card rounded-3xl p-6 border border-border/20 animate-fade-in-up" style="animation-delay: 0.25s">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h4 class="text-lg font-semibold">Baichuan 2</h4>
+                  <p class="text-xs text-muted-foreground mt-1">Baichuan AI</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-success" />
+                  <span class="text-xs font-medium text-success">在线</span>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold">198ms</span>
+                </div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 39%"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">可用性</p>
+                  <p class="text-lg font-semibold">99.6%</p>
+                </div>
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">错误率</p>
+                  <p class="text-lg font-semibold text-success">0.4%</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>2 分钟前更新</span>
+              </div>
+            </div>
+
+            <div class="apple-card bg-card rounded-3xl p-6 border border-border/20 animate-fade-in-up" style="animation-delay: 0.3s">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h4 class="text-lg font-semibold">DeepSeek V3</h4>
+                  <p class="text-xs text-muted-foreground mt-1">DeepSeek</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-2.5 rounded-full status-dot bg-success" />
+                  <span class="text-xs font-medium text-success">在线</span>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-sm mb-3">
+                  <span class="text-muted-foreground">延迟</span>
+                  <span class="text-xl font-semibold">178ms</span>
+                </div>
+                <div class="h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 35%"></div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mt-5">
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">可用性</p>
+                  <p class="text-lg font-semibold">99.9%</p>
+                </div>
+                <div class="bg-secondary rounded-2xl p-4">
+                  <p class="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">错误率</p>
+                  <p class="text-lg font-semibold text-success">0.1%</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
+                <span>2 分钟前更新</span>
               </div>
             </div>
           </div>
-
-          <!-- Baichuan 2 Card -->
-          <div class="group bg-card border border-border/10 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up" style="animation-delay: 0.1s">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <span class="text-sm font-bold text-emerald-600">BA</span>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-emerald-600 transition-colors">Baichuan 2</h4>
-                  <p class="text-xs text-muted-foreground">Baichuan AI</p>
-                </div>
-              </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-500/10 text-green-600 border border-green-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                在线
-              </span>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-foreground">198ms</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-700" style="width: 19%"></div>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">可用性</span>
-                  </div>
-                  <div class="text-lg font-bold text-foreground">99.6%</div>
-                </div>
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">错误率</span>
-                  </div>
-                  <div class="text-lg font-bold text-green-600">0.4%</div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>2分钟前</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Qwen Max Card - OFFLINE -->
-          <div class="group bg-card border border-rose-500/20 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up relative overflow-hidden" style="animation-delay: 0.15s">
-            <div class="absolute top-0 left-0 w-1 h-full bg-rose-500"></div>
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
-                  <span class="text-sm font-bold text-orange-600">AL</span>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-orange-600 transition-colors">Qwen Max</h4>
-                  <p class="text-xs text-muted-foreground">Alibaba</p>
-                </div>
-              </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-500/10 text-rose-600 border border-rose-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-                离线
-              </span>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-rose-600">超时</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-rose-500 to-rose-400 rounded-full transition-all duration-700" style="width: 100%"></div>
-                </div>
-              </div>
-              <div class="bg-rose-500/10 rounded-xl p-3">
-                <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                  <span class="uppercase tracking-wide">重试次数</span>
-                </div>
-                <div class="text-lg font-bold text-rose-600">2次</div>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>10分钟前</span>
-              </div>
-              <span class="flex items-center gap-1 px-2 py-0.5 bg-rose-500/10 text-rose-600 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
-                需要关注
-              </span>
-            </div>
-          </div>
-
-          <!-- Hunyuan Card -->
-          <div class="group bg-card border border-border/10 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up" style="animation-delay: 0.2s">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
-                  <span class="text-sm font-bold text-cyan-600">TE</span>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-cyan-600 transition-colors">Hunyuan</h4>
-                  <p class="text-xs text-muted-foreground">Tencent</p>
-                </div>
-              </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-500/10 text-green-600 border border-green-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                在线
-              </span>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-foreground">312ms</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-700" style="width: 31%"></div>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">可用性</span>
-                  </div>
-                  <div class="text-lg font-bold text-foreground">99.5%</div>
-                </div>
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">错误率</span>
-                  </div>
-                  <div class="text-lg font-bold text-green-600">0.5%</div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>2分钟前</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Ernie 4.0 Card -->
-          <div class="group bg-card border border-border/10 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up" style="animation-delay: 0.25s">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
-                  <span class="text-sm font-bold text-red-600">BD</span>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-red-600 transition-colors">Ernie 4.0</h4>
-                  <p class="text-xs text-muted-foreground">Baidu</p>
-                </div>
-              </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-500/10 text-green-600 border border-green-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                在线
-              </span>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-foreground">287ms</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-700" style="width: 28%"></div>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">可用性</span>
-                  </div>
-                  <div class="text-lg font-bold text-foreground">99.7%</div>
-                </div>
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">错误率</span>
-                  </div>
-                  <div class="text-lg font-bold text-green-600">0.3%</div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>2分钟前</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- DeepSeek V3 Card -->
-          <div class="group bg-card border border-border/10 rounded-2xl p-5 card-hover shadow-soft animate-fade-in-up" style="animation-delay: 0.3s">
-            <div class="flex items-start justify-between mb-5">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <span class="text-sm font-bold text-emerald-600">DS</span>
-                </div>
-                <div>
-                  <h4 class="font-semibold text-foreground group-hover:text-emerald-600 transition-colors">DeepSeek V3</h4>
-                  <p class="text-xs text-muted-foreground">DeepSeek</p>
-                </div>
-              </div>
-              <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-green-500/10 text-green-600 border border-green-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                在线
-              </span>
-            </div>
-            <div class="space-y-4">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-xs text-muted-foreground font-medium">延迟</span>
-                  <span class="text-sm font-bold text-foreground">178ms</span>
-                </div>
-                <div class="h-2 bg-muted rounded-full overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-700" style="width: 17%"></div>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">可用性</span>
-                  </div>
-                  <div class="text-lg font-bold text-foreground">99.9%</div>
-                </div>
-                <div class="bg-muted/30 rounded-xl p-3">
-                  <div class="flex items-center justify-between text-[10px] text-muted-foreground mb-1.5">
-                    <span class="uppercase tracking-wide">错误率</span>
-                  </div>
-                  <div class="text-lg font-bold text-green-600">0.1%</div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center justify-between text-[10px] text-muted-foreground/60 border-t border-border/5 pt-4 mt-5">
-              <div class="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>2分钟前</span>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ==================== LATENCY HISTORY CHART ==================== -->
-    <section class="mt-10">
-      <div class="bg-card border border-border/10 rounded-2xl p-5 sm:p-6 shadow-soft">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-            </div>
-            <div>
-              <h2 class="text-base sm:text-lg font-bold">延迟历史</h2>
-              <p class="text-xs text-muted-foreground">最近1小时内的性能趋势</p>
-            </div>
-          </div>
-          <div class="flex flex-wrap gap-3">
-            <button class="px-3 py-1.5 text-[10px] font-medium border border-border/20 rounded-lg hover:bg-muted transition-colors">1小时</button>
-            <button class="px-3 py-1.5 text-[10px] font-medium border border-border/20 rounded-lg hover:bg-muted transition-colors">6小时</button>
-            <button class="px-3 py-1.5 text-[10px] font-medium border border-border/20 rounded-lg hover:bg-muted transition-colors">24小时</button>
-          </div>
+  <section class="px-6 md:px-10 lg:px-16 py-12 md:py-16 bg-secondary/30">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-8">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-semibold">延迟历史</h2>
+          <p class="text-muted-foreground mt-2">过去 1 小时内的性能趋势分析</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button class="px-4 py-2 text-xs font-medium bg-card border border-border/20 rounded-xl hover:bg-secondary transition-colors">1 小时</button>
+          <button class="px-4 py-2 text-xs font-medium bg-secondary rounded-xl hover:bg-muted transition-colors">6 小时</button>
+          <button class="px-4 py-2 text-xs font-medium bg-secondary rounded-xl hover:bg-muted transition-colors">24 小时</button>
+        </div>
+      </div>
+
+      <div class="bg-card rounded-3xl p-6 border border-border/20">
+        <div class="flex flex-wrap gap-4 mb-6 pb-6 border-b border-border/10">
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-blue-500"></div><span class="text-xs font-medium text-muted-foreground">GPT-4o</span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-orange-500"></div><span class="text-xs font-medium text-muted-foreground">Claude 3.5</span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-amber-500"></div><span class="text-xs font-medium text-muted-foreground">Gemini 1.5</span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-purple-500"></div><span class="text-xs font-medium text-muted-foreground">Llama 3</span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-cyan-500"></div><span class="text-xs font-medium text-muted-foreground">Kimi</span></div>
+          <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-rose-500"></div><span class="text-xs font-medium text-muted-foreground">Qwen Max</span></div>
         </div>
 
-        <!-- Chart Legend -->
-        <div class="flex flex-wrap gap-x-4 gap-y-2 mb-6 pb-4 border-b border-border/10">
-          <div class="flex items-center gap-1.5">
-            <div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
-            <span class="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">GPT-4o</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <div class="w-2.5 h-2.5 rounded-full bg-orange-500"></div>
-            <span class="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Claude 3.5</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
-            <span class="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Gemini 1.5</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <div class="w-2.5 h-2.5 rounded-full bg-purple-500"></div>
-            <span class="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Llama 3</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <div class="w-2.5 h-2.5 rounded-full bg-cyan-500"></div>
-            <span class="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Kimi</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <div class="w-2.5 h-2.5 rounded-full bg-rose-500"></div>
-            <span class="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Qwen Max</span>
-          </div>
-        </div>
-
-        <!-- SVG Chart -->
-        <div class="h-48 sm:h-56 lg:h-72 relative">
-          <svg viewBox="0 0 1000 300" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
+        <div class="h-64 relative">
+          <svg viewBox="0 0 1000 280" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
             <defs>
-              <!-- Grid Pattern -->
-              <pattern id="grid" width="50" height="30" patternUnits="userSpaceOnUse">
-                <path d="M 50 0 L 0 0 0 30" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.1"/>
+              <pattern id="grid" width="50" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.08"/>
               </pattern>
-              <!-- Gradients -->
-              <linearGradient id="blueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.3"/>
+              <linearGradient id="blueGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.25"/>
                 <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:0"/>
               </linearGradient>
-              <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:#F97316;stop-opacity:0.3"/>
+              <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#F97316;stop-opacity:0.25"/>
                 <stop offset="100%" style="stop-color:#F97316;stop-opacity:0"/>
               </linearGradient>
-              <linearGradient id="amberGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0.3"/>
+              <linearGradient id="amberGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:0.25"/>
                 <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:0"/>
               </linearGradient>
-              <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:#A855F7;stop-opacity:0.3"/>
+              <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#A855F7;stop-opacity:0.25"/>
                 <stop offset="100%" style="stop-color:#A855F7;stop-opacity:0"/>
               </linearGradient>
-              <linearGradient id="cyanGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:#06B6D4;stop-opacity:0.3"/>
+              <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#06B6D4;stop-opacity:0.25"/>
                 <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:0"/>
               </linearGradient>
             </defs>
-            
-            <!-- Background Grid -->
-            <rect width="1000" height="300" fill="url(#grid)" />
-            
-            <!-- Y-axis labels -->
-            <text x="10" y="25" class="text-[10px] fill-current" fill="currentColor" opacity="0.4" font-family="monospace">2000ms</text>
-            <text x="10" y="85" class="text-[10px] fill-current" fill="currentColor" opacity="0.4" font-family="monospace">1500ms</text>
-            <text x="10" y="145" class="text-[10px] fill-current" fill="currentColor" opacity="0.4" font-family="monospace">1000ms</text>
-            <text x="10" y="205" class="text-[10px] fill-current" fill="currentColor" opacity="0.4" font-family="monospace">500ms</text>
-            <text x="10" y="265" class="text-[10px] fill-current" fill="currentColor" opacity="0.4" font-family="monospace">0ms</text>
-            
-            <!-- X-axis labels -->
-            <text x="60" y="280" class="text-[10px] fill-current" fill="currentColor" opacity="0.4" font-family="monospace">14:00</text>
-            <text x="260" y="280" class="text-[10px] fill-current" fill="currentColor" opacity="0.4" font-family="monospace">14:15</text>
-            <text x="460" y="280" class="text-[10px] fill-current" fill="currentColor" opacity="0.4" font-family="monospace">14:30</text>
-            <text x="660" y="280" class="text-[10px] fill-current" fill="currentColor" opacity="0.4" font-family="monospace">14:45</text>
-            <text x="860" y="280" class="text-[10px] fill-current" fill="currentColor" opacity="0.4" font-family="monospace">15:00</text>
 
-            <!-- GPT-4o Area (Blue) -->
-            <path d="M 60,240 Q 120,220 180,230 T 300,200 T 420,210 T 540,190 T 660,220 T 780,200 T 900,210 T 960,195 L 960,300 L 60,300 Z" fill="url(#blueGradient)" />
+            <rect width="1000" height="280" fill="url(#grid)" />
+
+            <text x="10" y="20" class="text-[10px] fill-current opacity-0.4" font-family="monospace">2000ms</text>
+            <text x="10" y="80" class="text-[10px] fill-current opacity-0.4" font-family="monospace">1500ms</text>
+            <text x="10" y="140" class="text-[10px] fill-current opacity-0.4" font-family="monospace">1000ms</text>
+            <text x="10" y="200" class="text-[10px] fill-current opacity-0.4" font-family="monospace">500ms</text>
+            <text x="10" y="260" class="text-[10px] fill-current opacity-0.4" font-family="monospace">0ms</text>
+
+            <text x="60" y="275" class="text-[10px] fill-current opacity-0.4" font-family="monospace">14:00</text>
+            <text x="260" y="275" class="text-[10px] fill-current opacity-0.4" font-family="monospace">14:15</text>
+            <text x="460" y="275" class="text-[10px] fill-current opacity-0.4" font-family="monospace">14:30</text>
+            <text x="660" y="275" class="text-[10px] fill-current opacity-0.4" font-family="monospace">14:45</text>
+            <text x="860" y="275" class="text-[10px] fill-current opacity-0.4" font-family="monospace">15:00</text>
+
+            <path d="M 60,240 Q 120,220 180,230 T 300,200 T 420,210 T 540,190 T 660,220 T 780,200 T 900,210 T 960,195 L 960,280 L 60,280 Z" fill="url(#blueGrad)" />
             <path d="M 60,240 Q 120,220 180,230 T 300,200 T 420,210 T 540,190 T 660,220 T 780,200 T 900,210 T 960,195" fill="none" stroke="#3B82F6" stroke-width="2.5" />
-            
-            <!-- Claude 3.5 Area (Orange) -->
-            <path d="M 60,250 Q 120,260 180,245 T 300,255 T 420,240 T 540,250 T 660,235 T 780,245 T 900,230 T 960,235 L 960,300 L 60,300 Z" fill="url(#orangeGradient)" />
+
+            <path d="M 60,250 Q 120,260 180,245 T 300,255 T 420,240 T 540,250 T 660,235 T 780,245 T 900,230 T 960,235 L 960,280 L 60,280 Z" fill="url(#orangeGrad)" />
             <path d="M 60,250 Q 120,260 180,245 T 300,255 T 420,240 T 540,250 T 660,235 T 780,245 T 900,230 T 960,235" fill="none" stroke="#F97316" stroke-width="2.5" />
-            
-            <!-- Gemini 1.5 Area (Amber) - showing high latency -->
-            <path d="M 60,200 Q 120,150 180,170 T 300,100 T 420,120 T 540,80 T 660,100 T 780,60 T 900,70 T 960,50 L 960,300 L 60,300 Z" fill="url(#amberGradient)" />
+
+            <path d="M 60,200 Q 120,150 180,170 T 300,100 T 420,120 T 540,80 T 660,100 T 780,60 T 900,70 T 960,50 L 960,280 L 60,280 Z" fill="url(#amberGrad)" />
             <path d="M 60,200 Q 120,150 180,170 T 300,100 T 420,120 T 540,80 T 660,100 T 780,60 T 900,70 T 960,50" fill="none" stroke="#F59E0B" stroke-width="2.5" />
-            
-            <!-- Llama 3 Area (Purple) -->
-            <path d="M 60,255 Q 120,265 180,250 T 300,260 T 420,245 T 540,255 T 660,240 T 780,250 T 900,235 T 960,240 L 960,300 L 60,300 Z" fill="url(#purpleGradient)" />
+
+            <path d="M 60,255 Q 120,265 180,250 T 300,260 T 420,245 T 540,255 T 660,240 T 780,250 T 900,235 T 960,240 L 960,280 L 60,280 Z" fill="url(#purpleGrad)" />
             <path d="M 60,255 Q 120,265 180,250 T 300,260 T 420,245 T 540,255 T 660,240 T 780,250 T 900,235 T 960,240" fill="none" stroke="#A855F7" stroke-width="2.5" />
 
-            <!-- Kimi Area (Cyan) -->
-            <path d="M 60,235 Q 120,225 180,230 T 300,215 T 420,220 T 540,205 T 660,215 T 780,195 T 900,200 T 960,190 L 960,300 L 60,300 Z" fill="url(#cyanGradient)" />
+            <path d="M 60,235 Q 120,225 180,230 T 300,215 T 420,220 T 540,205 T 660,215 T 780,195 T 900,200 T 960,190 L 960,280 L 60,280 Z" fill="url(#cyanGrad)" />
             <path d="M 60,235 Q 120,225 180,230 T 300,215 T 420,220 T 540,205 T 660,215 T 780,195 T 900,200 T 960,190" fill="none" stroke="#06B6D4" stroke-width="2.5" />
 
-            <!-- Current data points -->
             <circle cx="960" cy="195" r="5" fill="#3B82F6" stroke="white" stroke-width="2"/>
             <circle cx="960" cy="235" r="5" fill="#F97316" stroke="white" stroke-width="2"/>
             <circle cx="960" cy="50" r="5" fill="#F59E0B" stroke="white" stroke-width="2"/>
@@ -1332,26 +774,24 @@
           </svg>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-  </main>
-
-  <!-- ==================== FOOTER ==================== -->
-  <footer class="border-t border-border/10 mt-10 sm:mt-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="flex flex-col sm:flex-row justify-between items-center gap-6">
+  <footer class="border-t border-border/20 mt-8">
+    <div class="max-w-7xl mx-auto px-6 md:px-10 lg:px-16 py-8">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
         <div class="flex items-center gap-4">
-          <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary-foreground">
+          <div class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-primary">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
             </svg>
           </div>
           <div>
-            <p class="text-sm font-bold uppercase italic">LLM API Sentinel</p>
-            <p class="text-[10px] font-mono text-muted-foreground">v2.6.2 | Supabase PostgreSQL</p>
+            <p class="text-sm font-semibold">LLM API Sentinel</p>
+            <p class="text-[10px] text-muted-foreground font-mono">v3.0.0 | Supabase PostgreSQL</p>
           </div>
         </div>
-        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+        <div class="flex flex-wrap items-center gap-6">
           <a href="#" class="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">文档</a>
           <a href="#" class="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">GitHub</a>
           <a href="#" class="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">问题反馈</a>
@@ -1359,12 +799,11 @@
         </div>
       </div>
       <div class="mt-6 pt-6 border-t border-border/10 text-center">
-        <p class="text-[10px] font-mono text-muted-foreground/60">
-          © 2024 LLM API Sentinel. 基于 Next.js + Supabase 构建，支持 16 种语言。
+        <p class="text-[10px] text-muted-foreground/60 font-mono">
+          © 2024 LLM API Sentinel. Built with Next.js + Supabase
         </p>
       </div>
     </div>
   </footer>
-
 </body>
 </html>

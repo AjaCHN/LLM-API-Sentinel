@@ -1,4 +1,3 @@
-// app/page.tsx v3.0.0 - Apple Style
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -56,40 +55,49 @@ export default function Dashboard() {
         resolveAlert={resolveAlert} 
       />
 
-      <main id="main-content" className="px-6 md:px-10 py-10 max-w-7xl mx-auto space-y-12">
-        {/* Hero Section */}
-        <div className="text-center space-y-4 animate-fade-in-up">
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">{t('dashboard.title')}</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t('dashboard.globalAIApiMonitoring')} — Real-time health monitoring for all your AI services</p>
-        </div>
-
-        {/* Alerts Banner */}
-        {alerts.length > 0 && (
-          <div id="alerts-banner" className="bg-error/10 border border-error/20 p-6 rounded-3xl flex items-center justify-between animate-fade-in-up">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-error/15 rounded-2xl">
-                <AlertTriangle className="w-6 h-6 text-error" />
-              </div>
-              <div className="text-left">
-                <p className="text-base font-semibold">
-                  {t('alerts.alertsLabel')}: {alerts.length} {alerts.length > 1 ? t('alerts.activeIssuesPlural') : t('alerts.activeIssues')} {t('alerts.detected')}
-                </p>
-              </div>
-            </div>
-            <button onClick={() => setShowAlerts(true)} className="apple-button px-5 py-3 bg-error text-white rounded-2xl text-sm font-medium hover:opacity-90">
-              {t('alerts.viewDetails')}
-            </button>
+      <main id="main-content" className="px-6 md:px-10 lg:px-16">
+        <section className="hero-gradient pt-16 md:pt-24 pb-12 md:pb-20">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <p className="mono-label text-primary">{t('dashboard.globalAIApiMonitoring')}</p>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight">
+              {t('dashboard.title')}
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+              {t('dashboard.description')}
+            </p>
           </div>
+        </section>
+
+        {alerts.length > 0 && (
+          <section className="-mt-6">
+            <div id="alerts-banner" className="bg-error/8 border border-error/20 rounded-3xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-fade-in-up">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-error/15 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-error" />
+                </div>
+                <div>
+                  <p className="text-base md:text-lg font-semibold">
+                    {t('alerts.alertsLabel')}: {alerts.length} {alerts.length > 1 ? t('alerts.activeIssuesPlural') : t('alerts.activeIssues')} {t('alerts.detected')}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-0.5">
+                    {alerts.filter(a => a.severity === 'critical').length} {t('alerts.offline')} · {alerts.filter(a => a.severity === 'high' || a.severity === 'medium').length} {t('alerts.highLatency')}
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setShowAlerts(true)} className="apple-button px-6 py-3 bg-error text-white rounded-2xl text-sm font-semibold hover:opacity-90 whitespace-nowrap">
+                {t('alerts.viewDetails')}
+              </button>
+            </div>
+          </section>
         )}
 
-        {/* API Status Grid Section */}
-        <section id="status-grid-section" className="space-y-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+        <section id="status-grid-section" className="py-12 md:py-16 space-y-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div>
-              <h2 className="text-2xl font-semibold">{t('dashboard.status')}</h2>
-              <p className="text-sm text-muted-foreground mt-2">Real-time API health monitoring</p>
+              <h2 className="text-2xl md:text-3xl font-semibold">{t('dashboard.status')}</h2>
+              <p className="text-muted-foreground mt-2">{t('dashboard.realTimeMonitoring')}</p>
             </div>
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end flex-wrap">
+            <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end flex-wrap">
               {lastUpdate && (
                 <span className="text-xs font-medium text-muted-foreground bg-secondary px-4 py-2 rounded-2xl">
                   {t('dashboard.lastSync')}: {format(lastUpdate, 'HH:mm:ss')}
@@ -106,7 +114,7 @@ export default function Dashboard() {
                 onClick={runCheck}
                 disabled={isChecking || !user}
                 className={cn(
-                  "apple-button flex items-center gap-2.5 px-5 py-3 bg-primary text-primary-foreground rounded-2xl text-sm font-medium",
+                  "apple-button px-5 py-3 bg-primary text-primary-foreground rounded-2xl text-sm font-semibold",
                   (isChecking || !user) && "opacity-50 cursor-not-allowed"
                 )}
               >
@@ -122,24 +130,36 @@ export default function Dashboard() {
           <ApiStatusGrid statuses={statuses} />
         </section>
 
-        {/* Latency History Chart Section */}
-        <section id="history-chart-section" className="space-y-6">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
-            <div>
-              <h2 className="text-2xl font-semibold">{t('dashboard.latencyHistory')}</h2>
-              <p className="text-sm text-muted-foreground mt-2">Performance trends over time</p>
+        <section id="history-chart-section" className="py-12 md:py-16 bg-secondary/30">
+          <div className="space-y-8">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-semibold">{t('dashboard.latencyHistory')}</h2>
+                <p className="text-muted-foreground mt-2">{t('dashboard.performanceTrends')}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button className="px-4 py-2 text-xs font-medium bg-card border border-border/20 rounded-xl hover:bg-secondary transition-colors">
+                  {t('dashboard.lastHour')}
+                </button>
+                <button className="px-4 py-2 text-xs font-medium bg-secondary rounded-xl hover:bg-muted transition-colors">
+                  {t('dashboard.last6Hours')}
+                </button>
+                <button className="px-4 py-2 text-xs font-medium bg-secondary rounded-xl hover:bg-muted transition-colors">
+                  {t('dashboard.last24Hours')}
+                </button>
+              </div>
             </div>
-            <div id="chart-legend" className="flex flex-wrap gap-x-3 gap-y-2 max-w-full scrollbar-hide">
+            <div className="flex flex-wrap gap-4 mb-6 pb-6 border-b border-border/10">
               {statuses.slice(0, 8).map(s => (
-                <div key={s.id} className="flex items-center gap-2 bg-secondary px-3 py-2 rounded-2xl">
+                <div key={s.id} className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getApiColor(s.id) }} />
                   <span className="text-xs font-medium text-muted-foreground">{s.name}</span>
                 </div>
               ))}
               {statuses.length > 8 && <span className="text-xs text-muted-foreground bg-secondary/50 px-3 py-2 rounded-2xl">+{statuses.length - 8} {t('dashboard.more')}</span>}
             </div>
+            <LatencyHistoryChart chartData={chartData} statuses={statuses} getApiColor={getApiColor} />
           </div>
-          <LatencyHistoryChart chartData={chartData} statuses={statuses} getApiColor={getApiColor} />
         </section>
 
         <DashboardFooter />
