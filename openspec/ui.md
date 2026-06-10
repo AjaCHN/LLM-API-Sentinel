@@ -1,4 +1,4 @@
-# UI 组件规范文档 (v3.0.0 - Apple Style)
+# UI 组件规范文档 (v2.6.3 - Apple Style)
 
 ## 1. 设计原则
 

@@ -1,4 +1,4 @@
-// app/lib/cache.ts v2.6.2
+// app/lib/cache.ts v2.6.3
 import { DEFAULT_CACHE_EXPIRY, MIN_CACHE_EXPIRY, MAX_CACHE_EXPIRY } from '../constants';
 import { ApiCheckResult, ApiCheckCache } from '../types';
 

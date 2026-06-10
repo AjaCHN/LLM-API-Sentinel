@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.6.2
+# LLM API Sentinel v2.6.3
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -92,7 +92,6 @@ npm run dev
 项目可部署到多种静态托管平台：
 - **腾讯云 EdgeOne Pages**
 - **Vercel**
-- **Firebase Hosting**
 - **Netlify**
 
 Express 服务器部署：
@@ -166,7 +165,6 @@ npm start
 │   └── page.tsx         # 主仪表盘页面
 ├── openspec/            # 项目规范文档
 ├── supabase/            # 数据库架构
-├── server.ts            # Express 自定义服务器
 └── package.json
 ```
 

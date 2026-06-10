@@ -1,4 +1,4 @@
-// app/hooks/useApiMonitor.ts v2.6.2
+// app/hooks/useApiMonitor.ts v2.6.3
 // 改进：使用本地 API 检查，同时支持从 Supabase 同步数据
 import { useCallback, useEffect } from 'react';
 import { supabase } from '../lib/supabase';

@@ -1,4 +1,4 @@
-// app/components/ApiConfig.tsx v2.6.2
+// app/components/ApiConfig.tsx v2.6.3
 'use client';
 
 import React, { useState, useEffect } from 'react';

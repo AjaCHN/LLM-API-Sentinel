@@ -87,10 +87,9 @@ npm run dev
 
 ### Deployment
 
-The project can be deployed to various static hosting platforms:
+The project can be deployed to various static hosting platforms:项目可部署到多种静态托管平台：
 - **腾讯云 EdgeOne Pages**
 - **Vercel**
-- **Firebase Hosting**
 - **Netlify**
 
 For Express server deployment:
