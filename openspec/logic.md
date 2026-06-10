@@ -280,7 +280,7 @@ export async function calculateMetrics(apiId: string): Promise<Metrics> {
 | **API 错误** | `API_UNAVAILABLE` | 记录日志 + 告警 |
 | **API 错误** | `API_RATE_LIMITED` | 延迟重试 |
 | **认证错误** | `AUTH_REQUIRED` | 显示登录提示 |
-| **Firebase 错误** | `FIREBASE_ERROR` | 重试 + 错误日志 |
+| **Supabase 错误** | `SUPABASE_ERROR` | 重试 + 错误日志 |
 | **未知错误** | `UNKNOWN_ERROR` | 记录 + 通知 |
 
 ### 5.2 错误处理流程
@@ -403,16 +403,23 @@ export function useDashboardData() {
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [geo, setGeo] = useState<GeoInfo | null>(null);
 
-  // 从 Firestore 实时获取数据
+  // 从 Supabase 实时获取数据
   useEffect(() => {
-    const unsubscribe = firestore.collection('api_status')
-      .onSnapshot((snapshot) => {
-        const data = snapshot.docs.map(doc => doc.data() as ApiStatus);
-        setStatuses(data);
+    const channel = supabase
+      .channel('api_status')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'api_status'
+      }, (payload) => {
+        if (payload.eventType === 'UPDATE') {
+          setStatuses(prev => prev.map(s => s.id === payload.new.id ? payload.new : s));
+        }
         setLastUpdate(new Date());
-      });
+      })
+      .subscribe();
 
-    return () => unsubscribe();
+    return () => supabase.removeChannel(channel);
   }, []);
 
   // 获取用户认证状态
@@ -444,11 +451,10 @@ export function useDashboardData() {
 
   // 解决告警
   const resolveAlert = async (id: string) => {
-    await firestore.collection('alerts').doc(id).update({
+    await supabase.from('alerts').update({
       resolved: true,
-      resolvedAt: new Date(),
-      resolvedBy: user?.email,
-    });
+      resolved_at: new Date().toISOString(),
+    }).eq('id', id);
   };
 
   return {
@@ -469,7 +475,7 @@ export function useDashboardData() {
 
 ### 7.2 useApiMonitor
 
-**功能**：管理 API 监控逻辑，直接从 Firestore 读取状态
+**功能**：管理 API 监控逻辑，从 Supabase 读取状态
 
 ```typescript
 export function useApiMonitor() {
@@ -479,22 +485,35 @@ export function useApiMonitor() {
 
   // 订阅 API 状态
   useEffect(() => {
-    const unsubscribe = firestore.collection('api_status')
-      .onSnapshot((snapshot) => {
-        setStatuses(snapshot.docs.map(doc => doc.data() as ApiStatus));
-      });
+    const channel = supabase
+      .channel('api_status')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'api_status'
+      }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setStatuses(prev => [...prev, payload.new as ApiStatus]);
+        } else if (payload.eventType === 'UPDATE') {
+          setStatuses(prev => prev.map(s => s.id === payload.new.id ? payload.new : s));
+        }
+      })
+      .subscribe();
 
-    return () => unsubscribe();
+    return () => supabase.removeChannel(channel);
   }, []);
 
   // 获取历史数据
   const fetchHistory = async () => {
-    const snapshot = await firestore.collection('status_history')
-      .orderBy('timestamp', 'desc')
-      .limit(50)
-      .get();
+    const { data } = await supabase
+      .from('status_history')
+      .select('*')
+      .order('timestamp', { ascending: false })
+      .limit(50);
     
-    setHistory(snapshot.docs.map(doc => doc.data() as StatusHistory));
+    if (data) {
+      setHistory(data as StatusHistory[]);
+    }
   };
 
   // 执行检查
@@ -514,7 +533,7 @@ export function useApiMonitor() {
 
 ### 7.3 useAuth
 
-**功能**：管理 Firebase 认证状态
+**功能**：管理 Supabase Auth 认证状态
 
 ```typescript
 export function useAuth() {
@@ -522,21 +541,29 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
+    // 获取初始会话
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    // 监听认证状态变化
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async () => {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    await supabase.auth.signInWithOAuth({
+      provider: 'google'
+    });
   };
 
   const logout = async () => {
-    await signOut(auth);
+    await supabase.auth.signOut();
   };
 
   return { user, loading, login, logout };
@@ -552,24 +579,30 @@ export function useAlerts() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
 
   useEffect(() => {
-    const unsubscribe = firestore.collection('alerts')
-      .where('resolved', '==', false)
-      .orderBy('timestamp', 'desc')
-      .onSnapshot((snapshot) => {
-        setAlerts(snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        })));
-      });
+    const channel = supabase
+      .channel('alerts')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'alerts',
+        filter: 'resolved=eq.false'
+      }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setAlerts(prev => [payload.new as Alert, ...prev]);
+        } else if (payload.eventType === 'UPDATE') {
+          setAlerts(prev => prev.filter(a => a.id !== payload.new.id));
+        }
+      })
+      .subscribe();
 
-    return () => unsubscribe();
+    return () => supabase.removeChannel(channel);
   }, []);
 
   const resolveAlert = async (id: string) => {
-    await firestore.collection('alerts').doc(id).update({
+    await supabase.from('alerts').update({
       resolved: true,
-      resolvedAt: new Date(),
-    });
+      resolved_at: new Date().toISOString(),
+    }).eq('id', id);
   };
 
   return { alerts, resolveAlert };
@@ -676,7 +709,7 @@ async function runBackgroundMonitor() {
   console.log('[Monitor] Starting background check...');
   try {
     const results = await performCheck();
-    await updateFirestore(results);
+    await updateSupabase(results);
     console.log('[Monitor] Background check completed successfully');
   } catch (error) {
     console.error('[Monitor] Background check failed:', error);
@@ -692,32 +725,28 @@ setTimeout(() => {
 }, INITIAL_DELAY);
 ```
 
-### 9.2 批量写入 Firestore
+### 9.2 批量写入 Supabase
 
 ```typescript
-async function updateFirestore(results: ApiStatus[]) {
-  const batch = db.batch();
+async function updateSupabase(results: ApiStatus[]) {
+  const updates = results.map(result => ({
+    id: result.id,
+    name: result.name,
+    provider: result.provider,
+    url: result.url,
+    status: result.status,
+    latency: result.latency,
+    lastChecked: new Date().toISOString(),
+    error: result.error || null,
+  }));
 
-  for (const result of results) {
-    // 更新当前状态
-    const statusRef = db.collection('api_status').doc(result.id);
-    batch.set(statusRef, result);
+  const { error } = await supabase
+    .from('api_status')
+    .upsert(updates);
 
-    // 添加历史记录
-    const historyRef = db.collection('status_history').doc();
-    batch.set(historyRef, {
-      apiId: result.id,
-      status: result.status,
-      latency: result.latency,
-      timestamp: FieldValue.serverTimestamp(),
-      time: new Date().toLocaleTimeString(),
-    });
-
-    // 告警逻辑
-    await handleAlerts(result);
+  if (error) {
+    console.error('[Monitor] Failed to update statuses:', error);
   }
-
-  await batch.commit();
 }
 ```
 
@@ -726,35 +755,37 @@ async function updateFirestore(results: ApiStatus[]) {
 ```typescript
 async function handleAlerts(result: ApiStatus) {
   // 检查是否已有同类未解决告警
-  const existingAlert = await db.collection('alerts')
-    .where('apiId', '==', result.id)
-    .where('resolved', '==', false)
-    .where('type', '==', getAlertType(result))
-    .get();
+  const { data: existingAlerts } = await supabase
+    .from('alerts')
+    .select('id')
+    .eq('apiId', result.id)
+    .eq('resolved', false)
+    .eq('type', getAlertType(result))
+    .limit(1);
 
-  if (!existingAlert.empty) {
+  if (existingAlerts && existingAlerts.length > 0) {
     return; // 已有同类告警，不重复创建
   }
 
   // 创建新告警
   if (result.status === 'offline') {
-    await db.collection('alerts').add({
+    await supabase.from('alerts').insert({
       apiId: result.id,
       apiName: result.name,
       type: 'downtime',
       severity: 'critical',
       message: `${result.name} is currently offline`,
-      timestamp: FieldValue.serverTimestamp(),
+      timestamp: new Date().toISOString(),
       resolved: false,
     });
   } else if (result.latency > LATENCY_THRESHOLD) {
-    await db.collection('alerts').add({
+    await supabase.from('alerts').insert({
       apiId: result.id,
       apiName: result.name,
       type: 'latency',
       severity: calculateSeverity(result.latency),
       message: `${result.name} latency is high: ${result.latency}ms`,
-      timestamp: FieldValue.serverTimestamp(),
+      timestamp: new Date().toISOString(),
       resolved: false,
       latency: result.latency,
     });

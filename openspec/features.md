@@ -105,7 +105,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控系统，提供�
 - 管理员操作：需要管理员权限才能写入数据
 
 **会话管理**：
-- 使用 Firebase Auth 管理会话
+- 使用 Supabase Auth 管理会话
 - 自动刷新令牌
 - 支持单点登录
 
@@ -289,15 +289,15 @@ timeline
 sequenceDiagram
     participant User as 用户
     participant Client as 前端
-    participant Firestore as Firestore
+    participant Supabase as Supabase
     participant Monitor as 后台监控
     
     Note over Monitor: 每 5 分钟自动执行
     Monitor->>Monitor: 批量检查 API
-    Monitor->>Firestore: 更新 API 状态
-    Monitor->>Firestore: 添加历史记录
+    Monitor->>Supabase: 更新 API 状态
+    Monitor->>Supabase: 添加历史记录
     
-    Firestore-->>Client: 实时推送更新
+    Supabase-->>Client: 实时推送更新
     Client->>Client: 更新状态显示
     
     User->>Client: 点击"立即检查"
@@ -305,7 +305,7 @@ sequenceDiagram
     
     alt 已登录
         Client->>Client: 执行手动检查
-        Client->>Firestore: 更新状态
+        Client->>Supabase: 更新状态
     else 未登录
         Client->>Client: 显示登录提示
     end
@@ -316,14 +316,14 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant Monitor as 监控
-    participant Firestore as Firestore
+    participant Supabase as Supabase
     participant Client as 前端
     participant User as 用户
     
     Monitor->>Monitor: 检测到异常
-    Monitor->>Firestore: 创建告警
+    Monitor->>Supabase: 创建告警
     
-    Firestore-->>Client: 推送告警
+    Supabase-->>Client: 推送告警
     Client->>Client: 更新告警计数
     Client->>Client: 显示告警横幅
     
@@ -331,8 +331,8 @@ sequenceDiagram
     Client->>Client: 显示告警列表
     
     User->>Client: 点击"解决"
-    Client->>Firestore: 更新告警状态
-    Firestore-->>Client: 同步更新
+    Client->>Supabase: 更新告警状态
+    Supabase-->>Client: 同步更新
 ```
 
 ### 5.3 主题切换流程
