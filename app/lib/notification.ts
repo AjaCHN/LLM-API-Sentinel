@@ -233,7 +233,7 @@ class NotificationService {
   }
 
   // 测试 Webhook 连接
-  async testWebhook(webhook: WebhookConfig): Promise<boolean> {
+  async testWebhook(_webhook: WebhookConfig): Promise<boolean> {
     const testAlert: Alert = {
       id: 'test',
       apiId: 'test-api',

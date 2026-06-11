@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/auth';
 import { logError, handleError } from '../lib/error-handler';
-import type { User } from '../types';
 
 export function useAuth() {
   const { user, setUser, setError } = useAuthStore();
