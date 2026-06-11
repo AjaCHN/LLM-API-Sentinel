@@ -1,10 +1,22 @@
-// app/components/ApiConfig.tsx v2.6.3
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Save, X, Edit } from 'lucide-react';
-import { APIS_TO_CHECK } from '../constants';
-import { useI18n } from '../hooks/useI18n';
+import { useState, useEffect } from 'react';
+import { Plus, Trash2, Save, X, Edit, Server } from 'lucide-react';
+import { APIS_TO_CHECK } from '@/constants';
+import { useI18n } from '@/hooks/useI18n';
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 
 interface ApiConfigItem {
   id: string;
@@ -20,17 +32,15 @@ export default function ApiConfig() {
   const [newApi, setNewApi] = useState<Omit<ApiConfigItem, 'id'>>({
     name: '',
     provider: '',
-    url: ''
+    url: '',
   });
 
-  // 从本地存储加载配置
   useEffect(() => {
     const savedConfig = localStorage.getItem('apiConfig');
     if (savedConfig) {
       try {
         setConfig(JSON.parse(savedConfig));
-      } catch (error) {
-        console.error('Failed to parse API config:', error);
+      } catch {
         setConfig([...APIS_TO_CHECK]);
       }
     } else {
@@ -38,136 +48,133 @@ export default function ApiConfig() {
     }
   }, []);
 
-  // 保存配置到本地存储
   const saveConfig = () => {
     localStorage.setItem('apiConfig', JSON.stringify(config));
     setIsEditing(false);
   };
 
-  // 添加新 API
   const addApi = () => {
-    if (newApi.name && newApi.provider && newApi.url) {
-      const newId = `${newApi.provider.toLowerCase().replace(/\s+/g, '-')}-${newApi.name.toLowerCase().replace(/\s+/g, '-')}`;
-      setConfig([...config, { ...newApi, id: newId }]);
-      setNewApi({ name: '', provider: '', url: '' });
-    }
+    if (!newApi.name || !newApi.provider || !newApi.url) return;
+    const id = `${newApi.provider.toLowerCase().replace(/\s+/g, '-')}-${newApi.name
+      .toLowerCase()
+      .replace(/\s+/g, '-')}`;
+    setConfig([...config, { ...newApi, id }]);
+    setNewApi({ name: '', provider: '', url: '' });
   };
 
-  // 删除 API
   const removeApi = (id: string) => {
-    setConfig(config.filter(api => api.id !== id));
+    setConfig(config.filter((api) => api.id !== id));
   };
 
-  // 重置为默认配置
   const resetToDefault = () => {
     setConfig([...APIS_TO_CHECK]);
   };
 
   return (
-    <div id="api-config-container" className="bg-card rounded-lg border border-border/20 p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg font-semibold">{t('config.apiConfiguration')}</h2>
+    <Card>
+      <CardHeader className="flex flex-row items-start justify-between gap-4">
+        <div>
+          <CardTitle>{t('config.apiConfiguration')}</CardTitle>
+          <CardDescription className="mt-1">
+            {config.length} {t('api.apis')}
+          </CardDescription>
+        </div>
         {isEditing ? (
-          <div className="flex space-x-2">
-            <button
-              onClick={saveConfig}
-              className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              <Save className="w-3 h-3 mr-1" />
+          <div className="flex gap-2">
+            <Button size="sm" onClick={saveConfig} className="gap-1.5">
+              <Save className="size-4" />
               {t('config.save')}
-            </button>
-            <button
-              onClick={() => setIsEditing(false)}
-              className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-muted text-muted-foreground hover:bg-muted/80"
-            >
-              <X className="w-3 h-3 mr-1" />
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setIsEditing(false)} className="gap-1.5">
+              <X className="size-4" />
               {t('config.cancel')}
-            </button>
+            </Button>
           </div>
         ) : (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md bg-muted text-muted-foreground hover:bg-muted/80"
-          >
-            <Edit className="w-3 h-3 mr-1" />
-            {t('config.edit') || 'Edit'}
-          </button>
+          <Button size="sm" variant="outline" onClick={() => setIsEditing(true)} className="gap-1.5">
+            <Edit className="size-4" />
+            {t('config.edit')}
+          </Button>
         )}
-      </div>
+      </CardHeader>
 
-      <div className="space-y-4">
+      <CardContent className="flex flex-col gap-3">
         {config.map((api) => (
-          <div key={api.id} className="flex items-center justify-between p-3 border border-border/20 rounded-md">
-            <div>
-              <p className="font-medium">{api.name}</p>
-              <p className="text-xs text-muted-foreground">{api.provider}</p>
-              <p className="text-xs font-mono text-muted-foreground truncate max-w-md">{api.url}</p>
+          <div
+            key={api.id}
+            className="flex items-center justify-between gap-4 rounded-lg border p-3"
+          >
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">{api.name}</p>
+              <p className="truncate text-xs text-muted-foreground">{api.provider}</p>
+              <p className="truncate font-mono text-xs text-muted-foreground">{api.url}</p>
             </div>
             {isEditing && (
-              <button
+              <Button
+                size="icon"
+                variant="ghost"
                 onClick={() => removeApi(api.id)}
-                className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-md"
+                aria-label="remove api"
               >
-                <Trash2 className="w-4 h-4" />
-              </button>
+                <Trash2 className="size-4 text-destructive" />
+              </Button>
             )}
           </div>
         ))}
 
         {isEditing && (
-          <div className="border-2 border-dashed border-border/30 rounded-md p-4">
-            <h3 className="text-sm font-medium mb-3">{t('config.addApi')}</h3>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium mb-1">{t('config.name')}</label>
-                <input
-                  type="text"
+          <div className="mt-2 rounded-lg border-2 border-dashed p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <Badge variant="secondary" className="gap-1.5">
+                <Server className="size-3" />
+                {t('config.addApi')}
+              </Badge>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="new-api-name">{t('config.name')}</Label>
+                <Input
+                  id="new-api-name"
                   value={newApi.name}
                   onChange={(e) => setNewApi({ ...newApi, name: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="e.g., GPT-4o"
+                  placeholder="GPT-4o"
                 />
               </div>
-              <div>
-                <label className="block text-xs font-medium mb-1">{t('config.provider')}</label>
-                <input
-                  type="text"
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="new-api-provider">{t('config.provider')}</Label>
+                <Input
+                  id="new-api-provider"
                   value={newApi.provider}
                   onChange={(e) => setNewApi({ ...newApi, provider: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="e.g., OpenAI"
+                  placeholder="OpenAI"
                 />
               </div>
-              <div>
-                <label className="block text-xs font-medium mb-1">{t('config.url')}</label>
-                <input
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="new-api-url">{t('config.url')}</Label>
+                <Input
+                  id="new-api-url"
                   type="url"
                   value={newApi.url}
                   onChange={(e) => setNewApi({ ...newApi, url: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="e.g., https://api.openai.com/v1/models"
+                  placeholder="https://api.openai.com/v1/models"
                 />
               </div>
-              <button
-                onClick={addApi}
-                className="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                {t('config.addApi')}
-              </button>
             </div>
+            <Button className="mt-3 gap-1.5" onClick={addApi}>
+              <Plus className="size-4" />
+              {t('config.addApi')}
+            </Button>
           </div>
         )}
+      </CardContent>
 
-        {isEditing && (
-          <button
-            onClick={resetToDefault}
-            className="text-xs text-muted-foreground hover:text-foreground"
-          >
-            {t('config.reset') || 'Reset to default configuration'}
-          </button>
-        )}
-      </div>
-    </div>
+      {isEditing && (
+        <CardFooter>
+          <Button variant="ghost" size="sm" onClick={resetToDefault}>
+            {t('config.reset')}
+          </Button>
+        </CardFooter>
+      )}
+    </Card>
   );
 }

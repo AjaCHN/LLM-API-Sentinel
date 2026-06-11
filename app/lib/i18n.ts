@@ -16,7 +16,9 @@ import tr from '../locales/tr.json';
 import ru from '../locales/ru.json';
 import vi from '../locales/vi.json';
 
-type TranslationData = typeof en;
+type TranslationData = {
+  [section: string]: { [key: string]: string };
+};
 
 const translations: Record<string, TranslationData> = {
   en,

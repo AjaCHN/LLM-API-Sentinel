@@ -1,74 +1,100 @@
-// app/components/AlertsDropdown.tsx v2.6.3
 'use client';
 
-import React from 'react';
-import { AlertTriangle, X, CheckCircle2 } from 'lucide-react';
-import { Alert } from '../types';
-import { useI18n } from '../hooks/useI18n';
+import { AlertTriangle, CheckCircle2 } from 'lucide-react';
+import type { Alert } from '@/types';
+import { useI18n } from '@/hooks/useI18n';
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+
+interface AlertsDropdownProps {
+  alerts: Alert[];
+  show: boolean;
+  onClose: () => void;
+  resolveAlert: (id: string) => void;
+}
+
+function severityTone(severity: Alert['severity']): string {
+  switch (severity) {
+    case 'critical':
+    case 'high':
+      return 'text-destructive';
+    case 'medium':
+      return 'text-amber-600';
+    default:
+      return 'text-blue-600';
+  }
+}
 
 export default function AlertsDropdown({
   alerts,
   show,
   onClose,
-  resolveAlert
-}: {
-  alerts: Alert[];
-  show: boolean;
-  onClose: () => void;
-  resolveAlert: (id: string) => void;
-}) {
+  resolveAlert,
+}: AlertsDropdownProps) {
   const { t } = useI18n();
-  if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md max-h-[80vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-sm font-bold uppercase tracking-wider">{t('alerts.activeAlerts')}</h3>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+    <Dialog open={show} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{t('alerts.activeAlerts')}</DialogTitle>
+          <DialogDescription>
+            {alerts.length === 0
+              ? t('alerts.noActiveAlerts')
+              : `${alerts.length} ${t('alerts.activeIssues')}`}
+          </DialogDescription>
+        </DialogHeader>
 
         {alerts.length === 0 ? (
-          <div className="text-center py-8">
-            <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
+          <div className="flex flex-col items-center gap-2 py-8 text-center">
+            <CheckCircle2 className="size-8 text-emerald-500" />
             <p className="text-sm text-muted-foreground">{t('alerts.noActiveAlerts')}</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="flex max-h-[60vh] flex-col gap-3 overflow-y-auto">
             {alerts.map((alert) => (
-              <div key={alert.id} className="border border-border rounded-md p-3">
-                <div className="flex items-start justify-between">
+              <Card key={alert.id} className="transition-colors hover:bg-muted/40">
+                <CardContent className="flex items-start justify-between gap-4 p-4">
                   <div className="flex items-start gap-3">
-                    <div className="mt-0.5">
-                      <AlertTriangle 
-                        className={`w-4 h-4 ${alert.severity === 'high' ? 'text-rose-500' : alert.severity === 'medium' ? 'text-amber-500' : 'text-blue-500'}`} 
-                      />
-                    </div>
-                    <div>
+                    <AlertTriangle className={`mt-0.5 size-5 ${severityTone(alert.severity)}`} />
+                    <div className="min-w-0">
                       <p className="text-sm font-medium">{alert.apiName}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{alert.message}</p>
+                      {alert.message && (
+                        <p className="text-sm text-muted-foreground">{alert.message}</p>
+                      )}
                       {alert.error && (
-                        <p className="text-xs text-rose-500 mt-1">{t('alerts.error')}: {alert.error}</p>
+                        <p className="mt-1 text-xs text-destructive">
+                          {t('alerts.error')}: {alert.error}
+                        </p>
                       )}
                       {alert.latency && (
-                        <p className="text-xs text-muted-foreground mt-1">{t('alerts.latency')}: {alert.latency}ms</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {t('alerts.latency')}: {alert.latency}ms
+                        </p>
                       )}
                     </div>
                   </div>
-                  <button 
+                  <Button
+                    size="sm"
+                    variant="outline"
                     onClick={() => resolveAlert(alert.id)}
-                    className="text-xs font-bold uppercase text-emerald-500 hover:underline"
                   >
                     {t('alerts.resolve')}
-                  </button>
-                </div>
-              </div>
+                  </Button>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
