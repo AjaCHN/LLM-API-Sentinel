@@ -1,4 +1,4 @@
-// app/lib/concurrency.ts v2.6.1
+// app/lib/concurrency.ts v2.6.3
 import { MAX_CONCURRENT_REQUESTS } from '../constants';
 import { RequestOptions, QueueItem, NetworkQuality } from '../types';
 

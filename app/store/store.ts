@@ -1,4 +1,4 @@
-// app/store/store.ts v2.6.1
+// app/store/store.ts v2.6.3
 import { useApiStore } from './api';
 import { useAuthStore } from './auth';
 import { useAlertStore } from './alerts';

@@ -1,4 +1,4 @@
-// app/components/DashboardFooter.tsx v2.6.1
+// app/components/DashboardFooter.tsx v2.6.3
 'use client';
 
 import React from 'react';
