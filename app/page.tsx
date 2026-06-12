@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { format } from 'date-fns';
-import { AlertTriangle, Settings } from 'lucide-react';
+import { AlertTriangle, Settings, RefreshCw, Zap, Database, Globe } from 'lucide-react';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import DashboardHeader from '@/components/DashboardHeader';
 import ApiStatusGrid from '@/components/ApiStatusGrid';
@@ -18,6 +18,7 @@ import { useI18n } from '@/hooks/useI18n';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const TIME_RANGES = ['dashboard.lastHour', 'dashboard.last6Hours', 'dashboard.last24Hours'] as const;
 
@@ -59,6 +60,13 @@ export default function Dashboard() {
     return acc;
   }, []);
 
+  const onlineCount = statuses.filter(s => s.status === 'online').length;
+  const degradedCount = statuses.filter(s => s.status === 'degraded').length;
+  const offlineCount = statuses.filter(s => s.status === 'offline').length;
+  const avgLatency = statuses.length > 0 
+    ? Math.round(statuses.reduce((sum, s) => sum + s.latency, 0) / statuses.length) 
+    : 0;
+
   if (!mounted) return null;
 
   return (
@@ -84,66 +92,129 @@ export default function Dashboard() {
       />
 
       <main className="mx-auto max-w-7xl px-6 md:px-10 lg:px-16">
-        <section className="py-16 md:py-20 text-center">
-          <Badge variant="secondary" className="mx-auto">
-            {t('dashboard.globalAIApiMonitoring')}
-          </Badge>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl lg:text-6xl">
-            {t('dashboard.title')}
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            {t('dashboard.description')}
-          </p>
+        <section className="relative py-16 md:py-24 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-accent/5 rounded-full blur-3xl" />
+          
+          <div className="relative z-10 text-center">
+            <Badge 
+              variant="secondary" 
+              className="mb-6 px-4 py-1.5 text-sm bg-primary/10 text-primary border-primary/20"
+            >
+              <Globe className="mr-2 size-4" />
+              {t('dashboard.globalAIApiMonitoring')}
+            </Badge>
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                {t('dashboard.title')}
+              </span>
+            </h1>
+            
+            <p className="mx-auto max-w-2xl text-lg md:text-xl text-muted-foreground mb-12">
+              {t('dashboard.description')}
+            </p>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                    <Zap className="size-4 text-emerald-400" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">{t('api.online')}</span>
+                </div>
+                <p className="text-2xl font-bold text-emerald-400 group-hover:scale-110 transition-transform">
+                  {onlineCount}
+                </p>
+              </div>
+
+              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                    <AlertTriangle className="size-4 text-amber-400" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">{t('api.degraded')}</span>
+                </div>
+                <p className="text-2xl font-bold text-amber-400 group-hover:scale-110 transition-transform">
+                  {degradedCount}
+                </p>
+              </div>
+
+              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-destructive/30 hover:shadow-lg hover:shadow-destructive/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
+                    <Database className="size-4 text-destructive" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">{t('api.offline')}</span>
+                </div>
+                <p className="text-2xl font-bold text-destructive group-hover:scale-110 transition-transform">
+                  {offlineCount}
+                </p>
+              </div>
+
+              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Zap className="size-4 text-primary" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">Avg Latency</span>
+                </div>
+                <p className="text-2xl font-bold text-primary group-hover:scale-110 transition-transform">
+                  {avgLatency}ms
+                </p>
+              </div>
+            </div>
+          </div>
         </section>
 
         {alerts.length > 0 && (
-          <section className="-mt-6">
-            <Card className="border-destructive/30 bg-destructive/5">
-              <CardContent className="flex flex-col items-start justify-between gap-4 p-5 md:flex-row md:items-center">
-                <div className="flex items-center gap-4">
-                  <div className="flex size-12 items-center justify-center rounded-2xl bg-destructive/10">
-                    <AlertTriangle className="size-6 text-destructive" />
-                  </div>
-                  <div>
-                    <p className="font-semibold">
-                      {t('alerts.alertsLabel')}: {alerts.length}{' '}
-                      {alerts.length > 1 ? t('alerts.activeIssuesPlural') : t('alerts.activeIssues')}{' '}
-                      {t('alerts.detected')}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {alerts.filter((a) => a.severity === 'critical').length}{' '}
-                      {t('alerts.offline')} ·{' '}
-                      {alerts.filter((a) => a.severity === 'high' || a.severity === 'medium').length}{' '}
-                      {t('alerts.highLatency')}
-                    </p>
-                  </div>
+          <section className="-mt-4 mb-8">
+            <Alert className="border-destructive/30 bg-destructive/5 backdrop-blur-sm">
+              <div className="flex items-start gap-4">
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-destructive/10">
+                  <AlertTriangle className="size-6 text-destructive" />
+                </div>
+                <div className="flex-1">
+                  <AlertTitle className="text-base font-semibold">
+                    {t('alerts.alertsLabel')}: {alerts.length} {alerts.length > 1 ? t('alerts.activeIssuesPlural') : t('alerts.activeIssues')} {t('alerts.detected')}
+                  </AlertTitle>
+                  <AlertDescription className="mt-1 text-sm">
+                    {offlineCount} {t('alerts.offline')} · {degradedCount} {t('alerts.highLatency')}
+                  </AlertDescription>
                 </div>
                 <Button
                   variant="destructive"
                   onClick={() => setShowAlerts(true)}
-                  className="whitespace-nowrap"
+                  className="whitespace-nowrap shadow-lg shadow-destructive/20"
                 >
                   {t('alerts.viewDetails')}
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </Alert>
           </section>
         )}
 
-        <section className="py-12 md:py-16">
-          <Card>
-            <CardHeader className="flex flex-col items-start gap-4 border-b md:flex-row md:items-end md:justify-between">
+        <section className="py-8 md:py-12">
+          <Card className="border-border/30 bg-card/50 backdrop-blur-sm">
+            <CardHeader className="flex flex-col items-start gap-4 border-b border-border/30 md:flex-row md:items-end md:justify-between">
               <div>
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  {t('dashboard.status')}
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-2xl font-bold tracking-tight">
+                    {t('dashboard.status')}
+                  </h2>
+                  <Badge variant="secondary" className="px-3 py-1">
+                    {statuses.length} APIs
+                  </Badge>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
                   {t('dashboard.realTimeMonitoring')}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 {lastUpdate && (
-                  <Badge variant="secondary">
+                  <Badge variant="outline" className="px-3 py-1">
+                    <RefreshCw className="mr-2 size-3" />
                     {t('dashboard.lastSync')}: {format(lastUpdate, 'HH:mm:ss')}
                   </Badge>
                 )}
@@ -160,14 +231,24 @@ export default function Dashboard() {
                   disabled={isChecking || !user}
                   className="gap-1.5"
                 >
-                  {isChecking ? t('dashboard.checking') : t('dashboard.checkNow')}
+                  {isChecking ? (
+                    <>
+                      <RefreshCw className="size-4 animate-spin" />
+                      {t('dashboard.checking')}
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="size-4" />
+                      {t('dashboard.checkNow')}
+                    </>
+                  )}
                 </Button>
               </div>
             </CardHeader>
           </Card>
 
           {showConfig && (
-            <div className={cn('mt-4 animate-in fade-in-0 zoom-in-95')}>
+            <div className="mt-4 animate-in fade-in-0 zoom-in-95">
               <ApiConfig />
             </div>
           )}
@@ -177,14 +258,14 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <section className="py-12 md:py-16">
-          <Card>
-            <CardHeader className="flex flex-col items-start gap-4 border-b md:flex-row md:items-end md:justify-between">
+        <section className="py-8 md:py-12">
+          <Card className="border-border/30 bg-card/50 backdrop-blur-sm">
+            <CardHeader className="flex flex-col items-start gap-4 border-b border-border/30 md:flex-row md:items-end md:justify-between">
               <div>
-                <h2 className="text-2xl font-semibold tracking-tight">
+                <h2 className="text-2xl font-bold tracking-tight">
                   {t('dashboard.latencyHistory')}
                 </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-muted-foreground">
                   {t('dashboard.performanceTrends')}
                 </p>
               </div>
@@ -195,6 +276,10 @@ export default function Dashboard() {
                     variant={activeRange === i ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setActiveRange(i)}
+                    className={cn(
+                      'transition-all duration-300',
+                      activeRange === i && 'shadow-lg shadow-primary/20'
+                    )}
                   >
                     {t(key)}
                   </Button>
@@ -202,7 +287,7 @@ export default function Dashboard() {
               </div>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="mb-6 flex flex-wrap gap-2 pb-6 border-b">
+              <div className="mb-6 flex flex-wrap gap-2 pb-6 border-b border-border/20">
                 {statuses.slice(0, 8).map((s) => (
                   <Badge key={s.id} variant="secondary" className="gap-1.5">
                     <span

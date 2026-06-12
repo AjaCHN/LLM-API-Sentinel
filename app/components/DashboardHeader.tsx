@@ -6,6 +6,7 @@ import { useI18n } from '@/hooks/useI18n';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 interface DashboardHeaderProps {
   user: User | null;
@@ -44,16 +45,20 @@ export default function DashboardHeader({
   logout,
 }: DashboardHeaderProps) {
   const { t } = useI18n();
+  const hasCriticalAlerts = alerts.some(a => a.severity === 'critical' || a.severity === 'high');
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border/30 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6 md:px-10 lg:px-16">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
-            <Activity className="size-5 text-primary" />
+          <div className="relative group">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 transition-transform duration-300 group-hover:scale-105">
+              <Activity className="size-5 text-primary" />
+            </div>
+            <div className="absolute -inset-1 rounded-xl bg-primary/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <div className="hidden sm:block">
-            <h1 className="text-base font-semibold tracking-tight">
+            <h1 className="text-base font-bold tracking-tight">
               {t('dashboard.title')}
             </h1>
             <p className="text-xs text-muted-foreground">
@@ -67,12 +72,23 @@ export default function DashboardHeader({
             variant="ghost"
             size="icon"
             onClick={() => setShowAlerts(!showAlerts)}
-            className="relative"
+            className={cn(
+              'relative transition-all duration-300',
+              hasCriticalAlerts && 'animate-pulse'
+            )}
             aria-label={t('alerts.alertsLabel')}
           >
-            <Bell className="size-5" />
+            <Bell className={cn(
+              'size-5 transition-colors',
+              hasCriticalAlerts && 'text-amber-500'
+            )} />
             {alerts.length > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex size-5 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
+              <span className={cn(
+                'absolute -right-0.5 -top-0.5 flex size-5 items-center justify-center rounded-full text-[10px] font-bold',
+                hasCriticalAlerts 
+                  ? 'bg-destructive text-destructive-foreground animate-pulse' 
+                  : 'bg-primary text-primary-foreground'
+              )}>
                 {alerts.length}
               </span>
             )}
@@ -83,16 +99,24 @@ export default function DashboardHeader({
             size="icon"
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             aria-label={t('dashboard.toggleTheme')}
+            className="group"
           >
-            {theme === 'dark' ? <Sun className="size-5" /> : <Moon className="size-5" />}
+            <div className="relative">
+              {theme === 'dark' ? (
+                <Sun className="size-5 transition-colors group-hover:text-amber-400" />
+              ) : (
+                <Moon className="size-5 transition-colors group-hover:text-indigo-400" />
+              )}
+              <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute inset-0 rounded-full bg-primary/10 blur-xl" />
+              </div>
+            </div>
           </Button>
 
           {geo && (
-            <div className="hidden lg:flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs text-muted-foreground">
-              <MapPin className="size-3.5" />
-              <span>
-                {geo.city}, {geo.country}
-              </span>
+            <div className="hidden lg:flex items-center gap-2 rounded-full bg-secondary/50 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur-sm border border-border/20">
+              <MapPin className="size-3.5 text-primary" />
+              <span className="font-medium">{geo.city}, {geo.country}</span>
             </div>
           )}
 
@@ -102,21 +126,38 @@ export default function DashboardHeader({
                 <p className="text-sm font-medium leading-tight">{user.displayName}</p>
                 <p className="text-xs text-muted-foreground leading-tight">{user.email}</p>
               </div>
-              <Avatar className="size-8">
-                <AvatarFallback className="text-xs">{getInitials(user.displayName)}</AvatarFallback>
-              </Avatar>
-              <Button variant="ghost" size="icon" onClick={logout} aria-label="logout">
-                <LogOut className="size-5" />
+              <div className="relative group">
+                <Avatar className="size-8 border border-border/30 transition-all duration-300 group-hover:border-primary/50 group-hover:scale-105">
+                  <AvatarFallback className="text-xs font-medium bg-primary/10 text-primary">
+                    {getInitials(user.displayName)}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={logout} 
+                aria-label="logout"
+                className="group"
+              >
+                <LogOut className="size-5 transition-colors group-hover:text-destructive" />
               </Button>
             </div>
           ) : (
-            <Button onClick={login} className="gap-2">
+            <Button 
+              onClick={login} 
+              className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-primary/30 hover:scale-105"
+            >
               <LogIn className="size-4" />
-              <span className="hidden sm:inline">{t('dashboard.signIn')}</span>
+              <span className="hidden sm:inline font-semibold">{t('dashboard.signIn')}</span>
             </Button>
           )}
         </div>
       </div>
     </header>
   );
+}
+
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(' ');
 }
