@@ -700,30 +700,7 @@ export const useApiStore = create((set) => ({
 
 ### 9.1 任务调度
 
-```typescript
-// server.ts
-const CHECK_INTERVAL = 5 * 60 * 1000; // 5 分钟
-const INITIAL_DELAY = 10 * 1000; // 10 秒
-
-async function runBackgroundMonitor() {
-  console.log('[Monitor] Starting background check...');
-  try {
-    const results = await performCheck();
-    await updateSupabase(results);
-    console.log('[Monitor] Background check completed successfully');
-  } catch (error) {
-    console.error('[Monitor] Background check failed:', error);
-  }
-}
-
-// 服务器启动后延迟执行
-setTimeout(() => {
-  runBackgroundMonitor();
-  
-  // 定期执行
-  setInterval(runBackgroundMonitor, CHECK_INTERVAL);
-}, INITIAL_DELAY);
-```
+> **注意**：后台监控任务已从 server.ts 迁移到 Supabase Edge Functions。请参考 Supabase Edge Functions 文档。
 
 ### 9.2 批量写入 Supabase
 

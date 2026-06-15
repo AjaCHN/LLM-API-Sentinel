@@ -109,8 +109,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   ├── style.css                 # 主题样式
 │   ├── layout.tsx                # 根布局
 │   └── page.tsx                  # 主页面
-├── openspec/                     # 项目规范文档
-├── server.ts                     # Express 自定义服务器（含后台监控）
+│   ├── openspec/                     # 项目规范文档
 └── package.json
 ```
 

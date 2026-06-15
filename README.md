@@ -160,7 +160,6 @@ Supported languages:
 │   └── page.tsx         # Main dashboard page
 ├── openspec/            # Project specification documents
 ├── supabase/            # Database schema
-├── server.ts            # Express custom server
 └── package.json
 ```
 
