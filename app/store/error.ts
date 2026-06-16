@@ -1,4 +1,4 @@
-// app/store/error.ts v2.6.1
+// app/store/error.ts v2.6.3
 import { create } from 'zustand';
 import { AppError, Notification } from '../types';
 

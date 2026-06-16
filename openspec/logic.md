@@ -405,34 +405,27 @@ export function useDashboardData() {
 
   // 从 Supabase 实时获取数据
   useEffect(() => {
-    const loadData = async () => {
-      const { data: statusData } = await supabase.from('api_status').select('*');
-      if (statusData) {
-        setStatuses(statusData);
+    const channel = supabase
+      .channel('api_status')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'api_status'
+      }, (payload) => {
+        if (payload.eventType === 'UPDATE') {
+          setStatuses(prev => prev.map(s => s.id === payload.new.id ? payload.new : s));
+        }
         setLastUpdate(new Date());
-      }
-    };
+      })
+      .subscribe();
 
-    loadData();
+    return () => supabase.removeChannel(channel);
   }, []);
 
   // 获取用户认证状态
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser({
-          uid: session.user.id,
-          displayName: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-          email: session.user.email ?? null,
-          photoURL: session.user.user_metadata?.avatar_url || null,
-          providerId: session.user.app_metadata?.provider || 'email'
-        });
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    const unsubscribe = auth.onAuthStateChanged(setUser);
+    return () => unsubscribe();
   }, []);
 
   // 获取地理位置
@@ -450,7 +443,7 @@ export function useDashboardData() {
     setIsChecking(true);
     try {
       const results = await performCheck();
-      await updateSupabase(results);
+      await updateStatuses(results);
     } finally {
       setIsChecking(false);
     }
@@ -460,7 +453,7 @@ export function useDashboardData() {
   const resolveAlert = async (id: string) => {
     await supabase.from('alerts').update({
       resolved: true,
-      resolved_at: new Date().toISOString()
+      resolved_at: new Date().toISOString(),
     }).eq('id', id);
   };
 
@@ -482,7 +475,7 @@ export function useDashboardData() {
 
 ### 7.2 useApiMonitor
 
-**功能**：管理 API 监控逻辑，直接从 Supabase 读取状态
+**功能**：管理 API 监控逻辑，从 Supabase 读取状态
 
 ```typescript
 export function useApiMonitor() {
@@ -492,14 +485,22 @@ export function useApiMonitor() {
 
   // 订阅 API 状态
   useEffect(() => {
-    const loadStatuses = async () => {
-      const { data } = await supabase.from('api_status').select('*');
-      if (data) {
-        setStatuses(data);
-      }
-    };
+    const channel = supabase
+      .channel('api_status')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'api_status'
+      }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setStatuses(prev => [...prev, payload.new as ApiStatus]);
+        } else if (payload.eventType === 'UPDATE') {
+          setStatuses(prev => prev.map(s => s.id === payload.new.id ? payload.new : s));
+        }
+      })
+      .subscribe();
 
-    loadStatuses();
+    return () => supabase.removeChannel(channel);
   }, []);
 
   // 获取历史数据
@@ -511,7 +512,7 @@ export function useApiMonitor() {
       .limit(50);
     
     if (data) {
-      setHistory(data);
+      setHistory(data as StatusHistory[]);
     }
   };
 
@@ -532,7 +533,7 @@ export function useApiMonitor() {
 
 ### 7.3 useAuth
 
-**功能**：管理 Supabase 认证状态
+**功能**：管理 Supabase Auth 认证状态
 
 ```typescript
 export function useAuth() {
@@ -540,52 +541,29 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setUser({
-          uid: session.user.id,
-          displayName: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-          email: session.user.email ?? null,
-          photoURL: session.user.user_metadata?.avatar_url || null,
-          providerId: session.user.app_metadata?.provider || 'email'
-        });
-      }
+    // 获取初始会话
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
       setLoading(false);
-    };
+    });
 
-    getInitialSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        setUser({
-          uid: session.user.id,
-          displayName: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
-          email: session.user.email ?? null,
-          photoURL: session.user.user_metadata?.avatar_url || null,
-          providerId: session.user.app_metadata?.provider || 'email'
-        });
-      } else {
-        setUser(null);
-      }
+    // 监听认证状态变化
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const login = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined
-      }
+    await supabase.auth.signInWithOAuth({
+      provider: 'google'
     });
-    if (error) throw error;
   };
 
   const logout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    await supabase.auth.signOut();
   };
 
   return { user, loading, login, logout };
@@ -601,46 +579,30 @@ export function useAlerts() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
 
   useEffect(() => {
-    const loadAlerts = async () => {
-      const { data } = await supabase
-        .from('alerts')
-        .select('*')
-        .eq('resolved', false)
-        .order('timestamp', { ascending: false })
-        .limit(10);
-
-      if (data) {
-        setAlerts(data);
-      }
-    };
-
-    loadAlerts();
-
-    // 实时订阅告警更新
     const channel = supabase
-      .channel('alerts_changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'alerts' },
-        () => {
-          loadAlerts();
+      .channel('alerts')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'alerts',
+        filter: 'resolved=eq.false'
+      }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setAlerts(prev => [payload.new as Alert, ...prev]);
+        } else if (payload.eventType === 'UPDATE') {
+          setAlerts(prev => prev.filter(a => a.id !== payload.new.id));
         }
-      )
+      })
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => supabase.removeChannel(channel);
   }, []);
 
   const resolveAlert = async (id: string) => {
-    await supabase
-      .from('alerts')
-      .update({
-        resolved: true,
-        resolved_at: new Date().toISOString()
-      })
-      .eq('id', id);
+    await supabase.from('alerts').update({
+      resolved: true,
+      resolved_at: new Date().toISOString(),
+    }).eq('id', id);
   };
 
   return { alerts, resolveAlert };
@@ -738,84 +700,29 @@ export const useApiStore = create((set) => ({
 
 ### 9.1 任务调度
 
-```typescript
-// server.ts
-const CHECK_INTERVAL = 5 * 60 * 1000; // 5 分钟
-const INITIAL_DELAY = 10 * 1000; // 10 秒
-
-async function runBackgroundMonitor() {
-  console.log('[Monitor] Starting background check...');
-  try {
-    const results = await performCheck();
-    await updateSupabase(results);
-    console.log('[Monitor] Background check completed successfully');
-  } catch (error) {
-    console.error('[Monitor] Background check failed:', error);
-  }
-}
-
-// 服务器启动后延迟执行
-setTimeout(() => {
-  runBackgroundMonitor();
-  
-  // 定期执行
-  setInterval(runBackgroundMonitor, CHECK_INTERVAL);
-}, INITIAL_DELAY);
-```
+> **注意**：后台监控任务已从 server.ts 迁移到 Supabase Edge Functions。请参考 Supabase Edge Functions 文档。
 
 ### 9.2 批量写入 Supabase
 
 ```typescript
 async function updateSupabase(results: ApiStatus[]) {
-  // 批量 upsert API 状态
-  const upsertData = results.map(result => ({
+  const updates = results.map(result => ({
     id: result.id,
     name: result.name,
     provider: result.provider,
     url: result.url,
     status: result.status,
     latency: result.latency,
-    last_checked: result.lastChecked,
+    lastChecked: new Date().toISOString(),
     error: result.error || null,
-    retries: result.retries || 0,
-    error_rate: result.errorRate || 0,
-    availability: result.availability || 100,
-    uptime: result.uptime || 100,
-    average_latency: result.averageLatency || null,
-    max_latency: result.maxLatency || null,
-    min_latency: result.minLatency || null,
-    updated_at: new Date().toISOString()
   }));
 
-  const { error: upsertError } = await supabase
+  const { error } = await supabase
     .from('api_status')
-    .upsert(upsertData, { onConflict: 'id' });
+    .upsert(updates);
 
-  if (upsertError) {
-    throw upsertError;
-  }
-
-  // 添加历史记录
-  const historyData = results.map(result => ({
-    api_id: result.id,
-    status: result.status,
-    latency: result.latency,
-    error: result.error || null,
-    retries: result.retries || 0,
-    timestamp: new Date().toISOString()
-  }));
-
-  const { error: historyError } = await supabase
-    .from('status_history')
-    .insert(historyData);
-
-  if (historyError) {
-    console.error('[Monitor] Failed to insert history records:', historyError);
-  }
-
-  // 处理告警
-  for (const result of results) {
-    await handleAlerts(result);
+  if (error) {
+    console.error('[Monitor] Failed to update statuses:', error);
   }
 }
 ```
@@ -825,33 +732,33 @@ async function updateSupabase(results: ApiStatus[]) {
 ```typescript
 async function handleAlerts(result: ApiStatus) {
   // 检查是否已有同类未解决告警
-  const { data: existingAlert } = await supabase
+  const { data: existingAlerts } = await supabase
     .from('alerts')
     .select('id')
-    .eq('api_id', result.id)
+    .eq('apiId', result.id)
     .eq('resolved', false)
-    .eq('type', result.status === 'offline' ? 'downtime' : 'latency')
+    .eq('type', getAlertType(result))
     .limit(1);
 
-  if (existingAlert && existingAlert.length > 0) {
+  if (existingAlerts && existingAlerts.length > 0) {
     return; // 已有同类告警，不重复创建
   }
 
   // 创建新告警
   if (result.status === 'offline') {
     await supabase.from('alerts').insert({
-      api_id: result.id,
-      api_name: result.name,
+      apiId: result.id,
+      apiName: result.name,
       type: 'downtime',
-      severity: 'high',
+      severity: 'critical',
       message: `${result.name} is currently offline`,
       timestamp: new Date().toISOString(),
       resolved: false,
     });
   } else if (result.latency > LATENCY_THRESHOLD) {
     await supabase.from('alerts').insert({
-      api_id: result.id,
-      api_name: result.name,
+      apiId: result.id,
+      apiName: result.name,
       type: 'latency',
       severity: calculateSeverity(result.latency),
       message: `${result.name} latency is high: ${result.latency}ms`,

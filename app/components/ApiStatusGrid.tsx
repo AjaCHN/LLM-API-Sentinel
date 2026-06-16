@@ -1,222 +1,285 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { Clock, AlertTriangle } from 'lucide-react';
-import { cn } from '../lib/utils';
-import { LATENCY_THRESHOLD } from '../constants';
-import { ApiStatus } from '../types';
-import { useI18n } from '../hooks/useI18n';
+import { Activity, Server } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { LATENCY_THRESHOLD } from '@/constants';
+import type { ApiStatus } from '@/types';
+import { useI18n } from '@/hooks/useI18n';
+
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+
+function StatusDot({ status }: { status: ApiStatus['status'] }) {
+  const pulseColor = status === 'online' 
+    ? 'shadow-[0_0_12px_rgba(34,197,94,0.6)]'
+    : status === 'degraded' 
+      ? 'shadow-[0_0_12px_rgba(245,158,11,0.6)]'
+      : 'shadow-[0_0_12px_rgba(239,68,68,0.6)]';
+
+  return (
+    <span
+      className={cn(
+        'relative flex size-2.5 rounded-full',
+        status === 'online' && 'bg-emerald-500',
+        status === 'degraded' && 'bg-amber-500',
+        status === 'offline' && 'bg-destructive',
+        pulseColor,
+        status !== 'online' && 'animate-pulse'
+      )}
+    />
+  );
+}
+
+function ProgressBar({ value, variant, showLabel = false }: { value: number; variant: 'success' | 'warning' | 'danger'; showLabel?: boolean }) {
+  const clamped = Math.max(0, Math.min(100, value));
+  
+  const gradientClass = variant === 'success'
+    ? 'from-emerald-500 to-emerald-400'
+    : variant === 'warning'
+      ? 'from-amber-500 to-amber-400'
+      : 'from-red-500 to-red-400';
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      {showLabel && (
+        <span className="text-xs font-medium text-muted-foreground">
+          {Math.round(clamped)}%
+        </span>
+      )}
+      <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          className={cn(
+            'absolute inset-y-0 left-0 rounded-full bg-gradient-to-r transition-all duration-1000 ease-out',
+            gradientClass
+          )}
+          style={{ width: `${clamped}%` }}
+        />
+        <div 
+          className="absolute inset-y-0 left-0 rounded-full opacity-30"
+          style={{ 
+            width: `${clamped}%`,
+            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+            animation: 'shimmer 2s infinite'
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
   const { t } = useI18n();
-  const statusesByProvider = useMemo(() => {
-    return statuses.reduce((acc, api) => {
-      if (!acc[api.provider]) {
-        acc[api.provider] = [];
-      }
-      acc[api.provider].push(api);
+
+  const providers = useMemo(() => {
+    const grouped = statuses.reduce<Record<string, ApiStatus[]>>((acc, api) => {
+      const key = api.provider || t('api.other');
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(api);
       return acc;
-    }, {} as Record<string, ApiStatus[]>);
-  }, [statuses]);
-  
-  const providers = useMemo(() => Object.keys(statusesByProvider).sort(), [statusesByProvider]);
+    }, {});
+    return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
+  }, [statuses, t]);
 
-  const getStatusColor = (status: string) => {
-    if (status === 'online') return 'text-success';
-    if (status === 'degraded') return 'text-warning';
-    return 'text-error';
-  };
-
-  const getStatusBg = (status: string) => {
-    if (status === 'online') return 'bg-success/10';
-    if (status === 'degraded') return 'bg-warning/10';
-    return 'bg-error/10';
-  };
-
-  const getLatencyColor = (latency: number, status: string) => {
-    if (status === 'offline') return 'bg-error';
-    if (status === 'degraded') return 'bg-warning';
-    if (latency > LATENCY_THRESHOLD) return 'bg-warning';
-    return 'bg-success';
-  };
-
-  let cardIndex = 0;
+  if (providers.length === 0) {
+    return (
+      <Card className="border-dashed border-border/50 bg-secondary/30">
+        <CardContent className="flex flex-col items-center gap-4 py-16 text-center">
+          <div className="relative">
+            <div className="flex size-16 items-center justify-center rounded-full bg-muted animate-pulse">
+              <Server className="size-8 text-muted-foreground" />
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-primary/10 blur-xl" />
+          </div>
+          <div>
+            <h3 className="text-xl font-semibold">{t('api.noApiConfigured')}</h3>
+            <p className="mt-2 text-muted-foreground">{t('api.addApiHint')}</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
-    <div id="api-cards-container" className="space-y-12">
-      {providers.length > 0 ? (
-        providers.map((provider) => (
-          <div key={provider} className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
+    <div className="flex flex-col gap-12">
+      {providers.map(([provider, apis]) => (
+        <div key={provider} className="flex flex-col gap-6">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-primary/15">
+                <Activity className="size-5 text-primary" />
               </div>
-              <h3 className="text-lg font-semibold">{provider}</h3>
-              <span className="text-xs font-medium text-muted-foreground bg-secondary px-3 py-1 rounded-xl">
-                {statusesByProvider[provider].length} APIs
+              <div className="absolute -inset-1 rounded-xl bg-primary/5 blur-xl" />
+            </div>
+            <h3 className="text-xl font-semibold">{provider}</h3>
+            <Badge variant="secondary" className="px-3 py-1">
+              <span className="flex items-center gap-1.5">
+                <Activity className="size-3" />
+                {apis.length} {t('api.apis')}
               </span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {statusesByProvider[provider].map((api) => {
-                const staggerClass = `stagger-${(cardIndex % 8) + 1}`;
-                cardIndex++;
-                return (
-                  <div 
-                    key={api.id} 
-                    id={`api-card-${api.id}`} 
-                    className={cn(
-                      'apple-card bg-card rounded-3xl p-6 border border-border/20 opacity-0 animate-fade-in-up',
-                      api.status === 'offline' && 'border-error/30',
-                      api.status === 'degraded' && 'border-warning/30',
-                      staggerClass
-                    )}
-                  >
-                    {api.status === 'offline' && (
-                      <div className="absolute top-0 left-0 w-1.5 h-full bg-error rounded-l-3xl" />
-                    )}
-                    <div className="flex items-start justify-between mb-6">
-                      <div>
-                        <h4 className="text-lg font-semibold">{api.name}</h4>
-                        <p className="text-xs text-muted-foreground mt-1">{api.provider}</p>
+            </Badge>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {apis.map((api, index) => {
+              const isOffline = api.status === 'offline';
+              const isDegraded = api.status === 'degraded';
+              const latencyHigh = api.latency >= LATENCY_THRESHOLD && !isOffline;
+
+              const latencyVariant: 'success' | 'warning' | 'danger' = isOffline
+                ? 'danger'
+                : isDegraded || latencyHigh
+                  ? 'warning'
+                  : 'success';
+
+              const statusBadgeVariant = isOffline
+                ? 'destructive'
+                : isDegraded
+                  ? 'secondary'
+                  : 'default';
+
+              return (
+                <Card
+                  key={api.id}
+                  className={cn(
+                    'group relative overflow-hidden border-border/50 bg-card/80 backdrop-blur-sm transition-all duration-500',
+                    'hover:border-primary/30',
+                    'card-hover-lift',
+                    isOffline && 'border-destructive/40 bg-destructive/5',
+                    index % 2 === 0 ? 'animate-fade-in-up' : 'animate-slide-in-right'
+                  )}
+                  style={{ animationDelay: `${index * 0.08}s` }}
+                >
+                  {!isOffline && (
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  )}
+                  
+                  {isOffline && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-destructive via-destructive/70 to-transparent" />
+                  )}
+
+                  <CardHeader className="relative">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <CardTitle className="truncate text-base group-hover:text-primary transition-colors">
+                          {api.name}
+                        </CardTitle>
+                        <CardDescription className="mt-1">{provider}</CardDescription>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className={cn(
-                          'w-2.5 h-2.5 rounded-full status-dot',
-                          api.status === 'online' ? 'bg-success' :
-                          api.status === 'degraded' ? 'bg-warning' : 'bg-error',
-                          api.status === 'offline' && 'animate-pulse-gentle'
-                        )} />
-                        <span className={cn(
-                          'text-xs font-medium',
-                          getStatusColor(api.status)
-                        )}>
-                          {api.status === 'online' ? t('api.online') :
-                           api.status === 'degraded' ? t('api.degraded') : t('api.offline')}
+                      <Badge 
+                        variant={statusBadgeVariant as 'default' | 'secondary' | 'destructive'}
+                        className="relative z-10"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <StatusDot status={api.status} />
+                          {t(`api.${api.status}`)}
                         </span>
+                      </Badge>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="relative space-y-4">
+                    <div className="relative">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <span className="text-sm text-muted-foreground">{t('api.latency')}</span>
+                        <span
+                          className={cn(
+                            'text-2xl font-bold tabular-nums transition-colors',
+                            latencyHigh && 'text-amber-500',
+                            isOffline && 'text-destructive',
+                            !latencyHigh && !isOffline && 'text-emerald-400'
+                          )}
+                        >
+                          {isOffline ? t('api.timeout') : `${api.latency}ms`}
+                        </span>
+                      </div>
+                      <div className="mt-3">
+                        <ProgressBar
+                          value={isOffline ? 100 : (api.latency / LATENCY_THRESHOLD) * 100}
+                          variant={latencyVariant}
+                        />
                       </div>
                     </div>
 
-                    <div className="space-y-5">
-                      <div>
-                        <div className="flex items-center justify-between text-sm mb-3">
-                          <span className="text-muted-foreground">{t('api.latency')}</span>
-                          <span className={cn(
-                            'text-xl font-semibold',
-                            api.latency >= LATENCY_THRESHOLD && api.status !== 'offline' ? 'text-warning' :
-                            api.status === 'offline' ? 'text-error' : 'text-foreground'
+                    {(api.errorRate !== undefined || api.availability !== undefined) && (
+                      <div className="grid grid-cols-2 gap-3">
+                        {api.errorRate !== undefined && (
+                          <div className={cn(
+                            'rounded-lg border p-3 transition-all',
+                            api.errorRate > 1 ? 'border-amber-500/30 bg-amber-500/5' : 'border-border/50 bg-muted/30'
                           )}>
-                            {api.status === 'offline' ? t('api.timeout') : `${api.latency}ms`}
-                          </span>
-                        </div>
-                        <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                          <div 
-                            className={cn(
-                              'h-full rounded-full transition-all duration-700 ease-out',
-                              getLatencyColor(api.latency, api.status)
-                            )}
-                            style={{ 
-                              width: api.status === 'offline' ? '100%' : `${Math.min((api.latency / LATENCY_THRESHOLD) * 100, 100)}%` 
-                            }}
-                          />
+                            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                              <span className="font-medium">{t('api.errorRate')}</span>
+                              <span className={cn(
+                                'font-bold',
+                                api.errorRate > 1 ? 'text-amber-500' : 'text-foreground'
+                              )}>
+                                {api.errorRate}%
+                              </span>
+                            </div>
+                            <ProgressBar
+                              value={api.errorRate}
+                              variant={api.errorRate > 1 ? 'warning' : 'success'}
+                            />
+                          </div>
+                        )}
+                        {api.availability !== undefined && (
+                          <div className="rounded-lg border border-border/50 bg-muted/30 p-3">
+                            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                              <span className="font-medium">{t('api.availability')}</span>
+                              <span className="font-bold text-emerald-400">{api.availability}%</span>
+                            </div>
+                            <ProgressBar
+                              value={api.availability}
+                              variant="success"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {isOffline && (
+                      <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                              {t('api.retries')}
+                            </p>
+                            <p className="mt-1 text-2xl font-bold text-destructive">
+                              {api.retries ?? 2}x
+                            </p>
+                          </div>
+                          <div className="flex flex-col items-end gap-1">
+                            <span className="text-xs text-muted-foreground">{t('api.timeout')}</span>
+                            <span className="text-[10px] text-destructive/70">
+                              {new Date(api.lastChecked).toLocaleTimeString()}
+                            </span>
+                          </div>
                         </div>
                       </div>
+                    )}
+                  </CardContent>
 
-                      {(api.errorRate !== undefined || api.availability !== undefined) && (
-                        <div className="grid grid-cols-2 gap-3">
-                          {api.errorRate !== undefined && (
-                            <div className={cn(
-                              'rounded-2xl p-4',
-                              api.errorRate > 1 ? 'bg-warning/10' : 'bg-secondary'
-                            )}>
-                              <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                                <span className="uppercase tracking-wide">{t('api.errorRate')}</span>
-                                <span className={cn(
-                                  'font-semibold',
-                                  api.errorRate > 1 ? 'text-warning' : 'text-foreground'
-                                )}>{api.errorRate}%</span>
-                              </div>
-                              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                                <div 
-                                  className="h-full bg-warning rounded-full"
-                                  style={{ width: `${Math.min(api.errorRate, 100)}%` }}
-                                />
-                              </div>
-                            </div>
-                          )}
-
-                          {api.availability !== undefined && (
-                            <div className="bg-secondary rounded-2xl p-4">
-                              <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                                <span className="uppercase tracking-wide">{t('api.availability')}</span>
-                                <span className="font-semibold text-foreground">{api.availability}%</span>
-                              </div>
-                              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                                <div 
-                                  className="h-full bg-success rounded-full"
-                                  style={{ width: `${api.availability}%` }}
-                                />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {api.status === 'offline' && (
-                        <div className="bg-error/10 rounded-2xl p-4">
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1.5">{t('api.retries')}</p>
-                          <p className="text-lg font-semibold text-error">{api.retries || 2} {t('api.times')}</p>
-                        </div>
-                      )}
+                  <CardFooter className="relative flex items-center justify-between text-xs text-muted-foreground border-t border-border/30">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary/60" />
+                      <span>{t('api.lastChecked')}: {new Date(api.lastChecked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
-
-                    <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border/20 pt-4 mt-5">
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5" />
-                        <span>{t('api.lastChecked')}: {new Date(api.lastChecked).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                      </div>
-                      {api.retries && api.retries > 0 && api.status !== 'offline' && (
-                        <div className={cn(
-                          'flex items-center gap-1.5 px-3 py-1 rounded-full',
-                          getStatusBg(api.status)
-                        )}>
-                          <AlertTriangle className="w-3.5 h-3.5" />
-                          <span className="font-medium">{api.retries} {t('api.retries')}</span>
-                        </div>
-                      )}
-                      {api.status === 'offline' && (
-                        <span className={cn(
-                          'flex items-center gap-1 px-2.5 py-1 rounded-full',
-                          getStatusBg('offline')
-                        )}>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                          </svg>
-                          {t('api.needsAttention')}
+                    {api.retries && api.retries > 0 && !isOffline && (
+                      <Badge variant="secondary" className="px-2 py-0.5 bg-amber-500/10 text-amber-400 border-amber-500/20">
+                        <span className="flex items-center gap-1">
+                          <Activity className="size-3" />
+                          {api.retries} {t('api.retries')}
                         </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                      </Badge>
+                    )}
+                  </CardFooter>
+                </Card>
+              );
+            })}
           </div>
-        ))
-      ) : (
-        <div className="w-full border border-dashed border-border/40 p-12 md:p-20 text-center rounded-3xl bg-card/30">
-          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-secondary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" className="text-muted-foreground">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a9 9 0 0 1-8.73-9 9 9 0 0 1 15.66-3"/>
-            </svg>
-          </div>
-          <h3 className="mt-8 text-2xl font-semibold">{t('api.noApiConfigured')}</h3>
-          <p className="mt-4 text-base text-muted-foreground max-w-md mx-auto">
-            {t('api.addApiHint')}
-          </p>
         </div>
-      )}
+      ))}
     </div>
   );
 }

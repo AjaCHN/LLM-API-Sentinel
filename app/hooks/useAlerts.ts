@@ -1,4 +1,4 @@
-// app/hooks/useAlerts.ts v2.6.2
+// app/hooks/useAlerts.ts v2.6.3
 import { useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAlertStore, useAuthStore } from '../store';

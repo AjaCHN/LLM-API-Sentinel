@@ -1,4 +1,4 @@
-// app/lib/supabase.ts v2.6.2
+// app/lib/supabase.ts v2.6.3
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';

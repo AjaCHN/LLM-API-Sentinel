@@ -1,4 +1,4 @@
-// app/store/auth.ts v2.6.2
+// app/store/auth.ts v2.6.3
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User } from '../types';
@@ -26,7 +26,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      partialize: () => ({}), // 不持久化用户信息，每次都从 Firebase 重新获取
+      partialize: () => ({}), // 不持久化用户信息，每次都从 Supabase 重新获取
     }
   )
 );

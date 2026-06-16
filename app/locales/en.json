@@ -9,8 +9,8 @@
     "authRequired": "Please sign in first.",
     "authFailed": "Sign in failed. Please check your credentials.",
     "authExpired": "Your session has expired. Please sign in again.",
-    "firebaseError": "Firebase service error.",
-    "firestoreError": "Database operation failed.",
+    "supabaseError": "Supabase service error.",
+    "supabaseQueryError": "Database query operation failed.",
     "validationError": "Input data validation failed.",
     "unknownError": "An unknown error occurred. Please try again later.",
     "errorOccurred": "An error occurred",
@@ -44,7 +44,11 @@
     "retries": "retries",
     "noApiConfigured": "No API endpoints configured",
     "addApiHint": "Add API endpoints to monitor their status and performance",
-    "status": "Status"
+    "status": "Status",
+    "apis": "APIs",
+    "other": "Other",
+    "timeout": "Timeout",
+    "times": "times"
   },
   "dashboard": {
     "title": "LLM API Sentinel",
@@ -60,7 +64,13 @@
     "signIn": "Sign In",
     "signOut": "Sign Out",
     "toggleTheme": "Toggle Theme",
-    "config": "Config"
+    "config": "Config",
+    "description": "Real-time monitoring and historical availability tracking for major LLM APIs.",
+    "realTimeMonitoring": "Real-time monitoring",
+    "performanceTrends": "Performance trends",
+    "lastHour": "Last hour",
+    "last6Hours": "Last 6 hours",
+    "last24Hours": "Last 24 hours"
   },
   "history": {
     "performanceHistory": "Performance History",

@@ -1,4 +1,4 @@
-// app/lib/error-handler.ts v2.6.1
+// app/lib/error-handler.ts v2.6.3
 import { AppError } from '../types';
 import { t } from './i18n';
 
@@ -6,7 +6,7 @@ export enum ErrorType {
   NETWORK = 'NETWORK',
   API = 'API',
   AUTH = 'AUTH',
-  FIREBASE = 'FIREBASE',
+  SUPABASE = 'SUPABASE',
   VALIDATION = 'VALIDATION',
   UNKNOWN = 'UNKNOWN',
 }
@@ -21,8 +21,8 @@ export enum ErrorCode {
   AUTH_REQUIRED = 'AUTH_REQUIRED',
   AUTH_FAILED = 'AUTH_FAILED',
   AUTH_EXPIRED = 'AUTH_EXPIRED',
-  FIREBASE_ERROR = 'FIREBASE_ERROR',
-  FIRESTORE_ERROR = 'FIRESTORE_ERROR',
+  SUPABASE_ERROR = 'SUPABASE_ERROR',
+  SUPABASE_QUERY_ERROR = 'SUPABASE_QUERY_ERROR',
   VALIDATION_ERROR = 'VALIDATION_ERROR',
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
@@ -37,8 +37,8 @@ const ERROR_KEYS: Record<ErrorCode, string> = {
   [ErrorCode.AUTH_REQUIRED]: 'errors.authRequired',
   [ErrorCode.AUTH_FAILED]: 'errors.authFailed',
   [ErrorCode.AUTH_EXPIRED]: 'errors.authExpired',
-  [ErrorCode.FIREBASE_ERROR]: 'errors.firebaseError',
-  [ErrorCode.FIRESTORE_ERROR]: 'errors.firestoreError',
+  [ErrorCode.SUPABASE_ERROR]: 'errors.supabaseError',
+  [ErrorCode.SUPABASE_QUERY_ERROR]: 'errors.supabaseQueryError',
   [ErrorCode.VALIDATION_ERROR]: 'errors.validationError',
   [ErrorCode.UNKNOWN_ERROR]: 'errors.unknownError',
 };

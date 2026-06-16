@@ -14,13 +14,11 @@ LLM API Sentinel 使用 Supabase PostgreSQL 作为主要数据库，包含以下
 
 ### 1.2 集合路径
 
-| 集合路径 | 用途 | 读写权限 |
+| 表名 | 用途 | 读写权限 |
 |---------|------|---------|
-| `/api_status/{apiId}` | 存储每个 API 的当前状态 | 所有人可读，仅管理员可写 |
-| `/status_history/{historyId}` | 存储 API 状态历史记录 | 所有人可读，仅管理员可写 |
-| `/alerts/{alertId}` | 存储系统告警信息 | 所有人可读，仅管理员可写 |
-
-> **注意**：Supabase PostgreSQL 使用表而不是集合（Collection）
+| `api_status` | 存储每个 API 的当前状态 | 所有人可读，所有人可写 |
+| `status_history` | 存储 API 状态历史记录 | 所有人可读，所有人可写 |
+| `alerts` | 存储系统告警信息 | 所有人可读写 |
 
 ### 1.3 数据结构
 
@@ -187,7 +185,7 @@ flowchart TD
     B -->|否| D[流程结束]
     
     C -->|已有| E[跳过，避免重复]
-    C -->|无| F --> G[创建 Alert 对象]
+    C -->|无| F[创建 Alert 对象]
     
     F --> G[写入 Supabase]
     G --> H[触发实时推送]
@@ -202,8 +200,8 @@ flowchart TD
 ```mermaid
 flowchart TD
     A[用户访问首页] --> B[初始化 Supabase]
-    B --> C[查询 api_status 表]
-    B --> D[查询 alerts 表]
+    B --> C[订阅 api_status 表]
+    B --> D[订阅 alerts 表]
     
     C --> E[获取初始状态]
     D --> F[获取活跃告警]
@@ -249,11 +247,16 @@ flowchart TD
 
 ### 3.2 推荐索引
 
-#### 告警表索引
-```sql
--- 活跃告警查询
--- 索引字段: resolved, timestamp DESC
-CREATE INDEX idx_alerts_resolved_timestamp ON alerts(resolved ASC, timestamp DESC);
+#### 告警集合索引
+```javascript
+// 活跃告警查询
+// 索引字段: resolved, timestamp DESC
+{
+  "fields": [
+    {"fieldPath": "resolved", "mode": "ASCENDING"},
+    {"fieldPath": "timestamp", "mode": "DESCENDING"}
+  ]
+}
 ```
 
 **用途**：快速获取未解决的告警，按时间倒序排列
@@ -290,7 +293,7 @@ CREATE INDEX idx_alerts_resolved_timestamp ON alerts(resolved ASC, timestamp DES
 | 索引 | 状态 | 优先级 |
 |-----|------|--------|
 | `api_status/provider` | 推荐 | 中 |
-| `status_history/api_id+timestamp` | 必须 | 高 |
+| `status_history/apiId+timestamp` | 必须 | 高 |
 | `alerts/resolved+timestamp` | 必须 | 高 |
 
 ## 4. 数据生命周期管理
@@ -332,25 +335,31 @@ async function cleanupOldData() {
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
   
   // 清理历史数据
-  const { error: historyError } = await supabase
-    .from('status_history')
-    .delete()
-    .lt('timestamp', thirtyDaysAgo.toISOString());
+  const historyQuery = db.collection('status_history')
+    .where('timestamp', '<', thirtyDaysAgo);
   
-  if (historyError) {
-    console.error('[Cleanup] Failed to clean history:', historyError);
-  }
+  const historySnapshot = await historyQuery.get();
+  const historyBatch = db.batch();
+  
+  historySnapshot.docs.forEach(doc => {
+    historyBatch.delete(doc.ref);
+  });
+  
+  await historyBatch.commit();
   
   // 清理已解决的告警
-  const { error: alertsError } = await supabase
-    .from('alerts')
-    .delete()
-    .eq('resolved', true)
-    .lt('resolved_at', ninetyDaysAgo.toISOString());
+  const alertsQuery = db.collection('alerts')
+    .where('resolved', '==', true)
+    .where('resolvedAt', '<', ninetyDaysAgo);
   
-  if (alertsError) {
-    console.error('[Cleanup] Failed to clean alerts:', alertsError);
-  }
+  const alertsSnapshot = await alertsQuery.get();
+  const alertsBatch = db.batch();
+  
+  alertsSnapshot.docs.forEach(doc => {
+    alertsBatch.delete(doc.ref);
+  });
+  
+  await alertsBatch.commit();
   
   console.log('[Cleanup] Old data cleaned successfully');
 }
@@ -405,54 +414,93 @@ flowchart TD
 
 ## 6. 安全规则
 
-### 6.1 Supabase Row Level Security (RLS) 策略
+### 6.1 Supabase RLS 策略
 
 ```sql
 -- 启用 RLS
 ALTER TABLE api_status ENABLE ROW LEVEL SECURITY;
 ALTER TABLE status_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE alerts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 
--- API Status 表：所有人可读，可写入
-CREATE POLICY "api_status_read_all" ON api_status FOR SELECT USING (true);
+-- API Status 表：所有人可读写
+CREATE POLICY "api_status_select_all" ON api_status FOR SELECT USING (true);
 CREATE POLICY "api_status_insert_all" ON api_status FOR INSERT WITH CHECK (true);
 CREATE POLICY "api_status_update_all" ON api_status FOR UPDATE USING (true);
 
--- Status History 表：所有人可读，可写入
-CREATE POLICY "status_history_read_all" ON status_history FOR SELECT USING (true);
+-- Status History 表：所有人可读写
+CREATE POLICY "status_history_select_all" ON status_history FOR SELECT USING (true);
 CREATE POLICY "status_history_insert_all" ON status_history FOR INSERT WITH CHECK (true);
 
 -- Alerts 表：所有人可读写
-CREATE POLICY "alerts_read_all" ON alerts FOR SELECT USING (true);
-CREATE POLICY "alerts_update_resolve" ON alerts FOR UPDATE USING (true);
+CREATE POLICY "alerts_select_all" ON alerts FOR SELECT USING (true);
 CREATE POLICY "alerts_insert_all" ON alerts FOR INSERT WITH CHECK (true);
+CREATE POLICY "alerts_update_resolve" ON alerts FOR UPDATE USING (true);
+
+-- User Profiles 表：用户可读写自己的资料
+CREATE POLICY "user_profiles_select_own" ON user_profiles FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "user_profiles_insert_own" ON user_profiles FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "user_profiles_update_own" ON user_profiles FOR UPDATE USING (auth.uid() = user_id);
 ```
 
 ### 6.2 安全策略说明
 
-| 表 | 读取权限 | 写入权限 | 更新权限 |
-|-----|---------|---------|---------|
-| `api_status` | 公开 | 管理员 | 管理员 |
-| `status_history` | 公开 | 管理员 | 管理员 |
-| `alerts` | 公开 | 认证用户 | 认证用户(仅解决) |
+| 表名 | 读取权限 | 写入权限 | 说明 |
+|-----|---------|---------|------|
+| `api_status` | 公开 | 公开 | API 状态信息公开 |
+| `status_history` | 公开 | 公开 | 历史数据公开 |
+| `alerts` | 公开 | 公开 | 告警信息可被所有人管理 |
+| `user_profiles` | 仅本人 | 仅本人 | 用户资料仅本人可访问 |
 
 ### 6.3 数据验证规则
 
-#### ApiStatus 写入验证
+#### ApiStatus 数据验证
 ```sql
--- 使用 CHECK 约束验证数据
-ALTER TABLE api_status ADD CONSTRAINT chk_api_status_status 
-  CHECK (status IN ('online', 'offline', 'degraded'));
-ALTER TABLE api_status ADD CONSTRAINT chk_api_status_latency 
-  CHECK (latency >= 0);
+-- 创建触发器验证数据格式
+CREATE OR REPLACE FUNCTION validate_api_status()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.id IS NULL OR NEW.id = '' THEN
+    RAISE EXCEPTION 'API ID is required';
+  END IF;
+  
+  IF NEW.status NOT IN ('online', 'offline', 'degraded') THEN
+    RAISE EXCEPTION 'Invalid status value';
+  END IF;
+  
+  IF NEW.latency < 0 THEN
+    RAISE EXCEPTION 'Latency cannot be negative';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER api_status_validation
+  BEFORE INSERT OR UPDATE ON api_status
+  FOR EACH ROW EXECUTE FUNCTION validate_api_status();
 ```
 
-#### Alert 更新验证
+#### Alert 数据验证
 ```sql
--- 允许用户更新自己的 resolved 状态
-CREATE POLICY "alerts_resolved_by_user" ON alerts FOR UPDATE
-  USING (auth.role() = 'authenticated')
-  WITH CHECK (resolved = true AND resolved_at IS NOT NULL);
+CREATE OR REPLACE FUNCTION validate_alert()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.type NOT IN ('downtime', 'latency', 'error') THEN
+    RAISE EXCEPTION 'Invalid alert type';
+  END IF;
+  
+  IF NEW.severity NOT IN ('low', 'medium', 'high', 'critical') THEN
+    RAISE EXCEPTION 'Invalid severity value';
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER alert_validation
+  BEFORE INSERT OR UPDATE ON alerts
+  FOR EACH ROW EXECUTE FUNCTION validate_alert();
 ```
 
 ## 7. 数据一致性
@@ -462,40 +510,23 @@ CREATE POLICY "alerts_resolved_by_user" ON alerts FOR UPDATE
 **批量写入事务**：
 ```typescript
 async function updateStatuses(results: ApiStatus[]) {
-  // 使用 Supabase 批量操作
-  const upsertData = results.map(result => ({
-    id: result.id,
-    name: result.name,
-    provider: result.provider,
-    status: result.status,
-    latency: result.latency,
-    last_checked: result.lastChecked,
-    updated_at: new Date().toISOString()
-  }));
-
-  const { error: upsertError } = await supabase
-    .from('api_status')
-    .upsert(upsertData, { onConflict: 'id' });
-
-  if (upsertError) {
-    throw upsertError;
+  const batch = db.batch();
+  
+  for (const result of results) {
+    const statusRef = db.collection('api_status').doc(result.id);
+    batch.set(statusRef, result);
+    
+    const historyRef = db.collection('status_history').doc();
+    batch.set(historyRef, {
+      apiId: result.id,
+      status: result.status,
+      latency: result.latency,
+      timestamp: FieldValue.serverTimestamp(),
+      time: new Date().toLocaleTimeString()
+    });
   }
-
-  // 添加历史记录
-  const historyData = results.map(result => ({
-    api_id: result.id,
-    status: result.status,
-    latency: result.latency,
-    timestamp: new Date().toISOString()
-  }));
-
-  const { error: historyError } = await supabase
-    .from('status_history')
-    .insert(historyData);
-
-  if (historyError) {
-    throw historyError;
-  }
+  
+  await batch.commit();
 }
 ```
 
@@ -503,9 +534,9 @@ async function updateStatuses(results: ApiStatus[]) {
 
 | 保证类型 | 实现方式 |
 |-----|---------|
-| **原子性** | 使用 Supabase 批量 upsert 操作 |
+| **原子性** | Supabase 批量操作保证 |
 | **隔离性** | PostgreSQL 内置事务支持 |
-| **持久性** | PostgreSQL 自动持久化 |
+| **持久性** | PostgreSQL WAL 自动持久化 |
 
 ## 8. 数据迁移
 
@@ -554,9 +585,9 @@ flowchart TD
 
 | 优化项 | 实现方式 |
 |-----|---------|
-| **批量写入** | 使用 Supabase upsert 操作 |
+| **批量写入** | 使用 Batch 操作 |
 | **减少写入频率** | 聚合更新而非单次更新 |
-| **离线写入** | Supabase 离线支持（可选配置） |
+| **离线支持** | 使用 Supabase 离线模式 |
 
 ### 9.3 缓存策略
 

@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.6.3] - 2026-06-10
+
+### Changed
+- **Documentation**: Updated README files to remove Firebase Hosting references (migrated to Supabase).
+- **Project Structure**: Updated README project structure to reflect actual directory layout (removed server.ts).
+
+### Removed
+- **Firebase Legacy Files**: Deleted unused Firebase configuration files:
+  - `firebase.json`
+  - `firebase-applet-config.json`
+  - `firebase-blueprint.json`
+  - `firestore.rules`
+- **Unused Server Files**: Deleted `server.ts` and `edgeone.config.js`.
+- **Unused Metadata**: Deleted `metadata.json` and `LLM-API-Sentinel.code-workspace`.
+- **Redundant Lock File**: Deleted `package-lock.json` (project uses pnpm).
+- **Unused Components**: Deleted `StatusGrid.tsx` wrapper component and `use-mobile.ts` hook.
+- **Build Scripts**: Removed `build:functions`, `deploy:functions`, and `serve:functions` scripts from package.json.
+
+### Fixed
+- **Test Configuration**: Removed `app/lib/error.test.ts` from Jest ignore patterns to enable test execution.
+- **TypeScript Config**: Removed `functions` directory from tsconfig.json exclude patterns.
+- **i18n Files**: Updated 16 language files to replace Firebase error messages with Supabase equivalents.
+- **Error Handler**: Replaced FIREBASE enum values with SUPABASE in error-handler.ts.
+
 ## [2.6.2] - 2024-12-08
 
 ### Changed

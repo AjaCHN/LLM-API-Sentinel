@@ -1,4 +1,4 @@
-// app/lib/metrics.ts v2.6.2
+// app/lib/metrics.ts v2.6.3
 import { supabase } from './supabase';
 import type { StatusHistory } from '../types';
 

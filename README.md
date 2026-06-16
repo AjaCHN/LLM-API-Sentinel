@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.6.2
+# LLM API Sentinel v2.6.3
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -87,10 +87,9 @@ npm run dev
 
 ### Deployment
 
-The project can be deployed to various static hosting platforms:
+The project can be deployed to various static hosting platforms:项目可部署到多种静态托管平台：
 - **腾讯云 EdgeOne Pages**
 - **Vercel**
-- **Firebase Hosting**
 - **Netlify**
 
 For Express server deployment:
@@ -161,7 +160,6 @@ Supported languages:
 │   └── page.tsx         # Main dashboard page
 ├── openspec/            # Project specification documents
 ├── supabase/            # Database schema
-├── server.ts            # Express custom server
 └── package.json
 ```
 

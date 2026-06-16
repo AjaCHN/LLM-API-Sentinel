@@ -1,4 +1,4 @@
-// app/lib/i18n.ts v2.6.2
+// app/lib/i18n.ts v2.6.3
 import en from '../locales/en.json';
 import zhCN from '../locales/zh-cn.json';
 import zhTW from '../locales/zh-tw.json';
@@ -16,7 +16,9 @@ import tr from '../locales/tr.json';
 import ru from '../locales/ru.json';
 import vi from '../locales/vi.json';
 
-type TranslationData = typeof en;
+type TranslationData = {
+  [section: string]: { [key: string]: string };
+};
 
 const translations: Record<string, TranslationData> = {
   en,

@@ -124,12 +124,11 @@ graph TD
     end
 
     subgraph External [External Data Sources]
-        Supabase[(Supabase)]
+        Supabase[(Supabase PostgreSQL)]
         GeoAPI[Geo Location API]
         AuthAPI[Supabase Auth]
     end
 
-    useDashboard --> API
     useDashboard --> API
     useDashboard --> Auth
     useDashboard --> Alerts
@@ -391,12 +390,11 @@ graph TD
 graph TD
     subgraph Deployment
         Vercel[Vercel / EdgeOne Pages]
-        Supabase[Supabase]
         Express[Express Server]
     end
     
     subgraph Database
-        PostgreSQL[(PostgreSQL)]
+        Supabase[(Supabase PostgreSQL)]
         Auth[Supabase Auth]
     end
     
@@ -406,10 +404,10 @@ graph TD
     
     User[用户] --> Static
     User --> Vercel
-    Vercel --> PostgreSQL
+    Vercel --> Supabase
     Vercel --> Auth
     
-    Express --> PostgreSQL
+    Express --> Supabase
 ```
 
 ### 6.2 部署选项对比
@@ -417,7 +415,6 @@ graph TD
 | 选项 | 适用场景 | 优势 | 劣势 |
 |-----|---------|------|------|
 | **Vercel** | 纯静态前端 | 自动 SSL、全球 CDN、无缝 Next.js 集成 | 无后端支持 |
-| **Supabase** | 全栈应用 | 与 PostgreSQL/Auth 深度集成、实时订阅 | 需配置 RLS 策略 |
 | **EdgeOne Pages** | 中国区部署 | 国内加速、低成本 | 功能相对简单 |
 | **Express Server** | 后台任务 | 可控性强、支持定时任务 | 需要服务器维护 |
 
@@ -429,7 +426,7 @@ graph TD
 graph TD
     subgraph SecurityLayers
         AuthLayer[认证层]
-        RLSRules[RLS 策略层]
+        RLSPolicies[RLS 策略层]
         ClientValidation[客户端验证层]
         HTTPS[传输层]
     end
@@ -443,16 +440,16 @@ graph TD
     User --> AuthLayer
     Admin --> AuthLayer
     
-    AuthLayer -->|认证用户| RLSRules
+    AuthLayer -->|认证用户| RLSPolicies
     AuthLayer -->|未认证| Deny[拒绝]
     
-    RLSRules -->|读取| AllowRead[允许读取]
-    RLSRules -->|写入| AdminCheck[管理员检查]
+    RLSPolicies -->|读取| AllowRead[允许读取]
+    RLSPolicies -->|写入| AdminCheck[管理员检查]
     
     AdminCheck -->|管理员| AllowWrite[允许写入]
     AdminCheck -->|非管理员| Deny
     
-    Monitor -->|服务器端| RLSRules
+    Monitor -->|服务器端| RLSPolicies
     Monitor -->|Service Role| AllowWrite
     
     HTTPS -->|加密传输| SecurityLayers
