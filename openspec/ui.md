@@ -1,26 +1,31 @@
-# UI 组件规范文档 (v2.6.3 - Apple Style)
+# UI 组件规范文档 (v2.6.3 - Dark Indigo Theme)
 
 ## 1. 设计原则
 
 ### 1.1 核心原则
-参考 Apple 官网 (apple.com.cn) 的设计风格，强调：
+
+参考现代仪表盘设计风格，强调数据可视化的清晰度和沉浸感：
 
 | 原则 | 说明 |
 |-----|------|
-| **极简主义** | 大量留白、清晰层次、去除冗余元素 |
-| **大图展示** | Hero 区域采用全屏标题布局 |
-| **清晰层次** | 通过间距、大小、颜色建立视觉层级 |
-| **一致性** | 所有组件使用统一的设计语言和交互模式 |
-| **响应式** | 适配桌面、平板、移动端设备 |
-| **可访问性** | 支持键盘导航和屏幕阅读器 |
-| **性能优先** | 优化渲染性能，减少不必要的重渲染 |
-| **国际化** | 支持多语言切换 |
+| **深色沉浸** | 以 `#0f0f14` 为基底，紫色/靛蓝渐变作为氛围光，营造科技感与专注感 |
+| **数据优先** | 图表、数字、状态指示器为核心视觉元素，留白辅助层级区分 |
+| **清晰层级** | 通过边框、阴影、颜色透明度建立视觉层级关系 |
+| **状态指示** | 所有动态数据必须有明确的在线/降级/离线三态视觉标识 |
+| **一致性** | 所有组件使用统一的圆角 (rounded-xl)、间距、色彩与动画节奏 |
+| **响应式** | 适配桌面、平板、移动端设备（1/2/3/4 列布局切换） |
+| **可访问性** | 支持键盘导航和屏幕阅读器，按钮带 aria-label |
+| **性能优先** | 使用 React.memo 等方式优化渲染性能，图表数据做 slice 优化 |
+| **国际化** | 支持多语言切换（useI18n hook） |
 
 ### 1.2 设计系统
-- **样式框架**: Tailwind CSS 4.1.11
+
+- **样式框架**: Tailwind CSS 4.1.11（`@theme` 块定义 CSS 变量桥接）
+- **组件库**: shadcn/ui（基于 Radix UI primitives）
 - **图标库**: Lucide React
-- **颜色系统**: Apple 风格深色/浅色主题
-- **动画**: 平滑 CSS transitions
+- **图表库**: Recharts（AreaChart）
+- **颜色系统**: 深色紫色/靛蓝主题，CSS 变量驱动（详见 §5.1）
+- **动画**: 自定义 keyframes（pulse-gentle / fade-in-up / scale-in-gentle 等）
 
 ## 2. 组件 API 规范
 
@@ -37,22 +42,21 @@ interface DashboardHeaderProps {
   setShowAlerts: (show: boolean) => void;
   theme: string | undefined;
   setTheme: (theme: string) => void;
-  geo: GeoLocation | null;
+  geo: { city: string; country: string; ip?: string } | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
-  resolveAlert: (id: string) => Promise<void>;
 }
 ```
 
 **设计特点**：
-- 大量留白 (px-6 md:px-10 lg:px-16)
-- 圆角按钮 (rounded-2xl)
-- 毛玻璃效果 (backdrop-blur-xl)
-- 简洁的控制按钮
+- 固定顶部 (sticky top-0)、80% 不透明背景、backdrop-blur-xl
+- 左侧品牌标识：size-10 圆角方块 + primary/accent 渐变背景
+- 右侧操作区：Bell 告警铃（含数字徽标 + critical 状态脉冲）、主题切换、地理位置胶囊、登录按钮
+- 登录按钮带有 `shadow-lg shadow-primary/20` 光晕效果
 
 ### 2.2 ApiStatusGrid
 
-**功能**：以网格形式展示所有 API 状态卡片，支持供应商分组
+**功能**：以网格形式展示所有 API 状态卡片，支持按供应商分组
 
 **Props**：
 ```typescript
@@ -65,16 +69,18 @@ interface ApiStatusGridProps {
 ```
 ApiStatusGrid
 ├── Provider Group (按 provider 分组)
-│   ├── Provider Header (provider 名称 + 图标)
-│   └── ApiCard (API 状态卡片)
-└── Empty State (无数据时显示)
+│   ├── Provider Header (provider 名称 + 图标 + Badge 数量)
+│   └── ApiCard (API 状态卡片，交错入场动画)
+└── Empty State (无数据时显示 dashed border 提示)
 ```
 
 **设计特点**：
-- Apple 风格圆角卡片 (rounded-3xl)
-- 状态圆点指示器 (status-dot)
-- 悬停效果 (apple-card)
-- 交错动画入场
+- 响应式列数：sm:1 / sm+:2 / lg:3 / xl:4
+- 每张卡片使用 `card-hover-lift`：悬停向上位移 8px 并放大 1.02，叠加 primary 紫色光晕
+- StatusDot 状态圆点：带 `shadow-[0_0_12px_*]` 光晕，非在线态使用 `animate-pulse`
+- 延迟进度条（ProgressBar）：渐变填充 + shimmer 扫光动画
+- 离线卡片左侧添加 1px 渐变红色竖条（from-destructive via destructive/70）
+- 入场动画：偶数 `animate-fade-in-up`，奇数 `animate-slide-in-right`，delay 交错
 
 ### 2.3 LatencyHistoryChart
 
@@ -90,13 +96,16 @@ interface LatencyHistoryChartProps {
 ```
 
 **设计特点**：
-- 圆角容器 (rounded-3xl)
-- 柔和的网格线
-- Apple 风格 Tooltip
+- 容器 `rounded-xl border bg-card`（shadcn Card）
+- 高度 320px (md: 420px)
+- 网格线 `strokeDasharray="6 6"`，透明度 0.06，vertical=false
+- 每条 API 曲线使用独立线性渐变填充（linearGradient id=color-{id}）
+- Tooltip 样式：`bg-card border-border rounded-xl`，使用 CSS 变量
+- `React.memo` 包裹：只在 chartData/statuses 变化时重渲染
 
 ### 2.4 AlertsDropdown
 
-**功能**：显示活跃告警列表，支持告警解决
+**功能**：以 Dialog 形式展示活跃告警列表，支持告警解决
 
 **Props**：
 ```typescript
@@ -111,239 +120,642 @@ interface AlertsDropdownProps {
 **告警严重程度样式**：
 | 严重程度 | 颜色 |
 |---------|------|
-| `critical` | #FF3B30 |
-| `high` | #FF3B30 |
-| `medium` | #FF9500 |
-| `low` | #007AFF |
+| `critical` / `high` | text-destructive (#ef4444) |
+| `medium` | text-amber-600 |
+| `low` | text-blue-600 |
+
+**空状态**：无告警时显示 `CheckCircle2` 图标 + 文字提示
 
 ### 2.5 ApiConfig
 
-**功能**：允许用户自定义 API 检查配置
+**功能**：允许用户自定义 API 检查配置（添加/删除/保存/重置）
 
 **Props**：无
 
-### 2.6 ThemeProvider
+**设计特点**：
+- 编辑态/查看态双模式切换
+- 配置通过 localStorage 持久化
+- 新 API 表单使用 dashed border 2 视觉区分
+- 三个字段：name / provider / url
+- 底部提供 reset 回退到默认（APIS_TO_CHECK 常量）
 
-**功能**：管理深色/浅色主题切换
+### 2.6 DashboardFooter
 
-## 3. 样式规范
+**功能**：展示项目技术栈和数据来源说明
 
-### 3.1 颜色系统
+**三个模块**：
+1. Global Coverage（全球 AI 供应商监控）
+2. UI 技术栈（Next.js + Tailwind CSS + shadcn/ui + Recharts）
+3. Data Integrity（Supabase PostgreSQL 持久化）
 
-#### 浅色主题 (Apple Style)
-| 颜色变量 | 值 | 用途 |
-|---------|---|------|
-| `--background` | #F5F5F7 | 页面背景 |
-| `--foreground` | #1D1D1F | 文字颜色 |
-| `--card` | #FFFFFF | 卡片背景 |
-| `--card-foreground` | #1D1D1F | 卡片文字 |
-| `--primary` | #007AFF | 主色调 (Apple Blue) |
-| `--primary-foreground` | #FFFFFF | 主色文字 |
-| `--secondary` | #FFFFFF | 次要背景 |
-| `--muted` | #F5F5F7 | 次要背景 |
-| `--muted-foreground` | #86868B | 次要文字 |
-| `--border` | #D1D1D6 | 边框 |
-| `--success` | #34C759 | 成功/在线状态 |
-| `--warning` | #FF9500 | 警告/降级状态 |
-| `--error` | #FF3B30 | 错误/离线状态 |
+### 2.7 ThemeProvider
 
-#### 深色主题 (Apple Style)
-| 颜色变量 | 值 | 用途 |
-|---------|---|------|
-| `--background` | #000000 | 页面背景 |
-| `--foreground` | #FFFFFF | 文字颜色 |
-| `--card` | #1C1C1E | 卡片背景 |
-| `--card-foreground` | #FFFFFF | 卡片文字 |
-| `--primary` | #0A84FF | 主色调 (Apple Blue Dark) |
-| `--primary-foreground` | #000000 | 主色文字 |
-| `--secondary` | #1C1C1E | 次要背景 |
-| `--muted` | #1C1C1E | 次要背景 |
-| `--muted-foreground` | #98989D | 次要文字 |
-| `--border` | #38383A | 边框 |
-| `--success` | #30D158 | 成功/在线状态 |
-| `--warning` | #FF9F0A | 警告/降级状态 |
-| `--error` | #FF453A | 错误/离线状态 |
+**功能**：管理深色/浅色主题切换（通过 `html` 根节点的 `class="dark"` 切换）
 
-### 3.2 圆角系统 (Apple Style)
+## 3. 组件库规范
 
-| 圆角 | Tailwind | 像素 | 用途 |
-|-----|---------|-----|------|
-| 2xl | `rounded-2xl` | 20px | 按钮、小组件 |
-| 3xl | `rounded-3xl` | 28px | 卡片、面板 |
-| full | `rounded-full` | 50% | 状态圆点、标签 |
+### 3.1 基础组件（shadcn/ui）
 
-### 3.3 间距系统 (Apple Style)
+所有基础组件均遵循相同规范：
+- 统一 `cn()` 辅助函数（来自 `@/lib/utils`）拼接 class
+- 支持 `cva` (class-variance-authority) 管理 variant
+- 支持 `forwardRef`，符合 Radix 无障碍标准
 
-| 间距 | Tailwind | 像素值 | 用途 |
-|-----|-----------|-------|------|
-| sm | `gap-3` | 12px | 小间距 |
-| md | `gap-5` | 20px | 默认间距 |
-| xl | `gap-10` | 40px | 大间距 |
-| section | `space-y-12` | 48px | Section 分隔 |
+#### Button
 
-### 3.4 字体系统
+**变体**：`default` / `destructive` / `outline` / `secondary` / `ghost` / `link`
 
-| 字体 | 变量 | 用途 |
-|-----|------|------|
-| Inter | `--font-sans` | 正文、标题 |
-| SF Mono | `--font-mono` | 代码、时间显示 |
+**尺寸**：`default` (h-9) / `sm` (h-8) / `lg` (h-10) / `icon` (size-9)
+
+**默认样式**：
+```
+inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md
+text-sm font-medium transition-colors
+focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+disabled:pointer-events-none disabled:opacity-50
+[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0
+```
+
+**default variant**: `bg-primary text-primary-foreground shadow hover:bg-primary/90`
+
+#### Alert
+
+**变体**：`default` / `destructive` / `warning` / `success`
+
+**默认样式**：`relative w-full rounded-lg border px-4 py-3 text-sm`
+- destructive: `border-destructive/50 text-destructive`
+- warning: `border-amber-500/50 text-amber-700 dark:text-amber-400`
+- success: `border-emerald-500/50 text-emerald-700 dark:text-emerald-400`
+
+#### Badge
+
+**变体**：`default` / `secondary` / `destructive` / `outline`
+
+**默认样式**：
+```
+inline-flex items-center justify-center rounded-md border px-2.5 py-0.5
+text-xs font-semibold transition-colors
+focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+```
+
+#### Avatar
+
+**结构**：`Avatar` (root) + `AvatarImage` (可选) + `AvatarFallback` (首字母)
+
+**样式**：
+- root: `relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full`
+- fallback: `bg-muted`，首字母大写
+- DashboardHeader 中使用 size-8，添加 `border-border/30`
+
+#### Card
+
+**子组件**：`Card` / `CardHeader` / `CardTitle` / `CardDescription` / `CardContent` / `CardFooter`
+
+**样式**：
+- root: `rounded-xl border bg-card text-card-foreground shadow`
+- header: `flex flex-col space-y-1.5 p-6`
+- title: `font-semibold leading-none tracking-tight`
+- content: `p-6 pt-0`
+- footer: `flex items-center p-6 pt-0`
+
+**业务层扩展**：ApiStatusGrid 使用 `card-hover-lift` 自定义 hover 效果
+
+#### Input
+
+**默认样式**：
+```
+flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm
+transition-colors
+placeholder:text-muted-foreground
+focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
+disabled:cursor-not-allowed disabled:opacity-50
+```
+
+### 3.2 复合组件（业务封装）
+
+#### ApiStatusGrid
+
+| 特征 | 规范 |
+|------|------|
+| 布局 | 外部 flex gap-12；每个 provider 内 `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5` |
+| 分组标题 | `rounded-xl bg-primary/15` 图标容器 + `text-xl font-semibold` 标题 + secondary Badge |
+| 卡片容器 | `Card` + `bg-card/80 backdrop-blur-sm` + 悬停 `border-primary/30` + `card-hover-lift` |
+| 状态色带 | 离线态左侧红色竖条 `from-destructive via destructive/70 to-transparent` |
+| 状态圆点 | size-2.5 rounded-full + `shadow-[0_0_12px_*]` 光晕，非 online 使用 `animate-pulse` |
+| 进度条 | h-1.5 rounded-full，渐变填充 + shimmer 扫光覆盖层 |
+| 空状态 | `border-dashed border-border/50 bg-secondary/30` + Server 图标脉冲 |
+
+#### LatencyHistoryChart
+
+| 特征 | 规范 |
+|------|------|
+| 容器 | `Card > CardContent h-[320px] md:h-[420px] p-4` |
+| 网格 | `strokeDasharray="6 6"`，`opacity=0.06`，vertical=false |
+| X 轴 | fontSize 11，opacity 0.4，dy=12，>20 点时 `preserveStartEnd` |
+| Y 轴 | fontSize 11，opacity 0.4，insideLeft "ms" 标签 |
+| Tooltip | `bg-card border-border rounded-xl`，boxShadow `0 8px 24px rgba(0,0,0,0.12)` |
+| Area 曲线 | `strokeWidth=2.5`，linearGradient 5%→95% (0.15→0) 透明渐变填充 |
+| activeDot | r=5, strokeWidth=0 |
+| 动画 | animationDuration=1200 |
+| 性能 | `React.memo` 包裹，JSON.stringify 做 props 比较 |
+
+#### AlertsDropdown
+
+| 特征 | 规范 |
+|------|------|
+| 容器 | shadcn `Dialog` + `max-w-lg` |
+| 每条告警 | `Card > CardContent`，flex items-start justify-between gap-4 |
+| 严重程度图标 | `AlertTriangle` size-5，使用 severityTone 着色 |
+| 信息 | apiName (font-medium) + message + error (text-destructive) + latency |
+| 操作 | `Button size="sm" variant="outline"` + "Resolve" |
+| 最大高度 | `max-h-[60vh] overflow-y-auto` |
+
+### 3.3 业务组件
+
+#### DashboardHeader
+
+| 区域 | 规范 |
+|------|------|
+| 容器 | `sticky top-0 z-50 border-b border-border/30 bg-background/80 backdrop-blur-xl h-16` |
+| 内部宽度 | `max-w-7xl px-6 md:px-10 lg:px-16` |
+| 左侧品牌 | size-10 rounded-xl + primary/accent 渐变，悬停 group-hover:scale-105 + blur-xl 光晕 |
+| 右侧按钮 | variant="ghost" size="icon"，均带 aria-label |
+| 告警徽标 | absolute -right-0.5 -top-0.5 size-5 rounded-full text-[10px] font-bold；critical→destructive+animate-pulse，其他→primary |
+| 地理位置胶囊 | lg:flex only，`rounded-full bg-secondary/50 px-3 py-1.5 text-xs text-muted-foreground border border-border/20` |
+| 登录按钮 | `bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:scale-105` |
+| 头像 | size-8 border-border/30，悬停 `border-primary/50 scale-105` |
+
+#### DashboardFooter
+
+| 区域 | 规范 |
+|------|------|
+| 顶部 | `pt-8` + `Separator` |
+| 布局 | `grid-cols-1 md:grid-cols-3 gap-6` |
+| 标题行 | flex items-center gap-2 text-sm font-medium + primary 色 icon |
+| 描述行 | text-xs text-muted-foreground |
+
+#### ApiConfig
+
+| 区域 | 规范 |
+|------|------|
+| 容器 | 标准 Card |
+| Header | flex-row items-start justify-between；title + description（显示 API 数量）；右侧 edit/save/cancel 按钮组 |
+| 列表项 | `flex items-center justify-between gap-4 rounded-lg border p-3`；内容行 text-sm + provider text-xs muted + url text-xs font-mono |
+| 编辑态 | 每项右侧显示 `Button variant=ghost size=icon` + Trash2（text-destructive） |
+| 新 API 表单 | `rounded-lg border-2 border-dashed p-4`；grid sm:grid-cols-3 gap-3；每个子项 flex flex-col gap-1.5 + Label + Input |
+| Footer | 编辑态时显示 ghost reset 按钮 |
+
+### 3.4 组件使用规则
+
+1. **统一入口**：所有 UI 组件从 `@/components/ui/*` 导入，业务组件从 `@/components/*` 导入
+2. **图标一致性**：统一使用 Lucide React（size-4 默认 / size-5 强调 / size-8 头像）
+3. **语义化 color**：使用 `text-primary` / `bg-card` / `border-border` 等语义化 token，禁止硬编码色值
+4. **响应式优先**：移动端列数 1 → 2 → 3 → 4 渐进扩展，lg 以下隐藏次要信息（地理位置）
+5. **动画克制**：入场动画仅在首屏渲染时触发；悬停动作用 cubic-bezier 缓出；禁用过度抖动动画
+6. **无障碍**：所有图标按钮必须带 `aria-label`，焦点态使用 `focus-visible:ring-2 ring-ring`
+7. **国际化**：所有用户可见文本必须通过 `useI18n()` 的 `t()` 函数获取
+8. **性能**：列表/图表组件用 React.memo；数据量大时做 slice 优化；避免频繁重渲染
+
+## 4. 交互标准
+
+### 4.1 交互模式库
+
+| 交互模式 | 典型组件 | 行为定义 |
+|---------|---------|---------|
+| **状态指示** | StatusDot、Badge、进度条 | 三色语义（online=emerald / degraded=amber / offline=destructive）；非在线态使用脉冲动画吸引注意 |
+| **悬停反馈** | Button、Card、Avatar | 轻度位移（translateY -6~-8px）+ 阴影增强 + 颜色微变（primary/90） |
+| **选中/展开** | Dialog（AlertsDropdown） | 背景遮罩 + 内容缩放淡入；ESC 键关闭；点击外部关闭 |
+| **切换开关** | 主题切换按钮 | Sun/Moon 图标切换；悬停显示对应色调预览 |
+| **表单输入** | ApiConfig Input | focus-visible:ring-1 ring-ring；placeholder text-muted-foreground；disabled:opacity-50 |
+| **工具提示** | Recharts Tooltip | 内容卡片样式，阴影 boxShadow 0 8px 24px rgba(0,0,0,0.12) |
+
+### 4.2 状态指示器规范
+
+#### 视觉层级（从强到弱）
+1. **破坏性 (destructive / #ef4444)**：用于严重告警、离线、错误状态；可使用 `animate-pulse` 持续吸引注意
+2. **警告 (warning / #f59e0b)**：用于降级状态、高延迟、重试；可使用脉冲动画
+3. **成功 (success / #22c55e)**：用于在线状态、可用率、正常延迟；静态（无动画以避免视觉噪音）
+
+#### 状态圆点规范
+```
+size-2.5 rounded-full + 12px 光晕 shadow
+online → bg-emerald-500 + shadow-[0_0_12px_rgba(34,197,94,0.6)] （静态）
+degraded → bg-amber-500 + shadow-[0_0_12px_rgba(245,158,11,0.6)] （animate-pulse）
+offline → bg-destructive + shadow-[0_0_12px_rgba(239,68,68,0.6)] （animate-pulse）
+```
+
+#### 进度条规范
+- 容器：`h-1.5 rounded-full bg-muted`
+- 填充：`bg-gradient-to-r` + shimmer 扫光覆盖层（白色 0.3 opacity + animation-shimmer 2s infinite）
+- 颜色变体：success (emerald 500→400) / warning (amber 500→400) / danger (red 500→400)
+
+### 4.3 悬停效果规范
+
+#### Button hover
+```
+bg-primary → bg-primary/90
+shadow-lg shadow-primary/20 → hover:shadow-primary/30 + hover:scale-105（登录按钮强化版）
+```
+
+#### Card hover（card-hover-lift class）
+```
+transition-all duration-400 cubic-bezier(0.23, 1, 0.32, 1)
+hover → translateY(-8px) scale(1.02)
+       + boxShadow 0 25px 50px -12px rgba(0,0,0,0.4)
+       + boxShadow 0 0 30px rgba(99,102,241,0.15)
+       + border-primary/30
+       + 内部渐变背景 from-primary/5 via-transparent to-accent/5 (淡入 opacity)
+```
+
+#### Avatar hover
+```
+border-border/30 → border-primary/50
+scale-1 → scale-105
+duration-300
+```
+
+#### Brand logo hover
+```
+group-hover:scale-105
++ 外层 -inset-1 rounded-xl bg-primary/10 blur-xl opacity-0 → opacity-100
+```
+
+### 4.4 错误处理规范
+
+#### 视觉策略
+- **内联错误**：在 ApiConfig 等表单中，错误字段使用 Input 标准样式（不做红色边框，保持简洁，由业务逻辑 block 提交）
+- **告警 Banner**：AlertsDropdown Dialog 中使用 text-destructive 标注 error 字段
+- **卡片级错误**：ApiStatusGrid 离线卡片左侧 1px 红色竖条 + `border-destructive/40 bg-destructive/5`
+- **字段级错误**：errorRate > 1% → 容器 `border-amber-500/30 bg-amber-500/5`，数字 `text-amber-500`，进度条 variant="warning"
+
+#### 数据降级规则
+| 字段 | 缺省值 | 展示策略 |
+|------|--------|---------|
+| latency | 0 | 显示 "timeout"，text-destructive；进度条 100% danger |
+| errorRate | undefined | 隐藏该指标 |
+| availability | undefined | 隐藏该指标 |
+| retries | 2 | 在离线卡片中显示 "Nx" 重试标记 |
+| lastChecked | Date.now() | 显示为 `toLocaleTimeString` |
+
+### 4.5 空状态设计规范
+
+#### ApiStatusGrid 空状态
+```
+Card border-dashed border-border/50 bg-secondary/30
+> CardContent flex-col items-center gap-4 py-16 text-center
+  - size-16 rounded-full bg-muted animate-pulse 容器
+  - Server size-8 text-muted-foreground 图标
+  - h3 text-xl font-semibold 标题
+  - p text-muted-foreground 辅助文字
+```
+
+#### AlertsDropdown 空状态
+```
+flex flex-col items-center gap-2 py-8 text-center
+- CheckCircle2 size-8 text-emerald-500
+- p text-sm text-muted-foreground "无活跃告警"
+```
+
+#### 设计原则
+1. **不使用空空白**：任何空数据区域必须有视觉占位，避免界面坍塌
+2. **语义化图标**：空数据使用对应语义图标（Server=无配置 / CheckCircle2=健康）
+3. **操作引导**：空状态文字提示下一步操作（例如 "添加 API 开始监控"）
+4. **动画克制**：使用 `animate-pulse` 做柔和的"等待/加载"暗示，不使用抖动动画
+
+## 5. 样式规范
+
+### 5.1 颜色系统（Dark Indigo Theme）
+
+#### CSS 变量（在 `app/style.css` 的 `:root` 中定义）
+
+| Token | 值 | 用途 |
+|-------|----|------|
+| `--background` | `#0f0f14` | 主页面背景 |
+| `--foreground` | `#e4e4e7` | 主文字颜色 |
+| `--card` | `#1a1a24` | 卡片背景 |
+| `--card-foreground` | `#e4e4e7` | 卡片文字 |
+| `--popover` | `#1a1a24` | 弹出层背景 |
+| `--primary` | `#6366f1` | 主色（靛蓝） |
+| `--primary-foreground` | `#ffffff` | 主色上的文字 |
+| `--secondary` | `#252532` | 次要背景 |
+| `--secondary-foreground` | `#e4e4e7` | 次要背景上的文字 |
+| `--muted` | `#252532` | 弱化背景 |
+| `--muted-foreground` | `#71717a` | 次要/辅助文字 |
+| `--accent` | `#8b5cf6` | 强调色（紫色） |
+| `--accent-foreground` | `#ffffff` | 强调色上的文字 |
+| `--destructive` | `#ef4444` | 错误/离线状态 |
+| `--destructive-foreground` | `#ffffff` | 错误色上的文字 |
+| `--border` | `#2a2a3a` | 边框 |
+| `--input` | `#2a2a3a` | 输入框背景 |
+| `--ring` | `#6366f1` | 焦点环 |
+| `--success` | `#22c55e` | 成功/在线状态（语义色） |
+| `--warning` | `#f59e0b` | 警告/降级状态（语义色） |
+| `--info` | `#3b82f6` | 信息色（语义色） |
+
+#### 深色模式变体（`.dark` class）
+
+| Token | 值 |
+|-------|----|
+| `--background` | `#0a0a0f`（更深沉） |
+| `--primary` | `#818cf8`（更亮的靛蓝） |
+| `--card` | `#13131a` |
+| `--secondary` / `--muted` | `#1e1e28` |
+| `--border` / `--input` | `#242430` |
+| `--destructive` | `#f87171` |
+
+#### Tailwind 桥接（`@theme` block）
+
+CSS 变量通过 Tailwind 4.1 的 `@theme` 语法注册为 Tailwind token，例如：
+```
+@theme {
+  --color-background: var(--background);
+  --color-primary: var(--primary);
+  --color-success: #34C759;
+  /* ... 其他 token ... */
+}
+```
+这使得 `bg-primary` / `text-muted-foreground` / `border-border` 等 Tailwind class 自动映射到 CSS 变量。
+
+#### 背景氛围光（Radial Gradient）
+
+body 背景在纯色 `#0f0f14` 基础上叠加三层径向渐变：
+```
+radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 50%)
+radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%)
+radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 40%)
+```
+这营造出柔和的紫色光晕氛围，不干扰数据可读性。
+
+### 5.2 圆角系统
+
+| 尺寸 | Tailwind class | 像素 | 用途 |
+|------|---------------|------|------|
+| 小 | `rounded-md` | 6px | Button、Input、Badge（shadcn 默认） |
+| 中 | `rounded-lg` | 8px | Alert 容器、信息卡片 |
+| 标准 | `rounded-xl` | 12px | Card 主容器（shadcn 默认） |
+| 大 | `rounded-2xl` | 16px | 品牌标识方块、分组图标容器 |
+| 满圆 | `rounded-full` | 50% | Avatar、状态圆点、徽标胶囊 |
+
+**深色主题边框/阴影层级**（按视觉深度从浅到深）：
+
+| 层级 | 边框 | 阴影 | 典型组件 |
+|------|------|------|---------|
+| L0 背景 | — | — | body（纯背景 + 径向渐变） |
+| L1 次要容器 | `border-border/30` | — | DashboardHeader border-b、Badge 默认透明 |
+| L2 标准卡片 | `border-border/50` | `shadow` | 默认 Card、ApiCard |
+| L3 强调卡片 | `border-primary/30`（hover） | `shadow-lg shadow-primary/20` | 主按钮、悬停中的 ApiCard |
+| L4 警告卡片 | `border-destructive/40` | `shadow-[0_0_12px_rgba(239,68,68,0.6)]` | 离线 ApiCard、错误 Alert |
+| L5 弹出层 | `border-border` | `boxShadow 0 8px 24px rgba(0,0,0,0.12)` | Dialog、Tooltip |
+
+### 5.3 间距系统
+
+| 规格 | Tailwind class | 像素值 | 用途 |
+|------|---------------|--------|------|
+| 微间距 | `gap-1.5` / `gap-2` | 6px / 8px | 图标与文字组合、行内元素间距 |
+| 小间距 | `gap-3` / `p-3` | 12px | Input 内边距、紧凑信息块 |
+| 默认间距 | `gap-4` / `gap-5` / `p-4` / `p-6` | 16px / 20px | 标准 Card 内边距 (p-6)、卡片间网格 gap-5 |
+| 中等 | `gap-6` / `space-y-6` | 24px | Footer 三栏间距、Section 内部分组 |
+| 大间距 | `gap-12` / `py-12` | 48px | Provider Group 间距、垂直 Section 分隔 |
+| 页面边距 | `px-6 md:px-10 lg:px-16` | 24/40/64px | DashboardHeader 及主体横向边距 |
+
+### 5.4 字体系统
+
+**字体族**：
+| 变量 | 字体 | 用途 |
+|------|------|------|
+| `font-sans` | Inter（系统默认 sans-serif） | 正文、标题、按钮（绝大多数场景） |
+| `font-mono` | JetBrains Mono 后备链 | URL 显示、latency 数值、标签 |
+| `font-semibold` | 600 | CardTitle、section 标题 |
+| `font-bold` | 700 | 大数值、品牌标题 |
 
 **字体大小**：
 | 大小 | Tailwind | 像素 | 用途 |
-|-----|---------|-----|------|
-| 10px | `text-[10px]` | 10px | 标签、辅助文字 |
-| 14px | `text-sm` | 14px | 正文 |
-| 16px | `text-base` | 16px | 基础文字 |
-| 18px | `text-lg` | 18px | 小标题 |
-| 24px | `text-2xl` | 24px | 标题 |
-| 36px+ | `text-4xl/5xl/6xl` | 36px+ | Hero 标题 |
+|------|---------|------|------|
+| 极小 | `text-[10px]` | 10px | 微标签、时间戳辅助说明 |
+| 小 | `text-xs` | 12px | CardDescription、辅助信息 |
+| 正文 | `text-sm` | 14px | 按钮文字、列表项、描述文字（主文字大小） |
+| 基础 | `text-base` | 16px | Input 文字 |
+| 小标题 | `text-lg` | 18px | 空状态标题 |
+| 标题 | `text-xl` | 20px | Provider Group 标题 |
+| 大标题 | `text-2xl` | 24px | Latency 大数字显示 |
 
-### 3.5 阴影系统
+**数字规范**：所有 latency/errorRate/availability 数字使用 `tabular-nums`（等宽数字对齐）
 
-| 阴影 | 效果 | 用途 |
-|-----|------|------|
-| hover | 0 20px 40px rgba(0, 0, 0, 0.08) | 卡片悬停 |
+### 5.5 阴影系统
 
-## 4. 交互规范
+| 阴影 | 值 | 用途 |
+|------|----|------|
+| 默认 | Tailwind `shadow` | Card 默认 |
+| 主色光晕 | `shadow-lg shadow-primary/20` | 主按钮默认 |
+| 悬停主色 | `hover:shadow-primary/30` | 主按钮 hover |
+| 状态圆点光晕 | `shadow-[0_0_12px_rgba(34,197,94,0.6)]` 等 | StatusDot 的三色发光阴影 |
+| 卡片悬停 | `0 25px 50px -12px rgba(0,0,0,0.4) + 0 0 30px rgba(99,102,241,0.15)` | card-hover-lift |
+| Tooltip / Dialog | `0 8px 24px rgba(0,0,0,0.12)` | 弹出层 box-shadow |
 
-### 4.1 Apple 风格按钮
+## 6. 动画效果规范
 
-**CSS 类**: `apple-button`
+### 6.1 动画核心 keyframes
 
-**状态样式**：
-| 状态 | 样式 |
-|-----|------|
-| 默认 | 背景填充色 |
-| 悬停 | 轻微透明度变化 |
-| 点击 | 轻微缩放 (scale 0.96) |
-| 禁用 | 透明度 0.5，cursor not-allowed |
-
-**按钮类型**：
-| 类型 | 样式 | 用途 |
-|-----|------|------|
-| 主按钮 | `bg-primary text-primary-foreground` | 主要操作 |
-| 次按钮 | `bg-secondary hover:bg-muted` | 次要操作 |
-| 危险按钮 | `bg-error text-white` | 危险操作 |
-
-### 4.2 Apple 风格卡片
-
-**CSS 类**: `apple-card`
-
-**状态样式**：
-| 状态 | 样式 |
-|-----|------|
-| 默认 | 细边框、圆角、无阴影 |
-| 悬停 | 向上平移 6px、阴影增强 |
-
-### 4.3 状态圆点指示器
-
-**CSS 类**: `status-dot`
-
-**功能**：
-- 圆点状态指示
-- 脉冲动画效果 (pulse-gentle)
-- 外层光晕扩展
-
-### 4.4 动画效果
-
-**过渡动画**：
-| 动画 | 时长 | 缓动 | 用途 |
-|-----|------|------|------|
-| 颜色过渡 | 500ms | cubic-bezier(0.4, 0, 0.2, 1) | 主题切换 |
-| 位置过渡 | 350ms | cubic-bezier(0.25, 0.1, 0.25, 1) | 卡片移动 |
-| 淡入上移 | 800ms | cubic-bezier(0.25, 0.1, 0.25, 1) | 页面加载 |
-
-**交错动画类**：
-- `stagger-1` 至 `stagger-8`
-
-**CSS 动画**：
+#### pulse-gentle（柔和脉冲）
 ```css
 @keyframes pulse-gentle {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(1.1); }
 }
+```
+**用途**：StatusDot ::before 外层光晕扩展（opacity 0.25 inset -6px），2s ease-in-out infinite
+**典型 class**：`animate-pulse-gentle`
 
+#### fade-in-up（淡入上移）
+```css
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
+```
+**用途**：ApiStatusGrid 偶数位置卡片入场动画
+**典型 class**：`animate-fade-in-up`，配合 `animationDelay` 交错
 
+#### scale-in-gentle（轻柔缩放入场）
+```css
 @keyframes scale-in-gentle {
   from { transform: scale(0.96); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 ```
+**用途**：Dialog 内容、新卡片入场，营造"浮现"效果
+**典型 class**：`animate-scale-in-gentle`
 
-## 5. 响应式规范
+#### slide-in-right（右滑淡入）
+```css
+@keyframes slide-in-right {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+```
+**用途**：ApiStatusGrid 奇数位置卡片入场动画（与 fade-in-up 交替制造节奏）
+**典型 class**：`animate-slide-in-right`
 
-### 5.1 断点定义
+#### shimmer（扫光）
+```css
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+```
+**用途**：ProgressBar 覆盖层（白色 0.3 opacity 线性渐变），制造数据"流动感"
+**节奏**：2s infinite
 
-| 断点 | Tailwind | 屏幕宽度 | 设备类型 |
-|-----|---------|---------|---------|
-| sm | `sm:` | ≥640px | 手机横屏 |
-| md | `md:` | ≥768px | 平板 |
-| lg | `lg:` | ≥1024px | 小桌面 |
-| xl | `xl:` | ≥1280px | 桌面 |
+#### glow-pulse（光晕脉冲）
+```css
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+}
+```
+**用途**：主操作按钮强化版的呼吸光晕（目前在 brand logo hover 使用类似 blur-xl 实现）
 
-### 5.2 布局适配
+### 6.2 交错动画（Stagger）
 
-#### DashboardHeader
-| 断点 | 布局 |
-|-----|------|
-| <1024px | 水平排列，紧凑间距 |
-| ≥1024px | 水平排列，更大边距 (lg:px-16) |
+使用方式：在循环渲染的卡片上，根据 index 设置 `animationDelay: \`${index * 0.08}s\``（在 style 内联中设置）
 
-#### ApiStatusGrid
+预定义 class（如需使用 Tailwind class 方式）：
+```
+stagger-1 → 0.05s
+stagger-2 → 0.10s
+stagger-3 → 0.15s
+stagger-4 → 0.20s
+stagger-5 → 0.25s
+stagger-6 → 0.30s
+stagger-7 → 0.35s
+stagger-8 → 0.40s
+```
+
+### 6.3 过渡动画（Transition）
+
+| 场景 | 时长 | 缓动函数 | class |
+|------|------|---------|-------|
+| 主题切换（背景色） | 500ms | `cubic-bezier(0.4, 0, 0.2, 1)` | body transition |
+| 颜色过渡（按钮 hover） | 150-300ms | `ease-out` | `transition-colors` |
+| 卡片位移 hover | 350-400ms | `cubic-bezier(0.23, 1, 0.32, 1)` | card-hover-lift |
+| 入场动画 | 400-800ms | `cubic-bezier(0.25, 0.1, 0.25, 1)` | fade-in-up / slide-in-right |
+| 图表动画 | 1200ms | （Recharts 默认缓动） | animationDuration={1200} |
+| 缩放反馈 | 200ms | `ease-out` | apple-button:active scale(0.96) |
+
+### 6.4 动画使用原则
+
+1. **克制入场**：入场动画仅在首次渲染触发；滚动/筛选更新时不重复触发
+2. **时长限制**：单体动画 ≤ 800ms，动画总时长（交错合计）≤ 1500ms
+3. **动效为语义服务**：脉冲动画仅用于"需要关注"的状态（离线/告警），健康状态保持静默以减少视觉噪音
+4. **硬件加速**：使用 `transform` / `opacity` 触发 GPU 合成，避免 `width` / `top` 等布局属性动画
+5. **可配置**：尊重用户 `prefers-reduced-motion`（后续可增强）
+
+## 7. 响应式规范
+
+### 7.1 断点定义
+
+| 断点 | Tailwind 前缀 | 屏幕宽度 | 设备类型 |
+|------|--------------|---------|---------|
+| sm | `sm:` | ≥ 640px | 手机横屏 |
+| md | `md:` | ≥ 768px | 平板 |
+| lg | `lg:` | ≥ 1024px | 小桌面 |
+| xl | `xl:` | ≥ 1280px | 标准桌面 |
+
+### 7.2 布局适配
+
+#### ApiStatusGrid 列数
+
+| 断点 | 列数 | class |
+|------|------|-------|
+| < 640px | 1 | `grid-cols-1` |
+| 640-1023px | 2 | `sm:grid-cols-2` |
+| 1024-1279px | 3 | `lg:grid-cols-3` |
+| ≥ 1280px | 4 | `xl:grid-cols-4` |
+
+#### DashboardFooter 列数
+
 | 断点 | 列数 |
-|-----|------|
-| <640px | 1 列 |
-| 640px-768px | 2 列 |
-| 768px-1024px | 3 列 |
-| ≥1024px | 4 列 |
+|------|------|
+| < 768px | 1 |
+| ≥ 768px | 3 |
 
-### 5.3 内容适配
+#### ApiConfig 新 API 表单列数
 
-| 元素 | 移动端 | 桌面端 |
-|-----|------|------|
-| Hero 标题 | text-4xl | text-5xl/6xl |
-| 地理位置 | 隐藏 | 显示 |
-| 副标题 | 显示 | 显示 |
+| 断点 | 列数 |
+|------|------|
+| < 640px | 1 |
+| ≥ 640px | 3 |
 
-## 6. 页面布局
+#### LatencyHistoryChart 高度
 
-### 6.1 主页面结构
+| 断点 | 高度 |
+|------|------|
+| < 768px | 320px |
+| ≥ 768px | 420px |
+
+### 7.3 内容可见性适配
+
+| 元素 | 移动端 | 桌面端 (≥ lg) |
+|------|--------|--------------|
+| 地理位置胶囊 | 隐藏 | 显示（`lg:flex`） |
+| 副标题说明 | 显示 | 显示 |
+| 图表完整刻度 | 简化（preserveStartEnd） | 完整（interval=0，>20 点时同上） |
+
+### 7.4 页面边距
+
+| 断点 | 横向边距 | class |
+|------|---------|-------|
+| 默认 | 24px | `px-6` |
+| md | 40px | `md:px-10` |
+| lg | 64px | `lg:px-16` |
+
+## 8. 页面布局
+
+### 8.1 主页面结构
 
 ```
-Dashboard
-├── Header (固定顶部)
-├── Hero Section (居中标题 + 渐变背景)
-├── Alerts Banner (条件显示)
-├── API Status Grid Section
-├── Latency History Chart Section
-└── Footer
+<html lang>
+└── <body> (bg: #0f0f14 + 三层径向渐变)
+    ├── DashboardHeader (sticky top-0 z-50)
+    │   ├── Brand Logo (size-10 rounded-xl + primary/accent gradient)
+    │   ├── Title + Subtitle (hidden sm:block)
+    │   ├── Right Actions (Bell / Theme / Geo / User / Login)
+    │   └── Alerts Dialog (Dialog + DialogContent max-w-lg)
+    ├── <main> (mx-auto max-w-7xl)
+    │   ├── AlertsBanner（条件显示：当有活跃告警时）
+    │   ├── Section: API Status Grid (py-8)
+    │   └── Section: Latency History Chart (py-8)
+    └── DashboardFooter
+        ├── Separator
+        └── Grid: Global Coverage / UI Stack / Data Integrity
 ```
 
-### 6.2 间距
+### 8.2 垂直间距
 
-- 页面边距: px-6 md:px-10 lg:px-16
-- 垂直间距: py-12 md:py-16
-- Section 间距: space-y-12
+- main: `py-8 md:py-12`
+- Section 间: `space-y-10`
+- Header 内部: 紧凑 flex items-center gap-2
 
-## 7. 版本历史
+### 8.3 最大宽度
 
-### v3.0.0 (当前版本)
-- ✨ Apple 风格全面重构
-- 🎨 全新配色系统 (F5F5F7 背景)
-- 🎯 极简主义设计 (大量留白)
-- 💫 优雅动画效果
-- 📱 优化响应式布局
-- 🍎 圆角设计统一 (rounded-3xl)
-- ✨ Hero Section 新增渐变背景
+- 所有内容容器：`max-w-7xl`
+- AlertsDropdown Dialog 内容：`max-w-lg`
+
+## 9. 版本历史
+
+### v2.6.3
+- 🎨 Dark Indigo 主题全面落地（CSS 变量驱动）
+- 🎯 ApiStatusGrid 增加 card-hover-lift 悬浮效果 + StatusDot 光晕 + shimmer 进度条
+- 📊 LatencyHistoryChart 增加独立线性渐变填充 + 暗色图表样式
+- 🔔 AlertsDropdown 从 dropdown 重构为 Dialog 组件
+- ⚙️ ApiConfig 增加编辑/保存/重置完整流程 + localStorage 持久化
+- 👤 DashboardHeader 增加品牌光晕 + 头像悬停效果
+- ♿ 全面补充 aria-label 无障碍属性
+- 🌍 useI18n 多语言支持
 
 ### v2.6.2
 - 🐛 修复构建错误
 - 📦 Supabase 迁移
-- 🎨 配色微调
 
 ### v2.6.1
 - ✨ 初始版本

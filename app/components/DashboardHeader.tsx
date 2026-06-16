@@ -1,12 +1,12 @@
 'use client';
 
 import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { Alert, User } from '@/types';
 import { useI18n } from '@/hooks/useI18n';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 
 interface DashboardHeaderProps {
   user: User | null;
@@ -156,8 +156,4 @@ export default function DashboardHeader({
       </div>
     </header>
   );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(' ');
 }

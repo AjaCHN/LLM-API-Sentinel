@@ -1,8 +1,8 @@
-// app/components/StatusGrid.tsx v2.6.2
+// app/components/StatusGrid.tsx v2.6.3
 'use client';
 
 import ApiStatusGrid from './ApiStatusGrid';
-import { ApiStatus } from '../types';
+import type { ApiStatus } from '@/types';
 
 export default function StatusGrid({ statuses }: { statuses: ApiStatus[] }) {
   return <ApiStatusGrid statuses={statuses} />;
