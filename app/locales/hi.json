@@ -80,5 +80,13 @@
   },
   "general": {
     "and": "और"
+  },
+  "footer": {
+    "globalCoverage": "वैश्विक कवरेज",
+    "globalCoverageDesc": "अमेरिका और चीन में प्रमुख AI प्रदाताओं की निगरानी।",
+    "ui": "आधुनिक UI",
+    "uiDesc": "Next.js, Tailwind CSS, shadcn/ui और Recharts से निर्मित।",
+    "dataIntegrity": "डेटा अखंडता",
+    "dataIntegrityDesc": "ऐतिहासिक डेटा Supabase PostgreSQL द्वारा संग्रहीत।"
   }
 }

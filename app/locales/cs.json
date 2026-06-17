@@ -80,5 +80,13 @@
   },
   "general": {
     "and": "a"
+  },
+  "footer": {
+    "globalCoverage": "Globální Pokrytí",
+    "globalCoverageDesc": "Monitorování hlavních AI poskytovatelů v USA a Číně.",
+    "ui": "Moderní UI",
+    "uiDesc": "Postaveno na Next.js, Tailwind CSS, shadcn/ui a Recharts.",
+    "dataIntegrity": "Integrita Dat",
+    "dataIntegrityDesc": "Historické data uloženy via Supabase PostgreSQL."
   }
 }

@@ -1,10 +1,13 @@
 'use client';
 
 import { Zap, ShieldCheck, Settings } from 'lucide-react';
+import { useI18n } from '@/hooks/useI18n';
 
 import { Separator } from '@/components/ui/separator';
 
 export default function DashboardFooter() {
+  const { t } = useI18n();
+
   return (
     <footer className="flex flex-col gap-6 pt-8">
       <Separator />
@@ -12,30 +15,30 @@ export default function DashboardFooter() {
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-sm font-medium">
             <Zap className="size-4 text-primary" />
-            <span>Global Coverage</span>
+            <span>{t('footer.globalCoverage')}</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Monitoring major AI providers in the US and China.
+            {t('footer.globalCoverageDesc')}
           </p>
         </div>
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-sm font-medium">
             <Settings className="size-4 text-primary" />
-            <span>UI</span>
+            <span>{t('footer.ui')}</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Built with Next.js, Tailwind CSS, shadcn/ui, and Recharts.
+            {t('footer.uiDesc')}
           </p>
         </div>
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-sm font-medium">
             <ShieldCheck className="size-4 text-primary" />
-            <span>Data Integrity</span>
+            <span>{t('footer.dataIntegrity')}</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Historical data persisted via Supabase PostgreSQL.
+            {t('footer.dataIntegrityDesc')}
           </p>
         </div>
       </div>

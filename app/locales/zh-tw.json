@@ -80,5 +80,13 @@
   },
   "general": {
     "and": "和"
+  },
+  "footer": {
+    "globalCoverage": "全球覆蓋",
+    "globalCoverageDesc": "監控美國和中國的主要 AI 服務供應商。",
+    "ui": "現代介面",
+    "uiDesc": "基於 Next.js、Tailwind CSS、shadcn/ui 和 Recharts 构建。",
+    "dataIntegrity": "資料完整性",
+    "dataIntegrityDesc": "歷史資料透過 Supabase PostgreSQL 持久化儲存。"
   }
 }

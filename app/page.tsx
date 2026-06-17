@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { format } from 'date-fns';
 import { AlertTriangle, Settings, RefreshCw, Zap, Database, Globe } from 'lucide-react';
@@ -48,17 +48,19 @@ export default function Dashboard() {
     setMounted(true);
   }, []);
 
-  const chartData = history.reduce<ChartDataPoint[]>((acc, curr) => {
-    const time = curr.time;
-    if (!time) return acc;
-    const existing = acc.find((a) => a.time === time);
-    if (!existing) {
-      acc.push({ time, [curr.apiId]: curr.latency });
-    } else {
-      existing[curr.apiId] = curr.latency;
-    }
-    return acc;
-  }, []);
+  const chartData = useMemo(() => {
+    return history.reduce<ChartDataPoint[]>((acc, curr) => {
+      const time = curr.time;
+      if (!time) return acc;
+      const existing = acc.find((a) => a.time === time);
+      if (!existing) {
+        acc.push({ time, [curr.apiId]: curr.latency });
+      } else {
+        existing[curr.apiId] = curr.latency;
+      }
+      return acc;
+    }, []);
+  }, [history]);
 
   const onlineCount = statuses.filter(s => s.status === 'online').length;
   const degradedCount = statuses.filter(s => s.status === 'degraded').length;
@@ -158,7 +160,7 @@ export default function Dashboard() {
                   <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                     <Zap className="size-4 text-primary" />
                   </div>
-                  <span className="text-xs text-muted-foreground">Avg Latency</span>
+                  <span className="text-xs text-muted-foreground">{t('api.averageLatency')}</span>
                 </div>
                 <p className="text-2xl font-bold text-primary group-hover:scale-110 transition-transform">
                   {avgLatency}ms

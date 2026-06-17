@@ -80,5 +80,13 @@
   },
   "general": {
     "and": "و"
+  },
+  "footer": {
+    "globalCoverage": "تغطية عالمية",
+    "globalCoverageDesc": "مراقبة مزودي AI الرئيسيين في أمريكا والصين.",
+    "ui": "واجهة حديثة",
+    "uiDesc": "مبني باستخدام Next.js، Tailwind CSS، shadcn/ui و Recharts.",
+    "dataIntegrity": "سلامة البيانات",
+    "dataIntegrityDesc": "البيانات التاريخية محفوظة عبر Supabase PostgreSQL."
   }
 }

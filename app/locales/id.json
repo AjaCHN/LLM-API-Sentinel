@@ -80,5 +80,13 @@
   },
   "general": {
     "and": "dan"
+  },
+  "footer": {
+    "globalCoverage": "Cakupan Global",
+    "globalCoverageDesc": "Memantau penyedia AI utama di AS dan China.",
+    "ui": "UI Modern",
+    "uiDesc": "Dibangun dengan Next.js, Tailwind CSS, shadcn/ui, dan Recharts.",
+    "dataIntegrity": "Integritas Data",
+    "dataIntegrityDesc": "Data historis disimpan via Supabase PostgreSQL."
   }
 }

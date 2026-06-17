@@ -90,5 +90,13 @@
   },
   "general": {
     "and": "and"
+  },
+  "footer": {
+    "globalCoverage": "Global Coverage",
+    "globalCoverageDesc": "Monitoring major AI providers in the US and China.",
+    "ui": "Modern UI",
+    "uiDesc": "Built with Next.js, Tailwind CSS, shadcn/ui, and Recharts.",
+    "dataIntegrity": "Data Integrity",
+    "dataIntegrityDesc": "Historical data persisted via Supabase PostgreSQL."
   }
 }

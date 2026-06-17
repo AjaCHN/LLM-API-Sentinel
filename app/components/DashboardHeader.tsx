@@ -18,7 +18,6 @@ interface DashboardHeaderProps {
   geo: { city: string; country: string; ip?: string } | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   resolveAlert?: (id: string) => Promise<void>;
 }
 
