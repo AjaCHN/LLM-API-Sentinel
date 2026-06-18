@@ -131,7 +131,7 @@ export default function Dashboard() {
                   <span className="text-xs text-muted-foreground">{t('api.online')}</span>
                 </div>
                 <p className="text-2xl font-bold text-emerald-400 group-hover:scale-110 transition-transform">
-                  {onlineCount}
+                  {stats.online}
                 </p>
               </div>
 

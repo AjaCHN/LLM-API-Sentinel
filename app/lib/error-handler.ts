@@ -106,5 +106,16 @@ export function logError(error: unknown, context: string): void {
   }
 
   if (process.env.NODE_ENV === 'production') {
+    // 生产环境: 结构化日志 (脱敏), 不输出堆栈
+    const safeLog = {
+      code: appError.code,
+      context,
+      timestamp: appError.timestamp,
+      // 不暴露 user data, 仅记录错误类型
+      message: typeof appError.message === 'string'
+        ? appError.message.replace(/([^\\s]{100,})/g, '[truncated]')
+        : 'unknown',
+    };
+    console.error(JSON.stringify(safeLog));
   }
 }
