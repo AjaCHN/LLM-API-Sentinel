@@ -18,7 +18,7 @@ export interface ApiStoreState {
   
   // 操作方法
   clearHistory: () => void;
-  addHistoryEntry: (entry: StatusHistory) => void;
+  addHistoryEntry: (entry: StatusHistory | StatusHistory[]) => void;
   updateApiStatus: (apiId: string, status: Partial<ApiStatus>) => void;
   clearApiStatuses: () => void;
 }

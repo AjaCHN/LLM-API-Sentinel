@@ -1,6 +1,7 @@
 // app/hooks/useApiMonitor.ts v2.6.3
 // 改进：使用本地 API 检查，同时支持从 Supabase 同步数据
 import { useCallback, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { supabase } from '../lib/supabase';
 import { useApiStore, useAuthStore } from '../store';
 import { LATENCY_THRESHOLD, APIS_TO_CHECK } from '../constants';
@@ -18,7 +19,15 @@ export function useApiMonitor() {
     setLastUpdate,
     setStatuses,
     addHistoryEntry
-  } = useApiStore();
+  } = useApiStore(useShallow((state) => ({
+    statuses: state.statuses,
+    history: state.history,
+    isChecking: state.isChecking,
+    setIsChecking: state.setIsChecking,
+    setLastUpdate: state.setLastUpdate,
+    setStatuses: state.setStatuses,
+    addHistoryEntry: state.addHistoryEntry,
+  })));
   const { setError } = useAuthStore();
 
   // 同步 API 状态到 Supabase

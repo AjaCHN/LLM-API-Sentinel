@@ -93,6 +93,12 @@
   "general": {
     "and": "and"
   },
+  "geo": {
+    "title": "Location Detection",
+    "description": "Enable IP-based location detection to show your region in the dashboard. This is optional and can be changed anytime.",
+    "enable": "Enable",
+    "disable": "Disable"
+  },
   "footer": {
     "globalCoverage": "Global Coverage",
     "globalCoverageDesc": "Monitoring major AI providers in the US and China.",

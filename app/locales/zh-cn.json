@@ -83,6 +83,12 @@
   "general": {
     "and": "和"
   },
+  "geo": {
+    "title": "位置检测",
+    "description": "启用基于 IP 的位置检测以在仪表板中显示您的地区。这是可选的，可随时更改。",
+    "enable": "启用",
+    "disable": "禁用"
+  },
   "footer": {
     "globalCoverage": "全球覆盖",
     "globalCoverageDesc": "监控美国和中国的主要 AI 服务提供商。",
