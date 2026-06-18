@@ -180,22 +180,18 @@ export function useApiMonitor() {
       setLastUpdate(new Date());
 
       // 添加到历史记录
-      for (const result of results) {
-        const historyEntry: StatusHistory = {
-          id: `${result.id}-${Date.now()}`,
-          apiId: result.id,
-          status: result.status,
-          latency: result.latency,
-          time: new Date().toLocaleTimeString(),
-          timestamp: new Date()
-        };
-        addHistoryEntry(historyEntry);
-      }
+      const historyEntries: StatusHistory[] = results.map(result => ({
+        id: `${result.id}-${Date.now()}`,
+        apiId: result.id,
+        status: result.status,
+        latency: result.latency,
+        time: new Date().toLocaleTimeString(),
+        timestamp: new Date()
+      }));
+      addHistoryEntry(historyEntries);
 
-      // 对每个 API 状态检查是否需要创建告警
-      for (const result of results) {
-        await checkAndCreateAlert(result);
-      }
+      // 性能优化: 并行执行告警检查 (使用 Promise.all)
+      await Promise.all(results.map(result => checkAndCreateAlert(result)));
 
       // 尝试同步到 Supabase（可选）
       try {

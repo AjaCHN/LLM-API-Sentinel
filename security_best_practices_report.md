@@ -4,61 +4,105 @@
 **版本**: v2.6.3
 **审查日期**: 2026-06-18
 **审查类型**: 安全最佳实践 + React/Next.js 性能优化
+**更新日期**: 2026-06-18 (修复后)
 
 ---
 
 ## 执行摘要
 
-本报告对 LLM API Sentinel 项目进行了全面的安全最佳实践和 React/Next.js 性能优化审查。项目整体架构良好，采用 Next.js 13+ App Router、TypeScript、Tailwind CSS、shadcn/ui 和 Supabase 技术栈。审查发现 **4 个高优先级安全问题**、**6 个中等安全问题** 和 **8 个性能优化建议**。
+本报告对 LLM API Sentinel 项目进行了全面的安全最佳实践和 React/Next.js 性能优化审查。项目整体架构良好，采用 Next.js 13+ App Router、TypeScript、Tailwind CSS、shadcn/ui 和 Supabase 技术栈。审查发现 **4 个高优先级安全问题**、**6 个中等安全问题** 和 **10 个性能优化建议**。
+
+**修复状态**: 6 项问题已修复，详见下方各节标记。
 
 ---
 
-## 安全审查结果
+## 已修复问题
 
-### 严重级别 (Critical/High)
+### ✅ S-1: API 配置中的 XSS 风险 (已修复)
+**位置**: [app/components/ApiConfig.tsx](file:///workspace/app/components/ApiConfig.tsx)
 
-#### S-1: API 配置中的 XSS 风险
-**严重程度**: High
-**影响**: 可能导致跨站脚本攻击
-**位置**: [app/components/ApiConfig.tsx#L102-L123](file:///workspace/app/components/ApiConfig.tsx#L102-L123)
-
-**问题描述**:
-```typescript
-// 当前代码直接渲染 API 配置数据
-<p className="truncate text-sm font-medium">{api.name}</p>
-<p className="truncate text-xs text-muted-foreground">{api.provider}</p>
-<p className="truncate font-mono text-xs text-muted-foreground">{api.url}</p>
-```
-
-用户可以通过添加恶意 API 名称/URL 来注入脚本。虽然当前场景是用户自己配置的，但存储在 localStorage 中的数据可能被恶意扩展程序修改。
-
-**建议**:
-- 使用 `textContent` 而不是直接插值，或使用 DOMPurify 清理输入
-- 添加 URL 验证，确保以 `https://` 开头
-- 对用户输入进行长度限制
+**修复内容**:
+- 添加 `sanitizeInput()` 函数清理特殊字符 (`<`, `>`, `"`, `'`, `` ` ``)
+- 添加 `validateUrl()` 函数验证 URL 必须为 HTTPS 协议
+- 添加 `ValidatedApiConfigItem` 接口和 `validateApiConfig()` 验证函数
+- 添加输入长度限制 (MAX_INPUT_LENGTH = 100, MAX_URL_LENGTH = 200)
+- 添加验证错误提示 UI 组件
+- 添加国际化错误消息 (en.json, zh-cn.json)
 
 ---
 
-#### S-2: Supabase 客户端未验证环境变量
-**严重程度**: High
-**影响**: 使用占位符凭据可能导致意外行为
+### ✅ S-2: Supabase 客户端环境变量验证 (已修复)
 **位置**: [app/lib/supabase.ts](file:///workspace/app/lib/supabase.ts)
 
-**问题描述**:
-```typescript
-// 如果环境变量缺失,使用空的supabase客户端,功能将在运行时降级
-export const supabase = supabaseUrl && supabaseAnonKey
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : createClient('https://placeholder.supabase.co', 'placeholder-key');
-```
-
-当 Supabase 环境变量缺失时，代码使用占位符 URL 和密钥创建客户端，这可能导致静默失败或意外行为。
-
-**建议**:
-- 在应用启动时验证必需的环境变量，如果缺失则抛出明确错误
-- 考虑在 next.config.mjs 中添加环境变量验证
+**修复内容**:
+- 添加 `validateEnvironment()` 函数验证 URL 和 Key
+- 添加 `isValidSupabaseUrl()` 函数验证 URL 格式 (HTTPS + 有效域名)
+- 添加客户端运行时检测避免 SSR 问题
+- 添加 `isSupabaseConfigured` 导出供组件检查
+- 改进降级策略，提供明确警告日志
 
 ---
+
+### ✅ P-1: 组件过度重新渲染 (已修复)
+**位置**: [app/page.tsx](file:///workspace/app/page.tsx#L65-L74)
+
+**修复内容**:
+```typescript
+const stats = useMemo(() => ({
+  online: statuses.filter(s => s.status === 'online').length,
+  degraded: statuses.filter(s => s.status === 'degraded').length,
+  offline: statuses.filter(s => s.status === 'offline').length,
+  avgLatency: statuses.length > 0
+    ? Math.round(statuses.reduce((sum, s) => sum + s.latency, 0) / statuses.length)
+    : 0
+}), [statuses]);
+```
+
+---
+
+### ✅ P-2: API 监控中的请求瀑布 (已修复)
+**位置**: [app/hooks/useApiMonitor.ts](file:///workspace/app/hooks/useApiMonitor.ts#L193-L194)
+
+**修复内容**:
+```typescript
+// 性能优化: 并行执行告警检查 (使用 Promise.all)
+await Promise.all(results.map(result => checkAndCreateAlert(result)));
+```
+
+---
+
+### ✅ P-4: 状态批量更新 (已修复)
+**位置**: [app/hooks/useApiMonitor.ts](file:///workspace/app/hooks/useApiMonitor.ts#L182-L191), [app/store/api.ts](file:///workspace/app/store/api.ts)
+
+**修复内容**:
+```typescript
+// 批量创建历史记录
+const historyEntries: StatusHistory[] = results.map(result => ({...}));
+addHistoryEntry(historyEntries);
+
+// Store 支持数组参数
+addHistoryEntry: (entryOrEntries) => set((state) => {
+  const entries = Array.isArray(entryOrEntries) ? entryOrEntries : [entryOrEntries];
+  return { history: [...state.history, ...entries].slice(-100) };
+}),
+```
+
+---
+
+### ✅ S-8: 缺少速率限制 (已修复)
+**位置**: [server.ts](file:///workspace/server.ts)
+
+**修复内容**:
+- 添加内存速率限制器 `rateLimitMiddleware`
+- 配置: 1分钟窗口，最多100请求/IP
+- 添加 429 Too Many Requests 响应和 retryAfter 字段
+- 添加定期清理过期条带的定时器 (每5分钟)
+
+---
+
+## 安全审查结果 (待处理)
+
+### 严重级别 (Critical/High)
 
 #### S-3: 缺少 CSRF 保护
 **严重程度**: Medium-High
@@ -123,28 +167,14 @@ fetch 请求未包含 CSRF token 或 SameSite cookie。
 #### S-7: localStorage 数据无完整性验证
 **严重程度**: Medium
 **影响**: 配置数据可能被篡改
-**位置**: [app/components/ApiConfig.tsx#L38-L48](file:///workspace/app/components/ApiConfig.tsx#L38-L48)
+**位置**: [app/components/ApiConfig.tsx](file:///workspace/app/components/ApiConfig.tsx)
 
 **问题描述**:
-从 localStorage 读取的 API 配置没有完整性验证。
+虽然已添加输入验证，但存储的 localStorage 数据仍可能被直接修改。
 
 **建议**:
 - 使用 HMAC 签名验证数据完整性
 - 定义配置数据的 schema 并验证类型
-
----
-
-#### S-8: 缺少速率限制
-**严重程度**: Medium
-**影响**: API 可能被滥用或遭受 DoS
-**位置**: [server.ts](file:///workspace/server.ts)
-
-**问题描述**:
-Express 服务器没有配置速率限制中间件。
-
-**建议**:
-- 使用 `express-rate-limit` 限制请求频率
-- 对不同的 API 端点设置不同的限制
 
 ---
 
@@ -176,59 +206,37 @@ Express 服务器没有配置速率限制中间件。
 
 ---
 
-## React/Next.js 性能优化建议
+## React/Next.js 性能优化建议 (部分已修复)
 
-### 高优先级 (High Impact)
+### 已修复
 
-#### P-1: 组件过度重新渲染
-**规则**: `rerender-defer-reads`, `rerender-memo`
-**位置**: [app/page.tsx](file:///workspace/app/page.tsx#L25-L72)
+#### ✅ P-1: 组件过度重新渲染 (已修复)
+**位置**: [app/page.tsx](file:///workspace/app/page.tsx#L65-L74)
 
-**问题描述**:
-`page.tsx` 中大量内联计算在每次渲染时重新执行:
-```typescript
-const onlineCount = statuses.filter(s => s.status === 'online').length;
-const degradedCount = statuses.filter(s => s.status === 'degraded').length;
-const offlineCount = statuses.filter(s => s.status === 'offline').length;
-const avgLatency = statuses.length > 0 
-  ? Math.round(statuses.reduce((sum, s) => sum + s.latency, 0) / statuses.length) 
-  : 0;
-```
-
-**建议**:
-使用 `useMemo` 包装这些计算，或将统计逻辑下推到 `useApiStore` 级别:
-
-```typescript
-const stats = useMemo(() => ({
-  online: statuses.filter(s => s.status === 'online').length,
-  degraded: statuses.filter(s => s.status === 'degraded').length,
-  offline: statuses.filter(s => s.status === 'offline').length,
-  avgLatency: statuses.length > 0 
-    ? Math.round(statuses.reduce((sum, s) => sum + s.latency, 0) / statuses.length)
-    : 0
-}), [statuses]);
-```
+**修复内容**:
+- 使用 `useMemo` 包装统计计算
+- 避免每次渲染时重新计算 `onlineCount`, `degradedCount`, `offlineCount`, `avgLatency`
 
 ---
 
-#### P-2: API 监控中的请求瀑布
-**规则**: `async-parallel`
-**位置**: [app/hooks/useApiMonitor.ts#L195-L198](file:///workspace/app/hooks/useApiMonitor.ts#L195-L198)
+#### ✅ P-2: API 监控中的请求瀑布 (已修复)
+**位置**: [app/hooks/useApiMonitor.ts](file:///workspace/app/hooks/useApiMonitor.ts#L193-L194)
 
-**问题描述**:
-```typescript
-for (const result of results) {
-  await checkAndCreateAlert(result);  // 串行执行
-}
-```
-
-**建议**:
-使用 `Promise.all` 并行执行告警检查:
-```typescript
-await Promise.all(results.map(result => checkAndCreateAlert(result)));
-```
+**修复内容**:
+- 将串行 `for...await` 循环改为 `Promise.all` 并行执行
 
 ---
+
+#### ✅ P-4: 状态批量更新 (已修复)
+**位置**: [app/hooks/useApiMonitor.ts](file:///workspace/app/hooks/useApiMonitor.ts#L182-L191), [app/store/api.ts](file:///workspace/app/store/api.ts)
+
+**修复内容**:
+- 批量创建历史记录数组，一次性调用 `addHistoryEntry`
+- Store 的 `addHistoryEntry` 支持单条或数组参数
+
+---
+
+### 待处理
 
 #### P-3: 缺少数据获取加载状态
 **规则**: `async-suspense-boundaries`
@@ -246,35 +254,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 <Suspense fallback={<DashboardSkeleton />}>
   <Dashboard />
 </Suspense>
-```
-
----
-
-### 中等优先级 (Medium Impact)
-
-#### P-4: 状态更新可能触发额外渲染
-**规则**: `rerender-split-combined-hooks`
-**位置**: [app/hooks/useApiMonitor.ts#L172-L214](file:///workspace/app/hooks/useApiMonitor.ts#L172-L214)
-
-**问题描述**:
-```typescript
-setStatuses(results.sort((a, b) => a.name.localeCompare(b.name)));
-setLastUpdate(new Date());
-for (const result of results) {
-  const historyEntry = {...};
-  addHistoryEntry(historyEntry);  // N 次状态更新
-}
-```
-
-**建议**:
-批量更新历史记录:
-```typescript
-const historyEntries: StatusHistory[] = results.map(result => ({
-  id: `${result.id}-${Date.now()}`,
-  apiId: result.id,
-  ...
-}));
-addHistoryEntries(historyEntries);  // 一次性添加
 ```
 
 ---
@@ -392,18 +371,31 @@ import { Dashboard } from './Dashboard';  // 客户端组件
 
 ## 建议优先级
 
-| ID | 问题 | 优先级 | 估计工时 |
-|----|------|--------|----------|
-| S-1 | XSS 风险 | High | 1-2h |
-| S-2 | 环境变量验证 | High | 0.5h |
-| P-1 | 组件重渲染优化 | High | 1h |
-| P-2 | 请求并行化 | Medium | 0.5h |
-| P-3 | 加载状态骨架屏 | Medium | 1h |
-| S-3 | CSRF 保护 | Medium | 2h |
-| S-6 | CSP 配置 | Medium | 1h |
-| P-4 | 状态批量更新 | Low | 1h |
-| S-4 | 地理位置同意 | Low | 2h |
+| ID | 问题 | 优先级 | 状态 | 估计工时 |
+|----|------|--------|------|----------|
+| S-1 | XSS 风险 | High | ✅ 已修复 | - |
+| S-2 | 环境变量验证 | High | ✅ 已修复 | - |
+| P-1 | 组件重渲染优化 | High | ✅ 已修复 | - |
+| P-2 | 请求并行化 | Medium | ✅ 已修复 | - |
+| P-4 | 状态批量更新 | Medium | ✅ 已修复 | - |
+| S-8 | 速率限制 | Medium | ✅ 已修复 | - |
+| P-3 | 加载状态骨架屏 | Medium | ⏳ 待处理 | 1h |
+| S-3 | CSRF 保护 | Medium | ⏳ 待处理 | 2h |
+| S-6 | CSP 配置 | Medium | ⏳ 待处理 | 1h |
+| P-5 | useEffect 依赖 | Low | ⏳ 待处理 | 0.5h |
+| S-4 | 地理位置同意 | Low | ⏳ 待处理 | 2h |
+| S-5 | API 密钥暴露 | Low | ⏳ 待处理 | 1h |
+| P-7 | 图片优化 | Low | ⏳ 待处理 | 0.5h |
+| P-8 | 预加载提示 | Low | ⏳ 待处理 | 0.5h |
+| P-9 | 语言包延迟加载 | Low | ⏳ 待处理 | 2h |
+| P-10 | 服务端组件 | Low | ⏳ 待处理 | 2h |
+| S-7 | localStorage 完整性 | Low | ⏳ 待处理 | 1h |
+| S-9 | 错误信息脱敏 | Low | ⏳ 待处理 | 0.5h |
+| S-10 | 安全 HTTP 头 | Low | ⏳ 待处理 | 1h |
+
+**总结**: 已修复 6 项问题，待处理 13 项问题。
 
 ---
 
 *报告生成工具: Trae IDE 安全与性能审查*
+*最后更新: 2026-06-18*

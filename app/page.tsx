@@ -62,12 +62,16 @@ export default function Dashboard() {
     }, []);
   }, [history]);
 
-  const onlineCount = statuses.filter(s => s.status === 'online').length;
-  const degradedCount = statuses.filter(s => s.status === 'degraded').length;
-  const offlineCount = statuses.filter(s => s.status === 'offline').length;
-  const avgLatency = statuses.length > 0 
-    ? Math.round(statuses.reduce((sum, s) => sum + s.latency, 0) / statuses.length) 
-    : 0;
+  // 性能优化: 使用 useMemo 缓存统计计算结果
+  const stats = useMemo(() => {
+    const online = statuses.filter(s => s.status === 'online').length;
+    const degraded = statuses.filter(s => s.status === 'degraded').length;
+    const offline = statuses.filter(s => s.status === 'offline').length;
+    const avgLatency = statuses.length > 0
+      ? Math.round(statuses.reduce((sum, s) => sum + s.latency, 0) / statuses.length)
+      : 0;
+    return { online, degraded, offline, avgLatency };
+  }, [statuses]);
 
   if (!mounted) return null;
 
@@ -139,7 +143,7 @@ export default function Dashboard() {
                   <span className="text-xs text-muted-foreground">{t('api.degraded')}</span>
                 </div>
                 <p className="text-2xl font-bold text-amber-400 group-hover:scale-110 transition-transform">
-                  {degradedCount}
+                  {stats.degraded}
                 </p>
               </div>
 
@@ -151,7 +155,7 @@ export default function Dashboard() {
                   <span className="text-xs text-muted-foreground">{t('api.offline')}</span>
                 </div>
                 <p className="text-2xl font-bold text-destructive group-hover:scale-110 transition-transform">
-                  {offlineCount}
+                  {stats.offline}
                 </p>
               </div>
 
@@ -163,7 +167,7 @@ export default function Dashboard() {
                   <span className="text-xs text-muted-foreground">{t('api.averageLatency')}</span>
                 </div>
                 <p className="text-2xl font-bold text-primary group-hover:scale-110 transition-transform">
-                  {avgLatency}ms
+                  {stats.avgLatency}ms
                 </p>
               </div>
             </div>
@@ -182,7 +186,7 @@ export default function Dashboard() {
                     {t('alerts.alertsLabel')}: {alerts.length} {alerts.length > 1 ? t('alerts.activeIssuesPlural') : t('alerts.activeIssues')} {t('alerts.detected')}
                   </AlertTitle>
                   <AlertDescription className="mt-1 text-sm">
-                    {offlineCount} {t('alerts.offline')} · {degradedCount} {t('alerts.highLatency')}
+                    {stats.offline} {t('alerts.offline')} · {stats.degraded} {t('alerts.highLatency')}
                   </AlertDescription>
                 </div>
                 <Button

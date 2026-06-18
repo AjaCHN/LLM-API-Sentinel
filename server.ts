@@ -1,4 +1,4 @@
-// server.ts v2.6.2
+// server.ts v2.6.3
 import express from 'express';
 import next from 'next';
 import { createClient } from '@supabase/supabase-js';
@@ -6,6 +6,51 @@ import { parse } from 'url';
 import { performCheck } from './app/lib/monitor';
 import { LATENCY_THRESHOLD } from './app/constants';
 import type { ApiCheckResult } from './app/types';
+
+// 安全增强: 简单的内存速率限制器
+interface RateLimitEntry {
+  count: number;
+  resetTime: number;
+}
+
+const rateLimitMap = new Map<string, RateLimitEntry>();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1分钟窗口
+const RATE_LIMIT_MAX = 100; // 每分钟最多100个请求
+
+function rateLimitMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry || now > entry.resetTime) {
+    // 新窗口或过期窗口
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return next();
+  }
+
+  if (entry.count >= RATE_LIMIT_MAX) {
+    // 超过限制
+    console.warn(`[RateLimit] IP ${ip} exceeded rate limit`);
+    return res.status(429).json({
+      error: 'Too Many Requests',
+      message: 'Rate limit exceeded. Please try again later.',
+      retryAfter: Math.ceil((entry.resetTime - now) / 1000)
+    });
+  }
+
+  entry.count++;
+  return next();
+}
+
+// 清理过期的速率限制条目 (每5分钟)
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of rateLimitMap.entries()) {
+    if (now > entry.resetTime) {
+      rateLimitMap.delete(ip);
+    }
+  }
+}, 5 * 60 * 1000);
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -147,6 +192,9 @@ async function runBackgroundMonitor() {
 
 app.prepare().then(() => {
   const server = express();
+
+  // 安全增强: 应用速率限制中间件
+  server.use(rateLimitMiddleware);
 
   // Background task: Every 5 minutes
   setInterval(runBackgroundMonitor, 5 * 60 * 1000);

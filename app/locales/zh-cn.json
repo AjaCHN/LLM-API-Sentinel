@@ -76,7 +76,9 @@
     "provider": "提供商",
     "url": "地址",
     "edit": "编辑",
-    "reset": "重置为默认配置"
+    "reset": "重置为默认配置",
+    "errorNameRequired": "名称和提供商为必填项",
+    "errorInvalidUrl": "请输入有效的 HTTPS URL"
   },
   "general": {
     "and": "和"

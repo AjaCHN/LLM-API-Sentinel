@@ -40,9 +40,13 @@ export const useApiStore = create<ApiStoreState>()(
       
       // 操作方法
       clearHistory: () => set({ history: [] }),
-      addHistoryEntry: (entry) => set((state) => ({
-        history: [...state.history, entry].slice(-100) // 只保留最近100条记录
-      })),
+      // 性能优化: 支持批量添加历史记录
+      addHistoryEntry: (entryOrEntries) => set((state) => {
+        const entries = Array.isArray(entryOrEntries) ? entryOrEntries : [entryOrEntries];
+        return {
+          history: [...state.history, ...entries].slice(-100) // 只保留最近100条记录
+        };
+      }),
       updateApiStatus: (apiId, status) => set((state) => ({
         statuses: state.statuses.map(api => 
           api.id === apiId ? { ...api, ...status } : api

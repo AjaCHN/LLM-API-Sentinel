@@ -86,7 +86,9 @@
     "provider": "Provider",
     "url": "URL",
     "edit": "Edit",
-    "reset": "Reset to default configuration"
+    "reset": "Reset to default configuration",
+    "errorNameRequired": "Name and provider are required",
+    "errorInvalidUrl": "Please enter a valid HTTPS URL"
   },
   "general": {
     "and": "and"
