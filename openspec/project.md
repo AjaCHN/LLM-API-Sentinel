@@ -1,46 +1,59 @@
-# LLM API Sentinel 项目规范
+# LLM API Sentinel 项目规范 (v2.6.3)
 
 ## 1. 项目概述
 
 LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用性追踪系统，旨在为开发者和企业提供可靠的 API 状态监控服务。
 
 ### 1.1 核心功能
-- **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta, Mistral）和中国（Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek）主流 AI 供应商的连通性与延迟
-- **历史数据**：使用交互式面积图可视化性能趋势
-- **自适应 UI**：全响应式设计，支持深色/浅色模式切换
-- **实时更新**：基于 Supabase Realtime 实现状态即时同步
-- **安全访问**：手动健康检查受 Google 身份验证保护
-- **智能告警**：自动检测 API 宕机和延迟过高，并生成告警通知
-- **数据缓存**：内存和本地存储缓存机制，减少重复请求
-- **地理位置**：实时检测监控节点位置，24小时本地缓存
-- **多语言支持**：16 种语言国际化，自动检测浏览器语言
+- **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta, Mistral）和中国（Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek）主流 AI 供应商的连通性与延迟，共 12 个核心 API
+- **历史数据**：使用 Recharts 交互式面积图可视化性能趋势（默认保留最近 50 个数据点）
+- **自适应 UI**：全响应式设计（1/2/3/4 列网格），支持深色/浅色模式切换，默认深色沉浸主题（靛蓝 #6366f1 + 紫色 #8b5cf6）
+- **实时更新**：基于 Supabase Realtime 实现状态即时同步（默认 5 分钟检查周期）
+- **安全访问**：手动健康检查受 Supabase Auth (Google OAuth) 保护
+- **智能告警**：自动检测 API 宕机（offline）、降级（degraded）和延迟过高（阈值 1500ms），并生成告警通知
+- **数据缓存**：内存 + localStorage 双层缓存机制（默认 30 秒缓存，可配置 5 秒-1 分钟）
+- **地理位置**：实时检测监控节点位置，24 小时本地缓存
+- **多语言支持**：16 种语言国际化（en / zh-cn / zh-tw / ar / cs / es / hi / id / it / nl / pl / sv / th / tr / ru / vi），自动检测浏览器语言
 
 ### 1.2 技术栈
 | 类别 | 技术 | 版本 |
 |-----|------|------|
-| 前端框架 | Next.js 14.2.13 (App Router) | 14.2.13 |
+| 前端框架 | Next.js 14.2.13 (App Router, Static Export) | 14.2.13 |
 | 后端服务器 | Express 5.2.1 | 5.2.1 |
 | 数据库 | Supabase PostgreSQL | - |
 | 身份验证 | Supabase Auth (Google OAuth) | - |
 | 实时订阅 | Supabase Realtime | - |
 | 样式 | Tailwind CSS 4.1.11 | 4.1.11 |
+| 组件库 | shadcn/ui (基于 Tailwind) | - |
 | 图表 | Recharts 3.8.0 | 3.8.0 |
 | 图标 | Lucide React | - |
 | 状态管理 | Zustand 5.0.12 | 5.0.12 |
 | 国际化 | 自定义 i18n 系统 | - |
 | 时间处理 | date-fns 4.1.0 | 4.1.0 |
 
-### 1.3 系统架构
+### 1.3 关键常量
+| 常量 | 值 | 含义 |
+|-----|-----|-----|
+| `LATENCY_THRESHOLD` | 1500ms | 延迟过高告警阈值 |
+| `DEGRADED_THRESHOLD` | 1000ms | 降级状态阈值 |
+| `MAX_RETRIES` | 2 | 离线 API 重试次数 |
+| `MAX_CONCURRENT_REQUESTS` | 5 | 最大并发请求数 |
+| `CHART_DATA_LIMIT` | 50 | 图表数据点限制 |
+| `CHECK_INTERVAL` | 5 * 60 * 1000ms | 后台检查周期 |
+| `GEO_INFO_EXPIRY` | 24 小时 | 地理位置缓存有效期 |
+| `CACHE_EXPIRY` | 30 秒 | 响应数据默认缓存 |
+
+### 1.4 系统架构
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Next.js App   │────▶│     Supabase     │◀────│  Express Server │
-│   (Client)      │     │  (Auth + PostgreSQL) │   │  (Background)   │
+│   Next.js App   │────▶│    Supabase     │◀────│  Express Server │
+│  (Static HTML)  │     │(Auth + Postgres)│   │  (Background)     │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
-                                                         │
-                                                         ▼
-                                                ┌─────────────────┐
-                                                │  External LLM    │
-                                                │  APIs           │
+        │                      ▲                         │
+        │                      │                         ▼
+        └───── Realtime  ──────┘             ┌─────────────────┐
+                                                │  External LLM  │
+                                                │  APIs (12)     │
                                                 └─────────────────┘
 ```
 
@@ -50,67 +63,71 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 ```
 ├── app/
 │   ├── components/
-│   │   ├── AlertsDropdown.tsx    # 告警下拉组件
-│   │   ├── ApiConfig.tsx         # API 配置组件
-│   │   ├── ApiStatusGrid.tsx     # API 状态网格（旧版）
-│   │   ├── DashboardFooter.tsx   # 页脚组件
-│   │   ├── DashboardHeader.tsx   # 头部组件
-│   │   ├── LatencyHistoryChart.tsx # 延迟历史图表
-│   │   ├── StatusGrid.tsx        # 状态网格组件（新版）
-│   │   └── ThemeProvider.tsx     # 主题提供者
+│   │   ├── ui/                   # shadcn/ui 基础组件
+│   │   │   ├── alert.tsx
+│   │   │   ├── avatar.tsx
+│   │   │   ├── badge.tsx
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── dialog.tsx
+│   │   │   ├── dropdown-menu.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── label.tsx
+│   │   │   ├── popover.tsx
+│   │   │   ├── separator.tsx
+│   │   │   ├── skeleton.tsx
+│   │   │   └── tooltip.tsx
+│   │   ├── AlertsDropdown.tsx    # 告警下拉组件（shadcn Dialog）
+│   │   ├── ApiConfig.tsx         # API 配置组件（localStorage 读写）
+│   │   ├── ApiStatusGrid.tsx     # API 状态网格（主组件，按 provider 分组）
+│   │   ├── DashboardFooter.tsx   # 页脚组件（3 列 Feature 展示）
+│   │   ├── DashboardHeader.tsx   # 头部组件（Logo/告警/主题/地理/登录）
+│   │   ├── LatencyHistoryChart.tsx # 延迟历史图表（Recharts AreaChart）
+│   │   ├── StatusGrid.tsx        # 状态网格（向后兼容，转发给 ApiStatusGrid）
+│   │   └── ThemeProvider.tsx     # 主题提供者（next-themes）
 │   ├── hooks/
 │   │   ├── use-mobile.ts         # 移动端检测
-│   │   ├── useAlerts.ts          # 告警管理
-│   │   ├── useApiMonitor.ts      # API 监控
-│   │   ├── useAuth.ts            # 认证管理
-│   │   ├── useDashboardData.ts   # 仪表盘数据
-│   │   ├── useGeoLocation.ts     # 地理位置
-│   │   └── useI18n.ts            # 国际化
+│   │   ├── useAlerts.ts          # 告警管理（Zustand store）
+│   │   ├── useApiMonitor.ts      # API 监控逻辑（并发 + 重试）
+│   │   ├── useAuth.ts            # 认证管理（Supabase Auth）
+│   │   ├── useDashboardData.ts   # 仪表盘数据聚合（主 hook）
+│   │   ├── useGeoLocation.ts     # 地理位置（24 小时缓存）
+│   │   └── useI18n.ts            # 国际化（16 语言自动检测）
 │   ├── lib/
-│   │   ├── cache.ts              # 缓存逻辑
-│   │   ├── concurrency.ts        # 并发控制
-│   │   ├── error-handler.ts      # 错误处理
+│   │   ├── cache.ts              # 缓存逻辑（内存 + localStorage）
+│   │   ├── concurrency.ts        # 并发控制（信号量，默认 5）
+│   │   ├── error-handler.ts      # 错误处理（统一捕获 + 分类）
 │   │   ├── error.tsx             # 错误边界和通知组件
-│   │   ├── i18n.ts               # 国际化系统
-│   │   ├── metrics.ts            # 指标计算
-│   │   ├── monitor.ts            # API 监控逻辑
+│   │   ├── i18n.ts               # 国际化系统（语言资源加载）
+│   │   ├── metrics.ts            # 指标计算（平均延迟、可用性等）
+│   │   ├── monitor.ts            # API 监控核心逻辑
 │   │   ├── notification.ts       # 通知处理
 │   │   ├── supabase.ts           # Supabase 客户端配置
-│   │   └── utils.ts              # 工具函数
+│   │   └── utils.ts              # 工具函数（cn / getApiColor）
 │   ├── store/                    # Zustand 状态管理
-│   │   ├── alerts.ts             # 告警状态
-│   │   ├── api.ts                # API 状态
-│   │   ├── auth.ts               # 认证状态
-│   │   ├── error.ts              # 错误状态
-│   │   ├── geo.ts                # 地理位置状态
-│   │   ├── index.ts              # 导出文件
-│   │   └── store.ts              # 根 store
-│   ├── types/                    # TypeScript 类型定义
-│   │   └── index.ts
-│   ├── constants/                # 常量定义
-│   │   └── index.ts
-│   ├── locales/                  # 国际化翻译文件
-│   │   ├── en.json               # 英文
-│   │   ├── zh-cn.json            # 简体中文
-│   │   ├── zh-tw.json            # 繁体中文
-│   │   ├── ar.json               # 阿拉伯语
-│   │   ├── cs.json               # 捷克语
-│   │   ├── es.json               # 西班牙语
-│   │   ├── hi.json               # 印地语
-│   │   ├── id.json               # 印度尼西亚语
-│   │   ├── it.json               # 意大利语
-│   │   ├── nl.json               # 荷兰语
-│   │   ├── pl.json               # 波兰语
-│   │   ├── sv.json               # 瑞典语
-│   │   ├── th.json               # 泰语
-│   │   ├── tr.json               # 土耳其语
-│   │   ├── ru.json               # 俄语
-│   │   └── vi.json               # 越南语
-│   ├── style.css                 # 主题样式
-│   ├── layout.tsx                # 根布局
-│   └── page.tsx                  # 主页面
-│   ├── openspec/                     # 项目规范文档
-└── package.json
+│   ├── locales/                  # 语言资源 JSON（16 种语言）
+│   ├── types/index.ts            # 类型定义
+│   ├── constants/index.ts        # 常量与默认 API 配置
+│   ├── style.css                 # 全局样式（CSS 变量 + Tailwind）
+│   ├── globals.css               # 全局基础样式
+│   ├── layout.tsx                # 根布局（ThemeProvider 包裹）
+│   └── page.tsx                  # 主页面（Dashboard 组件）
+├── prototype/
+│   └── prototype.html            # 高保真原型（可直接浏览器打开预览）
+├── openspec/
+│   ├── ui.md                     # UI 设计系统规范
+│   ├── project.md                # 项目规范（当前文档）
+│   ├── architecture.md           # 架构文档
+│   ├── data.md                   # 数据模型
+│   ├── features.md               # 功能清单
+│   ├── logic.md                  # 业务逻辑
+│   └── README.md                 # OpenSpec 说明
+├── supabase/
+│   └── schema.sql                # 数据库 Schema
+├── CHANGELOG.md                  # 版本变更记录
+├── README.md                     # 项目说明（英文）
+├── README_CN.md                  # 项目说明（中文）
+└── package.json                  # 依赖与脚本
 ```
 
 ### 2.2 命名约定

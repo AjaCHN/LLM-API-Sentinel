@@ -27,9 +27,9 @@ function severityTone(severity: Alert['severity']): string {
     case 'high':
       return 'text-destructive';
     case 'medium':
-      return 'text-amber-600';
+      return 'text-amber-500';
     default:
-      return 'text-blue-600';
+      return 'text-blue-400';
   }
 }
 

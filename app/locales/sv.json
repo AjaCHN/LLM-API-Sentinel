@@ -80,5 +80,13 @@
   },
   "general": {
     "and": "och"
+  },
+  "footer": {
+    "globalCoverage": "Global Täckning",
+    "globalCoverageDesc": "Övervakning av större AI-leverantörer i USA och Kina.",
+    "ui": "Modern UI",
+    "uiDesc": "Byggd med Next.js, Tailwind CSS, shadcn/ui och Recharts.",
+    "dataIntegrity": "Dataintegritet",
+    "dataIntegrityDesc": "Historisk data lagrad via Supabase PostgreSQL."
   }
 }

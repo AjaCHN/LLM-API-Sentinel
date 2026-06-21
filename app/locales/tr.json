@@ -80,5 +80,13 @@
   },
   "general": {
     "and": "ve"
+  },
+  "footer": {
+    "globalCoverage": "Global Kapsama",
+    "globalCoverageDesc": "ABD ve Çin'deki ana AI sağlayıcılarını izleme.",
+    "ui": "Modern UI",
+    "uiDesc": "Next.js, Tailwind CSS, shadcn/ui ve Recharts ile oluşturuldu.",
+    "dataIntegrity": "Veri Bütünlüğü",
+    "dataIntegrityDesc": "Geçmiş veriler Supabase PostgreSQL ile saklanır."
   }
 }

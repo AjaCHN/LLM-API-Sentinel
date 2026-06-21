@@ -1,4 +1,4 @@
-// server.ts v2.6.2
+// server.ts v2.6.3
 import express from 'express';
 import next from 'next';
 import { createClient } from '@supabase/supabase-js';
@@ -8,6 +8,122 @@ import { LATENCY_THRESHOLD } from './app/constants';
 import type { ApiCheckResult } from './app/types';
 
 const dev = process.env.NODE_ENV !== 'production';
+
+function log(level: 'info' | 'warn' | 'error', message: string, extra: Record<string, unknown> = {}) {
+  const entry = { time: new Date().toISOString(), level, message, ...extra };
+  if (dev) {
+    console.log(`[${level.toUpperCase()}]`, message, Object.keys(extra).length ? extra : '');
+  } else {
+    console.log(JSON.stringify(entry));
+  }
+}
+
+interface RateLimiter {
+  hit(ip: string): Promise<{ allowed: boolean; retryAfter?: number; remaining: number }>;
+}
+
+class MemoryRateLimiter implements RateLimiter {
+  private map = new Map<string, { count: number; resetTime: number }>();
+  private windowMs = 60 * 1000;
+  private max = 100;
+
+  async hit(ip: string) {
+    const now = Date.now();
+    const entry = this.map.get(ip);
+    if (!entry || now > entry.resetTime) {
+      this.map.set(ip, { count: 1, resetTime: now + this.windowMs });
+      return { allowed: true, remaining: this.max - 1 };
+    }
+    if (entry.count >= this.max) {
+      return {
+        allowed: false,
+        retryAfter: Math.ceil((entry.resetTime - now) / 1000),
+        remaining: 0,
+      };
+    }
+    entry.count++;
+    return { allowed: true, remaining: this.max - entry.count };
+  }
+
+  startCleanup() {
+    setInterval(() => {
+      const now = Date.now();
+      for (const [ip, entry] of this.map.entries()) {
+        if (now > entry.resetTime) this.map.delete(ip);
+      }
+    }, 5 * 60 * 1000);
+  }
+}
+
+class RedisRateLimiter implements RateLimiter {
+  private url: string;
+  private token: string;
+  private windowMs = 60 * 1000;
+  private max = 100;
+
+  constructor(url: string, token: string) {
+    this.url = url;
+    this.token = token;
+  }
+
+  async hit(ip: string) {
+    try {
+      // Upstash Redis REST API-compatible request; works with any REST-redis provider.
+      // Uses INCR + EXPIRE for a sliding-window counter keyed per IP.
+      const key = `rate-limit:${ip}`;
+      const res = await fetch(`${this.url}/incr/${key}`, {
+        headers: { Authorization: `Bearer ${this.token}` },
+      });
+      if (!res.ok) throw new Error(`upstash ${res.status}`);
+      const { result: count } = (await res.json()) as { result: number };
+
+      if (count === 1) {
+        await fetch(`${this.url}/expire/${key}/${Math.floor(this.windowMs / 1000)}`, {
+          headers: { Authorization: `Bearer ${this.token}` },
+        });
+      }
+
+      if (count > this.max) {
+        return { allowed: false, retryAfter: 60, remaining: 0 };
+      }
+      return { allowed: true, remaining: this.max - count };
+    } catch (err) {
+      // Fallback: allow the request; alert via structured log.
+      log('warn', 'Rate limiter unavailable, falling back to permissive', { err: String(err) });
+      return { allowed: true, remaining: this.max };
+    }
+  }
+}
+
+const rateLimiter: RateLimiter = (() => {
+  const redisUrl = process.env.RATE_LIMIT_REDIS_URL;
+  const redisToken = process.env.RATE_LIMIT_REDIS_TOKEN;
+  if (redisUrl && redisToken) {
+    log('info', 'Using Redis/Upstash rate limiter');
+    return new RedisRateLimiter(redisUrl, redisToken);
+  }
+  log('info', 'Using in-memory rate limiter (single instance only)');
+  const ml = new MemoryRateLimiter();
+  ml.startCleanup();
+  return ml;
+})();
+
+async function rateLimitMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const ip = (req.ip || req.socket.remoteAddress || 'unknown').toString();
+  const result = await rateLimiter.hit(ip);
+  if (!result.allowed) {
+    log('warn', 'Rate limit exceeded', { ip, retryAfter: result.retryAfter });
+    res.status(429).json({
+      error: 'Too Many Requests',
+      message: 'Rate limit exceeded. Please try again later.',
+      retryAfter: result.retryAfter,
+    });
+    return;
+  }
+  res.setHeader('X-RateLimit-Remaining', String(result.remaining));
+  next();
+}
+
 const app = next({ dev });
 const handle = app.getRequestHandler();
 const port = parseInt(process.env.PORT || '3000', 10);
@@ -17,8 +133,8 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('[Server] Missing Supabase environment variables');
-  console.error('[Server] Required: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
+  log('error', 'Missing Supabase environment variables');
+  log('error', 'Required: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
   process.exit(1);
 }
 
@@ -26,7 +142,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 if (dev) {
-  console.log('[Server] Running in development mode');
+  log('info', 'Running in development mode');
 }
 
 async function hasExistingAlert(apiId: string, alertType: string): Promise<boolean> {
@@ -42,18 +158,18 @@ async function hasExistingAlert(apiId: string, alertType: string): Promise<boole
     if (error) throw error;
     return data && data.length > 0;
   } catch (error) {
-    console.error('[Server] Failed to check existing alerts:', error);
+    log('error', 'Failed to check existing alerts', { error: String(error) });
     return false;
   }
 }
 
 async function runBackgroundMonitor() {
-  console.log('[Monitor] Starting background check...');
+  log('info', 'Starting background check...');
   try {
-    const results = await performCheck() as ApiCheckResult[];
+    const results = (await performCheck()) as ApiCheckResult[];
 
     // Upsert API statuses
-    const upsertData = results.map(result => ({
+    const upsertData = results.map((result) => ({
       id: result.id,
       name: result.name,
       provider: result.provider,
@@ -69,7 +185,7 @@ async function runBackgroundMonitor() {
       average_latency: result.averageLatency || null,
       max_latency: result.maxLatency || null,
       min_latency: result.minLatency || null,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     }));
 
     const { error: upsertError } = await supabase
@@ -77,17 +193,17 @@ async function runBackgroundMonitor() {
       .upsert(upsertData, { onConflict: 'id' });
 
     if (upsertError) {
-      console.error('[Monitor] Failed to upsert API statuses:', upsertError);
+      log('error', 'Failed to upsert API statuses', { error: String(upsertError) });
     }
 
     // Insert history records
-    const historyData = results.map(result => ({
+    const historyData = results.map((result) => ({
       api_id: result.id,
       status: result.status,
       latency: result.latency,
       error: result.error || null,
       retries: result.retries || 0,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }));
 
     const { error: historyError } = await supabase
@@ -95,7 +211,7 @@ async function runBackgroundMonitor() {
       .insert(historyData);
 
     if (historyError) {
-      console.error('[Monitor] Failed to insert history records:', historyError);
+      log('error', 'Failed to insert history records', { error: String(historyError) });
     }
 
     // Create alerts for issues
@@ -111,11 +227,11 @@ async function runBackgroundMonitor() {
               type: 'downtime',
               message: `${result.name} is currently offline. (Auto-detected)`,
               timestamp: new Date().toISOString(),
-              resolved: false
+              resolved: false,
             });
 
           if (alertError) {
-            console.error('[Monitor] Failed to create downtime alert:', alertError);
+            log('error', 'Failed to create downtime alert', { error: String(alertError) });
           }
         }
       } else if (result.latency > LATENCY_THRESHOLD) {
@@ -129,39 +245,45 @@ async function runBackgroundMonitor() {
               type: 'latency',
               message: `${result.name} latency is high: ${result.latency}ms. (Auto-detected)`,
               timestamp: new Date().toISOString(),
-              resolved: false
+              resolved: false,
             });
 
           if (alertError) {
-            console.error('[Monitor] Failed to create latency alert:', alertError);
+            log('error', 'Failed to create latency alert', { error: String(alertError) });
           }
         }
       }
     }
 
-    console.log('[Monitor] Background check completed and synced.');
+    log('info', 'Background check completed and synced.');
   } catch (error) {
-    console.error('[Monitor] Background check failed:', error);
+    log('error', 'Background check failed', { error: String(error) });
   }
 }
 
-app.prepare().then(() => {
-  const server = express();
+app
+  .prepare()
+  .then(() => {
+    const server = express();
 
-  // Background task: Every 5 minutes
-  setInterval(runBackgroundMonitor, 5 * 60 * 1000);
-  // Initial check
-  setTimeout(runBackgroundMonitor, 10000);
+    // 安全增强: 应用速率限制中间件
+    server.use(rateLimitMiddleware);
 
-  server.all(/.*/, (req, res) => {
-    const parsedUrl = parse(req.url!, true);
-    handle(req, res, parsedUrl);
+    // Background task: Every 5 minutes
+    setInterval(runBackgroundMonitor, 5 * 60 * 1000);
+    // Initial check
+    setTimeout(runBackgroundMonitor, 10000);
+
+    server.all(/.*/, (req, res) => {
+      const parsedUrl = parse(req.url!, true);
+      handle(req, res, parsedUrl);
+    });
+
+    server.listen(port, () => {
+      log('info', `Ready on http://localhost:${port}`);
+    });
+  })
+  .catch((err) => {
+    log('error', 'Next.js prepare failed', { error: String(err) });
+    process.exit(1);
   });
-
-  server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`);
-  });
-}).catch((err) => {
-  console.error('Next.js prepare failed:', err);
-  process.exit(1);
-});

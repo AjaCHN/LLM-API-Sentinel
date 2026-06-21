@@ -1,3 +1,9 @@
+/**
+ * @module notification
+ * @description Handles platform-aware alert notifications (Discord / DingTalk / Feishu / generic webhook).
+ * Provides formatting, sending, batch-parallel dispatch, and helper utilities.
+ */
+
 // app/lib/notification.ts v2.6.3
 import { Alert } from '../types';
 
@@ -45,7 +51,7 @@ interface DiscordPayload {
   }>;
 }
 
-// 解析 Webhook URL 判断平台类型
+/** Detect platform type from webhook URL. */
 function detectPlatform(url: string): 'dingtalk' | 'feishu' | 'discord' | 'generic' {
   if (url.includes('oapi.dingtalk.com') || url.includes('dingtalk')) {
     return 'dingtalk';
@@ -59,11 +65,17 @@ function detectPlatform(url: string): 'dingtalk' | 'feishu' | 'discord' | 'gener
   return 'generic';
 }
 
-// 格式化告警为 Webhook 消息
+/** Format an alert payload for the target platform. */
 function formatAlert(alert: Alert, platform: string): WebhookPayload | DingTalkPayload | DiscordPayload {
-  const timestamp = alert.timestamp instanceof Date
-    ? alert.timestamp.toLocaleString()
-    : new Date(alert.timestamp as string).toLocaleString();
+  const normalizedTimestamp =
+    alert.timestamp instanceof Date
+      ? alert.timestamp
+      : typeof alert.timestamp === 'number'
+        ? new Date(alert.timestamp)
+        : typeof alert.timestamp === 'string'
+          ? new Date(alert.timestamp)
+          : new Date();
+  const timestamp = normalizedTimestamp.toLocaleString();
 
   const severityEmoji = {
     low: '🔵',
@@ -101,7 +113,7 @@ function formatAlert(alert: Alert, platform: string): WebhookPayload | DingTalkP
           ...(alert.latency ? [{ name: '延迟', value: `${alert.latency}ms`, inline: true }] : []),
           ...(alert.error ? [{ name: '错误信息', value: alert.error }] : [])
         ],
-        timestamp: new Date(alert.timestamp as string).toISOString()
+        timestamp: normalizedTimestamp.toISOString()
       }]
     } as DiscordPayload;
   }
@@ -141,7 +153,7 @@ function formatAlert(alert: Alert, platform: string): WebhookPayload | DingTalkP
   } as WebhookPayload;
 }
 
-// 发送 Webhook 请求
+/** Send a webhook POST with timeout + abort handling. */
 async function sendWebhookRequest(
   config: WebhookConfig,
   payload: WebhookPayload | DingTalkPayload | DiscordPayload

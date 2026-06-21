@@ -2,23 +2,30 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { setLocale, getLocale, initLocale, t as translate, formatMessage } from '../lib/i18n';
+import {
+  setLocale,
+  getLocale,
+  initLocale,
+  loadLocale,
+  t as translate,
+  formatMessage,
+  supportedLocales,
+} from '../lib/i18n';
 
 export function useI18n() {
   const [locale, setCurrentLocale] = useState('en');
-  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     initLocale();
     setCurrentLocale(getLocale());
-    setIsInitialized(true);
   }, []);
 
-  const changeLocale = useCallback((newLocale: string) => {
+  const changeLocale = useCallback(async (newLocale: string) => {
+    await loadLocale(newLocale);
     setLocale(newLocale);
-    setCurrentLocale(newLocale);
+    setCurrentLocale(getLocale());
     if (typeof window !== 'undefined') {
-      localStorage.setItem('locale', newLocale);
+      localStorage.setItem('locale', getLocale());
     }
   }, []);
 
@@ -35,10 +42,6 @@ export function useI18n() {
     setLocale: changeLocale,
     t,
     format,
-    isInitialized,
-    availableLocales: [
-      { code: 'en', name: 'English' },
-      { code: 'zh-CN', name: '中文' },
-    ],
+    supportedLocales,
   };
 }

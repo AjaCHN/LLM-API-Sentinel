@@ -1,12 +1,13 @@
 'use client';
 
+import Image from 'next/image';
 import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { Alert, User } from '@/types';
 import { useI18n } from '@/hooks/useI18n';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 
 interface DashboardHeaderProps {
   user: User | null;
@@ -18,7 +19,6 @@ interface DashboardHeaderProps {
   geo: { city: string; country: string; ip?: string } | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   resolveAlert?: (id: string) => Promise<void>;
 }
 
@@ -127,11 +127,21 @@ export default function DashboardHeader({
                 <p className="text-xs text-muted-foreground leading-tight">{user.email}</p>
               </div>
               <div className="relative group">
-                <Avatar className="size-8 border border-border/30 transition-all duration-300 group-hover:border-primary/50 group-hover:scale-105">
-                  <AvatarFallback className="text-xs font-medium bg-primary/10 text-primary">
-                    {getInitials(user.displayName)}
-                  </AvatarFallback>
-                </Avatar>
+                {user.photoURL ? (
+                  <Image
+                    src={user.photoURL}
+                    alt={user.displayName || 'User avatar'}
+                    width={32}
+                    height={32}
+                    className="rounded-full border border-border/30 transition-all duration-300 group-hover:border-primary/50 group-hover:scale-105 object-cover"
+                  />
+                ) : (
+                  <Avatar className="size-8 border border-border/30 transition-all duration-300 group-hover:border-primary/50 group-hover:scale-105">
+                    <AvatarFallback className="text-xs font-medium bg-primary/10 text-primary">
+                      {getInitials(user.displayName)}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
               </div>
               <Button 
                 variant="ghost" 
@@ -156,8 +166,4 @@ export default function DashboardHeader({
       </div>
     </header>
   );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(' ');
 }

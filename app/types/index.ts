@@ -38,7 +38,7 @@ export interface Alert {
   type: 'downtime' | 'latency' | 'error';
   severity: 'low' | 'medium' | 'high' | 'critical';
   message: string;
-  timestamp: Date | unknown;
+  timestamp: Date | string | number;
   resolved: boolean;
   error?: string;
   retries?: number;

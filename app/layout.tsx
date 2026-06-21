@@ -42,6 +42,16 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="preconnect"
+          href={process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://supabase.co'}
+          crossOrigin="anonymous"
+        />
+        <meta httpEquiv="X-Frame-Options" content="DENY" />
+      </head>
       <body suppressHydrationWarning className="antialiased">
         <ThemeProvider
           attribute="class"

@@ -76,9 +76,25 @@
     "provider": "提供商",
     "url": "地址",
     "edit": "编辑",
-    "reset": "重置为默认配置"
+    "reset": "重置为默认配置",
+    "errorNameRequired": "名称和提供商为必填项",
+    "errorInvalidUrl": "请输入有效的 HTTPS URL"
   },
   "general": {
     "and": "和"
+  },
+  "geo": {
+    "title": "位置检测",
+    "description": "启用基于 IP 的位置检测以在仪表板中显示您的地区。这是可选的，可随时更改。",
+    "enable": "启用",
+    "disable": "禁用"
+  },
+  "footer": {
+    "globalCoverage": "全球覆盖",
+    "globalCoverageDesc": "监控美国和中国的主要 AI 服务提供商。",
+    "ui": "现代界面",
+    "uiDesc": "基于 Next.js、Tailwind CSS、shadcn/ui 和 Recharts 构建。",
+    "dataIntegrity": "数据完整性",
+    "dataIntegrityDesc": "历史数据通过 Supabase PostgreSQL 持久化存储。"
   }
 }

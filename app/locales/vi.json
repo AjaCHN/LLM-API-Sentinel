@@ -80,5 +80,13 @@
   },
   "general": {
     "and": "và"
+  },
+  "footer": {
+    "globalCoverage": "Phạm vi Toàn cầu",
+    "globalCoverageDesc": "Giám sát các nhà cung cấp AI chính tại Mỹ và Trung Quốc.",
+    "ui": "UI Hiện đại",
+    "uiDesc": "Xây dựng với Next.js, Tailwind CSS, shadcn/ui và Recharts.",
+    "dataIntegrity": "Toàn vẹn Dữ liệu",
+    "dataIntegrityDesc": "Dữ liệu lịch trình được lưu qua Supabase PostgreSQL."
   }
 }

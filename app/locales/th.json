@@ -80,5 +80,13 @@
   },
   "general": {
     "and": "และ"
+  },
+  "footer": {
+    "globalCoverage": "การครอบคลุมทั่วโลก",
+    "globalCoverageDesc": "ติดตามผู้ให้บริการ AI หลักในสหรัฐอเมริกาและจีน",
+    "ui": "UI สมัยใหม่",
+    "uiDesc": "สร้างด้วย Next.js, Tailwind CSS, shadcn/ui และ Recharts",
+    "dataIntegrity": "ความสมบูรณ์ของข้อมูล",
+    "dataIntegrityDesc": "ข้อมูลประวัติศาสตร์จัดเก็บผ่าน Supabase PostgreSQL"
   }
 }

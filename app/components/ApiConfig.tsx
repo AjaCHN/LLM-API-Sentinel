@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Trash2, Save, X, Edit, Server } from 'lucide-react';
 import { APIS_TO_CHECK } from '@/constants';
 import { useI18n } from '@/hooks/useI18n';
+import { cn } from '@/lib/utils';
 
 import {
   Card,
@@ -25,26 +26,66 @@ interface ApiConfigItem {
   url: string;
 }
 
+// 输入验证和清理函数
+const MAX_INPUT_LENGTH = 100;
+const MAX_URL_LENGTH = 200;
+
+function sanitizeInput(input: string): string {
+  // 移除潜在的 HTML/JS 标签和特殊字符
+  return input
+    .replace(/[<>\"\'`]/g, '')
+    .trim()
+    .slice(0, MAX_INPUT_LENGTH);
+}
+
+function validateUrl(url: string): boolean {
+  // 验证 URL 格式和协议
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' && parsed.hostname.includes('.');
+  } catch {
+    return false;
+  }
+}
+
+// 验证后的 API 配置接口
+interface ValidatedApiConfigItem {
+  id: string;
+  name: string;
+  provider: string;
+  url: string;
+  isValid: boolean;
+}
+
+function validateApiConfig(config: ApiConfigItem[]): ValidatedApiConfigItem[] {
+  return config.map(api => ({
+    ...api,
+    isValid: validateUrl(api.url) && api.name.length > 0 && api.provider.length > 0
+  }));
+}
+
 export default function ApiConfig() {
   const { t } = useI18n();
-  const [config, setConfig] = useState<ApiConfigItem[]>([]);
+  const [config, setConfig] = useState<ValidatedApiConfigItem[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [newApi, setNewApi] = useState<Omit<ApiConfigItem, 'id'>>({
     name: '',
     provider: '',
     url: '',
   });
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
     const savedConfig = localStorage.getItem('apiConfig');
     if (savedConfig) {
       try {
-        setConfig(JSON.parse(savedConfig));
+        const parsed = JSON.parse(savedConfig);
+        setConfig(validateApiConfig(parsed));
       } catch {
-        setConfig([...APIS_TO_CHECK]);
+        setConfig(validateApiConfig([...APIS_TO_CHECK]));
       }
     } else {
-      setConfig([...APIS_TO_CHECK]);
+      setConfig(validateApiConfig([...APIS_TO_CHECK]));
     }
   }, []);
 
@@ -54,11 +95,27 @@ export default function ApiConfig() {
   };
 
   const addApi = () => {
-    if (!newApi.name || !newApi.provider || !newApi.url) return;
-    const id = `${newApi.provider.toLowerCase().replace(/\s+/g, '-')}-${newApi.name
+    setValidationError(null);
+    
+    const sanitizedName = sanitizeInput(newApi.name);
+    const sanitizedProvider = sanitizeInput(newApi.provider);
+    const sanitizedUrl = newApi.url.trim().slice(0, MAX_URL_LENGTH);
+    
+    if (!sanitizedName || !sanitizedProvider) {
+      setValidationError(t('config.errorNameRequired'));
+      return;
+    }
+    
+    if (!validateUrl(sanitizedUrl)) {
+      setValidationError(t('config.errorInvalidUrl'));
+      return;
+    }
+    
+    const id = `${sanitizedProvider.toLowerCase().replace(/\s+/g, '-')}-${sanitizedName
       .toLowerCase()
       .replace(/\s+/g, '-')}`;
-    setConfig([...config, { ...newApi, id }]);
+    
+    setConfig([...config, { id, name: sanitizedName, provider: sanitizedProvider, url: sanitizedUrl, isValid: true }]);
     setNewApi({ name: '', provider: '', url: '' });
   };
 
@@ -67,7 +124,7 @@ export default function ApiConfig() {
   };
 
   const resetToDefault = () => {
-    setConfig([...APIS_TO_CHECK]);
+    setConfig(validateApiConfig([...APIS_TO_CHECK]));
   };
 
   return (
@@ -99,12 +156,21 @@ export default function ApiConfig() {
       </CardHeader>
 
       <CardContent className="flex flex-col gap-3">
+        {validationError && (
+          <div className="rounded-lg bg-destructive/10 border border-destructive/30 p-3 text-sm text-destructive">
+            {validationError}
+          </div>
+        )}
         {config.map((api) => (
           <div
             key={api.id}
-            className="flex items-center justify-between gap-4 rounded-lg border p-3"
+            className={cn(
+              "flex items-center justify-between gap-4 rounded-lg border p-3",
+              !api.isValid && "border-destructive/50 bg-destructive/5"
+            )}
           >
             <div className="min-w-0">
+              {/* 使用 textContent 安全渲染，防止 XSS */}
               <p className="truncate text-sm font-medium">{api.name}</p>
               <p className="truncate text-xs text-muted-foreground">{api.provider}</p>
               <p className="truncate font-mono text-xs text-muted-foreground">{api.url}</p>

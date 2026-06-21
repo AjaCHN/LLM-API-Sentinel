@@ -1,6 +1,7 @@
 // app/hooks/useApiMonitor.ts v2.6.3
 // 改进：使用本地 API 检查，同时支持从 Supabase 同步数据
 import { useCallback, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { supabase } from '../lib/supabase';
 import { useApiStore, useAuthStore } from '../store';
 import { LATENCY_THRESHOLD, APIS_TO_CHECK } from '../constants';
@@ -18,7 +19,15 @@ export function useApiMonitor() {
     setLastUpdate,
     setStatuses,
     addHistoryEntry
-  } = useApiStore();
+  } = useApiStore(useShallow((state) => ({
+    statuses: state.statuses,
+    history: state.history,
+    isChecking: state.isChecking,
+    setIsChecking: state.setIsChecking,
+    setLastUpdate: state.setLastUpdate,
+    setStatuses: state.setStatuses,
+    addHistoryEntry: state.addHistoryEntry,
+  })));
   const { setError } = useAuthStore();
 
   // 同步 API 状态到 Supabase
@@ -180,22 +189,18 @@ export function useApiMonitor() {
       setLastUpdate(new Date());
 
       // 添加到历史记录
-      for (const result of results) {
-        const historyEntry: StatusHistory = {
-          id: `${result.id}-${Date.now()}`,
-          apiId: result.id,
-          status: result.status,
-          latency: result.latency,
-          time: new Date().toLocaleTimeString(),
-          timestamp: new Date()
-        };
-        addHistoryEntry(historyEntry);
-      }
+      const historyEntries: StatusHistory[] = results.map(result => ({
+        id: `${result.id}-${Date.now()}`,
+        apiId: result.id,
+        status: result.status,
+        latency: result.latency,
+        time: new Date().toLocaleTimeString(),
+        timestamp: new Date()
+      }));
+      addHistoryEntry(historyEntries);
 
-      // 对每个 API 状态检查是否需要创建告警
-      for (const result of results) {
-        await checkAndCreateAlert(result);
-      }
+      // 性能优化: 并行执行告警检查 (使用 Promise.all)
+      await Promise.all(results.map(result => checkAndCreateAlert(result)));
 
       // 尝试同步到 Supabase（可选）
       try {

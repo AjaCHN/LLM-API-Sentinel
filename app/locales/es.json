@@ -80,5 +80,13 @@
   },
   "general": {
     "and": "y"
+  },
+  "footer": {
+    "globalCoverage": "Cobertura Global",
+    "globalCoverageDesc": "Monitoreo de los principales proveedores de IA en EE.UU. y China.",
+    "ui": "Interfaz Moderna",
+    "uiDesc": "Construido con Next.js, Tailwind CSS, shadcn/ui y Recharts.",
+    "dataIntegrity": "Integridad de Datos",
+    "dataIntegrityDesc": "Datos históricos persistidos via Supabase PostgreSQL."
   }
 }

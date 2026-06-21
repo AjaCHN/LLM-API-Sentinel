@@ -96,7 +96,12 @@ CREATE TRIGGER update_user_profiles_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
--- Row Level Security (RLS) Policies
+-- Row Level Security (RLS) Policies (v2.6.3)
+-- Security Model:
+--   - READ (SELECT): Public (all users, including anon) to allow dashboard data access
+--   - WRITE (INSERT/UPDATE): Restricted to authenticated users only
+--   - Reason: Anonymous users MUST NOT be able to mutate tables; only signed-in users
+--     or the service_role backend (which bypasses RLS) should write data.
 
 -- Enable RLS on all tables
 ALTER TABLE api_status ENABLE ROW LEVEL SECURITY;
@@ -105,31 +110,18 @@ ALTER TABLE alerts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 
 -- API Status: Everyone can read, only authenticated users can write
-CREATE POLICY "api_status_read_all" ON api_status
-  FOR SELECT USING (true);
-
-CREATE POLICY "api_status_insert_all" ON api_status
-  FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "api_status_update_all" ON api_status
-  FOR UPDATE USING (true);
+CREATE POLICY "api_status_read_all" ON api_status FOR SELECT USING (true);
+CREATE POLICY "api_status_insert_authenticated" ON api_status FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "api_status_update_authenticated" ON api_status FOR UPDATE TO authenticated USING (true);
 
 -- Status History: Everyone can read, only authenticated users can insert
-CREATE POLICY "status_history_read_all" ON status_history
-  FOR SELECT USING (true);
-
-CREATE POLICY "status_history_insert_all" ON status_history
-  FOR INSERT WITH CHECK (true);
+CREATE POLICY "status_history_read_all" ON status_history FOR SELECT USING (true);
+CREATE POLICY "status_history_insert_authenticated" ON status_history FOR INSERT TO authenticated WITH CHECK (true);
 
 -- Alerts: Everyone can read, authenticated users can update (resolve)
-CREATE POLICY "alerts_read_all" ON alerts
-  FOR SELECT USING (true);
-
-CREATE POLICY "alerts_update_resolve" ON alerts
-  FOR UPDATE USING (true);
-
-CREATE POLICY "alerts_insert_all" ON alerts
-  FOR INSERT WITH CHECK (true);
+CREATE POLICY "alerts_read_all" ON alerts FOR SELECT USING (true);
+CREATE POLICY "alerts_update_authenticated" ON alerts FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "alerts_insert_authenticated" ON alerts FOR INSERT TO authenticated WITH CHECK (true);
 
 -- User Profiles: Users can read their own profile, admins can read all
 CREATE POLICY "user_profiles_select_own" ON user_profiles
@@ -161,7 +153,16 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- Grant necessary permissions
+-- Grant explicit, least-privilege permissions
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
-GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
+-- authenticated users: read + write on data tables (enforced by RLS)
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
+-- anonymous users: read-only (SELECT) for dashboard viewing
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon;
+GRANT SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO authenticated;
+GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO anon;
+-- Ensure future tables automatically inherit this policy
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO anon;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, UPDATE ON SEQUENCES TO authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON SEQUENCES TO anon;

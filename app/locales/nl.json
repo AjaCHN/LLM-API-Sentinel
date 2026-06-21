@@ -80,5 +80,13 @@
   },
   "general": {
     "and": "en"
+  },
+  "footer": {
+    "globalCoverage": "Wereldwijde Dekking",
+    "globalCoverageDesc": "Monitoring van grote AI-providers in de VS en China.",
+    "ui": "Moderne UI",
+    "uiDesc": "Gebouwd met Next.js, Tailwind CSS, shadcn/ui en Recharts.",
+    "dataIntegrity": "Data Integriteit",
+    "dataIntegrityDesc": "Historische data opgeslagen via Supabase PostgreSQL."
   }
 }

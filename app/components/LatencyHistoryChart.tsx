@@ -78,12 +78,13 @@ function LatencyHistoryChart({
                 borderRadius: '12px',
                 fontSize: '12px',
                 color: 'var(--foreground)',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                padding: '12px 14px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.2), 0 0 0 1px rgba(99,102,241,0.1)',
+                padding: '12px 16px',
               }}
-              itemStyle={{ padding: '4px 0' }}
-              labelStyle={{ marginBottom: '8px', fontWeight: 600, fontSize: '11px' }}
+              itemStyle={{ padding: '4px 0', display: 'flex', alignItems: 'center', gap: '8px' }}
+              labelStyle={{ marginBottom: '10px', fontWeight: 600, fontSize: '11px', opacity: 0.7 }}
               filterNull={true}
+              formatter={(value) => value !== undefined ? [`${value}ms`, ''] : ['', '']}
             />
             {statuses.map((s) => (
               <Area

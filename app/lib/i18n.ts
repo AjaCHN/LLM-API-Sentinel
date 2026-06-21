@@ -1,42 +1,13 @@
 // app/lib/i18n.ts v2.6.3
-import en from '../locales/en.json';
-import zhCN from '../locales/zh-cn.json';
-import zhTW from '../locales/zh-tw.json';
-import ar from '../locales/ar.json';
-import cs from '../locales/cs.json';
-import es from '../locales/es.json';
-import hi from '../locales/hi.json';
-import id from '../locales/id.json';
-import it from '../locales/it.json';
-import nl from '../locales/nl.json';
-import pl from '../locales/pl.json';
-import sv from '../locales/sv.json';
-import th from '../locales/th.json';
-import tr from '../locales/tr.json';
-import ru from '../locales/ru.json';
-import vi from '../locales/vi.json';
 
-type TranslationData = {
-  [section: string]: { [key: string]: string };
-};
+type TranslationData = { [section: string]: { [key: string]: string } };
+const translations: Record<string, TranslationData> = {};
 
-const translations: Record<string, TranslationData> = {
-  en,
-  'zh-CN': zhCN,
-  'zh-TW': zhTW,
-  ar,
-  cs,
-  es,
-  hi,
-  id,
-  it,
-  nl,
-  pl,
-  sv,
-  th,
-  tr,
-  ru,
-  vi,
+let currentLocale = 'en';
+let enFallback: TranslationData | null = null;
+
+const enInlineFallback: TranslationData = {
+  dashboard: { title: 'LLM API Sentinel' },
 };
 
 export const supportedLocales = [
@@ -58,7 +29,37 @@ export const supportedLocales = [
   { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
 ] as const;
 
-let currentLocale = 'en';
+export async function loadLocale(locale: string): Promise<void> {
+  if (translations[locale]) {
+    currentLocale = locale;
+    return;
+  }
+  if (typeof window === 'undefined') {
+    return;
+  }
+  try {
+    const mod = await import(`../locales/${locale}.json`);
+    translations[locale] = mod.default as TranslationData;
+    if (locale === 'en') {
+      enFallback = mod.default as TranslationData;
+    }
+    currentLocale = locale;
+  } catch {
+    if (locale !== 'en' && translations['en']) {
+      currentLocale = 'en';
+    }
+  }
+}
+
+export function initLocaleSync(): void {
+  if (!translations['en']) {
+    translations['en'] = enInlineFallback;
+  }
+  if (!enFallback) {
+    enFallback = enInlineFallback;
+  }
+  currentLocale = 'en';
+}
 
 export function setLocale(locale: string): void {
   if (translations[locale]) {
@@ -75,37 +76,40 @@ export function getLocale(): string {
 
 export function detectBrowserLocale(): string {
   if (typeof window === 'undefined') return 'en';
-  
+
   const browserLang = navigator.language || 'en';
   const browserLangLower = browserLang.toLowerCase();
-  
-  // Direct match
-  if (translations[browserLangLower]) {
-    return browserLangLower;
+
+  const availableCodes = supportedLocales.map((l) => l.code);
+  const lowerToCode: Record<string, string> = {};
+  for (const code of availableCodes) {
+    lowerToCode[code.toLowerCase()] = code;
   }
-  
-  // Check for locale without region (e.g., 'zh' from 'zh-CN')
+
+  if (lowerToCode[browserLangLower]) {
+    return lowerToCode[browserLangLower];
+  }
+
   const langOnly = browserLangLower.split('-')[0];
-  
-  // Language code mapping
+
   const langToLocale: Record<string, string> = {
-    'zh': browserLangLower.includes('tw') || browserLangLower.includes('hant') ? 'zh-TW' : 'zh-CN',
-    'en': 'en',
-    'ar': 'ar',
-    'cs': 'cs',
-    'es': 'es',
-    'hi': 'hi',
-    'id': 'id',
-    'it': 'it',
-    'nl': 'nl',
-    'pl': 'pl',
-    'sv': 'sv',
-    'th': 'th',
-    'tr': 'tr',
-    'ru': 'ru',
-    'vi': 'vi',
+    zh: browserLangLower.includes('tw') || browserLangLower.includes('hant') ? 'zh-TW' : 'zh-CN',
+    en: 'en',
+    ar: 'ar',
+    cs: 'cs',
+    es: 'es',
+    hi: 'hi',
+    id: 'id',
+    it: 'it',
+    nl: 'nl',
+    pl: 'pl',
+    sv: 'sv',
+    th: 'th',
+    tr: 'tr',
+    ru: 'ru',
+    vi: 'vi',
   };
-  
+
   return langToLocale[langOnly] || 'en';
 }
 
@@ -114,14 +118,11 @@ export function detectLocale(): string {
 }
 
 export function initLocale(): void {
-  if (typeof window !== 'undefined') {
-    const savedLocale = localStorage.getItem('locale');
-    if (savedLocale && translations[savedLocale]) {
-      currentLocale = savedLocale;
-    } else {
-      currentLocale = detectLocale();
-    }
-  }
+  initLocaleSync();
+  if (typeof window === 'undefined') return;
+
+  const savedLocale = localStorage.getItem('locale') || detectLocale();
+  void loadLocale(savedLocale);
 }
 
 export function t(key: string): string {
@@ -132,16 +133,16 @@ export function t(key: string): string {
     if (value && typeof value === 'object' && k in value) {
       value = (value as Record<string, unknown>)[k];
     } else {
-      const enValue: unknown = translations['en'];
-      let fallback: unknown = enValue;
+      const fallback: unknown = enFallback || translations['en'];
+      let fb: unknown = fallback;
       for (const fk of keys) {
-        if (fallback && typeof fallback === 'object' && fk in fallback) {
-          fallback = (fallback as Record<string, unknown>)[fk];
+        if (fb && typeof fb === 'object' && fk in fb) {
+          fb = (fb as Record<string, unknown>)[fk];
         } else {
           return key;
         }
       }
-      return typeof fallback === 'string' ? fallback : key;
+      return typeof fb === 'string' ? fb : key;
     }
   }
 
