@@ -1,8 +1,0 @@
-module.exports = {
-  extends: ["next/core-web-vitals", "next/typescript"],
-  rules: {
-    "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
-  },
-  ignorePatterns: ["node_modules/", "out/", ".next/", "jest.setup.cjs"]
-};
