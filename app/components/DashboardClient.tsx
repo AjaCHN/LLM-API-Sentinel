@@ -12,6 +12,7 @@ import LatencyHistoryChart from '@/components/LatencyHistoryChart';
 import DashboardFooter from '@/components/DashboardFooter';
 import ApiConfig from '@/components/ApiConfig';
 import AlertsDropdown from '@/components/AlertsDropdown';
+import { StatCard } from '@/components/StatCard';
 import { getApiColor, cn } from '@/lib/utils';
 import type { ChartDataPoint } from '@/types';
 import { useI18n } from '@/hooks/useI18n';
@@ -126,53 +127,49 @@ export default function DashboardClient() {
             </p>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                    <Zap className="size-4 text-emerald-400" />
-                  </div>
-                  <span className="text-xs text-muted-foreground">{t('api.online')}</span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-400 group-hover:scale-110 transition-transform">
-                  {stats.online}
-                </p>
-              </div>
+              <StatCard
+                icon={<Zap className="size-4 text-emerald-400" />}
+                label={t('api.online')}
+                value={stats.online}
+                iconBgColor="bg-emerald-500/10"
+                iconTextColor="text-emerald-400"
+                valueColor="text-emerald-400"
+                hoverBorderColor="hover:border-primary/30"
+                hoverShadowColor="hover:shadow-lg hover:shadow-primary/5"
+              />
 
-              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                    <AlertTriangle className="size-4 text-amber-400" />
-                  </div>
-                  <span className="text-xs text-muted-foreground">{t('api.degraded')}</span>
-                </div>
-                <p className="text-2xl font-bold text-amber-400 group-hover:scale-110 transition-transform">
-                  {stats.degraded}
-                </p>
-              </div>
+              <StatCard
+                icon={<AlertTriangle className="size-4 text-amber-400" />}
+                label={t('api.degraded')}
+                value={stats.degraded}
+                iconBgColor="bg-amber-500/10"
+                iconTextColor="text-amber-400"
+                valueColor="text-amber-400"
+                hoverBorderColor="hover:border-amber-500/30"
+                hoverShadowColor="hover:shadow-lg hover:shadow-amber-500/5"
+              />
 
-              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-destructive/30 hover:shadow-lg hover:shadow-destructive/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
-                    <Database className="size-4 text-destructive" />
-                  </div>
-                  <span className="text-xs text-muted-foreground">{t('api.offline')}</span>
-                </div>
-                <p className="text-2xl font-bold text-destructive group-hover:scale-110 transition-transform">
-                  {stats.offline}
-                </p>
-              </div>
+              <StatCard
+                icon={<Database className="size-4 text-destructive" />}
+                label={t('api.offline')}
+                value={stats.offline}
+                iconBgColor="bg-destructive/10"
+                iconTextColor="text-destructive"
+                valueColor="text-destructive"
+                hoverBorderColor="hover:border-destructive/30"
+                hoverShadowColor="hover:shadow-lg hover:shadow-destructive/5"
+              />
 
-              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Zap className="size-4 text-primary" />
-                  </div>
-                  <span className="text-xs text-muted-foreground">{t('api.averageLatency')}</span>
-                </div>
-                <p className="text-2xl font-bold text-primary group-hover:scale-110 transition-transform">
-                  {stats.avgLatency}ms
-                </p>
-              </div>
+              <StatCard
+                icon={<Zap className="size-4 text-primary" />}
+                label={t('api.averageLatency')}
+                value={`${stats.avgLatency}ms`}
+                iconBgColor="bg-primary/10"
+                iconTextColor="text-primary"
+                valueColor="text-primary"
+                hoverBorderColor="hover:border-primary/30"
+                hoverShadowColor="hover:shadow-lg hover:shadow-primary/5"
+              />
             </div>
           </div>
         </section>

@@ -1,4 +1,10 @@
 // app/types/index.ts v2.6.3
+// 类型定义文件 - 按逻辑分组组织
+
+// ============================================
+// API 状态相关类型
+// ============================================
+
 // API 状态接口
 export interface ApiStatus {
   id: string;
@@ -18,6 +24,9 @@ export interface ApiStatus {
   minLatency?: number;
 }
 
+// API 检查结果接口 (与 ApiStatus 相同)
+export type ApiCheckResult = ApiStatus;
+
 // 状态历史记录接口
 export interface StatusHistory {
   id?: string;
@@ -29,32 +38,6 @@ export interface StatusHistory {
   error?: string;
   retries?: number;
 }
-
-// 告警接口
-export interface Alert {
-  id: string;
-  apiId: string;
-  apiName: string;
-  type: 'downtime' | 'latency' | 'error';
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  message: string;
-  timestamp: Date | string | number;
-  resolved: boolean;
-  error?: string;
-  retries?: number;
-  latency?: number;
-  resolvedAt?: Date;
-  resolvedBy?: string;
-}
-
-// 图表数据点接口
-export interface ChartDataPoint {
-  time: string;
-  [apiId: string]: number | string;
-}
-
-// API 检查结果接口
-export type ApiCheckResult = ApiStatus;
 
 // API 指标接口
 export interface ApiMetrics {
@@ -71,6 +54,21 @@ export interface ApiMetrics {
   responseTimeTrend?: number[];
 }
 
+// API 配置接口
+export interface ApiConfig {
+  id: string;
+  name: string;
+  provider: string;
+  url: string;
+  enabled?: boolean;
+  checkInterval?: number;
+  timeout?: number;
+}
+
+// ============================================
+// 缓存与并发相关类型
+// ============================================
+
 // 缓存接口
 export interface ApiCheckCache {
   [apiId: string]: {
@@ -78,16 +76,6 @@ export interface ApiCheckCache {
     timestamp: number;
     expiry: number;
   };
-}
-
-// 地理位置接口
-export interface GeoLocation {
-  city: string;
-  country: string;
-  ip?: string;
-  region?: string;
-  latitude?: number;
-  longitude?: number;
 }
 
 // 并发请求选项接口
@@ -108,7 +96,7 @@ export interface QueueItem<T> {
   timestamp: number;
 }
 
-// 网络质量接口
+// 网络质量类型
 export type NetworkQuality = 'excellent' | 'good' | 'fair' | 'poor';
 
 // 并发状态接口
@@ -119,32 +107,25 @@ export interface ConcurrencyStatus {
   networkQuality: NetworkQuality;
 }
 
-// API 配置接口
-export interface ApiConfig {
+// ============================================
+// 告警与通知相关类型
+// ============================================
+
+// 告警接口
+export interface Alert {
   id: string;
-  name: string;
-  provider: string;
-  url: string;
-  enabled?: boolean;
-  checkInterval?: number;
-  timeout?: number;
-}
-
-// 用户接口
-export interface User {
-  uid: string;
-  displayName: string | null;
-  email: string | null;
-  photoURL: string | null;
-  providerId?: string;
-}
-
-// 错误接口
-export interface AppError {
-  code: string;
+  apiId: string;
+  apiName: string;
+  type: 'downtime' | 'latency' | 'error';
+  severity: 'low' | 'medium' | 'high' | 'critical';
   message: string;
-  details?: unknown;
-  timestamp: number;
+  timestamp: Date | string | number;
+  resolved: boolean;
+  error?: string;
+  retries?: number;
+  latency?: number;
+  resolvedAt?: Date;
+  resolvedBy?: string;
 }
 
 // 通知接口
@@ -155,4 +136,49 @@ export interface Notification {
   timestamp: number;
   duration?: number;
   dismissible?: boolean;
+}
+
+// ============================================
+// 图表数据相关类型
+// ============================================
+
+// 图表数据点接口
+export interface ChartDataPoint {
+  time: string;
+  [apiId: string]: number | string;
+}
+
+// ============================================
+// 用户与地理位置相关类型
+// ============================================
+
+// 用户接口
+export interface User {
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+  providerId?: string;
+}
+
+// 地理位置接口
+export interface GeoLocation {
+  city: string;
+  country: string;
+  ip?: string;
+  region?: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+// ============================================
+// 错误相关类型
+// ============================================
+
+// 错误接口
+export interface AppError {
+  code: string;
+  message: string;
+  details?: unknown;
+  timestamp: number;
 }

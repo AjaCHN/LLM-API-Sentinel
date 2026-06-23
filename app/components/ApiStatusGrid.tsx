@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { Activity, Server } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getStatusPulseColor, getLatencyColor, getProgressBarVariant } from '@/lib/utils';
 import { LATENCY_THRESHOLD } from '@/constants';
 import type { ApiStatus } from '@/types';
 import { useI18n } from '@/hooks/useI18n';
@@ -11,11 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 
 function StatusDot({ status }: { status: ApiStatus['status'] }) {
-  const pulseColor = status === 'online' 
-    ? 'shadow-[0_0_12px_rgba(34,197,94,0.6)]'
-    : status === 'degraded' 
-      ? 'shadow-[0_0_12px_rgba(245,158,11,0.6)]'
-      : 'shadow-[0_0_12px_rgba(239,68,68,0.6)]';
+  const pulseColor = getStatusPulseColor(status);
 
   return (
     <span
@@ -126,11 +122,8 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
               const isDegraded = api.status === 'degraded';
               const latencyHigh = api.latency >= LATENCY_THRESHOLD && !isOffline;
 
-              const latencyVariant: 'success' | 'warning' | 'danger' = isOffline
-                ? 'danger'
-                : isDegraded || latencyHigh
-                  ? 'warning'
-                  : 'success';
+              const latencyVariant = getProgressBarVariant(api.latency, LATENCY_THRESHOLD, isOffline);
+              const latencyColorClass = getLatencyColor(api.latency, LATENCY_THRESHOLD, isOffline);
 
               const statusBadgeVariant = isOffline
                 ? 'destructive'
@@ -180,19 +173,17 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
 
                   <CardContent className="relative space-y-4">
                     <div className="relative">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <span className="text-sm text-muted-foreground">{t('api.latency')}</span>
-                        <span
-                          className={cn(
-                            'text-2xl font-bold tabular-nums transition-colors',
-                            latencyHigh && 'text-amber-500',
-                            isOffline && 'text-destructive',
-                            !latencyHigh && !isOffline && 'text-emerald-400'
-                          )}
-                        >
-                          {isOffline ? t('api.timeout') : `${api.latency}ms`}
-                        </span>
-                      </div>
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="text-sm text-muted-foreground">{t('api.latency')}</span>
+                          <span
+                            className={cn(
+                              'text-2xl font-bold tabular-nums transition-colors',
+                              latencyColorClass
+                            )}
+                          >
+                            {isOffline ? t('api.timeout') : `${api.latency}ms`}
+                          </span>
+                        </div>
                       <div className="mt-3">
                         <ProgressBar
                           value={isOffline ? 100 : (api.latency / LATENCY_THRESHOLD) * 100}
