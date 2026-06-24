@@ -28,7 +28,7 @@ export function generateMockApiStatus(api: typeof APIS_TO_CHECK[0]): ApiStatus {
  * 为所有 API 生成模拟状态数据
  */
 export function generateMockApiStatuses(): ApiStatus[] {
-  return APIS_TO_CHECK.map(generateMockApiStatus).sort((a, b) => 
+  return APIS_TO_CHECK.map(generateMockApiStatus).sort((a: ApiStatus, b: ApiStatus) => 
     a.name.localeCompare(b.name)
   );
 }
