@@ -44,7 +44,11 @@
     "retries": "إعادة المحاولة",
     "noApiConfigured": "لم يتم تكوين نقاط API",
     "addApiHint": "أضف نقاط API لمراقبة حالتها وأدائها",
-    "status": "الحالة"
+    "status": "الحالة",
+    "apis": "APIs",
+    "other": "آخرى",
+    "timeout": "مهلة",
+    "times": "مرات"
   },
   "dashboard": {
     "title": "حارس واجهة برمجة تطبيقات LLM",

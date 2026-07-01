@@ -44,7 +44,11 @@
     "retries": "försök",
     "noApiConfigured": "Inga API-slutpunkter konfigurerade",
     "addApiHint": "Lägg till API-slutpunkter för att övervaka deras status och prestanda",
-    "status": "Status"
+    "status": "Status",
+    "apis": "APIs",
+    "other": "Annat",
+    "timeout": "Timeout",
+    "times": "gånger"
   },
   "dashboard": {
     "title": "LLM API Sentinel",

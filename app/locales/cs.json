@@ -44,7 +44,11 @@
     "retries": "opakovaných pokusů",
     "noApiConfigured": "Nejsou nakonfigurovány žádné koncové body API",
     "addApiHint": "Přidejte koncové body API pro sledování jejich stavu a výkonu",
-    "status": "Stav"
+    "status": "Stav",
+    "apis": "APIs",
+    "other": "Jiné",
+    "timeout": "Časový limit",
+    "times": "krát"
   },
   "dashboard": {
     "title": "LLM API Sentinel",

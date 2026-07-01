@@ -44,7 +44,11 @@
     "retries": "percobaan ulang",
     "noApiConfigured": "Tidak ada titik akhir API dikonfigurasi",
     "addApiHint": "Tambahkan titik akhir API untuk memantau status dan kinerjanya",
-    "status": "Status"
+    "status": "Status",
+    "apis": "APIs",
+    "other": "Lain",
+    "timeout": "Waktu habis",
+    "times": "kali"
   },
   "dashboard": {
     "title": "LLM API Sentinel",

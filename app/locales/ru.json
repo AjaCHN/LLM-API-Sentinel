@@ -44,7 +44,11 @@
     "retries": "повторов",
     "noApiConfigured": "Конечные точки API не настроены",
     "addApiHint": "Добавьте конечные точки API для мониторинга их состояния и производительности",
-    "status": "Статус"
+    "status": "Статус",
+    "apis": "APIs",
+    "other": "Другой",
+    "timeout": "Таймаут",
+    "times": "раз"
   },
   "dashboard": {
     "title": "LLM API Sentinel",

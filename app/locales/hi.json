@@ -44,7 +44,11 @@
     "retries": "पुनः प्रयास",
     "noApiConfigured": "कोई API एंडपॉइंट कॉन्फ़िगर नहीं",
     "addApiHint": "उनकी स्थिति और प्रदर्शन की निगरानी के लिए API एंडपॉइंट जोड़ें",
-    "status": "स्थिति"
+    "status": "स्थिति",
+    "apis": "APIs",
+    "other": "अन्य",
+    "timeout": "समय समाप्त",
+    "times": "बार"
   },
   "dashboard": {
     "title": "LLM API Sentinel",

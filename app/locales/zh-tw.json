@@ -44,7 +44,11 @@
     "retries": "重試",
     "noApiConfigured": "未設定 API 端點",
     "addApiHint": "新增 API 端點以監控其狀態和效能",
-    "status": "狀態"
+    "status": "狀態",
+    "apis": "APIs",
+    "other": "其他",
+    "timeout": "超時",
+    "times": "次"
   },
   "dashboard": {
     "title": "LLM API Sentinel",

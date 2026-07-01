@@ -44,7 +44,11 @@
     "retries": "lần thử lại",
     "noApiConfigured": "Không có điểm cuối API nào được định cấu hình",
     "addApiHint": "Thêm điểm cuối API để giám sát trạng thái và hiệu suất của chúng",
-    "status": "Trạng thái"
+    "status": "Trạng thái",
+    "apis": "APIs",
+    "other": "Khác",
+    "timeout": "Hết giờ",
+    "times": "lần"
   },
   "dashboard": {
     "title": "LLM API Sentinel",

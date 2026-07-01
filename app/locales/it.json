@@ -44,7 +44,11 @@
     "retries": "ritentativi",
     "noApiConfigured": "Nessun endpoint API configurato",
     "addApiHint": "Aggiungi endpoint API per monitorare il loro stato e le prestazioni",
-    "status": "Stato"
+    "status": "Stato",
+    "apis": "APIs",
+    "other": "Altro",
+    "timeout": "Timeout",
+    "times": "volte"
   },
   "dashboard": {
     "title": "LLM API Sentinel",

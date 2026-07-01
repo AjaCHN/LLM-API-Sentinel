@@ -44,7 +44,11 @@
     "retries": "herhalingen",
     "noApiConfigured": "Geen API-eindpunten geconfigureerd",
     "addApiHint": "Voeg API-eindpunten toe om hun status en prestaties te bewaken",
-    "status": "Status"
+    "status": "Status",
+    "apis": "APIs",
+    "other": "Anders",
+    "timeout": "Timeout",
+    "times": "keer"
   },
   "dashboard": {
     "title": "LLM API Sentinel",

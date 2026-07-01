@@ -44,7 +44,11 @@
     "retries": "yeniden deneme",
     "noApiConfigured": "Yapılandırılmış API uç noktası yok",
     "addApiHint": "Durumlarını ve performanslarını izlemek için API uç noktaları ekleyin",
-    "status": "Durum"
+    "status": "Durum",
+    "apis": "APIs",
+    "other": "Diğer",
+    "timeout": "Zaman aşımı",
+    "times": "kez"
   },
   "dashboard": {
     "title": "LLM API Sentinel",

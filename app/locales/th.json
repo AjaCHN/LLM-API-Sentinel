@@ -44,7 +44,11 @@
     "retries": "การลองใหม่",
     "noApiConfigured": "ไม่มีจุดสิ้นสุด API ที่กำหนดค่าไว้",
     "addApiHint": "เพิ่มจุดสิ้นสุด API เพื่อตรวจสอบสถานะและประสิทธิภาพ",
-    "status": "สถานะ"
+    "status": "สถานะ",
+    "apis": "APIs",
+    "other": "อื่น",
+    "timeout": "หมดเวลา",
+    "times": "ครั้ง"
   },
   "dashboard": {
     "title": "LLM API Sentinel",
