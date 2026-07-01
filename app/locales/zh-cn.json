@@ -78,7 +78,13 @@
     "signIn": "登录",
     "signOut": "登出",
     "toggleTheme": "切换主题",
-    "config": "配置"
+    "config": "配置",
+    "description": "实时监控和历史可用性跟踪主要 LLM API。",
+    "realTimeMonitoring": "实时监控",
+    "performanceTrends": "性能趋势",
+    "lastHour": "最近1小时",
+    "last6Hours": "最近6小时",
+    "last24Hours": "最近24小时"
   },
   "history": {
     "performanceHistory": "性能历史",
@@ -95,7 +101,7 @@
     "url": "地址",
     "edit": "编辑",
     "reset": "重置为默认配置",
-    "errorNameRequired": "名称和提供商为必填项",
+    "errorNameRequired": "名称和提供商是必填项",
     "errorInvalidUrl": "请输入有效的 HTTPS URL"
   },
   "general": {

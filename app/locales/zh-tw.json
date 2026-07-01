@@ -64,7 +64,13 @@
     "signIn": "登入",
     "signOut": "登出",
     "toggleTheme": "切換主題",
-    "config": "設定"
+    "config": "設定",
+    "description": "即時監控和歷史可用性追蹤主要 LLM API。",
+    "realTimeMonitoring": "即時監控",
+    "performanceTrends": "效能趨勢",
+    "lastHour": "最近1小時",
+    "last6Hours": "最近6小時",
+    "last24Hours": "最近24小時"
   },
   "history": {
     "performanceHistory": "效能歷史",
@@ -80,17 +86,25 @@
     "provider": "供應商",
     "url": "網址",
     "edit": "編輯",
-    "reset": "重設為預設設定"
+    "reset": "重設為預設設定",
+    "errorNameRequired": "名稱和提供商是必填項",
+    "errorInvalidUrl": "請輸入有效的 HTTPS URL"
   },
   "general": {
     "and": "和"
   },
   "footer": {
     "globalCoverage": "全球覆蓋",
-    "globalCoverageDesc": "監控美國和中國的主要 AI 服務供應商。",
+    "globalCoverageDesc": "監控美國和中國的主要 AI 服務提供商。",
     "ui": "現代介面",
-    "uiDesc": "基於 Next.js、Tailwind CSS、shadcn/ui 和 Recharts 构建。",
+    "uiDesc": "基於 Next.js、Tailwind CSS、shadcn/ui 和 Recharts 建構。",
     "dataIntegrity": "資料完整性",
     "dataIntegrityDesc": "歷史資料透過 Supabase PostgreSQL 持久化儲存。"
+  },
+  "geo": {
+    "title": "位置偵測",
+    "description": "啟用基於 IP 的位置偵測以在儀表板中顯示您的地區。這是可選的，可隨時變更。",
+    "enable": "啟用",
+    "disable": "停用"
   }
 }

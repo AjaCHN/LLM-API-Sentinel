@@ -64,7 +64,13 @@
     "signIn": "Logga In",
     "signOut": "Logga Ut",
     "toggleTheme": "Byt Tema",
-    "config": "Konfiguration"
+    "config": "Konfiguration",
+    "description": "Realtidsövervakning och historisk tillgänglighetsspårning för stora LLM API:er.",
+    "realTimeMonitoring": "Realtidsövervakning",
+    "performanceTrends": "Prestandatrender",
+    "lastHour": "Senaste timmen",
+    "last6Hours": "Senaste 6 timmarna",
+    "last24Hours": "Senaste 24 timmarna"
   },
   "history": {
     "performanceHistory": "Prestandahistorik",
@@ -80,17 +86,25 @@
     "provider": "Leverantör",
     "url": "URL",
     "edit": "Redigera",
-    "reset": "Återställ till standardkonfiguration"
+    "reset": "Återställ till standardkonfiguration",
+    "errorNameRequired": "Namn och leverantör krävs",
+    "errorInvalidUrl": "Ange en giltig HTTPS URL"
   },
   "general": {
     "and": "och"
   },
   "footer": {
-    "globalCoverage": "Global Täckning",
-    "globalCoverageDesc": "Övervakning av större AI-leverantörer i USA och Kina.",
-    "ui": "Modern UI",
-    "uiDesc": "Byggd med Next.js, Tailwind CSS, shadcn/ui och Recharts.",
+    "globalCoverage": "Global täckning",
+    "globalCoverageDesc": "Övervakning av stora AI-tjänsteleverantörer i USA och Kina.",
+    "ui": "Modernt gränssnitt",
+    "uiDesc": "Byggt med Next.js, Tailwind CSS, shadcn/ui och Recharts.",
     "dataIntegrity": "Dataintegritet",
-    "dataIntegrityDesc": "Historisk data lagrad via Supabase PostgreSQL."
+    "dataIntegrityDesc": "Historiska data lagras permanent via Supabase PostgreSQL."
+  },
+  "geo": {
+    "title": "Platsdetektering",
+    "description": "Aktivera IP-baserad platsdetektering för att visa din region på instrumentpanelen. Detta är valfritt och kan ändras när som helst.",
+    "enable": "Aktivera",
+    "disable": "Inaktivera"
   }
 }

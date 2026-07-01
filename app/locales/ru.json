@@ -64,11 +64,17 @@
     "signIn": "Войти",
     "signOut": "Выйти",
     "toggleTheme": "Сменить тему",
-    "config": "Настройка"
+    "config": "Настройка",
+    "description": "Мониторинг в реальном времени и отслеживание исторической доступности для основных LLM API.",
+    "realTimeMonitoring": "Мониторинг в реальном времени",
+    "performanceTrends": "Тенденции производительности",
+    "lastHour": "Последний час",
+    "last6Hours": "Последние 6 часов",
+    "last24Hours": "Последние 24 часа"
   },
   "history": {
     "performanceHistory": "История производительности",
-    "noHistory": "Нет исторических данных"
+    "noHistory": "Исторические данные отсутствуют"
   },
   "config": {
     "apiConfiguration": "Настройка API",
@@ -80,17 +86,25 @@
     "provider": "Провайдер",
     "url": "URL",
     "edit": "Редактировать",
-    "reset": "Сбросить к настройкам по умолчанию"
+    "reset": "Сбросить к настройкам по умолчанию",
+    "errorNameRequired": "Имя и поставщик обязательны",
+    "errorInvalidUrl": "Введите действительный HTTPS URL"
   },
   "general": {
     "and": "и"
   },
   "footer": {
-    "globalCoverage": "Глобальное Покрытие",
-    "globalCoverageDesc": "Мониторинг основных AI-провайдеров в США и Китае.",
-    "ui": "Современный UI",
-    "uiDesc": "Создано с Next.js, Tailwind CSS, shadcn/ui и Recharts.",
-    "dataIntegrity": "Целостность Данных",
-    "dataIntegrityDesc": "Исторические данные сохранены через Supabase PostgreSQL."
+    "globalCoverage": "Глобальное покрытие",
+    "globalCoverageDesc": "Мониторинг основных поставщиков услуг ИИ в США и Китае.",
+    "ui": "Современный интерфейс",
+    "uiDesc": "Построено на Next.js, Tailwind CSS, shadcn/ui и Recharts.",
+    "dataIntegrity": "Целостность данных",
+    "dataIntegrityDesc": "Исторические данные постоянно хранятся через Supabase PostgreSQL."
+  },
+  "geo": {
+    "title": "Определение местоположения",
+    "description": "Включите определение местоположения на основе IP для отображения вашего региона на панели управления. Это необязательно и может быть изменено в любое время.",
+    "enable": "Включить",
+    "disable": "Отключить"
   }
 }

@@ -64,10 +64,16 @@
     "signIn": "Đăng nhập",
     "signOut": "Đăng xuất",
     "toggleTheme": "Chuyển đổi Giao diện",
-    "config": "Cấu hình"
+    "config": "Cấu hình",
+    "description": "Giám sát thời gian thực và theo dõi tính sẵn sàng lịch sử cho các API LLM chính.",
+    "realTimeMonitoring": "Giám sát thời gian thực",
+    "performanceTrends": "Xu hướng hiệu suất",
+    "lastHour": "Giờ qua",
+    "last6Hours": "6 giờ qua",
+    "last24Hours": "24 giờ qua"
   },
   "history": {
-    "performanceHistory": "Lịch sử Hiệu suất",
+    "performanceHistory": "Lịch sử hiệu suất",
     "noHistory": "Không có dữ liệu lịch sử"
   },
   "config": {
@@ -80,17 +86,25 @@
     "provider": "Nhà cung cấp",
     "url": "URL",
     "edit": "Sửa",
-    "reset": "Đặt lại về cấu hình mặc định"
+    "reset": "Đặt lại về cấu hình mặc định",
+    "errorNameRequired": "Tên và nhà cung cấp là bắt buộc",
+    "errorInvalidUrl": "Vui lòng nhập URL HTTPS hợp lệ"
   },
   "general": {
     "and": "và"
   },
   "footer": {
-    "globalCoverage": "Phạm vi Toàn cầu",
-    "globalCoverageDesc": "Giám sát các nhà cung cấp AI chính tại Mỹ và Trung Quốc.",
-    "ui": "UI Hiện đại",
-    "uiDesc": "Xây dựng với Next.js, Tailwind CSS, shadcn/ui và Recharts.",
-    "dataIntegrity": "Toàn vẹn Dữ liệu",
-    "dataIntegrityDesc": "Dữ liệu lịch trình được lưu qua Supabase PostgreSQL."
+    "globalCoverage": "Phạm vi toàn cầu",
+    "globalCoverageDesc": "Giám sát các nhà cung cấp dịch vụ AI lớn ở Mỹ và Trung Quốc.",
+    "ui": "Giao diện hiện đại",
+    "uiDesc": "Được xây dựng với Next.js, Tailwind CSS, shadcn/ui và Recharts.",
+    "dataIntegrity": "Tính toàn vẹn dữ liệu",
+    "dataIntegrityDesc": "Dữ liệu lịch sử được lưu trữ bền vững thông qua Supabase PostgreSQL."
+  },
+  "geo": {
+    "title": "Phát hiện vị trí",
+    "description": "Bật phát hiện vị trí dựa trên IP để hiển thị khu vực của bạn trong bảng điều khiển. Điều này là tùy chọn và có thể thay đổi bất cứ lúc nào.",
+    "enable": "Bật",
+    "disable": "Tắt"
   }
 }

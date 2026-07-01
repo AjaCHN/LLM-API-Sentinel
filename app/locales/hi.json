@@ -64,11 +64,17 @@
     "signIn": "साइन इन",
     "signOut": "साइन आउट",
     "toggleTheme": "थीम बदलें",
-    "config": "कॉन्फ़िगरेशन"
+    "config": "कॉन्फ़िगरेशन",
+    "description": "प्रमुख LLM API के लिए रीयल-टाइम निगरानी और ऐतिहासिक उपलब्धता ट्रैकिंग।",
+    "realTimeMonitoring": "रीयल-टाइम निगरानी",
+    "performanceTrends": "प्रदर्शन प्रवृत्तियां",
+    "lastHour": "पिछले घंटे",
+    "last6Hours": "पिछले 6 घंटे",
+    "last24Hours": "पिछले 24 घंटे"
   },
   "history": {
     "performanceHistory": "प्रदर्शन इतिहास",
-    "noHistory": "कोई ऐतिहासिक डेटा उपलब्ध नहीं"
+    "noHistory": "कोई ऐतिहासिक डेटा उपलब्ध नहीं है"
   },
   "config": {
     "apiConfiguration": "API कॉन्फ़िगरेशन",
@@ -80,17 +86,25 @@
     "provider": "प्रदाता",
     "url": "URL",
     "edit": "संपादित करें",
-    "reset": "डिफ़ॉल्ट कॉन्फ़िगरेशन पर रीसेट करें"
+    "reset": "डिफ़ॉल्ट कॉन्फ़िगरेशन पर रीसेट करें",
+    "errorNameRequired": "नाम और प्रदाता आवश्यक हैं",
+    "errorInvalidUrl": "कृपया एक मान्य HTTPS URL दर्ज करें"
   },
   "general": {
     "and": "और"
   },
   "footer": {
     "globalCoverage": "वैश्विक कवरेज",
-    "globalCoverageDesc": "अमेरिका और चीन में प्रमुख AI प्रदाताओं की निगरानी।",
-    "ui": "आधुनिक UI",
-    "uiDesc": "Next.js, Tailwind CSS, shadcn/ui और Recharts से निर्मित।",
+    "globalCoverageDesc": "अमेरिका और चीन में प्रमुख AI सेवा प्रदाताओं की निगरानी।",
+    "ui": "आधुनिक इंटरफ़ेस",
+    "uiDesc": "Next.js, Tailwind CSS, shadcn/ui और Recharts पर निर्मित।",
     "dataIntegrity": "डेटा अखंडता",
-    "dataIntegrityDesc": "ऐतिहासिक डेटा Supabase PostgreSQL द्वारा संग्रहीत।"
+    "dataIntegrityDesc": "ऐतिहासिक डेटा Supabase PostgreSQL के माध्यम से स्थायी रूप से संग्रहीत किया जाता है।"
+  },
+  "geo": {
+    "title": "स्थान का पता लगाना",
+    "description": "डैशबोर्ड में अपना क्षेत्र दिखाने के लिए IP-आधारित स्थान का पता लगाना सक्षम करें। यह वैकल्पिक है और किसी भी समय बदला जा सकता है।",
+    "enable": "सक्षम करें",
+    "disable": "अक्षम करें"
   }
 }

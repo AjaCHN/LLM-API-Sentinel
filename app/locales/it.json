@@ -64,10 +64,16 @@
     "signIn": "Accedi",
     "signOut": "Esci",
     "toggleTheme": "Cambia Tema",
-    "config": "Configurazione"
+    "config": "Configurazione",
+    "description": "Monitoraggio in tempo reale e tracciamento della disponibilità storica per le principali API LLM.",
+    "realTimeMonitoring": "Monitoraggio in tempo reale",
+    "performanceTrends": "Tendenze di prestazione",
+    "lastHour": "Ultima ora",
+    "last6Hours": "Ultime 6 ore",
+    "last24Hours": "Ultime 24 ore"
   },
   "history": {
-    "performanceHistory": "Storico Prestazioni",
+    "performanceHistory": "Cronologia delle prestazioni",
     "noHistory": "Nessun dato storico disponibile"
   },
   "config": {
@@ -80,17 +86,25 @@
     "provider": "Provider",
     "url": "URL",
     "edit": "Modifica",
-    "reset": "Ripristina alla configurazione predefinita"
+    "reset": "Ripristina alla configurazione predefinita",
+    "errorNameRequired": "Nome e fornitore sono obbligatori",
+    "errorInvalidUrl": "Inserisci un URL HTTPS valido"
   },
   "general": {
     "and": "e"
   },
   "footer": {
-    "globalCoverage": "Copertura Globale",
-    "globalCoverageDesc": "Monitoraggio dei principali provider AI in USA e Cina.",
-    "ui": "UI Moderna",
+    "globalCoverage": "Copertura globale",
+    "globalCoverageDesc": "Monitoraggio dei principali fornitori di servizi AI negli Stati Uniti e in Cina.",
+    "ui": "Interfaccia moderna",
     "uiDesc": "Costruito con Next.js, Tailwind CSS, shadcn/ui e Recharts.",
-    "dataIntegrity": "Integrità dei Dati",
-    "dataIntegrityDesc": "Dati storici salvati via Supabase PostgreSQL."
+    "dataIntegrity": "Integrità dei dati",
+    "dataIntegrityDesc": "I dati storici sono memorizzati in modo persistente tramite Supabase PostgreSQL."
+  },
+  "geo": {
+    "title": "Rilevamento della posizione",
+    "description": "Abilita il rilevamento della posizione basato su IP per mostrare la tua regione nel dashboard. Questo è opzionale e può essere modificato in qualsiasi momento.",
+    "enable": "Abilita",
+    "disable": "Disabilita"
   }
 }

@@ -64,11 +64,17 @@
     "signIn": "Giriş Yap",
     "signOut": "Çıkış Yap",
     "toggleTheme": "Temayı Değiştir",
-    "config": "Yapılandırma"
+    "config": "Yapılandırma",
+    "description": "Başlıca LLM API'leri için gerçek zamanlı izleme ve geçmiş kullanılabilirlik takibi.",
+    "realTimeMonitoring": "Gerçek zamanlı izleme",
+    "performanceTrends": "Performans trendleri",
+    "lastHour": "Son saat",
+    "last6Hours": "Son 6 saat",
+    "last24Hours": "Son 24 saat"
   },
   "history": {
-    "performanceHistory": "Performans Geçmişi",
-    "noHistory": "Kullanılabilir geçmiş veri yok"
+    "performanceHistory": "Performans geçmişi",
+    "noHistory": "Tarihi veri mevcut değil"
   },
   "config": {
     "apiConfiguration": "API Yapılandırması",
@@ -80,17 +86,25 @@
     "provider": "Sağlayıcı",
     "url": "URL",
     "edit": "Düzenle",
-    "reset": "Varsayılan yapılandırmaya sıfırla"
+    "reset": "Varsayılan yapılandırmaya sıfırla",
+    "errorNameRequired": "Ad ve sağlayıcı zorunludur",
+    "errorInvalidUrl": "Geçerli bir HTTPS URL girin"
   },
   "general": {
     "and": "ve"
   },
   "footer": {
-    "globalCoverage": "Global Kapsama",
-    "globalCoverageDesc": "ABD ve Çin'deki ana AI sağlayıcılarını izleme.",
-    "ui": "Modern UI",
+    "globalCoverage": "Küresel kapsam",
+    "globalCoverageDesc": "ABD ve Çin'deki başlıca AI servis sağlayıcılarını izleme.",
+    "ui": "Modern arayüz",
     "uiDesc": "Next.js, Tailwind CSS, shadcn/ui ve Recharts ile oluşturuldu.",
-    "dataIntegrity": "Veri Bütünlüğü",
-    "dataIntegrityDesc": "Geçmiş veriler Supabase PostgreSQL ile saklanır."
+    "dataIntegrity": "Veri bütünlüğü",
+    "dataIntegrityDesc": "Tarihi veriler Supabase PostgreSQL aracılığıyla kalıcı olarak depolanır."
+  },
+  "geo": {
+    "title": "Konum tespiti",
+    "description": "Gösterge panelinde bölgenizi göstermek için IP tabanlı konum tespitini etkinleştirin. Bu isteğe bağlıdır ve istediğiniz zaman değiştirilebilir.",
+    "enable": "Etkinleştir",
+    "disable": "Devre dışı bırak"
   }
 }

@@ -64,11 +64,17 @@
     "signIn": "Masuk",
     "signOut": "Keluar",
     "toggleTheme": "Ganti Tema",
-    "config": "Konfigurasi"
+    "config": "Konfigurasi",
+    "description": "Pemantauan waktu nyata dan pelacakan ketersediaan historis untuk API LLM utama.",
+    "realTimeMonitoring": "Pemantauan waktu nyata",
+    "performanceTrends": "Tren kinerja",
+    "lastHour": "Satu jam terakhir",
+    "last6Hours": "6 jam terakhir",
+    "last24Hours": "24 jam terakhir"
   },
   "history": {
-    "performanceHistory": "Riwayat Kinerja",
-    "noHistory": "Tidak ada data historis tersedia"
+    "performanceHistory": "Riwayat kinerja",
+    "noHistory": "Tidak ada data historis yang tersedia"
   },
   "config": {
     "apiConfiguration": "Konfigurasi API",
@@ -80,17 +86,25 @@
     "provider": "Penyedia",
     "url": "URL",
     "edit": "Edit",
-    "reset": "Atur ulang ke konfigurasi default"
+    "reset": "Atur ulang ke konfigurasi default",
+    "errorNameRequired": "Nama dan penyedia diperlukan",
+    "errorInvalidUrl": "Silakan masukkan URL HTTPS yang valid"
   },
   "general": {
     "and": "dan"
   },
   "footer": {
-    "globalCoverage": "Cakupan Global",
-    "globalCoverageDesc": "Memantau penyedia AI utama di AS dan China.",
-    "ui": "UI Modern",
+    "globalCoverage": "Cakupan global",
+    "globalCoverageDesc": "Memantau penyedia layanan AI utama di AS dan Tiongkok.",
+    "ui": "Antarmuka modern",
     "uiDesc": "Dibangun dengan Next.js, Tailwind CSS, shadcn/ui, dan Recharts.",
-    "dataIntegrity": "Integritas Data",
-    "dataIntegrityDesc": "Data historis disimpan via Supabase PostgreSQL."
+    "dataIntegrity": "Integritas data",
+    "dataIntegrityDesc": "Data historis disimpan secara persisten melalui Supabase PostgreSQL."
+  },
+  "geo": {
+    "title": "Deteksi lokasi",
+    "description": "Aktifkan deteksi lokasi berbasis IP untuk menampilkan wilayah Anda di dasbor. Ini opsional dan dapat diubah kapan saja.",
+    "enable": "Aktifkan",
+    "disable": "Nonaktifkan"
   }
 }

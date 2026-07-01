@@ -64,7 +64,13 @@
     "signIn": "تسجيل الدخول",
     "signOut": "تسجيل الخروج",
     "toggleTheme": "تبديل المظهر",
-    "config": "الإعدادات"
+    "config": "الإعدادات",
+    "description": "المراقبة الفورية وتتبع التوفر التاريخي لـ APIs LLM الرئيسية.",
+    "realTimeMonitoring": "مراقبة فورية",
+    "performanceTrends": "اتجاهات الأداء",
+    "lastHour": "الساعة الماضية",
+    "last6Hours": "آخر 6 ساعات",
+    "last24Hours": "آخر 24 ساعة"
   },
   "history": {
     "performanceHistory": "سجل الأداء",
@@ -80,17 +86,25 @@
     "provider": "المزود",
     "url": "الرابط",
     "edit": "تعديل",
-    "reset": "إعادة التعيين إلى الإعدادات الافتراضية"
+    "reset": "إعادة التعيين إلى الإعدادات الافتراضية",
+    "errorNameRequired": "الاسم والمزود مطلوبان",
+    "errorInvalidUrl": "يرجى إدخال عنوان URL HTTPS صالح"
   },
   "general": {
     "and": "و"
   },
   "footer": {
     "globalCoverage": "تغطية عالمية",
-    "globalCoverageDesc": "مراقبة مزودي AI الرئيسيين في أمريكا والصين.",
+    "globalCoverageDesc": "مراقبة مزودي خدمات الذكاء الاصطناعي الرئيسيين في الولايات المتحدة والصين.",
     "ui": "واجهة حديثة",
-    "uiDesc": "مبني باستخدام Next.js، Tailwind CSS، shadcn/ui و Recharts.",
+    "uiDesc": "مبني على Next.js و Tailwind CSS و shadcn/ui و Recharts.",
     "dataIntegrity": "سلامة البيانات",
-    "dataIntegrityDesc": "البيانات التاريخية محفوظة عبر Supabase PostgreSQL."
+    "dataIntegrityDesc": "يتم تخزين البيانات التاريخية بشكل دائم عبر Supabase PostgreSQL."
+  },
+  "geo": {
+    "title": "كشف الموقع",
+    "description": "تمكين كشف الموقع بناءً على IP لإظهار منطقتك في لوحة القيادة. هذا اختياري ويمكن تغييره في أي وقت.",
+    "enable": "تفعيل",
+    "disable": "تعطيل"
   }
 }

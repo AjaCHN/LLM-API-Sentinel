@@ -64,11 +64,17 @@
     "signIn": "Zaloguj się",
     "signOut": "Wyloguj się",
     "toggleTheme": "Zmień Motyw",
-    "config": "Konfiguracja"
+    "config": "Konfiguracja",
+    "description": "Monitorowanie w czasie rzeczywistym i śledzenie historycznej dostępności głównych API LLM.",
+    "realTimeMonitoring": "Monitorowanie w czasie rzeczywistym",
+    "performanceTrends": "Trendy wydajności",
+    "lastHour": "Ostatnia godzina",
+    "last6Hours": "Ostatnie 6 godzin",
+    "last24Hours": "Ostatnie 24 godziny"
   },
   "history": {
-    "performanceHistory": "Historia Wydajności",
-    "noHistory": "Brak dostępnych danych historycznych"
+    "performanceHistory": "Historia wydajności",
+    "noHistory": "Brak danych historycznych"
   },
   "config": {
     "apiConfiguration": "Konfiguracja API",
@@ -80,17 +86,25 @@
     "provider": "Dostawca",
     "url": "URL",
     "edit": "Edytuj",
-    "reset": "Resetuj do konfiguracji domyślnej"
+    "reset": "Resetuj do konfiguracji domyślnej",
+    "errorNameRequired": "Nazwa i dostawca są wymagane",
+    "errorInvalidUrl": "Wprowadź prawidłowy adres URL HTTPS"
   },
   "general": {
     "and": "i"
   },
   "footer": {
-    "globalCoverage": "Globalne Pokrycie",
-    "globalCoverageDesc": "Monitorowanie głównych dostawców AI w USA i Chinach.",
-    "ui": "Nowoczesny UI",
-    "uiDesc": "Zbudowane z Next.js, Tailwind CSS, shadcn/ui i Recharts.",
-    "dataIntegrity": "Integralność Danych",
-    "dataIntegrityDesc": "Dane historyczne przechowywane via Supabase PostgreSQL."
+    "globalCoverage": "Globalne zasięg",
+    "globalCoverageDesc": "Monitorowanie głównych dostawców usług AI w USA i Chinach.",
+    "ui": "Nowoczesny interfejs",
+    "uiDesc": "Zbudowane na Next.js, Tailwind CSS, shadcn/ui i Recharts.",
+    "dataIntegrity": "Integralność danych",
+    "dataIntegrityDesc": "Dane historyczne są trwale przechowywane za pomocą Supabase PostgreSQL."
+  },
+  "geo": {
+    "title": "Wykrywanie lokalizacji",
+    "description": "Włącz wykrywanie lokalizacji oparte na IP, aby wyświetlać swój region na pulpicie. To jest opcjonalne i można je zmienić w dowolnym momencie.",
+    "enable": "Włącz",
+    "disable": "Wyłącz"
   }
 }
