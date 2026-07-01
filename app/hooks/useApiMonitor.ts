@@ -1,6 +1,6 @@
 // app/hooks/useApiMonitor.ts v2.6.3
 // 改进：使用本地 API 检查，同时支持从 Supabase 同步数据
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, startTransition } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { supabase } from '../lib/supabase';
 import { useApiStore, useAuthStore } from '../store';
@@ -9,6 +9,7 @@ import { ApiStatus, StatusHistory } from '../types';
 import { logError, handleError } from '../lib/error-handler';
 import { performCheck } from '../lib/monitor';
 import { sendAlert } from '../lib/notification';
+import { generateMockApiStatuses } from '../lib/mock-data';
 
 export function useApiMonitor() {
   const { 
@@ -184,9 +185,12 @@ export function useApiMonitor() {
       // 执行本地 API 检查
       const results = await performCheck();
       
-      // 更新状态
-      setStatuses(results.sort((a, b) => a.name.localeCompare(b.name)));
-      setLastUpdate(new Date());
+      // 性能优化: 使用 startTransition 标记非紧急更新，保持 UI 响应性
+      startTransition(() => {
+        // 更新状态
+        setStatuses(results.sort((a, b) => a.name.localeCompare(b.name)));
+        setLastUpdate(new Date());
+      });
 
       // 添加到历史记录
       const historyEntries: StatusHistory[] = results.map(result => ({
@@ -200,15 +204,23 @@ export function useApiMonitor() {
       addHistoryEntry(historyEntries);
 
       // 性能优化: 并行执行告警检查 (使用 Promise.all)
-      await Promise.all(results.map(result => checkAndCreateAlert(result)));
+      Promise.all(results.map(result => checkAndCreateAlert(result))).catch(err => 
+        logError(err, 'Alert checks failed')
+      );
 
-      // 尝试同步到 Supabase（可选）
-      try {
-        await syncToSupabase(results);
-      } catch (err) {
-        // 如果 Supabase 同步失败，只记录错误，不影响用户体验
-        logError(err, 'Supabase sync failed');
-      }
+      // 性能优化: 使用 requestIdleCallback 延迟非关键工作到浏览器空闲时执行
+      const syncInIdle = () => {
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(() => syncToSupabase(results).catch(err => 
+            logError(err, 'Supabase sync failed')
+          ));
+        } else {
+          setTimeout(() => syncToSupabase(results).catch(err => 
+            logError(err, 'Supabase sync failed')
+          ), 1000);
+        }
+      };
+      syncInIdle();
 
     } catch (err) {
       logError(err, 'Check failed');
@@ -249,35 +261,11 @@ export function useApiMonitor() {
           setStatuses(mappedData.sort((a, b) => a.name.localeCompare(b.name)));
         } else {
           // 如果 Supabase 中没有数据，生成模拟数据
-          const mockData = APIS_TO_CHECK.map((api: any) => ({
-            ...api,
-            status: Math.random() > 0.1 ? 'online' : 'offline',
-            latency: Math.floor(Math.random() * 1000) + 50,
-            lastChecked: new Date().toISOString(),
-            errorRate: Math.floor(Math.random() * 5),
-            availability: 95 + Math.floor(Math.random() * 5),
-            uptime: 99.5 + Math.random() * 0.5,
-            averageLatency: Math.floor(Math.random() * 800) + 100,
-            maxLatency: Math.floor(Math.random() * 2000) + 1000,
-            minLatency: Math.floor(Math.random() * 200) + 20
-          }));
-          setStatuses(mockData);
+          setStatuses(generateMockApiStatuses());
         }
       } catch {
         // 如果 Supabase 加载失败，生成模拟数据
-        const mockData = APIS_TO_CHECK.map((api: any) => ({
-          ...api,
-          status: Math.random() > 0.1 ? 'online' : 'offline',
-          latency: Math.floor(Math.random() * 1000) + 50,
-          lastChecked: new Date().toISOString(),
-          errorRate: Math.floor(Math.random() * 5),
-          availability: 95 + Math.floor(Math.random() * 5),
-          uptime: 99.5 + Math.random() * 0.5,
-          averageLatency: Math.floor(Math.random() * 800) + 100,
-          maxLatency: Math.floor(Math.random() * 2000) + 1000,
-          minLatency: Math.floor(Math.random() * 200) + 20
-        }));
-        setStatuses(mockData);
+        setStatuses(generateMockApiStatuses());
       }
     };
 

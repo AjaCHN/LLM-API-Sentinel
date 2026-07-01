@@ -44,7 +44,11 @@
     "retries": "herhalingen",
     "noApiConfigured": "Geen API-eindpunten geconfigureerd",
     "addApiHint": "Voeg API-eindpunten toe om hun status en prestaties te bewaken",
-    "status": "Status"
+    "status": "Status",
+    "apis": "APIs",
+    "other": "Anders",
+    "timeout": "Timeout",
+    "times": "keer"
   },
   "dashboard": {
     "title": "LLM API Sentinel",
@@ -60,7 +64,13 @@
     "signIn": "Inloggen",
     "signOut": "Uitloggen",
     "toggleTheme": "Thema Wisselen",
-    "config": "Configuratie"
+    "config": "Configuratie",
+    "description": "Real-time monitoring en historische beschikbaarheids tracking voor grote LLM API's.",
+    "realTimeMonitoring": "Real-time monitoring",
+    "performanceTrends": "Prestatietrends",
+    "lastHour": "Afgelopen uur",
+    "last6Hours": "Afgelopen 6 uur",
+    "last24Hours": "Afgelopen 24 uur"
   },
   "history": {
     "performanceHistory": "Prestatiegeschiedenis",
@@ -76,17 +86,25 @@
     "provider": "Provider",
     "url": "URL",
     "edit": "Bewerken",
-    "reset": "Reset naar standaardconfiguratie"
+    "reset": "Reset naar standaardconfiguratie",
+    "errorNameRequired": "Naam en provider zijn verplicht",
+    "errorInvalidUrl": "Voer een geldige HTTPS URL in"
   },
   "general": {
     "and": "en"
   },
   "footer": {
-    "globalCoverage": "Wereldwijde Dekking",
-    "globalCoverageDesc": "Monitoring van grote AI-providers in de VS en China.",
-    "ui": "Moderne UI",
+    "globalCoverage": "Wereldwijde dekking",
+    "globalCoverageDesc": "Monitoren van grote AI-serviceproviders in de VS en China.",
+    "ui": "Moderne interface",
     "uiDesc": "Gebouwd met Next.js, Tailwind CSS, shadcn/ui en Recharts.",
-    "dataIntegrity": "Data Integriteit",
-    "dataIntegrityDesc": "Historische data opgeslagen via Supabase PostgreSQL."
+    "dataIntegrity": "Gegevensintegriteit",
+    "dataIntegrityDesc": "Historische gegevens worden permanent opgeslagen via Supabase PostgreSQL."
+  },
+  "geo": {
+    "title": "Locatie detectie",
+    "description": "Schakel IP-gebaseerde locatiedetectie in om uw regio in het dashboard te tonen. Dit is optioneel en kan op elk moment worden gewijzigd.",
+    "enable": "Inschakelen",
+    "disable": "Uitschakelen"
   }
 }

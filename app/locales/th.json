@@ -44,7 +44,11 @@
     "retries": "การลองใหม่",
     "noApiConfigured": "ไม่มีจุดสิ้นสุด API ที่กำหนดค่าไว้",
     "addApiHint": "เพิ่มจุดสิ้นสุด API เพื่อตรวจสอบสถานะและประสิทธิภาพ",
-    "status": "สถานะ"
+    "status": "สถานะ",
+    "apis": "APIs",
+    "other": "อื่น",
+    "timeout": "หมดเวลา",
+    "times": "ครั้ง"
   },
   "dashboard": {
     "title": "LLM API Sentinel",
@@ -60,11 +64,17 @@
     "signIn": "เข้าสู่ระบบ",
     "signOut": "ออกจากระบบ",
     "toggleTheme": "สลับธีม",
-    "config": "การกำหนดค่า"
+    "config": "การกำหนดค่า",
+    "description": "การตรวจสอบแบบเรียลไทม์และติดตามความพร้อมใช้งานตามประวัติสำหรับ API LLM หลัก",
+    "realTimeMonitoring": "การตรวจสอบแบบเรียลไทม์",
+    "performanceTrends": "แนวโน้มประสิทธิภาพ",
+    "lastHour": "ชั่วโมงที่ผ่านมา",
+    "last6Hours": "6 ชั่วโมงที่ผ่านมา",
+    "last24Hours": "24 ชั่วโมงที่ผ่านมา"
   },
   "history": {
     "performanceHistory": "ประวัติประสิทธิภาพ",
-    "noHistory": "ไม่มีข้อมูลประวัติ"
+    "noHistory": "ไม่มีข้อมูลประวัติที่พร้อมใช้งาน"
   },
   "config": {
     "apiConfiguration": "การกำหนดค่า API",
@@ -76,17 +86,25 @@
     "provider": "ผู้ให้บริการ",
     "url": "URL",
     "edit": "แก้ไข",
-    "reset": "รีเซ็ตเป็นการกำหนดค่าเริ่มต้น"
+    "reset": "รีเซ็ตเป็นการกำหนดค่าเริ่มต้น",
+    "errorNameRequired": "ต้องระบุชื่อและผู้ให้บริการ",
+    "errorInvalidUrl": "กรุณาใส่ URL HTTPS ที่ถูกต้อง"
   },
   "general": {
     "and": "และ"
   },
   "footer": {
-    "globalCoverage": "การครอบคลุมทั่วโลก",
-    "globalCoverageDesc": "ติดตามผู้ให้บริการ AI หลักในสหรัฐอเมริกาและจีน",
-    "ui": "UI สมัยใหม่",
+    "globalCoverage": "ความครอบคลุมทั่วโลก",
+    "globalCoverageDesc": "ตรวจสอบผู้ให้บริการ AI หลักในสหรัฐอเมริกาและจีน",
+    "ui": "อินเทอร์เฟซสมัยใหม่",
     "uiDesc": "สร้างด้วย Next.js, Tailwind CSS, shadcn/ui และ Recharts",
     "dataIntegrity": "ความสมบูรณ์ของข้อมูล",
-    "dataIntegrityDesc": "ข้อมูลประวัติศาสตร์จัดเก็บผ่าน Supabase PostgreSQL"
+    "dataIntegrityDesc": "ข้อมูลประวัติถูกจัดเก็บอย่างถาวรผ่าน Supabase PostgreSQL"
+  },
+  "geo": {
+    "title": "การตรวจหาตำแหน่ง",
+    "description": "เปิดใช้งานการตรวจหาตำแหน่งตาม IP เพื่อแสดงภูมิภาคของคุณในแดชบอร์ด นี่เป็นทางเลือกและสามารถเปลี่ยนแปลงได้ตลอดเวลา",
+    "enable": "เปิดใช้งาน",
+    "disable": "ปิดใช้งาน"
   }
 }

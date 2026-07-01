@@ -1,6 +1,8 @@
+// app/components/DashboardClient.tsx v2.6.3
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, startTransition } from 'react';
+import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
 import { format } from 'date-fns';
 import { AlertTriangle, Settings, RefreshCw, Zap, Database, Globe } from 'lucide-react';
@@ -8,10 +10,9 @@ import { useDashboardData } from '@/hooks/useDashboardData';
 import DashboardHeader from '@/components/DashboardHeader';
 import GeoOptInDialog from '@/components/GeoOptInDialog';
 import ApiStatusGrid from '@/components/ApiStatusGrid';
-import LatencyHistoryChart from '@/components/LatencyHistoryChart';
 import DashboardFooter from '@/components/DashboardFooter';
-import ApiConfig from '@/components/ApiConfig';
-import AlertsDropdown from '@/components/AlertsDropdown';
+import { StatCard } from '@/components/StatCard';
+import { ChartSkeleton } from '@/components/ChartSkeleton';
 import { getApiColor, cn } from '@/lib/utils';
 import type { ChartDataPoint } from '@/types';
 import { useI18n } from '@/hooks/useI18n';
@@ -20,6 +21,25 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+// 性能优化: 使用 next/dynamic 延迟加载非关键组件，减少初始 bundle 大小
+const LatencyHistoryChart = dynamic(
+  () => import('@/components/LatencyHistoryChart'),
+  {
+    loading: () => <ChartSkeleton />,
+    ssr: false // 图表不需要服务端渲染
+  }
+);
+
+const ApiConfig = dynamic(
+  () => import('@/components/ApiConfig'),
+  { ssr: false }
+);
+
+const AlertsDropdown = dynamic(
+  () => import('@/components/AlertsDropdown'),
+  { ssr: false }
+);
 
 const TIME_RANGES = ['dashboard.lastHour', 'dashboard.last6Hours', 'dashboard.last24Hours'] as const;
 
@@ -50,17 +70,23 @@ export default function DashboardClient() {
   }, []);
 
   const chartData = useMemo(() => {
-    return history.reduce<ChartDataPoint[]>((acc, curr) => {
+    // 性能优化: 使用 Map 进行 O(1) 查找替代 Array.find 的 O(n) 查找
+    const timeMap = new Map<string, ChartDataPoint>();
+    
+    for (const curr of history) {
       const time = curr.time;
-      if (!time) return acc;
-      const existing = acc.find((a) => a.time === time);
-      if (!existing) {
-        acc.push({ time, [curr.apiId]: curr.latency });
-      } else {
+      if (!time) continue;
+      
+      const existing = timeMap.get(time);
+      if (existing) {
         existing[curr.apiId] = curr.latency;
+      } else {
+        const point = { time, [curr.apiId]: curr.latency } as ChartDataPoint;
+        timeMap.set(time, point);
       }
-      return acc;
-    }, []);
+    }
+    
+    return Array.from(timeMap.values());
   }, [history]);
 
   // 性能优化: 使用 useMemo 缓存统计计算结果
@@ -126,58 +152,54 @@ export default function DashboardClient() {
             </p>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                    <Zap className="size-4 text-emerald-400" />
-                  </div>
-                  <span className="text-xs text-muted-foreground">{t('api.online')}</span>
-                </div>
-                <p className="text-2xl font-bold text-emerald-400 group-hover:scale-110 transition-transform">
-                  {stats.online}
-                </p>
-              </div>
+              <StatCard
+                icon={<Zap className="size-4 text-emerald-400" />}
+                label={t('api.online')}
+                value={stats.online}
+                iconBgColor="bg-emerald-500/10"
+                iconTextColor="text-emerald-400"
+                valueColor="text-emerald-400"
+                hoverBorderColor="hover:border-primary/30"
+                hoverShadowColor="hover:shadow-lg hover:shadow-primary/5"
+              />
 
-              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                    <AlertTriangle className="size-4 text-amber-400" />
-                  </div>
-                  <span className="text-xs text-muted-foreground">{t('api.degraded')}</span>
-                </div>
-                <p className="text-2xl font-bold text-amber-400 group-hover:scale-110 transition-transform">
-                  {stats.degraded}
-                </p>
-              </div>
+              <StatCard
+                icon={<AlertTriangle className="size-4 text-amber-400" />}
+                label={t('api.degraded')}
+                value={stats.degraded}
+                iconBgColor="bg-amber-500/10"
+                iconTextColor="text-amber-400"
+                valueColor="text-amber-400"
+                hoverBorderColor="hover:border-amber-500/30"
+                hoverShadowColor="hover:shadow-lg hover:shadow-amber-500/5"
+              />
 
-              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-destructive/30 hover:shadow-lg hover:shadow-destructive/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
-                    <Database className="size-4 text-destructive" />
-                  </div>
-                  <span className="text-xs text-muted-foreground">{t('api.offline')}</span>
-                </div>
-                <p className="text-2xl font-bold text-destructive group-hover:scale-110 transition-transform">
-                  {stats.offline}
-                </p>
-              </div>
+              <StatCard
+                icon={<Database className="size-4 text-destructive" />}
+                label={t('api.offline')}
+                value={stats.offline}
+                iconBgColor="bg-destructive/10"
+                iconTextColor="text-destructive"
+                valueColor="text-destructive"
+                hoverBorderColor="hover:border-destructive/30"
+                hoverShadowColor="hover:shadow-lg hover:shadow-destructive/5"
+              />
 
-              <div className="group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Zap className="size-4 text-primary" />
-                  </div>
-                  <span className="text-xs text-muted-foreground">{t('api.averageLatency')}</span>
-                </div>
-                <p className="text-2xl font-bold text-primary group-hover:scale-110 transition-transform">
-                  {stats.avgLatency}ms
-                </p>
-              </div>
+              <StatCard
+                icon={<Zap className="size-4 text-primary" />}
+                label={t('api.averageLatency')}
+                value={`${stats.avgLatency}ms`}
+                iconBgColor="bg-primary/10"
+                iconTextColor="text-primary"
+                valueColor="text-primary"
+                hoverBorderColor="hover:border-primary/30"
+                hoverShadowColor="hover:shadow-lg hover:shadow-primary/5"
+              />
             </div>
           </div>
         </section>
 
-        {alerts.length > 0 && (
+        {alerts.length > 0 ? (
           <section className="-mt-4 mb-8">
             <Alert className="border-destructive/30 bg-destructive/5 backdrop-blur-sm">
               <div className="flex items-start gap-4">
@@ -202,7 +224,7 @@ export default function DashboardClient() {
               </div>
             </Alert>
           </section>
-        )}
+        ) : null}
 
         <section className="py-8 md:py-12">
           <Card className="border-border/30 bg-card/50 backdrop-blur-sm">

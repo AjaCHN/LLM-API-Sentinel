@@ -1,3 +1,4 @@
+// app/components/AlertsDropdown.tsx v2.6.3
 'use client';
 
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';

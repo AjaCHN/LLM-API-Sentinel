@@ -1,3 +1,4 @@
+// app/components/GeoOptInDialog.tsx v2.6.3
 'use client';
 
 import { useEffect, useState } from 'react';

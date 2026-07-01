@@ -44,7 +44,11 @@
     "retries": "reintentos",
     "noApiConfigured": "No hay puntos finales API configurados",
     "addApiHint": "Añada puntos finales API para monitorizar su estado y rendimiento",
-    "status": "Estado"
+    "status": "Estado",
+    "apis": "APIs",
+    "other": "Otro",
+    "timeout": "Tiempo de espera",
+    "times": "veces"
   },
   "dashboard": {
     "title": "LLM API Sentinel",
@@ -60,10 +64,16 @@
     "signIn": "Iniciar Sesión",
     "signOut": "Cerrar Sesión",
     "toggleTheme": "Cambiar Tema",
-    "config": "Configuración"
+    "config": "Configuración",
+    "description": "Monitoreo en tiempo real y seguimiento de disponibilidad histórica para las principales API de LLM.",
+    "realTimeMonitoring": "Monitoreo en tiempo real",
+    "performanceTrends": "Tendencias de rendimiento",
+    "lastHour": "Última hora",
+    "last6Hours": "Últimas 6 horas",
+    "last24Hours": "Últimas 24 horas"
   },
   "history": {
-    "performanceHistory": "Historial de Rendimiento",
+    "performanceHistory": "Historial de rendimiento",
     "noHistory": "No hay datos históricos disponibles"
   },
   "config": {
@@ -76,17 +86,25 @@
     "provider": "Proveedor",
     "url": "URL",
     "edit": "Editar",
-    "reset": "Restablecer a la configuración predeterminada"
+    "reset": "Restablecer a la configuración predeterminada",
+    "errorNameRequired": "Nombre y proveedor son requeridos",
+    "errorInvalidUrl": "Por favor ingrese una URL HTTPS válida"
   },
   "general": {
     "and": "y"
   },
   "footer": {
-    "globalCoverage": "Cobertura Global",
-    "globalCoverageDesc": "Monitoreo de los principales proveedores de IA en EE.UU. y China.",
-    "ui": "Interfaz Moderna",
+    "globalCoverage": "Cobertura global",
+    "globalCoverageDesc": "Monitoreo de los principales proveedores de servicios de IA en EE. UU. y China.",
+    "ui": "Interfaz moderna",
     "uiDesc": "Construido con Next.js, Tailwind CSS, shadcn/ui y Recharts.",
-    "dataIntegrity": "Integridad de Datos",
-    "dataIntegrityDesc": "Datos históricos persistidos via Supabase PostgreSQL."
+    "dataIntegrity": "Integridad de datos",
+    "dataIntegrityDesc": "Los datos históricos se almacenan de forma persistente a través de Supabase PostgreSQL."
+  },
+  "geo": {
+    "title": "Detección de ubicación",
+    "description": "Habilite la detección de ubicación basada en IP para mostrar su región en el panel. Esto es opcional y se puede cambiar en cualquier momento.",
+    "enable": "Habilitar",
+    "disable": "Deshabilitar"
   }
 }

@@ -1,3 +1,4 @@
+// app/components/DashboardHeader.tsx v2.6.3
 'use client';
 
 import Image from 'next/image';

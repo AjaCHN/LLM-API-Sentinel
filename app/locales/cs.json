@@ -44,7 +44,11 @@
     "retries": "opakovaných pokusů",
     "noApiConfigured": "Nejsou nakonfigurovány žádné koncové body API",
     "addApiHint": "Přidejte koncové body API pro sledování jejich stavu a výkonu",
-    "status": "Stav"
+    "status": "Stav",
+    "apis": "APIs",
+    "other": "Jiné",
+    "timeout": "Časový limit",
+    "times": "krát"
   },
   "dashboard": {
     "title": "LLM API Sentinel",
@@ -60,11 +64,17 @@
     "signIn": "Přihlásit se",
     "signOut": "Odhlásit se",
     "toggleTheme": "Přepnout téma",
-    "config": "Konfigurace"
+    "config": "Konfigurace",
+    "description": "Reálné monitorování a sledování historické dostupnosti hlavních LLM API.",
+    "realTimeMonitoring": "Reálné monitorování",
+    "performanceTrends": "Výkonnostní trendy",
+    "lastHour": "Poslední hodina",
+    "last6Hours": "Posledních 6 hodin",
+    "last24Hours": "Posledních 24 hodin"
   },
   "history": {
     "performanceHistory": "Historie výkonu",
-    "noHistory": "Historická data nejsou k dispozici"
+    "noHistory": "Nejsou k dispozici žádné historické údaje"
   },
   "config": {
     "apiConfiguration": "Konfigurace API",
@@ -76,17 +86,25 @@
     "provider": "Poskytovatel",
     "url": "URL",
     "edit": "Upravit",
-    "reset": "Obnovit výchozí konfiguraci"
+    "reset": "Obnovit výchozí konfiguraci",
+    "errorNameRequired": "Název a poskytovatel jsou povinné",
+    "errorInvalidUrl": "Zadejte platnou HTTPS URL"
   },
   "general": {
     "and": "a"
   },
   "footer": {
-    "globalCoverage": "Globální Pokrytí",
-    "globalCoverageDesc": "Monitorování hlavních AI poskytovatelů v USA a Číně.",
-    "ui": "Moderní UI",
+    "globalCoverage": "Globální pokrytí",
+    "globalCoverageDesc": "Sledování hlavních poskytovatelů služeb AI ve Spojených státech a Číně.",
+    "ui": "Moderní rozhraní",
     "uiDesc": "Postaveno na Next.js, Tailwind CSS, shadcn/ui a Recharts.",
-    "dataIntegrity": "Integrita Dat",
-    "dataIntegrityDesc": "Historické data uloženy via Supabase PostgreSQL."
+    "dataIntegrity": "Integrita dat",
+    "dataIntegrityDesc": "Historická data jsou trvale uložena přes Supabase PostgreSQL."
+  },
+  "geo": {
+    "title": "Detekce polohy",
+    "description": "Povolit detekci polohy na základě IP pro zobrazení vaší oblasti na ovládacím panelu. Toto je volitelné a lze kdykoli změnit.",
+    "enable": "Povolit",
+    "disable": "Zakázat"
   }
 }

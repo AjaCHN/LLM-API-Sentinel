@@ -44,7 +44,25 @@
     "retries": "重试",
     "noApiConfigured": "未配置 API 端点",
     "addApiHint": "添加 API 端点以监控其状态和性能",
-    "status": "状态"
+    "status": "状态",
+    "apis": "APIs",
+    "other": "其他",
+    "timeout": "超时",
+    "times": "次"
+  },
+  "geo": {
+    "title": "位置检测",
+    "description": "启用基于 IP 的位置检测以在仪表板中显示您的地区。这是可选的，可随时更改。",
+    "enable": "启用",
+    "disable": "禁用"
+  },
+  "footer": {
+    "globalCoverage": "全球覆盖",
+    "globalCoverageDesc": "监控美国和中国的主要 AI 服务提供商。",
+    "ui": "现代界面",
+    "uiDesc": "基于 Next.js、Tailwind CSS、shadcn/ui 和 Recharts 构建。",
+    "dataIntegrity": "数据完整性",
+    "dataIntegrityDesc": "历史数据通过 Supabase PostgreSQL 持久化存储。"
   },
   "dashboard": {
     "title": "LLM API Sentinel",
@@ -60,7 +78,13 @@
     "signIn": "登录",
     "signOut": "登出",
     "toggleTheme": "切换主题",
-    "config": "配置"
+    "config": "配置",
+    "description": "实时监控和历史可用性跟踪主要 LLM API。",
+    "realTimeMonitoring": "实时监控",
+    "performanceTrends": "性能趋势",
+    "lastHour": "最近1小时",
+    "last6Hours": "最近6小时",
+    "last24Hours": "最近24小时"
   },
   "history": {
     "performanceHistory": "性能历史",
@@ -77,24 +101,10 @@
     "url": "地址",
     "edit": "编辑",
     "reset": "重置为默认配置",
-    "errorNameRequired": "名称和提供商为必填项",
+    "errorNameRequired": "名称和提供商是必填项",
     "errorInvalidUrl": "请输入有效的 HTTPS URL"
   },
   "general": {
     "and": "和"
-  },
-  "geo": {
-    "title": "位置检测",
-    "description": "启用基于 IP 的位置检测以在仪表板中显示您的地区。这是可选的，可随时更改。",
-    "enable": "启用",
-    "disable": "禁用"
-  },
-  "footer": {
-    "globalCoverage": "全球覆盖",
-    "globalCoverageDesc": "监控美国和中国的主要 AI 服务提供商。",
-    "ui": "现代界面",
-    "uiDesc": "基于 Next.js、Tailwind CSS、shadcn/ui 和 Recharts 构建。",
-    "dataIntegrity": "数据完整性",
-    "dataIntegrityDesc": "历史数据通过 Supabase PostgreSQL 持久化存储。"
   }
 }
