@@ -99,7 +99,7 @@ describe('i18n', () => {
     });
 
     describe('api section - newly added keys', () => {
-      const newApiKeys = ['apis', 'other', 'timeout', 'times'];
+      const newApiKeys = ['apis', 'other', 'timeout', 'times'] as const;
 
       it('should have all new api keys in English locale', () => {
         newApiKeys.forEach((key) => {
@@ -128,9 +128,10 @@ describe('i18n', () => {
       it('should have all new api keys in all locales', () => {
         Object.entries(allLocales).forEach(([localeCode, localeData]) => {
           newApiKeys.forEach((key) => {
-            expect(localeData.api).toHaveProperty(key);
-            expect(typeof localeData.api[key]).toBe('string');
-            expect(localeData.api[key].length).toBeGreaterThan(0);
+            const apiObj = localeData.api as Record<string, string>;
+            expect(apiObj).toHaveProperty(key);
+            expect(typeof apiObj[key]).toBe('string');
+            expect(apiObj[key].length).toBeGreaterThan(0);
           });
         });
       });

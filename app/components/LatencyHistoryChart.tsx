@@ -1,3 +1,4 @@
+// app/components/LatencyHistoryChart.tsx v2.6.3
 'use client';
 
 import { memo } from 'react';
@@ -97,7 +98,7 @@ function LatencyHistoryChart({
                 strokeWidth={2.5}
                 dot={false}
                 activeDot={{ r: 5, strokeWidth: 0 }}
-                animationDuration={400}
+                animationDuration={1200}
               />
             ))}
           </AreaChart>
@@ -108,18 +109,8 @@ function LatencyHistoryChart({
 }
 
 export default memo(LatencyHistoryChart, (prevProps, nextProps) => {
-  // 性能优化: 使用浅比较而非 JSON.stringify 深比较
-  // 只比较数据长度和最后一项的时间戳
-  if (prevProps.chartData.length !== nextProps.chartData.length) return false;
-  if (prevProps.statuses.length !== nextProps.statuses.length) return false;
-  
-  const lastChartPrev = prevProps.chartData[prevProps.chartData.length - 1];
-  const lastChartNext = nextProps.chartData[nextProps.chartData.length - 1];
-  
-  // 如果都为空则相等
-  if (!lastChartPrev && !lastChartNext) return true;
-  if (!lastChartPrev || !lastChartNext) return false;
-  
-  // 比较最后一项的时间
-  return lastChartPrev.time === lastChartNext.time;
+  return (
+    JSON.stringify(prevProps.chartData) === JSON.stringify(nextProps.chartData) &&
+    JSON.stringify(prevProps.statuses) === JSON.stringify(nextProps.statuses)
+  );
 });

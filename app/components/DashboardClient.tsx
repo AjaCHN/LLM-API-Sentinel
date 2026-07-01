@@ -1,3 +1,4 @@
+// app/components/DashboardClient.tsx v2.6.3
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, startTransition } from 'react';

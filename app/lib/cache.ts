@@ -1,4 +1,4 @@
-// app/lib/cache.ts v2.6.4 - 性能优化版本
+// app/lib/cache.ts v2.6.3
 import { CACHE_EXPIRY, MIN_CACHE_EXPIRY, MAX_CACHE_EXPIRY } from '../constants';
 import { ApiCheckResult, ApiCheckCache } from '../types';
 
