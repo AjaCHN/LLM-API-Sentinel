@@ -4,7 +4,7 @@ import { useCallback, useEffect, startTransition } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { supabase } from '../lib/supabase';
 import { useApiStore, useAuthStore } from '../store';
-import { LATENCY_THRESHOLD, APIS_TO_CHECK } from '../constants';
+import { LATENCY_THRESHOLD } from '../constants';
 import { ApiStatus, StatusHistory } from '../types';
 import { logError, handleError } from '../lib/error-handler';
 import { performCheck } from '../lib/monitor';
