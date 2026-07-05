@@ -16,7 +16,6 @@ const nextConfig = {
       { protocol: 'https', hostname: '*.supabase.co', port: '', pathname: '/**' },
     ],
   },
-  transpilePackages: ['motion'],
   output: 'export',
   trailingSlash: true,
   allowedDevOrigins: ['127.0.0.1', 'localhost'],

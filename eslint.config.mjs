@@ -9,6 +9,7 @@ export default [
       'dist/',
       'jest.setup.cjs',
       'eslint.config.mjs',
+      '**/*.cjs',
     ],
   },
   ...tseslint.configs.recommended,

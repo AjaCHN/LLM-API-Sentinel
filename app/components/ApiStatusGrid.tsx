@@ -69,7 +69,6 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
             {apis.map((api, index) => {
               const isOffline = api.status === 'offline';
               const isDegraded = api.status === 'degraded';
-              const latencyHigh = api.latency >= LATENCY_THRESHOLD && !isOffline;
 
               const latencyVariant = getProgressBarVariant(api.latency, LATENCY_THRESHOLD, isOffline);
               const latencyColorClass = getLatencyColor(api.latency, LATENCY_THRESHOLD, isOffline);

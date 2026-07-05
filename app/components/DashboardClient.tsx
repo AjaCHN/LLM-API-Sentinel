@@ -1,7 +1,7 @@
 // app/components/DashboardClient.tsx v2.6.3
 'use client';
 
-import { useState, useEffect, useMemo, useCallback, startTransition } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
 import { format } from 'date-fns';
@@ -157,7 +157,6 @@ export default function DashboardClient() {
                 label={t('api.online')}
                 value={stats.online}
                 iconBgColor="bg-emerald-500/10"
-                iconTextColor="text-emerald-400"
                 valueColor="text-emerald-400"
                 hoverBorderColor="hover:border-primary/30"
                 hoverShadowColor="hover:shadow-lg hover:shadow-primary/5"
@@ -168,7 +167,6 @@ export default function DashboardClient() {
                 label={t('api.degraded')}
                 value={stats.degraded}
                 iconBgColor="bg-amber-500/10"
-                iconTextColor="text-amber-400"
                 valueColor="text-amber-400"
                 hoverBorderColor="hover:border-amber-500/30"
                 hoverShadowColor="hover:shadow-lg hover:shadow-amber-500/5"
@@ -179,7 +177,6 @@ export default function DashboardClient() {
                 label={t('api.offline')}
                 value={stats.offline}
                 iconBgColor="bg-destructive/10"
-                iconTextColor="text-destructive"
                 valueColor="text-destructive"
                 hoverBorderColor="hover:border-destructive/30"
                 hoverShadowColor="hover:shadow-lg hover:shadow-destructive/5"
@@ -190,7 +187,6 @@ export default function DashboardClient() {
                 label={t('api.averageLatency')}
                 value={`${stats.avgLatency}ms`}
                 iconBgColor="bg-primary/10"
-                iconTextColor="text-primary"
                 valueColor="text-primary"
                 hoverBorderColor="hover:border-primary/30"
                 hoverShadowColor="hover:shadow-lg hover:shadow-primary/5"
