@@ -190,7 +190,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                               {t('api.retries')}
                             </p>
                             <p className="mt-1 text-2xl font-bold text-destructive">
-                              {api.retries ?? 2}x
+                              {api.retries ?? 0}x
                             </p>
                           </div>
                           <div className="flex flex-col items-end gap-1">

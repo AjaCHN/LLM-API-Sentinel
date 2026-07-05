@@ -95,23 +95,30 @@ export class ConcurrencyManager<T> {
     this.activeRequests++;
 
     try {
+      let settled = false;
       // 添加超时处理
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
-          reject(new Error(`Request timed out after ${item.options.timeout}ms`));
+          if (!settled) {
+            reject(new Error(`Request timed out after ${item.options.timeout}ms`));
+          }
         }, item.options.timeout);
       });
 
-      const result = await Promise.race([item.fn(), timeoutPromise]);
-      item.resolve(result);
-    } catch (error) {
-      // 处理重试
-      if (item.options.retries! > 0) {
-        item.options.retries!--;
-        await new Promise(resolve => setTimeout(resolve, item.options.retryDelay!));
-        this.queue.unshift(item);
-      } else {
-        item.reject(error);
+      try {
+        const result = await Promise.race([item.fn(), timeoutPromise]);
+        settled = true;
+        item.resolve(result);
+      } catch (error) {
+        settled = true;
+        // 处理重试
+        if (item.options.retries! > 0) {
+          item.options.retries!--;
+          await new Promise(resolve => setTimeout(resolve, item.options.retryDelay!));
+          this.queue.unshift(item);
+        } else {
+          item.reject(error);
+        }
       }
     } finally {
       this.activeRequests--;

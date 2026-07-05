@@ -44,7 +44,7 @@ export const useApiStore = create<ApiStoreState>()(
       addHistoryEntry: (entryOrEntries) => set((state) => {
         const entries = Array.isArray(entryOrEntries) ? entryOrEntries : [entryOrEntries];
         return {
-          history: [...state.history, ...entries].slice(-100) // 只保留最近100条记录
+          history: [...state.history, ...entries].slice(-600) // 保留足够的历史记录以支撑图表数据点
         };
       }),
       updateApiStatus: (apiId, status) => set((state) => ({

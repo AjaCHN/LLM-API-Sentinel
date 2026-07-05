@@ -1,5 +1,5 @@
 // app/hooks/useAlerts.ts v2.6.3
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAlertStore, useAuthStore } from '../store';
 import { Alert } from '../types';
@@ -17,7 +17,7 @@ export function useAlerts() {
           .select('*')
           .eq('resolved', false)
           .order('timestamp', { ascending: false })
-          .limit(10);
+          .limit(50);
 
         if (error) throw error;
 
@@ -67,11 +67,13 @@ export function useAlerts() {
     };
   }, [setAlerts, setError]);
 
-  const resolveAlert = async (id: string) => {
+  const resolveAlert = useCallback(async (id: string) => {
+    // 乐观更新本地状态，避免等待实时订阅
+    useAlertStore.getState().resolveAlert(id);
     try {
       const { error } = await supabase
         .from('alerts')
-        .update({ 
+        .update({
           resolved: true,
           resolved_at: new Date().toISOString()
         })
@@ -79,10 +81,34 @@ export function useAlerts() {
 
       if (error) throw error;
     } catch (error) {
+      // 回滚本地乐观更新
       logError(error, 'Failed to resolve alert');
       setError(handleError(error).message);
+      // 重新加载以恢复真实状态
+      const { data } = await supabase
+        .from('alerts')
+        .select('*')
+        .eq('resolved', false)
+        .order('timestamp', { ascending: false })
+        .limit(50);
+      const mappedData: Alert[] = (data || []).map(doc => ({
+        id: doc.id,
+        apiId: doc.api_id,
+        apiName: doc.api_name,
+        type: doc.type,
+        severity: doc.severity,
+        message: doc.message,
+        timestamp: new Date(doc.timestamp),
+        resolved: doc.resolved,
+        error: doc.error,
+        retries: doc.retries,
+        latency: doc.latency,
+        resolvedAt: doc.resolved_at ? new Date(doc.resolved_at) : undefined,
+        resolvedBy: doc.resolved_by
+      }));
+      setAlerts(mappedData);
     }
-  };
+  }, [setAlerts, setError]);
 
   return { alerts, resolveAlert };
 }

@@ -7,6 +7,23 @@
 // app/lib/notification.ts v2.6.3
 import { Alert } from '../types';
 
+/** Compute HMAC-SHA256 signature (hex) for the given timestamp+secret. */
+async function signWithSecret(timestamp: number, secret: string): Promise<string> {
+  const stringToSign = `${timestamp}\n${secret}`;
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(stringToSign),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(stringToSign));
+  return Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
 // Webhook 配置接口
 export interface WebhookConfig {
   enabled: boolean;
@@ -164,13 +181,31 @@ async function sendWebhookRequest(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    // 可选的 HMAC 签名（DingTalk/Feishu/通用 Webhook）
+    if (config.secret) {
+      const platform = detectPlatform(config.url);
+      const timestamp = Date.now();
+      const signature = await signWithSecret(timestamp, config.secret);
+      if (platform === 'dingtalk') {
+        headers['timestamp'] = String(timestamp);
+        headers['sign'] = signature;
+      } else if (platform === 'feishu') {
+        headers['X-Lark-Signature'] = signature;
+      } else {
+        headers['X-Signature'] = `sha256=${signature}`;
+        headers['X-Timestamp'] = String(timestamp);
+      }
+    }
+
     const response = await fetch(config.url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers,
       body: JSON.stringify(payload),
-      signal: controller.signal
+      signal: controller.signal,
     });
 
     clearTimeout(timeoutId);
@@ -220,32 +255,34 @@ class NotificationService {
     let success = 0;
     let failed = 0;
 
-    const enabledWebhooks = this.config.webhooks.filter(w => w.enabled);
+    try {
+      const enabledWebhooks = this.config.webhooks.filter(w => w.enabled);
 
-    if (enabledWebhooks.length === 0) {
+      if (enabledWebhooks.length === 0) {
+        return { success: 0, failed: 0 };
+      }
+
+      // 并行发送到所有 Webhook
+      const results = await Promise.all(
+        enabledWebhooks.map(async (webhook) => {
+          const platform = detectPlatform(webhook.url);
+          const payload = formatAlert(alert, platform);
+          const success = await sendWebhookRequest(webhook, payload);
+          return success ? 'success' : 'failed';
+        })
+      );
+
+      success = results.filter(r => r === 'success').length;
+      failed = results.filter(r => r === 'failed').length;
+
+      return { success, failed };
+    } finally {
       this.isSending = false;
-      return { success: 0, failed: 0 };
     }
-
-    // 并行发送到所有 Webhook
-    const results = await Promise.all(
-      enabledWebhooks.map(async (webhook) => {
-        const platform = detectPlatform(webhook.url);
-        const payload = formatAlert(alert, platform);
-        const success = await sendWebhookRequest(webhook, payload);
-        return success ? 'success' : 'failed';
-      })
-    );
-
-    success = results.filter(r => r === 'success').length;
-    failed = results.filter(r => r === 'failed').length;
-
-    this.isSending = false;
-    return { success, failed };
   }
 
-  // 测试 Webhook 连接
-  async testWebhook(_webhook: WebhookConfig): Promise<boolean> {
+  // 测试指定 Webhook 连接
+  async testWebhook(webhook: WebhookConfig): Promise<boolean> {
     const testAlert: Alert = {
       id: 'test',
       apiId: 'test-api',
@@ -257,7 +294,9 @@ class NotificationService {
       resolved: false
     };
 
-    return (await this.sendAlert(testAlert)).success > 0;
+    // 仅向传入的 webhook 发送，避免误用全局配置
+    const tester = new NotificationService({ enabled: true, webhooks: [webhook] });
+    return (await tester.sendAlert(testAlert)).success > 0;
   }
 }
 

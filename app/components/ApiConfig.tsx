@@ -112,10 +112,18 @@ export default function ApiConfig() {
       return;
     }
     
-    const id = `${sanitizedProvider.toLowerCase().replace(/\s+/g, '-')}-${sanitizedName
+    const baseId = `${sanitizedProvider.toLowerCase().replace(/\s+/g, '-')}-${sanitizedName
       .toLowerCase()
       .replace(/\s+/g, '-')}`;
-    
+    // 确保 id 唯一，避免重复的 React key
+    let id = baseId;
+    let suffix = 1;
+    const existingIds = new Set(config.map(api => api.id));
+    while (existingIds.has(id)) {
+      id = `${baseId}-${suffix}`;
+      suffix++;
+    }
+
     setConfig([...config, { id, name: sanitizedName, provider: sanitizedProvider, url: sanitizedUrl, isValid: true }]);
     setNewApi({ name: '', provider: '', url: '' });
   };
@@ -171,7 +179,7 @@ export default function ApiConfig() {
             )}
           >
             <div className="min-w-0">
-              {/* 使用 textContent 安全渲染，防止 XSS */}
+              {/* 名称已通过 sanitizeInput 清理；React 默认转义 JSX 子节点 */}
               <p className="truncate text-sm font-medium">{api.name}</p>
               <p className="truncate text-xs text-muted-foreground">{api.provider}</p>
               <p className="truncate font-mono text-xs text-muted-foreground">{api.url}</p>

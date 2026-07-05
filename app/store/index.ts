@@ -5,6 +5,5 @@ export * from './api';
 export * from './auth';
 export * from './alerts';
 export * from './geo';
-export * from './error';
 export type { GeoLocation } from './geo';
 

@@ -30,12 +30,7 @@ export function disableGeoLocation(): void {
   // clear any cached geo data so we don't leak IP after opt-out
   window.localStorage.removeItem('geoInfo');
   window.localStorage.removeItem('geoInfoExpiry');
-  const store = (useGeoStore as unknown as { getState: () => { setGeo: (g: GeoLocation | null) => void; clearGeo: () => void } }).getState?.();
-  if (store && typeof store.clearGeo === 'function') {
-    store.clearGeo();
-  } else if (store && typeof store.setGeo === 'function') {
-    store.setGeo(FALLBACK_GEO);
-  }
+  useGeoStore.getState().clearGeo();
 }
 
 export function useGeoLocation() {
@@ -67,9 +62,7 @@ export function useGeoLocation() {
     // If no opt-in, ensure fallback is used and never fetch.
     if (!hasOptIn()) {
       setIsLoading(false);
-      if (!geo || geo.city === undefined) {
-        setGeo(FALLBACK_GEO);
-      }
+      setGeo(FALLBACK_GEO);
       return;
     }
 
@@ -91,21 +84,32 @@ export function useGeoLocation() {
 
         if (!cachedGeo || isExpired) {
           setIsLoading(true);
-          const response = await fetch('https://ipapi.co/json/');
-          const data = await response.json();
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          try {
+            const response = await fetch('https://ipapi.co/json/', {
+              signal: controller.signal,
+            });
+            clearTimeout(timeoutId);
+            if (!response.ok) {
+              throw new Error(`geo service responded ${response.status}`);
+            }
+            const data = await response.json();
 
-          const geoData: GeoLocation = {
-            city: data.city || 'Unknown',
-            country: data.country_name || 'Global',
-            ip: data.ip,
-          };
+            const geoData: GeoLocation = {
+              city: typeof data.city === 'string' && data.city ? data.city : 'Unknown',
+              country: typeof data.country_name === 'string' && data.country_name ? data.country_name : 'Global',
+            };
 
-          setGeo(geoData);
-          window.localStorage.setItem('geoInfo', JSON.stringify(geoData));
-          window.localStorage.setItem(
-            'geoInfoExpiry',
-            String(Date.now() + GEO_INFO_EXPIRY),
-          );
+            setGeo(geoData);
+            window.localStorage.setItem('geoInfo', JSON.stringify(geoData));
+            window.localStorage.setItem(
+              'geoInfoExpiry',
+              String(Date.now() + GEO_INFO_EXPIRY),
+            );
+          } finally {
+            clearTimeout(timeoutId);
+          }
         }
       } catch (error) {
         logError(error, 'Failed to fetch geo info');

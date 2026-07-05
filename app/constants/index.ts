@@ -1,4 +1,6 @@
 // app/constants/index.ts v2.6.3
+import type { ApiConfig } from '../types';
+
 export const LATENCY_THRESHOLD = 1500;
 export const DEGRADED_THRESHOLD = 1000;
 export const MAX_RETRIES = 2;
@@ -12,7 +14,7 @@ export const MIN_CACHE_EXPIRY = 5 * 1000; // 最小缓存时间：5秒
 export const MAX_CACHE_EXPIRY = 60 * 1000; // 最大缓存时间：1分钟
 
 // 默认 API 配置
-const DEFAULT_APIS = [
+export const DEFAULT_APIS = [
   // US APIs
   { id: 'openai-gpt-4o', name: 'GPT-4o', provider: 'OpenAI', url: 'https://api.openai.com/v1/models' },
   { id: 'anthropic-claude-3-5', name: 'Claude 3.5', provider: 'Anthropic', url: 'https://api.anthropic.com/v1/messages' },
@@ -30,18 +32,24 @@ const DEFAULT_APIS = [
   { id: 'deepseek-v3', name: 'DeepSeek V3', provider: 'DeepSeek', url: 'https://api.deepseek.com/models' }
 ];
 
-// 从本地存储读取 API 配置
-export const APIS_TO_CHECK = (() => {
+// APIS_TO_CHECK 保持为默认列表的别名，保留向后兼容（已有导入/测试期望长度为 12）
+export const APIS_TO_CHECK = DEFAULT_APIS;
+
+// 运行时获取 API 配置（每次调用都读取最新 localStorage）
+export function getApisToCheck(): ApiConfig[] {
   if (typeof localStorage === 'undefined') {
     return DEFAULT_APIS;
   }
   try {
     const savedConfig = localStorage.getItem('apiConfig');
     if (savedConfig) {
-      return JSON.parse(savedConfig);
+      const parsed = JSON.parse(savedConfig) as ApiConfig[];
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
     }
   } catch (error) {
     console.error('Failed to load API config:', error);
   }
   return DEFAULT_APIS;
-})();
+}

@@ -110,7 +110,8 @@ function LatencyHistoryChart({
 
 export default memo(LatencyHistoryChart, (prevProps, nextProps) => {
   return (
-    JSON.stringify(prevProps.chartData) === JSON.stringify(nextProps.chartData) &&
-    JSON.stringify(prevProps.statuses) === JSON.stringify(nextProps.statuses)
+    prevProps.chartData === nextProps.chartData &&
+    prevProps.statuses === nextProps.statuses &&
+    prevProps.getApiColor === nextProps.getApiColor
   );
 });
