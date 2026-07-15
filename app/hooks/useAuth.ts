@@ -1,4 +1,4 @@
-// app/hooks/useAuth.ts v2.6.3
+// app/hooks/useAuth.ts v2.7.0
 import { useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/auth';

@@ -105,6 +105,7 @@
     "title": "Locatie detectie",
     "description": "Schakel IP-gebaseerde locatiedetectie in om uw regio in het dashboard te tonen. Dit is optioneel en kan op elk moment worden gewijzigd.",
     "enable": "Inschakelen",
-    "disable": "Uitschakelen"
+    "disable": "Uitschakelen",
+    "refresh": "Locatie vernieuwen"
   }
 }

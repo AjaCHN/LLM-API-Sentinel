@@ -105,6 +105,7 @@
     "title": "Phát hiện vị trí",
     "description": "Bật phát hiện vị trí dựa trên IP để hiển thị khu vực của bạn trong bảng điều khiển. Điều này là tùy chọn và có thể thay đổi bất cứ lúc nào.",
     "enable": "Bật",
-    "disable": "Tắt"
+    "disable": "Tắt",
+    "refresh": "Làm mới vị trí"
   }
 }

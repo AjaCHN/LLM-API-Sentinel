@@ -1,8 +1,8 @@
-// app/components/DashboardHeader.tsx v2.6.3
+// app/components/DashboardHeader.tsx v2.7.0
 'use client';
 
 import Image from 'next/image';
-import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin } from 'lucide-react';
+import { Activity, Bell, LogIn, LogOut, Sun, Moon, MapPin, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Alert, User } from '@/types';
 import { useI18n } from '@/hooks/useI18n';
@@ -18,6 +18,8 @@ interface DashboardHeaderProps {
   theme: string | undefined;
   setTheme: (theme: string) => void;
   geo: { city: string; country: string; ip?: string } | null;
+  isGeoLoading?: boolean;
+  refreshGeo?: () => void;
   login: () => Promise<void>;
   logout: () => Promise<void>;
   resolveAlert?: (id: string) => Promise<void>;
@@ -42,6 +44,8 @@ export default function DashboardHeader({
   theme,
   setTheme,
   geo,
+  isGeoLoading,
+  refreshGeo,
   login,
   logout,
 }: DashboardHeaderProps) {
@@ -115,9 +119,22 @@ export default function DashboardHeader({
           </Button>
 
           {geo && (
-            <div className="hidden lg:flex items-center gap-2 rounded-full bg-secondary/50 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur-sm border border-border/20">
+            <div className="hidden lg:flex items-center gap-1.5 rounded-full bg-secondary/50 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur-sm border border-border/20">
               <MapPin className="size-3.5 text-primary" />
               <span className="font-medium">{geo.city}, {geo.country}</span>
+              {refreshGeo && (
+                <button
+                  onClick={refreshGeo}
+                  disabled={isGeoLoading}
+                  className="ml-1 p-0.5 rounded hover:bg-primary/10 transition-colors disabled:opacity-50"
+                  aria-label={t('geo.refresh') || 'Refresh location'}
+                >
+                  <RefreshCw className={cn(
+                    'size-3 text-muted-foreground hover:text-primary transition-colors',
+                    isGeoLoading && 'animate-spin'
+                  )} />
+                </button>
+              )}
             </div>
           )}
 

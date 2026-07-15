@@ -105,6 +105,7 @@
     "title": "Wykrywanie lokalizacji",
     "description": "Włącz wykrywanie lokalizacji oparte na IP, aby wyświetlać swój region na pulpicie. To jest opcjonalne i można je zmienić w dowolnym momencie.",
     "enable": "Włącz",
-    "disable": "Wyłącz"
+    "disable": "Wyłącz",
+    "refresh": "Odśwież lokalizację"
   }
 }

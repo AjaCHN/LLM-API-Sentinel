@@ -1,4 +1,4 @@
-// app/components/StatCard.tsx v2.6.3
+// app/components/StatCard.tsx v2.7.0
 'use client';
 
 import React from 'react';
@@ -9,6 +9,7 @@ interface StatCardProps {
   label: string;
   value: string | number;
   iconBgColor: string;
+  iconTextColor: string;
   valueColor: string;
   hoverBorderColor: string;
   hoverShadowColor: string;
@@ -19,6 +20,7 @@ export function StatCard({
   label,
   value,
   iconBgColor,
+  iconTextColor,
   valueColor,
   hoverBorderColor,
   hoverShadowColor

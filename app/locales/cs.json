@@ -105,6 +105,7 @@
     "title": "Detekce polohy",
     "description": "Povolit detekci polohy na základě IP pro zobrazení vaší oblasti na ovládacím panelu. Toto je volitelné a lze kdykoli změnit.",
     "enable": "Povolit",
-    "disable": "Zakázat"
+    "disable": "Zakázat",
+    "refresh": "Obnovit polohu"
   }
 }

@@ -1,4 +1,4 @@
-// app/lib/i18n.test.ts v2.6.3
+// app/lib/i18n.test.ts v2.7.0
 
 import { supportedLocales, initLocaleSync, getLocale, setLocale, t } from './i18n';
 
@@ -90,7 +90,7 @@ describe('i18n', () => {
     it('should have all required sections in every locale', () => {
       const requiredSections = ['dashboard', 'api', 'alerts', 'config', 'errors', 'general', 'history', 'footer', 'geo'];
 
-      Object.entries(allLocales).forEach(([_localeCode, localeData]) => {
+      Object.entries(allLocales).forEach(([localeCode, localeData]) => {
         requiredSections.forEach((section) => {
           expect(localeData).toHaveProperty(section);
           expect(typeof localeData[section]).toBe('object');
@@ -126,7 +126,7 @@ describe('i18n', () => {
       });
 
       it('should have all new api keys in all locales', () => {
-        Object.entries(allLocales).forEach(([_localeCode, localeData]) => {
+        Object.entries(allLocales).forEach(([localeCode, localeData]) => {
           newApiKeys.forEach((key) => {
             const apiObj = localeData.api as Record<string, string>;
             expect(apiObj).toHaveProperty(key);
@@ -141,7 +141,7 @@ describe('i18n', () => {
       it('should have the same number of api keys across all locales', () => {
         const enApiKeyCount = Object.keys(en.api).length;
 
-        Object.entries(allLocales).forEach(([_localeCode, localeData]) => {
+        Object.entries(allLocales).forEach(([localeCode, localeData]) => {
           expect(Object.keys(localeData.api).length).toBe(enApiKeyCount);
         });
       });
@@ -149,7 +149,7 @@ describe('i18n', () => {
       it('should have all English keys present in all locales', () => {
         const enKeys = getAllKeys(en);
 
-        Object.entries(allLocales).forEach(([_localeCode, localeData]) => {
+        Object.entries(allLocales).forEach(([localeCode, localeData]) => {
           const localeKeys = getAllKeys(localeData);
           const localeKeySet = new Set(localeKeys);
 
@@ -160,7 +160,7 @@ describe('i18n', () => {
       });
 
       it('should not have empty string values for new api keys', () => {
-        Object.entries(allLocales).forEach(([_localeCode, localeData]) => {
+        Object.entries(allLocales).forEach(([localeCode, localeData]) => {
           expect(localeData.api.apis).not.toBe('');
           expect(localeData.api.other).not.toBe('');
           expect(localeData.api.timeout).not.toBe('');

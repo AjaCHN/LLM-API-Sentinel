@@ -105,6 +105,7 @@
     "title": "Deteksi lokasi",
     "description": "Aktifkan deteksi lokasi berbasis IP untuk menampilkan wilayah Anda di dasbor. Ini opsional dan dapat diubah kapan saja.",
     "enable": "Aktifkan",
-    "disable": "Nonaktifkan"
+    "disable": "Nonaktifkan",
+    "refresh": "Perbarui lokasi"
   }
 }

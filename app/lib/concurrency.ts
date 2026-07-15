@@ -1,4 +1,4 @@
-// app/lib/concurrency.ts v2.6.3
+// app/lib/concurrency.ts v2.7.0
 import { MAX_CONCURRENT_REQUESTS } from '../constants';
 import { RequestOptions, QueueItem, NetworkQuality } from '../types';
 
@@ -95,30 +95,23 @@ export class ConcurrencyManager<T> {
     this.activeRequests++;
 
     try {
-      let settled = false;
       // 添加超时处理
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
-          if (!settled) {
-            reject(new Error(`Request timed out after ${item.options.timeout}ms`));
-          }
+          reject(new Error(`Request timed out after ${item.options.timeout}ms`));
         }, item.options.timeout);
       });
 
-      try {
-        const result = await Promise.race([item.fn(), timeoutPromise]);
-        settled = true;
-        item.resolve(result);
-      } catch (error) {
-        settled = true;
-        // 处理重试
-        if (item.options.retries! > 0) {
-          item.options.retries!--;
-          await new Promise(resolve => setTimeout(resolve, item.options.retryDelay!));
-          this.queue.unshift(item);
-        } else {
-          item.reject(error);
-        }
+      const result = await Promise.race([item.fn(), timeoutPromise]);
+      item.resolve(result);
+    } catch (error) {
+      // 处理重试
+      if (item.options.retries! > 0) {
+        item.options.retries!--;
+        await new Promise(resolve => setTimeout(resolve, item.options.retryDelay!));
+        this.queue.unshift(item);
+      } else {
+        item.reject(error);
       }
     } finally {
       this.activeRequests--;

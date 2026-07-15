@@ -1,4 +1,4 @@
-// app/store/api.ts v2.6.3
+// app/store/api.ts v2.7.0
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ApiStatus, StatusHistory } from '../types';
@@ -44,7 +44,7 @@ export const useApiStore = create<ApiStoreState>()(
       addHistoryEntry: (entryOrEntries) => set((state) => {
         const entries = Array.isArray(entryOrEntries) ? entryOrEntries : [entryOrEntries];
         return {
-          history: [...state.history, ...entries].slice(-600) // 保留足够的历史记录以支撑图表数据点
+          history: [...state.history, ...entries].slice(-100) // 只保留最近100条记录
         };
       }),
       updateApiStatus: (apiId, status) => set((state) => ({

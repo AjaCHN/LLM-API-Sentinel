@@ -1,4 +1,4 @@
-// server.ts v2.6.3
+// server.ts v2.7.0
 import express from 'express';
 import next from 'next';
 import { createClient } from '@supabase/supabase-js';
@@ -46,13 +46,12 @@ class MemoryRateLimiter implements RateLimiter {
   }
 
   startCleanup() {
-    const handle = setInterval(() => {
+    setInterval(() => {
       const now = Date.now();
       for (const [ip, entry] of this.map.entries()) {
         if (now > entry.resetTime) this.map.delete(ip);
       }
     }, 5 * 60 * 1000);
-    handle.unref();
   }
 }
 
@@ -266,41 +265,23 @@ app
   .prepare()
   .then(() => {
     const server = express();
-    server.set('trust proxy', 1);
 
     // 安全增强: 应用速率限制中间件
     server.use(rateLimitMiddleware);
 
     // Background task: Every 5 minutes
-    const monitorInterval = setInterval(runBackgroundMonitor, 5 * 60 * 1000);
-    monitorInterval.unref();
+    setInterval(runBackgroundMonitor, 5 * 60 * 1000);
     // Initial check
-    const initialTimeout = setTimeout(runBackgroundMonitor, 10000);
-    initialTimeout.unref();
+    setTimeout(runBackgroundMonitor, 10000);
 
     server.all(/.*/, (req, res) => {
       const parsedUrl = parse(req.url!, true);
       handle(req, res, parsedUrl);
     });
 
-    const httpServer = server.listen(port, () => {
+    server.listen(port, () => {
       log('info', `Ready on http://localhost:${port}`);
     });
-
-    // 优雅关闭：收到信号时停止接收新连接并退出
-    const shutdown = (signal: string) => {
-      log('info', `Received ${signal}, shutting down gracefully`);
-      clearInterval(monitorInterval);
-      clearTimeout(initialTimeout);
-      httpServer.close(() => {
-        log('info', 'HTTP server closed');
-        process.exit(0);
-      });
-      // 强制退出兜底（5s）
-      setTimeout(() => process.exit(1), 5000).unref();
-    };
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-    process.on('SIGINT', () => shutdown('SIGINT'));
   })
   .catch((err) => {
     log('error', 'Next.js prepare failed', { error: String(err) });

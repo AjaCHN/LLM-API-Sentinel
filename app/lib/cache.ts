@@ -1,4 +1,4 @@
-// app/lib/cache.ts v2.6.3
+// app/lib/cache.ts v2.7.0
 import { CACHE_EXPIRY, MIN_CACHE_EXPIRY, MAX_CACHE_EXPIRY } from '../constants';
 import { ApiCheckResult, ApiCheckCache } from '../types';
 
@@ -9,7 +9,6 @@ const CACHE_KEY = `apiCheckCache_${CACHE_VERSION}_data`;
 
 let memoryCache: ApiCheckCache = {};
 let storageLoaded = false;
-let saveTimer: ReturnType<typeof setTimeout> | null = null;
 
 function isValidCacheEntry(entry: unknown): entry is { result: ApiCheckResult; timestamp: number; expiry: number } {
   if (!entry || typeof entry !== 'object') return false;
@@ -131,12 +130,9 @@ export function saveCacheToStorage(cache: ApiCheckCache) {
 export function calculateCacheExpiry(apiId: string, status: string, latency: number): number {
   // 基础过期时间
   let baseExpiry = CACHE_EXPIRY;
-
+  
   // 根据状态调整
   if (status === 'offline') {
-    baseExpiry = MIN_CACHE_EXPIRY;
-  } else if (status === 'degraded') {
-    // 降级状态使用较短缓存以更快检测恢复
     baseExpiry = MIN_CACHE_EXPIRY;
   } else if (status === 'online') {
     if (latency < 100) {
@@ -145,8 +141,20 @@ export function calculateCacheExpiry(apiId: string, status: string, latency: num
       baseExpiry = Math.max(MIN_CACHE_EXPIRY, baseExpiry / 2);
     }
   }
-
+  
+  const apiSpecificExpiry = getApiSpecificExpiry(apiId);
+  if (apiSpecificExpiry) {
+    return apiSpecificExpiry;
+  }
+  
   return baseExpiry;
+}
+
+// 获取特定 API 的缓存过期时间
+export function getApiSpecificExpiry(apiId: string): number | null {
+  const apiExpiryMap: Record<string, number> = {};
+  
+  return apiExpiryMap[apiId] || null;
 }
 
 // 检查缓存是否有效
@@ -182,21 +190,14 @@ export function getCache(apiId: string): ApiCheckResult | null {
 export function setCache(apiId: string, result: ApiCheckResult): void {
   // 计算缓存过期时间
   const expiry = calculateCacheExpiry(apiId, result.status, result.latency);
-
+  
   memoryCache[apiId] = {
     result,
     timestamp: Date.now(),
     expiry
   };
-
-  // 防抖写入存储，避免每次检查都同步阻塞主线程
-  if (saveTimer) {
-    clearTimeout(saveTimer);
-  }
-  saveTimer = setTimeout(() => {
-    saveCacheToStorage(memoryCache);
-    saveTimer = null;
-  }, 500);
+  
+  saveCacheToStorage(memoryCache);
 }
 
 // 清除缓存
@@ -223,8 +224,64 @@ export function clearCache(): void {
   }
 }
 
+// 清除特定 API 的缓存
+export function clearApiCache(apiId: string): void {
+  delete memoryCache[apiId];
+  
+  // 清除本地存储中的特定 API 缓存
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        delete parsed[apiId];
+        localStorage.setItem(CACHE_KEY, JSON.stringify(parsed));
+      }
+    } catch (error) {
+      console.error('Failed to clear API cache from localStorage:', error);
+    }
+  }
+  
+  // 清除会话存储中的特定 API 缓存
+  if (typeof sessionStorage !== 'undefined') {
+    try {
+      const cached = sessionStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        delete parsed[apiId];
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(parsed));
+      }
+    } catch (error) {
+      console.error('Failed to clear API cache from sessionStorage:', error);
+    }
+  }
+}
+
 // 初始化缓存
 export function initializeCache(): void {
   memoryCache = loadCacheFromStorage();
+}
+
+// 获取当前缓存
+export function getCurrentCache(): ApiCheckCache {
+  return memoryCache;
+}
+
+// 预热缓存 - 预先加载指定 API 的缓存数据
+export function prewarmCache(apiIds: string[]): void {
+  console.log('Prewarming cache for APIs:', apiIds);
+  
+  const apisToPrewarm = apiIds.length > 0 
+    ? apiIds 
+    : Object.keys(memoryCache);
+  
+  apisToPrewarm.forEach(apiId => {
+    const cached = memoryCache[apiId];
+    if (cached && !isCacheValid(cached)) {
+      delete memoryCache[apiId];
+    }
+  });
+  
+  console.log('Cache prewarm completed. APIs in cache:', Object.keys(memoryCache).length);
 }
 

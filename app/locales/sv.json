@@ -105,6 +105,7 @@
     "title": "Platsdetektering",
     "description": "Aktivera IP-baserad platsdetektering för att visa din region på instrumentpanelen. Detta är valfritt och kan ändras när som helst.",
     "enable": "Aktivera",
-    "disable": "Inaktivera"
+    "disable": "Inaktivera",
+    "refresh": "Uppdatera plats"
   }
 }

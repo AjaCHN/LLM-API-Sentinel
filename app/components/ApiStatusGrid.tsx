@@ -1,4 +1,4 @@
-// app/components/ApiStatusGrid.tsx v2.6.3
+// app/components/ApiStatusGrid.tsx v2.7.0
 'use client';
 
 import React, { useMemo } from 'react';
@@ -69,6 +69,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
             {apis.map((api, index) => {
               const isOffline = api.status === 'offline';
               const isDegraded = api.status === 'degraded';
+              const latencyHigh = api.latency >= LATENCY_THRESHOLD && !isOffline;
 
               const latencyVariant = getProgressBarVariant(api.latency, LATENCY_THRESHOLD, isOffline);
               const latencyColorClass = getLatencyColor(api.latency, LATENCY_THRESHOLD, isOffline);
@@ -190,7 +191,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                               {t('api.retries')}
                             </p>
                             <p className="mt-1 text-2xl font-bold text-destructive">
-                              {api.retries ?? 0}x
+                              {api.retries ?? 2}x
                             </p>
                           </div>
                           <div className="flex flex-col items-end gap-1">

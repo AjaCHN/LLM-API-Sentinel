@@ -1,5 +1,5 @@
-// app/lib/monitor.ts v2.6.3
-import { APIS_TO_CHECK, getApisToCheck, MAX_RETRIES, RETRY_DELAY, DEGRADED_THRESHOLD } from '../constants';
+// app/lib/monitor.ts v2.7.0
+import { APIS_TO_CHECK, MAX_RETRIES, RETRY_DELAY, DEGRADED_THRESHOLD } from '../constants';
 import { ApiCheckResult } from '../types';
 import { getCache, setCache, initializeCache } from './cache';
 import { concurrencyManager, processBatch } from './concurrency';
@@ -12,22 +12,19 @@ interface HistoricalMetrics {
   minLatency: number;
 }
 
-// 指标窗口上限：超过后采用滑动窗口估算，防止 totalLatency 累积导致均值漂移
-const METRICS_CAP = 1000;
-
 const metricsCache: Map<string, HistoricalMetrics> = new Map();
 
 function calculateRealMetrics(
   apiId: string,
   currentLatency: number,
   isOnline: boolean,
-  initialTotalChecks: number = 100
+  totalChecks: number = 100
 ): { errorRate: number; availability: number; uptime: number; averageLatency: number; maxLatency: number; minLatency: number } {
   const existingMetrics = metricsCache.get(apiId);
-
+  
   if (!existingMetrics) {
     const initialMetrics: HistoricalMetrics = {
-      totalChecks: initialTotalChecks,
+      totalChecks: totalChecks,
       failedChecks: isOnline ? 0 : 1,
       totalLatency: isOnline ? currentLatency : 0,
       maxLatency: isOnline ? currentLatency : 0,
@@ -37,20 +34,10 @@ function calculateRealMetrics(
     return calculateFromMetrics(initialMetrics, currentLatency);
   }
   
-  const atCap = existingMetrics.totalChecks >= METRICS_CAP;
-  const totalChecks = atCap ? METRICS_CAP : existingMetrics.totalChecks + 1;
-  // Sliding-window: remove the oldest estimate's contribution, add the newest.
-  const removeFraction = atCap ? 1 / existingMetrics.totalChecks : 0;
-  const totalLatency = isOnline
-    ? existingMetrics.totalLatency - existingMetrics.totalLatency * removeFraction + currentLatency
-    : existingMetrics.totalLatency - existingMetrics.totalLatency * removeFraction;
-  const failedChecks = isOnline
-    ? Math.max(0, existingMetrics.failedChecks - existingMetrics.failedChecks * removeFraction)
-    : (atCap ? existingMetrics.failedChecks - existingMetrics.failedChecks * removeFraction + 1 : existingMetrics.failedChecks + 1);
   const updatedMetrics: HistoricalMetrics = {
-    totalChecks,
-    failedChecks,
-    totalLatency,
+    totalChecks: Math.min(existingMetrics.totalChecks + 1, 1000),
+    failedChecks: isOnline ? existingMetrics.failedChecks : existingMetrics.failedChecks + 1,
+    totalLatency: isOnline ? existingMetrics.totalLatency + currentLatency : existingMetrics.totalLatency,
     maxLatency: isOnline ? Math.max(existingMetrics.maxLatency, currentLatency) : existingMetrics.maxLatency,
     minLatency: isOnline ? Math.min(existingMetrics.minLatency, currentLatency) : existingMetrics.minLatency
   };
@@ -98,9 +85,9 @@ function determineStatus(isOnline: boolean, latency: number): 'online' | 'offlin
 
 initializeCache();
 
-async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0, forceRefresh: boolean = false): Promise<ApiCheckResult> {
+async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0): Promise<ApiCheckResult> {
   const cachedResult = getCache(api.id);
-  if (cachedResult && !forceRefresh) {
+  if (cachedResult) {
     return cachedResult;
   }
 
@@ -173,21 +160,19 @@ async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0, force
   }
 }
 
-export async function performCheck(forceRefresh: boolean = false): Promise<ApiCheckResult[]> {
-  // 运行时获取最新 API 配置，避免使用模块加载时的快照
-  const apis = getApisToCheck();
-  // 使用并发管理器处理请求（重试由 checkApi 内部负责，此处不再叠加重试）
+export async function performCheck(): Promise<ApiCheckResult[]> {
+  // 使用并发管理器处理请求
   const results = await processBatch(
-    apis,
-    (api) => checkApi(api, 0, forceRefresh),
+    APIS_TO_CHECK,
+    (api) => checkApi(api),
     {
       priority: 'medium',
       timeout: 30000,
-      retries: 0,
+      retries: 1,
       retryDelay: 1000
     }
   );
-
+  
   return results;
 }
 
@@ -199,14 +184,4 @@ export function getConcurrencyStatus(): import('../types').ConcurrencyStatus {
     concurrencyLimit: concurrencyManager.getConcurrencyLimit(),
     networkQuality: concurrencyManager.getNetworkQuality()
   };
-}
-
-// 清理不再监控的 API 的指标缓存，避免内存泄漏
-export function pruneMetricsCache(activeApiIds: string[]): void {
-  const activeSet = new Set(activeApiIds);
-  for (const key of metricsCache.keys()) {
-    if (!activeSet.has(key)) {
-      metricsCache.delete(key);
-    }
-  }
 }

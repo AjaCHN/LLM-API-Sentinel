@@ -1,4 +1,4 @@
-// app/lib/mock-data.ts v2.6.3
+// app/lib/mock-data.ts v2.7.0
 // 模拟数据生成器 - 用于在 Supabase 不可用时生成测试数据
 import { APIS_TO_CHECK } from '../constants';
 import { ApiStatus } from '../types';

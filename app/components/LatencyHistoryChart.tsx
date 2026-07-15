@@ -1,4 +1,4 @@
-// app/components/LatencyHistoryChart.tsx v2.6.3
+// app/components/LatencyHistoryChart.tsx v2.7.0
 'use client';
 
 import { memo } from 'react';
@@ -110,8 +110,7 @@ function LatencyHistoryChart({
 
 export default memo(LatencyHistoryChart, (prevProps, nextProps) => {
   return (
-    prevProps.chartData === nextProps.chartData &&
-    prevProps.statuses === nextProps.statuses &&
-    prevProps.getApiColor === nextProps.getApiColor
+    JSON.stringify(prevProps.chartData) === JSON.stringify(nextProps.chartData) &&
+    JSON.stringify(prevProps.statuses) === JSON.stringify(nextProps.statuses)
   );
 });

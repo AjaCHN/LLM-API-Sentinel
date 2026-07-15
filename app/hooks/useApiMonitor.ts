@@ -1,10 +1,10 @@
-// app/hooks/useApiMonitor.ts v2.6.3
+// app/hooks/useApiMonitor.ts v2.7.0
 // 改进：使用本地 API 检查，同时支持从 Supabase 同步数据
-import { useCallback, useEffect, useRef, startTransition } from 'react';
+import { useCallback, useEffect, startTransition } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { supabase } from '../lib/supabase';
 import { useApiStore, useAuthStore } from '../store';
-import { LATENCY_THRESHOLD } from '../constants';
+import { LATENCY_THRESHOLD, APIS_TO_CHECK } from '../constants';
 import { ApiStatus, StatusHistory } from '../types';
 import { logError, handleError } from '../lib/error-handler';
 import { performCheck } from '../lib/monitor';
@@ -30,8 +30,6 @@ export function useApiMonitor() {
     addHistoryEntry: state.addHistoryEntry,
   })));
   const { setError } = useAuthStore();
-
-  const idleHandle = useRef<number | null>(null);
 
   // 同步 API 状态到 Supabase
   const syncToSupabase = useCallback(async (results: ApiStatus[]) => {
@@ -185,7 +183,7 @@ export function useApiMonitor() {
     setIsChecking(true);
     try {
       // 执行本地 API 检查
-      const results = await performCheck(true);
+      const results = await performCheck();
       
       // 性能优化: 使用 startTransition 标记非紧急更新，保持 UI 响应性
       startTransition(() => {
@@ -213,14 +211,11 @@ export function useApiMonitor() {
       // 性能优化: 使用 requestIdleCallback 延迟非关键工作到浏览器空闲时执行
       const syncInIdle = () => {
         if ('requestIdleCallback' in window) {
-          idleHandle.current = window.requestIdleCallback(() => {
-            idleHandle.current = null;
-            syncToSupabase(results).catch(err =>
-              logError(err, 'Supabase sync failed')
-            );
-          });
+          window.requestIdleCallback(() => syncToSupabase(results).catch(err => 
+            logError(err, 'Supabase sync failed')
+          ));
         } else {
-          setTimeout(() => syncToSupabase(results).catch(err =>
+          setTimeout(() => syncToSupabase(results).catch(err => 
             logError(err, 'Supabase sync failed')
           ), 1000);
         }
@@ -235,13 +230,8 @@ export function useApiMonitor() {
     }
   }, [setIsChecking, setLastUpdate, setError, setStatuses, addHistoryEntry, checkAndCreateAlert, syncToSupabase]);
 
-  // 初始化时从 Supabase 加载最新状态（仅执行一次），否则使用本地模拟数据
-  const didInit = useRef(false);
+  // 初始化时尝试从 Supabase 加载（可选），否则使用本地模拟数据
   useEffect(() => {
-    if (didInit.current) return;
-    didInit.current = true;
-
-    let cancelled = false;
     const loadInitialData = async () => {
       try {
         const { data, error } = await supabase
@@ -250,58 +240,44 @@ export function useApiMonitor() {
 
         if (error) throw error;
 
-        if (!cancelled) {
-          if (data && data.length > 0) {
-            const mappedData: ApiStatus[] = data.map(doc => ({
-              id: doc.id,
-              name: doc.name,
-              provider: doc.provider,
-              url: doc.url,
-              status: doc.status,
-              latency: doc.latency,
-              lastChecked: doc.last_checked,
-              error: doc.error,
-              retries: doc.retries,
-              errorRate: doc.error_rate,
-              availability: doc.availability,
-              uptime: doc.uptime,
-              averageLatency: doc.average_latency,
-              maxLatency: doc.max_latency,
-              minLatency: doc.min_latency
-            }));
-            setStatuses(mappedData.sort((a, b) => a.name.localeCompare(b.name)));
-          } else {
-            // 如果 Supabase 中没有数据，生成模拟数据
-            setStatuses(generateMockApiStatuses());
-          }
+        if (data && data.length > 0) {
+          const mappedData: ApiStatus[] = data.map(doc => ({
+            id: doc.id,
+            name: doc.name,
+            provider: doc.provider,
+            url: doc.url,
+            status: doc.status,
+            latency: doc.latency,
+            lastChecked: doc.last_checked,
+            error: doc.error,
+            retries: doc.retries,
+            errorRate: doc.error_rate,
+            availability: doc.availability,
+            uptime: doc.uptime,
+            averageLatency: doc.average_latency,
+            maxLatency: doc.max_latency,
+            minLatency: doc.min_latency
+          }));
+          setStatuses(mappedData.sort((a, b) => a.name.localeCompare(b.name)));
+        } else {
+          // 如果 Supabase 中没有数据，生成模拟数据
+          setStatuses(generateMockApiStatuses());
         }
       } catch {
         // 如果 Supabase 加载失败，生成模拟数据
-        if (!cancelled) {
-          setStatuses(generateMockApiStatuses());
-        }
+        setStatuses(generateMockApiStatuses());
       }
     };
 
-    loadInitialData();
-    return () => {
-      cancelled = true;
-    };
-  }, [setStatuses]);
+    if (statuses.length === 0) {
+      loadInitialData();
+    }
+  }, [statuses.length, setStatuses]);
 
-  // 组件卸载时取消尚未执行的空闲同步，避免在已卸载组件上更新状态
-  useEffect(() => {
-    return () => {
-      if (idleHandle.current !== null && 'cancelIdleCallback' in window) {
-        window.cancelIdleCallback(idleHandle.current);
-      }
-    };
-  }, []);
-
-  return {
-    statuses,
-    history,
-    isChecking,
-    runCheck
+  return { 
+    statuses, 
+    history, 
+    isChecking, 
+    runCheck 
   };
 }

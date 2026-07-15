@@ -1,4 +1,4 @@
-// app/lib/error-handler.ts v2.6.3
+// app/lib/error-handler.ts v2.7.0
 import { AppError } from '../types';
 import { t } from './i18n';
 
@@ -113,7 +113,7 @@ export function logError(error: unknown, context: string): void {
       timestamp: appError.timestamp,
       // 不暴露 user data, 仅记录错误类型
       message: typeof appError.message === 'string'
-        ? appError.message.replace(/(\S{100,})/g, '[truncated]')
+        ? appError.message.replace(/([^\\s]{100,})/g, '[truncated]')
         : 'unknown',
     };
     console.error(JSON.stringify(safeLog));
