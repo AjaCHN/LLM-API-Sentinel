@@ -1,4 +1,4 @@
-// app/components/DashboardClient.tsx v2.6.3
+// app/components/DashboardClient.tsx v2.7.0
 'use client';
 
 import { useState, useEffect, useMemo, useCallback, startTransition } from 'react';
@@ -52,6 +52,8 @@ export default function DashboardClient() {
     isChecking,
     lastUpdate,
     geo,
+    isGeoLoading,
+    refreshGeo,
     runCheck,
     resolveAlert,
     login,
@@ -112,6 +114,8 @@ export default function DashboardClient() {
         theme={theme}
         setTheme={setTheme}
         geo={geo}
+        isGeoLoading={isGeoLoading}
+        refreshGeo={refreshGeo}
         login={login}
         logout={logout}
         resolveAlert={resolveAlert}

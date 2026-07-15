@@ -105,6 +105,7 @@
     "title": "Rilevamento della posizione",
     "description": "Abilita il rilevamento della posizione basato su IP per mostrare la tua regione nel dashboard. Questo è opzionale e può essere modificato in qualsiasi momento.",
     "enable": "Abilita",
-    "disable": "Disabilita"
+    "disable": "Disabilita",
+    "refresh": "Aggiorna posizione"
   }
 }

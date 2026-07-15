@@ -1,4 +1,4 @@
-// app/components/ProgressBar.tsx v2.6.3
+// app/components/ProgressBar.tsx v2.7.0
 // 性能优化: 将子组件提取到外部，避免每次父组件渲染时重新创建
 import { memo } from 'react';
 import { cn } from '@/lib/utils';

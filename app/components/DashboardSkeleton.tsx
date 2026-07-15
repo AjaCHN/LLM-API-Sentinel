@@ -1,4 +1,4 @@
-// app/components/DashboardSkeleton.tsx v2.6.3
+// app/components/DashboardSkeleton.tsx v2.7.0
 // LLM API Sentinel — Dashboard Skeleton (pure presentational)
 // Static shimmer-only layout that mirrors the general dashboard structure.
 // No hooks, no state, no interactivity — safe for Suspense fallback.

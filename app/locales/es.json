@@ -105,6 +105,7 @@
     "title": "Detección de ubicación",
     "description": "Habilite la detección de ubicación basada en IP para mostrar su región en el panel. Esto es opcional y se puede cambiar en cualquier momento.",
     "enable": "Habilitar",
-    "disable": "Deshabilitar"
+    "disable": "Deshabilitar",
+    "refresh": "Actualizar ubicación"
   }
 }

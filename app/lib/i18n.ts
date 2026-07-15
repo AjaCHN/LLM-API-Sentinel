@@ -1,4 +1,4 @@
-// app/lib/i18n.ts v2.6.3
+// app/lib/i18n.ts v2.7.0
 
 type TranslationData = { [section: string]: { [key: string]: string } };
 const translations: Record<string, TranslationData> = {};

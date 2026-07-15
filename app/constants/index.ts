@@ -1,4 +1,4 @@
-// app/constants/index.ts v2.6.3
+// app/constants/index.ts v2.7.0
 export const LATENCY_THRESHOLD = 1500;
 export const DEGRADED_THRESHOLD = 1000;
 export const MAX_RETRIES = 2;

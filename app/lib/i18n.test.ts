@@ -1,4 +1,4 @@
-// app/lib/i18n.test.ts v2.6.3
+// app/lib/i18n.test.ts v2.7.0
 
 import { supportedLocales, initLocaleSync, getLocale, setLocale, t } from './i18n';
 

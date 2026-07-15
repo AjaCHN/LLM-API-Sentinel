@@ -1,12 +1,13 @@
-// app/hooks/useGeoLocation.ts v2.6.3
+// app/hooks/useGeoLocation.ts v2.7.0
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { GEO_INFO_EXPIRY } from '../constants';
 import { logError } from '../lib/error-handler';
 import { useGeoStore, GeoLocation } from '../store';
 
 const GEO_OPT_IN_KEY = 'geoOptIn';
+const GEO_FETCH_TIMEOUT = 5000;
 
 const FALLBACK_GEO: GeoLocation = { city: 'Unknown', country: 'Global' };
 
@@ -27,23 +28,17 @@ export function enableGeoLocation(): void {
 export function disableGeoLocation(): void {
   if (!isBrowser()) return;
   window.localStorage.setItem(GEO_OPT_IN_KEY, 'false');
-  // clear any cached geo data so we don't leak IP after opt-out
   window.localStorage.removeItem('geoInfo');
   window.localStorage.removeItem('geoInfoExpiry');
-  const store = (useGeoStore as unknown as { getState: () => { setGeo: (g: GeoLocation | null) => void; clearGeo: () => void } }).getState?.();
-  if (store && typeof store.clearGeo === 'function') {
-    store.clearGeo();
-  } else if (store && typeof store.setGeo === 'function') {
-    store.setGeo(FALLBACK_GEO);
-  }
+  useGeoStore.getState().clearGeo();
 }
 
 export function useGeoLocation() {
   const { geo, isLoading, setGeo, setIsLoading } = useGeoStore();
   const [optInGranted, setOptInGrantedState] = useState<boolean>(false);
   const [optInRequested, setOptInRequested] = useState<boolean>(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  // hydrate opt-in state from localStorage on mount
   useEffect(() => {
     if (!isBrowser()) return;
     const raw = window.localStorage.getItem(GEO_OPT_IN_KEY);
@@ -60,11 +55,84 @@ export function useGeoLocation() {
     setOptInGrantedState(value);
   }, []);
 
-  useEffect(() => {
-    // Only run fetch once opt-in state is known and user has opted in.
+  const fetchGeoLocation = useCallback(async (forceRefresh: boolean = false) => {
     if (!isBrowser()) return;
 
-    // If no opt-in, ensure fallback is used and never fetch.
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
+    try {
+      const cachedGeo = window.localStorage.getItem('geoInfo');
+      const expiry = window.localStorage.getItem('geoInfoExpiry');
+      const isExpired = !expiry || Date.now() > parseInt(expiry, 10);
+
+      if (cachedGeo && !isExpired && !forceRefresh) {
+        try {
+          const parsedGeo = JSON.parse(cachedGeo) as GeoLocation;
+          setGeo(parsedGeo);
+          setIsLoading(false);
+          return;
+        } catch (error) {
+          logError(error, 'Failed to parse cached geo info');
+        }
+      }
+
+      setIsLoading(true);
+
+      const timeoutId = setTimeout(() => {
+        abortController.abort();
+      }, GEO_FETCH_TIMEOUT);
+
+      const response = await fetch('https://ipapi.co/json/', {
+        signal: abortController.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`Geo API responded with status ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      const geoData: GeoLocation = {
+        city: data.city || 'Unknown',
+        country: data.country_name || 'Global',
+        ip: data.ip,
+      };
+
+      setGeo(geoData);
+      window.localStorage.setItem('geoInfo', JSON.stringify(geoData));
+      window.localStorage.setItem(
+        'geoInfoExpiry',
+        String(Date.now() + GEO_INFO_EXPIRY),
+      );
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return;
+      }
+      logError(error, 'Failed to fetch geo info');
+      if (!forceRefresh) {
+        setGeo(FALLBACK_GEO);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [setGeo, setIsLoading]);
+
+  const refreshGeo = useCallback(() => {
+    if (hasOptIn()) {
+      fetchGeoLocation(true);
+    }
+  }, [fetchGeoLocation]);
+
+  useEffect(() => {
+    if (!isBrowser()) return;
+
     if (!hasOptIn()) {
       setIsLoading(false);
       if (!geo || geo.city === undefined) {
@@ -73,50 +141,16 @@ export function useGeoLocation() {
       return;
     }
 
-    const fetchGeoLocation = async () => {
-      try {
-        const cachedGeo = window.localStorage.getItem('geoInfo');
-        const expiry = window.localStorage.getItem('geoInfoExpiry');
-        const isExpired = !expiry || Date.now() > parseInt(expiry, 10);
+    fetchGeoLocation();
+  }, [fetchGeoLocation, setGeo, setIsLoading, geo]);
 
-        if (cachedGeo) {
-          try {
-            const parsedGeo = JSON.parse(cachedGeo) as GeoLocation;
-            setGeo(parsedGeo);
-            setIsLoading(false);
-          } catch (error) {
-            logError(error, 'Failed to parse cached geo info');
-          }
-        }
-
-        if (!cachedGeo || isExpired) {
-          setIsLoading(true);
-          const response = await fetch('https://ipapi.co/json/');
-          const data = await response.json();
-
-          const geoData: GeoLocation = {
-            city: data.city || 'Unknown',
-            country: data.country_name || 'Global',
-            ip: data.ip,
-          };
-
-          setGeo(geoData);
-          window.localStorage.setItem('geoInfo', JSON.stringify(geoData));
-          window.localStorage.setItem(
-            'geoInfoExpiry',
-            String(Date.now() + GEO_INFO_EXPIRY),
-          );
-        }
-      } catch (error) {
-        logError(error, 'Failed to fetch geo info');
-        setGeo(FALLBACK_GEO);
-      } finally {
-        setIsLoading(false);
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
     };
-
-    fetchGeoLocation();
-  }, [setGeo, setIsLoading, optInGranted]);
+  }, []);
 
   return {
     geo: geo ?? FALLBACK_GEO,
@@ -124,5 +158,6 @@ export function useGeoLocation() {
     optInGranted,
     optInRequested,
     setOptInGranted,
+    refreshGeo,
   };
 }

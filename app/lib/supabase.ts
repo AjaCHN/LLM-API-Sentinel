@@ -1,4 +1,4 @@
-// app/lib/supabase.ts v2.6.3
+// app/lib/supabase.ts v2.7.0
 // 安全修复: 环境变量验证、URL 格式验证、HTTPS 强制、避免 SSR 副作用
 import { createClient } from '@supabase/supabase-js';
 

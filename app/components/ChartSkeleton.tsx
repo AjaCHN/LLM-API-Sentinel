@@ -1,4 +1,4 @@
-// app/components/ChartSkeleton.tsx v2.6.3
+// app/components/ChartSkeleton.tsx v2.7.0
 // 图表组件骨架屏 - 用于动态加载时的占位
 import { Card, CardContent } from '@/components/ui/card';
 

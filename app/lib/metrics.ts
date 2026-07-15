@@ -1,4 +1,4 @@
-// app/lib/metrics.ts v2.6.3
+// app/lib/metrics.ts v2.7.0
 import { supabase } from './supabase';
 import type { StatusHistory } from '../types';
 
@@ -38,7 +38,7 @@ async function _fetchStatusHistory(
     return [];
   }
 
-  return (data || []).map(doc => ({
+  return (data || []).map((doc: any) => ({
     id: doc.id,
     apiId: doc.api_id,
     status: doc.status,

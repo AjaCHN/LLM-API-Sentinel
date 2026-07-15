@@ -1,4 +1,4 @@
-// app/store/auth.ts v2.6.3
+// app/store/auth.ts v2.7.0
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User } from '../types';

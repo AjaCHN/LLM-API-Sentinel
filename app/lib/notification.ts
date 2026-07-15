@@ -4,7 +4,7 @@
  * Provides formatting, sending, batch-parallel dispatch, and helper utilities.
  */
 
-// app/lib/notification.ts v2.6.3
+// app/lib/notification.ts v2.7.0
 import { Alert } from '../types';
 
 // Webhook 配置接口

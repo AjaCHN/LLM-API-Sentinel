@@ -1,4 +1,4 @@
-// app/lib/error-handler.ts v2.6.3
+// app/lib/error-handler.ts v2.7.0
 import { AppError } from '../types';
 import { t } from './i18n';
 

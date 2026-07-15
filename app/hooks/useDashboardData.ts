@@ -1,4 +1,4 @@
-// app/hooks/useDashboardData.ts v2.6.3
+// app/hooks/useDashboardData.ts v2.7.0
 'use client';
 
 import { useApiStore } from '../store';
@@ -9,24 +9,26 @@ import { useAuth } from './useAuth';
 
 export function useDashboardData() {
   // 使用专注的钩子
-  const { geo } = useGeoLocation();
+  const { geo, isLoading: isGeoLoading, refreshGeo } = useGeoLocation();
   const { statuses, history, isChecking, runCheck } = useApiMonitor();
   const { alerts, resolveAlert } = useAlerts();
   const { user, login, logout } = useAuth();
 
   const { lastUpdate } = useApiStore();
 
-  return { 
-    statuses, 
-    history, 
-    alerts, 
-    user, 
-    isChecking, 
-    lastUpdate, 
-    geo, 
-    runCheck, 
-    resolveAlert, 
-    login, 
-    logout 
+  return {
+    statuses,
+    history,
+    alerts,
+    user,
+    isChecking,
+    lastUpdate,
+    geo,
+    isGeoLoading,
+    refreshGeo,
+    runCheck,
+    resolveAlert,
+    login,
+    logout
   };
 }

@@ -1,4 +1,4 @@
-// server.ts v2.6.3
+// server.ts v2.7.0
 import express from 'express';
 import next from 'next';
 import { createClient } from '@supabase/supabase-js';

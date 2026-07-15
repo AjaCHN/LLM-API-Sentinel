@@ -1,4 +1,4 @@
-// app/components/StatCard.tsx v2.6.3
+// app/components/StatCard.tsx v2.7.0
 'use client';
 
 import React from 'react';
