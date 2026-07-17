@@ -1,20 +1,33 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+# Project context (shown to AI when creating artifacts)
+context: |
+  Tech stack: Next.js 14.2 (App Router, Static Export), TypeScript 5.9, Tailwind CSS 4.1, shadcn/ui, Zustand, Recharts, Supabase (PostgreSQL + Auth + Realtime), Express 5.2
+  Architecture: Static frontend + Supabase backend, no custom API routes
+  Conventions: PascalCase components, camelCase hooks/utils, SCREAMING_SNAKE_CASE constants, kebab-case CSS
+  Commits: conventional commits (feat/fix/docs/refactor/style/test/chore/perf)
+  Testing: 80%+ coverage required, run npm test before commit
+  Security: no secrets in code/logs, validate inputs, XSS protection, HTTPS in production
+  i18n: 16 languages supported (en/zh-cn/zh-tw/ar/cs/es/hi/id/it/nl/pl/sv/th/tr/ru/vi)
+  Error handling: use unified logError instead of console.error/console.warn
+  Version: v2.7.0 (SemVer)
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+# Per-artifact rules
+rules:
+  proposal:
+    - Keep proposals under 800 words
+    - Always include "Goals" and "Non-goals" sections
+    - Reference related openspec docs when applicable
+  tasks:
+    - Break tasks into chunks of max 2 hours
+    - Include verification steps for each task
+    - Reference file paths relative to project root
+  design:
+    - Follow Dark Indigo theme (#6366f1 + #8b5cf6)
+    - Ensure WCAG AA accessibility compliance
+    - Support responsive 1/2/3/4 column grids
+  code:
+    - Add Chinese comments for critical logic
+    - Extract Chinese text to i18n files
+    - Use TypeScript strict mode, no implicit any
+    - Handle Promise rejections with meaningful errors

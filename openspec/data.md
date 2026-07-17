@@ -327,41 +327,36 @@ flowchart TD
 ### 4.3 清理脚本示例
 
 ```typescript
+import { supabase } from '../app/lib/supabase';
+import { logError } from '../app/lib/error-handler';
+
 async function cleanupOldData() {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  
+
   const ninetyDaysAgo = new Date();
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-  
-  // 清理历史数据
-  const historyQuery = db.collection('status_history')
-    .where('timestamp', '<', thirtyDaysAgo);
-  
-  const historySnapshot = await historyQuery.get();
-  const historyBatch = db.batch();
-  
-  historySnapshot.docs.forEach(doc => {
-    historyBatch.delete(doc.ref);
-  });
-  
-  await historyBatch.commit();
-  
-  // 清理已解决的告警
-  const alertsQuery = db.collection('alerts')
-    .where('resolved', '==', true)
-    .where('resolvedAt', '<', ninetyDaysAgo);
-  
-  const alertsSnapshot = await alertsQuery.get();
-  const alertsBatch = db.batch();
-  
-  alertsSnapshot.docs.forEach(doc => {
-    alertsBatch.delete(doc.ref);
-  });
-  
-  await alertsBatch.commit();
-  
-  console.log('[Cleanup] Old data cleaned successfully');
+
+  // 清理历史数据（删除 30 天前的记录）
+  const { error: historyError } = await supabase
+    .from('status_history')
+    .delete()
+    .lt('timestamp', thirtyDaysAgo.toISOString());
+
+  if (historyError) {
+    logError(historyError, 'Failed to clean up old status history');
+  }
+
+  // 清理已解决的告警（删除已解决超过 90 天的记录）
+  const { error: alertsError } = await supabase
+    .from('alerts')
+    .delete()
+    .eq('resolved', true)
+    .lt('resolved_at', ninetyDaysAgo.toISOString());
+
+  if (alertsError) {
+    logError(alertsError, 'Failed to clean up old alerts');
+  }
 }
 ```
 
@@ -509,24 +504,41 @@ CREATE TRIGGER alert_validation
 
 **批量写入事务**：
 ```typescript
+import { supabase } from '../app/lib/supabase';
+
 async function updateStatuses(results: ApiStatus[]) {
-  const batch = db.batch();
-  
-  for (const result of results) {
-    const statusRef = db.collection('api_status').doc(result.id);
-    batch.set(statusRef, result);
-    
-    const historyRef = db.collection('status_history').doc();
-    batch.set(historyRef, {
-      apiId: result.id,
-      status: result.status,
-      latency: result.latency,
-      timestamp: FieldValue.serverTimestamp(),
-      time: new Date().toLocaleTimeString()
-    });
-  }
-  
-  await batch.commit();
+  // 批量更新 API 状态
+  const statusUpdates = results.map(result => ({
+    id: result.id,
+    name: result.name,
+    provider: result.provider,
+    url: result.url,
+    status: result.status,
+    latency: result.latency,
+    last_checked: new Date().toISOString(),
+    error: result.error || null,
+  }));
+
+  const { error: statusError } = await supabase
+    .from('api_status')
+    .upsert(statusUpdates);
+
+  if (statusError) throw statusError;
+
+  // 批量插入历史记录
+  const historyInserts = results.map(result => ({
+    api_id: result.id,
+    status: result.status,
+    latency: result.latency,
+    timestamp: new Date().toISOString(),
+    time: new Date().toLocaleTimeString(),
+  }));
+
+  const { error: historyError } = await supabase
+    .from('status_history')
+    .insert(historyInserts);
+
+  if (historyError) throw historyError;
 }
 ```
 

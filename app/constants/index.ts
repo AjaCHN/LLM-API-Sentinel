@@ -41,7 +41,7 @@ export const APIS_TO_CHECK = (() => {
       return JSON.parse(savedConfig);
     }
   } catch (error) {
-    console.error('Failed to load API config:', error);
+    // 静默忽略配置加载错误，使用默认配置
   }
   return DEFAULT_APIS;
 })();

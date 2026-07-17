@@ -611,40 +611,56 @@ export function useAlerts() {
 
 ### 7.5 useGeoLocation
 
-**功能**：获取并缓存地理位置信息
+**功能**：基于 IP 获取并缓存地理位置信息（使用 ipapi.co 服务）
 
 ```typescript
 export function useGeoLocation() {
   const [geo, setGeo] = useState<GeoInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchGeo = async () => {
+    setLoading(true);
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const response = await fetch('https://ipapi.co/json/', {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) throw new Error('Geo request failed');
+
+      const data = await response.json();
+      const geoInfo: GeoInfo = {
+        city: data.city,
+        region: data.region,
+        country: data.country_name,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        timezone: data.timezone,
+        timestamp: Date.now(),
+      };
+      setGeo(geoInfo);
+      cacheGeoLocation(geoInfo);
+    } catch (error) {
+      logError(error, 'Failed to fetch geo location');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const cached = getCachedGeoLocation();
-    if (cached) {
+    if (cached && Date.now() - cached.timestamp < 24 * 60 * 60 * 1000) {
       setGeo(cached);
       setLoading(false);
       return;
     }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const geoInfo: GeoInfo = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          timestamp: Date.now(),
-        };
-        setGeo(geoInfo);
-        cacheGeoLocation(geoInfo);
-        setLoading(false);
-      },
-      () => {
-        setLoading(false);
-      },
-      { timeout: 10000 }
-    );
+    fetchGeo();
   }, []);
 
-  return { geo, loading };
+  return { geo, loading, refreshGeo: fetchGeo };
 }
 ```
 
@@ -722,7 +738,7 @@ async function updateSupabase(results: ApiStatus[]) {
     .upsert(updates);
 
   if (error) {
-    console.error('[Monitor] Failed to update statuses:', error);
+    logError(error, '[Monitor] Failed to update statuses');
   }
 }
 ```

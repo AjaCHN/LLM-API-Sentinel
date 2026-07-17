@@ -1,4 +1,4 @@
-# LLM API Sentinel 项目规范 (v2.6.3)
+# LLM API Sentinel 项目规范 (v2.7.0)
 
 ## 1. 项目概述
 

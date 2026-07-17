@@ -1,6 +1,7 @@
 // app/lib/cache.ts v2.7.0
 import { CACHE_EXPIRY, MIN_CACHE_EXPIRY, MAX_CACHE_EXPIRY } from '../constants';
 import { ApiCheckResult, ApiCheckCache } from '../types';
+import { logError } from './error-handler';
 
 // 缓存版本控制 - 应用更新时自动清除旧缓存
 const CACHE_VERSION = 'v1';
@@ -71,7 +72,7 @@ export function loadCacheFromStorage(): ApiCheckCache {
       }
     }
   } catch (error) {
-    console.error('Failed to load cache from localStorage:', error);
+    logError(error, 'Failed to load cache from localStorage');
     localStorage.removeItem(CACHE_KEY);
   }
   
@@ -91,7 +92,7 @@ export function loadCacheFromStorage(): ApiCheckCache {
         }
       }
     } catch (error) {
-      console.error('Failed to load cache from sessionStorage:', error);
+      logError(error, 'Failed to load cache from sessionStorage');
     }
   }
   
@@ -112,7 +113,7 @@ export function saveCacheToStorage(cache: ApiCheckCache) {
       });
       localStorage.setItem(CACHE_KEY, JSON.stringify(persistentCache));
     } catch (error) {
-      console.error('Failed to save cache to localStorage:', error);
+      logError(error, 'Failed to save cache to localStorage');
     }
   }
   
@@ -121,7 +122,7 @@ export function saveCacheToStorage(cache: ApiCheckCache) {
     try {
       sessionStorage.setItem(CACHE_KEY, JSON.stringify(cache));
     } catch (error) {
-      console.error('Failed to save cache to sessionStorage:', error);
+      logError(error, 'Failed to save cache to sessionStorage');
     }
   }
 }
@@ -210,7 +211,7 @@ export function clearCache(): void {
     try {
       localStorage.removeItem(CACHE_KEY);
     } catch (error) {
-      console.error('Failed to clear cache from localStorage:', error);
+      logError(error, 'Failed to clear cache from localStorage');
     }
   }
   
@@ -219,7 +220,7 @@ export function clearCache(): void {
     try {
       sessionStorage.removeItem(CACHE_KEY);
     } catch (error) {
-      console.error('Failed to clear cache from sessionStorage:', error);
+      logError(error, 'Failed to clear cache from sessionStorage');
     }
   }
 }
@@ -238,7 +239,7 @@ export function clearApiCache(apiId: string): void {
         localStorage.setItem(CACHE_KEY, JSON.stringify(parsed));
       }
     } catch (error) {
-      console.error('Failed to clear API cache from localStorage:', error);
+      logError(error, 'Failed to clear API cache from localStorage');
     }
   }
   
@@ -252,7 +253,7 @@ export function clearApiCache(apiId: string): void {
         sessionStorage.setItem(CACHE_KEY, JSON.stringify(parsed));
       }
     } catch (error) {
-      console.error('Failed to clear API cache from sessionStorage:', error);
+      logError(error, 'Failed to clear API cache from sessionStorage');
     }
   }
 }
@@ -269,8 +270,6 @@ export function getCurrentCache(): ApiCheckCache {
 
 // 预热缓存 - 预先加载指定 API 的缓存数据
 export function prewarmCache(apiIds: string[]): void {
-  console.log('Prewarming cache for APIs:', apiIds);
-  
   const apisToPrewarm = apiIds.length > 0 
     ? apiIds 
     : Object.keys(memoryCache);
@@ -281,7 +280,5 @@ export function prewarmCache(apiIds: string[]): void {
       delete memoryCache[apiId];
     }
   });
-  
-  console.log('Cache prewarm completed. APIs in cache:', Object.keys(memoryCache).length);
 }
 

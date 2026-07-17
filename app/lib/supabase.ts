@@ -40,10 +40,7 @@ const isBrowser = typeof window !== 'undefined';
 if (isBrowser) {
   const envCheck = validateSupabaseEnv();
   if (!envCheck.valid) {
-    console.warn(
-      `[Supabase] ${envCheck.reason}. ` +
-      `Application will use fallback mode. Features requiring Supabase will be unavailable.`
-    );
+    // Supabase 环境变量未配置，应用将使用降级模式
   }
 }
 

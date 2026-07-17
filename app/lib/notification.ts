@@ -6,6 +6,7 @@
 
 // app/lib/notification.ts v2.7.0
 import { Alert } from '../types';
+import { logError } from './error-handler';
 
 // Webhook 配置接口
 export interface WebhookConfig {
@@ -176,16 +177,16 @@ async function sendWebhookRequest(
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      console.error(`Webhook request failed with status ${response.status}`);
+      logError(new Error(`Webhook request failed with status ${response.status}`), 'Webhook request failed');
       return false;
     }
 
     return true;
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      console.error(`Webhook request timed out after ${timeout}ms`);
+      logError(new Error(`Webhook request timed out after ${timeout}ms`), 'Webhook timeout');
     } else {
-      console.error('Webhook request failed:', error);
+      logError(error, 'Webhook request failed');
     }
     return false;
   }

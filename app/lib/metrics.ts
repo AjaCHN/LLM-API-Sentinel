@@ -1,6 +1,7 @@
 // app/lib/metrics.ts v2.7.0
 import { supabase } from './supabase';
 import type { StatusHistory } from '../types';
+import { logError } from './error-handler';
 
 export interface ApiMetrics {
   errorRate: number;
@@ -34,7 +35,7 @@ async function _fetchStatusHistory(
   const { data, error } = await query;
 
   if (error) {
-    console.error('Failed to fetch status history:', error);
+    logError(error, 'Failed to fetch status history');
     return [];
   }
 
@@ -95,7 +96,7 @@ export async function calculateMetrics(
     const history = await _fetchStatusHistory(apiId, timeWindow, 1000);
     return _calculateMetricsFromHistory(history);
   } catch (error) {
-    console.error('Failed to calculate metrics:', error);
+    logError(error, 'Failed to calculate metrics');
     return _calculateMetricsFromHistory([]);
   }
 }
@@ -105,7 +106,7 @@ export async function calculateAggregateMetrics(): Promise<ApiMetrics> {
     const history = await _fetchStatusHistory(undefined, 24 * 60 * 60 * 1000, 5000);
     return _calculateMetricsFromHistory(history);
   } catch (error) {
-    console.error('Failed to calculate aggregate metrics:', error);
+    logError(error, 'Failed to calculate aggregate metrics');
     return _calculateMetricsFromHistory([]);
   }
 }
