@@ -19,7 +19,7 @@ function StatusDotComponent({ status }: StatusDotProps) {
         status === 'degraded' && 'bg-amber-500',
         status === 'offline' && 'bg-destructive',
         pulseColor,
-        status !== 'online' && 'animate-pulse'
+        status !== 'online' && 'motion-safe:animate-pulse'
       )}
     />
   );

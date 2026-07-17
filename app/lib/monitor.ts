@@ -14,6 +14,16 @@ interface HistoricalMetrics {
 
 const metricsCache: Map<string, HistoricalMetrics> = new Map();
 
+// 安全清理错误消息，防止敏感信息泄露到缓存
+function sanitizeErrorMessage(message: string): string {
+  // 限制长度并移除可能包含敏感信息的模式（如 URL、Token、密钥）
+  const cleaned = message
+    .replace(/https?:\/\/[^\s]+/g, '[URL]')
+    .replace(/[a-zA-Z0-9_-]*(?:key|token|secret|auth|password)[a-zA-Z0-9_-]*[:=]\s*[^\s]+/gi, '[REDACTED]')
+    .slice(0, 200);
+  return cleaned || 'Request failed';
+}
+
 function calculateRealMetrics(
   apiId: string,
   currentLatency: number,
@@ -144,7 +154,8 @@ async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0): Prom
       status: 'offline',
       latency: 0,
       lastChecked: new Date().toISOString(),
-      error: error instanceof Error ? error.message : String(error),
+      // 安全清理：避免将潜在的敏感信息存入缓存
+      error: error instanceof Error ? sanitizeErrorMessage(error.message) : 'Request failed',
       retries,
       errorRate: realMetrics.errorRate,
       availability: realMetrics.availability,

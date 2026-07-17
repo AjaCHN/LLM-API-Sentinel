@@ -78,8 +78,8 @@ export default function DashboardHeader({
             size="icon"
             onClick={() => setShowAlerts(!showAlerts)}
             className={cn(
-              'relative transition-all duration-300',
-              hasCriticalAlerts && 'animate-pulse'
+              'relative transition-colors duration-300',
+              hasCriticalAlerts && 'motion-safe:animate-pulse'
             )}
             aria-label={t('alerts.alertsLabel')}
           >
@@ -154,7 +154,7 @@ export default function DashboardHeader({
                     className="rounded-full border border-border/30 transition-all duration-300 group-hover:border-primary/50 group-hover:scale-105 object-cover"
                   />
                 ) : (
-                  <Avatar className="size-8 border border-border/30 transition-all duration-300 group-hover:border-primary/50 group-hover:scale-105">
+                  <Avatar className="size-8 border border-border/30 transition-colors duration-300 group-hover:border-primary/50 group-hover:scale-105">
                     <AvatarFallback className="text-xs font-medium bg-primary/10 text-primary">
                       {getInitials(user.displayName)}
                     </AvatarFallback>
@@ -174,7 +174,7 @@ export default function DashboardHeader({
           ) : (
             <Button 
               onClick={login} 
-              className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-primary/30 hover:scale-105"
+              className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-shadow duration-300 hover:shadow-primary/30 hover:scale-105"
             >
               <LogIn className="size-4" />
               <span className="hidden sm:inline font-semibold">{t('dashboard.signIn')}</span>

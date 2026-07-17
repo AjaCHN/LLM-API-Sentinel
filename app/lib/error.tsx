@@ -40,9 +40,9 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           <div className="text-6xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold mb-2">{t('errors.errorOccurred')}</h2>
           <p className="text-gray-600 mb-4">{this.state.error?.message}</p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             {t('errors.refreshPage')}
           </button>
@@ -62,9 +62,10 @@ export function ErrorNotification({ error, onClose }: { error: AppError; onClose
         <h3 className="font-bold">{t('errors.errorOccurred')}</h3>
         <p className="text-sm">{error.message}</p>
       </div>
-      <button 
+      <button
         onClick={onClose}
-        className="text-white hover:text-gray-200"
+        className="text-white hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded"
+        aria-label={t('common.close')}
       >
         ×
       </button>

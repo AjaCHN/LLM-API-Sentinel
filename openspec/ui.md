@@ -24,8 +24,8 @@
 - **组件库**: shadcn/ui（基于 Radix UI primitives）
 - **图标库**: Lucide React
 - **图表库**: Recharts（AreaChart）
-- **颜色系统**: 深色紫色/靛蓝主题，CSS 变量驱动（详见 §5.1）
-- **动画**: 自定义 keyframes（pulse-gentle / fade-in-up / scale-in-gentle 等）
+- **颜色系统**: 深色紫色/靛蓝主题，CSS 变量驱动（详见 [design-system.md](design-system.md) 和 §5.1）
+- **动画**: 自定义 keyframes（pulse-gentle / fade-in-up / scale-in-gentle 等），遵循 `prefers-reduced-motion` 规范
 
 ## 2. 组件 API 规范
 

@@ -32,9 +32,9 @@ const MAX_INPUT_LENGTH = 100;
 const MAX_URL_LENGTH = 200;
 
 function sanitizeInput(input: string): string {
-  // 移除潜在的 HTML/JS 标签和特殊字符
+  // 白名单策略：仅保留字母、数字、空格、连字符、下划线、点和常见标点
   return input
-    .replace(/[<>\"\'`]/g, '')
+    .replace(/[^a-zA-Z0-9\s\-_\.\/:@?#&=+~,()[\]{}|%]/g, '')
     .trim()
     .slice(0, MAX_INPUT_LENGTH);
 }

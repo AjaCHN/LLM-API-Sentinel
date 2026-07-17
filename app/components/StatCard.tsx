@@ -28,7 +28,7 @@ export function StatCard({
   return (
     <div 
       className={cn(
-        'group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-all duration-300',
+        'group relative rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 p-4 transition-shadow duration-300',
         hoverBorderColor,
         hoverShadowColor
       )}

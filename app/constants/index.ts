@@ -30,6 +30,18 @@ const DEFAULT_APIS = [
   { id: 'deepseek-v3', name: 'DeepSeek V3', provider: 'DeepSeek', url: 'https://api.deepseek.com/models' }
 ];
 
+// Schema 校验 API 配置项
+function isValidApiConfigItem(item: unknown): item is { id: string; name: string; provider: string; url: string } {
+  if (typeof item !== 'object' || item === null) return false;
+  const obj = item as Record<string, unknown>;
+  return (
+    typeof obj.id === 'string' && obj.id.trim().length > 0 &&
+    typeof obj.name === 'string' && obj.name.trim().length > 0 &&
+    typeof obj.provider === 'string' && obj.provider.trim().length > 0 &&
+    typeof obj.url === 'string' && obj.url.startsWith('https://')
+  );
+}
+
 // 从本地存储读取 API 配置
 export const APIS_TO_CHECK = (() => {
   if (typeof localStorage === 'undefined') {
@@ -38,7 +50,12 @@ export const APIS_TO_CHECK = (() => {
   try {
     const savedConfig = localStorage.getItem('apiConfig');
     if (savedConfig) {
-      return JSON.parse(savedConfig);
+      const parsed = JSON.parse(savedConfig);
+      if (Array.isArray(parsed) && parsed.every(isValidApiConfigItem)) {
+        return parsed;
+      }
+      // 配置格式无效，清除并回退到默认
+      localStorage.removeItem('apiConfig');
     }
   } catch (error) {
     // 静默忽略配置加载错误，使用默认配置

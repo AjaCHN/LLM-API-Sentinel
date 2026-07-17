@@ -32,7 +32,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
         <CardContent className="flex flex-col items-center gap-4 py-16 text-center">
           <div className="relative">
             <div className="flex size-16 items-center justify-center rounded-full bg-muted animate-pulse">
-              <Server className="size-8 text-muted-foreground" />
+              <Server className="size-8 text-muted-foreground" aria-hidden="true" />
             </div>
             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-primary/10 blur-xl" />
           </div>
@@ -52,14 +52,14 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
           <div className="flex items-center gap-4">
             <div className="relative">
               <div className="flex size-10 items-center justify-center rounded-xl bg-primary/15">
-                <Activity className="size-5 text-primary" />
+                <Activity className="size-5 text-primary" aria-hidden="true" />
               </div>
               <div className="absolute -inset-1 rounded-xl bg-primary/5 blur-xl" />
             </div>
             <h3 className="text-xl font-semibold">{provider}</h3>
             <Badge variant="secondary" className="px-3 py-1">
               <span className="flex items-center gap-1.5">
-                <Activity className="size-3" />
+                <Activity className="size-3" aria-hidden="true" />
                 {apis.length} {t('api.apis')}
               </span>
             </Badge>
@@ -84,11 +84,11 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                 <Card
                   key={api.id}
                   className={cn(
-                    'group relative overflow-hidden border-border/50 bg-card/80 backdrop-blur-sm transition-all duration-500',
+                    'group relative overflow-hidden border-border/50 bg-card/80 backdrop-blur-sm transition-shadow duration-500',
                     'hover:border-primary/30',
                     'card-hover-lift',
                     isOffline && 'border-destructive/40 bg-destructive/5',
-                    index % 2 === 0 ? 'animate-fade-in-up' : 'animate-slide-in-right'
+                    index % 2 === 0 ? 'motion-safe:animate-fade-in-up' : 'motion-safe:animate-slide-in-right'
                   )}
                   style={{ 
                     animationDelay: `${index * 0.08}s`,
@@ -150,7 +150,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                       <div className="grid grid-cols-2 gap-3">
                         {api.errorRate !== undefined && (
                           <div className={cn(
-                            'rounded-lg border p-3 transition-all',
+                            'rounded-lg border p-3 transition-colors',
                             api.errorRate > 1 ? 'border-amber-500/30 bg-amber-500/5' : 'border-border/50 bg-muted/30'
                           )}>
                             <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
@@ -213,7 +213,7 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
                     {api.retries && api.retries > 0 && !isOffline && (
                       <Badge variant="secondary" className="px-2 py-0.5 bg-amber-500/10 text-amber-400 border-amber-500/20">
                         <span className="flex items-center gap-1">
-                          <Activity className="size-3" />
+                          <Activity className="size-3" aria-hidden="true" />
                           {api.retries} {t('api.retries')}
                         </span>
                       </Badge>

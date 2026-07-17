@@ -141,7 +141,7 @@ export default function DashboardClient() {
               variant="secondary" 
               className="mb-6 px-4 py-1.5 text-sm bg-primary/10 text-primary border-primary/20"
             >
-              <Globe className="mr-2 size-4" />
+              <Globe className="mr-2 size-4" aria-hidden="true" />
               {t('dashboard.globalAIApiMonitoring')}
             </Badge>
             
@@ -157,7 +157,7 @@ export default function DashboardClient() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
               <StatCard
-                icon={<Zap className="size-4 text-emerald-400" />}
+                icon={<Zap className="size-4 text-emerald-400" aria-hidden="true" />}
                 label={t('api.online')}
                 value={stats.online}
                 iconBgColor="bg-emerald-500/10"
@@ -168,7 +168,7 @@ export default function DashboardClient() {
               />
 
               <StatCard
-                icon={<AlertTriangle className="size-4 text-amber-400" />}
+                icon={<AlertTriangle className="size-4 text-amber-400" aria-hidden="true" />}
                 label={t('api.degraded')}
                 value={stats.degraded}
                 iconBgColor="bg-amber-500/10"
@@ -179,7 +179,7 @@ export default function DashboardClient() {
               />
 
               <StatCard
-                icon={<Database className="size-4 text-destructive" />}
+                icon={<Database className="size-4 text-destructive" aria-hidden="true" />}
                 label={t('api.offline')}
                 value={stats.offline}
                 iconBgColor="bg-destructive/10"
@@ -190,7 +190,7 @@ export default function DashboardClient() {
               />
 
               <StatCard
-                icon={<Zap className="size-4 text-primary" />}
+                icon={<Zap className="size-4 text-primary" aria-hidden="true" />}
                 label={t('api.averageLatency')}
                 value={`${stats.avgLatency}ms`}
                 iconBgColor="bg-primary/10"
@@ -208,7 +208,7 @@ export default function DashboardClient() {
             <Alert className="border-destructive/30 bg-destructive/5 backdrop-blur-sm">
               <div className="flex items-start gap-4">
                 <div className="flex size-12 items-center justify-center rounded-2xl bg-destructive/10">
-                  <AlertTriangle className="size-6 text-destructive" />
+                  <AlertTriangle className="size-6 text-destructive" aria-hidden="true" />
                 </div>
                 <div className="flex-1">
                   <AlertTitle className="text-base font-semibold">
@@ -249,7 +249,7 @@ export default function DashboardClient() {
               <div className="flex flex-wrap items-center gap-2">
                 {lastUpdate && (
                   <Badge variant="outline" className="px-3 py-1">
-                    <RefreshCw className="mr-2 size-3" />
+                    <RefreshCw className="mr-2 size-3" aria-hidden="true" />
                     {t('dashboard.lastSync')}: {format(lastUpdate, 'HH:mm:ss')}
                   </Badge>
                 )}
@@ -312,7 +312,7 @@ export default function DashboardClient() {
                     size="sm"
                     onClick={() => setActiveRange(i)}
                     className={cn(
-                      'transition-all duration-300',
+                      'transition-colors duration-300',
                       activeRange === i && 'shadow-lg shadow-primary/20'
                     )}
                   >

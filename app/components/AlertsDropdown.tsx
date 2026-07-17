@@ -56,7 +56,7 @@ export default function AlertsDropdown({
 
         {alerts.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-8 text-center">
-            <CheckCircle2 className="size-8 text-emerald-500" />
+            <CheckCircle2 className="size-8 text-emerald-500" aria-hidden="true" />
             <p className="text-sm text-muted-foreground">{t('alerts.noActiveAlerts')}</p>
           </div>
         ) : (
@@ -65,7 +65,7 @@ export default function AlertsDropdown({
               <Card key={alert.id} className="transition-colors hover:bg-muted/40">
                 <CardContent className="flex items-start justify-between gap-4 p-4">
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className={`mt-0.5 size-5 ${severityTone(alert.severity)}`} />
+                    <AlertTriangle className={`mt-0.5 size-5 ${severityTone(alert.severity)}`} aria-hidden="true" />
                     <div className="min-w-0">
                       <p className="text-sm font-medium">{alert.apiName}</p>
                       {alert.message && (

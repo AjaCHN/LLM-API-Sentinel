@@ -28,17 +28,16 @@ function ProgressBarComponent({ value, variant, showLabel = false }: ProgressBar
       <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-muted">
         <div
           className={cn(
-            'absolute inset-y-0 left-0 rounded-full bg-gradient-to-r transition-all duration-1000 ease-out',
+            'absolute inset-y-0 left-0 rounded-full bg-gradient-to-r transition-[width] duration-1000 ease-out',
             gradientClass
           )}
           style={{ width: `${clamped}%` }}
         />
-        <div 
-          className="absolute inset-y-0 left-0 rounded-full opacity-30"
-          style={{ 
+        <div
+          className="absolute inset-y-0 left-0 rounded-full opacity-30 motion-safe:animate-[shimmer_2s_infinite]"
+          style={{
             width: `${clamped}%`,
             background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-            animation: 'shimmer 2s infinite'
           }}
         />
       </div>

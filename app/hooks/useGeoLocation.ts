@@ -99,11 +99,12 @@ export function useGeoLocation() {
 
       const data = await response.json();
 
-      const geoData: GeoLocation = {
-        city: data.city || 'Unknown',
-        country: data.country_name || 'Global',
-        ip: data.ip,
-      };
+      // Schema 校验：确保返回数据包含必要的字符串字段
+      const city = typeof data.city === 'string' && data.city.trim() ? data.city.trim() : 'Unknown';
+      const country = typeof data.country_name === 'string' && data.country_name.trim() ? data.country_name.trim() : 'Global';
+      const ip = typeof data.ip === 'string' && /^[\d.:a-fA-F]+$/.test(data.ip) ? data.ip : undefined;
+
+      const geoData: GeoLocation = { city, country, ip };
 
       setGeo(geoData);
       window.localStorage.setItem('geoInfo', JSON.stringify(geoData));

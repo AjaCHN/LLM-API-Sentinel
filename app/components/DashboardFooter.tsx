@@ -15,7 +15,7 @@ export default function DashboardFooter() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-sm font-medium">
-            <Zap className="size-4 text-primary" />
+            <Zap className="size-4 text-primary" aria-hidden="true" />
             <span>{t('footer.globalCoverage')}</span>
           </div>
           <p className="text-xs text-muted-foreground">
@@ -25,7 +25,7 @@ export default function DashboardFooter() {
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-sm font-medium">
-            <Settings className="size-4 text-primary" />
+            <Settings className="size-4 text-primary" aria-hidden="true" />
             <span>{t('footer.ui')}</span>
           </div>
           <p className="text-xs text-muted-foreground">
@@ -35,7 +35,7 @@ export default function DashboardFooter() {
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-sm font-medium">
-            <ShieldCheck className="size-4 text-primary" />
+            <ShieldCheck className="size-4 text-primary" aria-hidden="true" />
             <span>{t('footer.dataIntegrity')}</span>
           </div>
           <p className="text-xs text-muted-foreground">
