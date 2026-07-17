@@ -1,4 +1,5 @@
-// app/layout.tsx v2.7.0
+// app/layout.tsx v2.7.1
+// 安全改进: SITE_URL 默认值使用 localhost 而非生产域名，防止开发环境配置错误
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './style.css';
@@ -15,7 +16,8 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-mono',
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://llm-api-sentinel.vercel.app';
+const isDev = process.env.NODE_ENV !== 'production';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || (isDev ? 'http://localhost:3000' : 'https://llm-api-sentinel.vercel.app');
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -87,7 +89,7 @@ export const metadata: Metadata = {
     creator: '@llm_api_sentinel',
   },
   verification: {
-    google: 'google-site-verification-code',
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
 };
 

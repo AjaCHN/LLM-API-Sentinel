@@ -1,4 +1,5 @@
-// app/lib/i18n.ts v2.7.0
+// app/lib/i18n.ts v2.7.1
+// 安全加固: 添加 locale 白名单验证，防止 localStorage 篡改导致的异常
 
 type TranslationData = { [section: string]: { [key: string]: string } };
 const translations: Record<string, TranslationData> = {};
@@ -28,6 +29,37 @@ export const supportedLocales = [
   { code: 'ru', name: 'Russian', nativeName: 'Русский' },
   { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
 ] as const;
+
+// 安全: 有效的 locale 代码白名单（从 supportedLocales 生成）
+const VALID_LOCALE_CODES = new Set<string>(supportedLocales.map((l) => l.code));
+
+/**
+ * 安全验证 locale 字符串是否在白名单中
+ * 防止 localStorage 被篡改导致加载恶意 locale
+ */
+export function isValidLocale(locale: unknown): locale is string {
+  return typeof locale === 'string' && VALID_LOCALE_CODES.has(locale);
+}
+
+/**
+ * 安全地从 localStorage 读取 locale，失败则返回默认值
+ */
+function getSafeLocaleFromStorage(): string {
+  if (typeof window === 'undefined') return 'en';
+  try {
+    const saved = localStorage.getItem('locale');
+    if (isValidLocale(saved)) {
+      return saved;
+    }
+    // 无效值则清除
+    if (saved !== null) {
+      localStorage.removeItem('locale');
+    }
+    return 'en';
+  } catch {
+    return 'en';
+  }
+}
 
 export async function loadLocale(locale: string): Promise<void> {
   if (translations[locale]) {
@@ -121,8 +153,10 @@ export function initLocale(): void {
   initLocaleSync();
   if (typeof window === 'undefined') return;
 
-  const savedLocale = localStorage.getItem('locale') || detectLocale();
-  void loadLocale(savedLocale);
+  // 安全: 使用验证过的 localStorage 值
+  const savedLocale = getSafeLocaleFromStorage();
+  const localeToUse = savedLocale !== 'en' ? savedLocale : detectLocale();
+  void loadLocale(isValidLocale(localeToUse) ? localeToUse : 'en');
 }
 
 export function t(key: string): string {

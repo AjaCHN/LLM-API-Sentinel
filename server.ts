@@ -1,5 +1,7 @@
-// server.ts v2.7.0
+// server.ts v2.7.1
+// 安全加固: 添加 helmet 安全头、禁用 x-powered-by、错误处理中间件、body 大小限制
 import express from 'express';
+import helmet from 'helmet';
 import next from 'next';
 import { createClient } from '@supabase/supabase-js';
 import { parse } from 'url';
@@ -8,6 +10,7 @@ import { LATENCY_THRESHOLD } from './app/constants';
 import type { ApiCheckResult } from './app/types';
 
 const dev = process.env.NODE_ENV !== 'production';
+const isProduction = process.env.NODE_ENV === 'production';
 
 function log(level: 'info' | 'warn' | 'error', message: string, extra: Record<string, unknown> = {}) {
   const entry = { time: new Date().toISOString(), level, message, ...extra };
@@ -266,6 +269,68 @@ app
   .then(() => {
     const server = express();
 
+    // 安全加固: 禁用 X-Powered-By 头，防止信息泄露
+    server.disable('x-powered-by');
+
+    // 安全加固: Helmet 安全头中间件
+    // 配置 CSP 和其他安全头以防御 XSS、点击劫持等攻击
+    server.use(helmet({
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'default-src': ["'self'"],
+          'script-src': [
+            "'self'",
+            "'unsafe-inline'",
+            'https://www.googletagmanager.com',
+          ],
+          'style-src': [
+            "'self'",
+            "'unsafe-inline'",
+            'https://fonts.googleapis.com',
+          ],
+          'font-src': [
+            "'self'",
+            'https://fonts.gstatic.com',
+            'data:',
+          ],
+          'img-src': [
+            "'self'",
+            'data:',
+            'https://*.supabase.co',
+            'https://lh3.googleusercontent.com',
+            'https://picsum.photos',
+          ],
+          'connect-src': [
+            "'self'",
+            'https://*.supabase.co',
+            'https://ipapi.co',
+            'https://*.openai.com',
+            'https://*.anthropic.com',
+            'https://*.google.com',
+          ],
+          'frame-ancestors': ["'none'"],
+        },
+      },
+      // 其他安全头
+      xFrameOptions: { action: 'deny' },
+      xContentTypeOptions: true,
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    }));
+
+    // 安全加固: 手动设置 Permissions-Policy 头（Helmet v8 不包含此中间件）
+    server.use((req, res, next) => {
+      res.setHeader(
+        'Permissions-Policy',
+        'camera=(), microphone=(), geolocation=()',
+      );
+      next();
+    });
+
+    // 安全加固: 限制请求体大小，防止 DoS 攻击
+    server.use(express.json({ limit: '100kb' }));
+    server.use(express.urlencoded({ extended: true, limit: '100kb' }));
+
     // 安全增强: 应用速率限制中间件
     server.use(rateLimitMiddleware);
 
@@ -279,8 +344,44 @@ app
       handle(req, res, parsedUrl);
     });
 
+    // 安全加固: 自定义 404 处理（避免默认 Express 错误页面泄露信息）
+    server.use((req, res) => {
+      res.status(404).json({
+        error: 'Not Found',
+        message: 'The requested resource was not found.',
+      });
+    });
+
+    // 安全加固: 全局错误处理中间件
+    // 生产环境不返回堆栈信息，防止信息泄露
+    server.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+      log('error', 'Unhandled error', {
+        error: err.message,
+        path: req.path,
+        method: req.method,
+        // 生产环境不记录堆栈，开发环境可记录
+        ...(dev ? { stack: err.stack } : {}),
+      });
+
+      if (isProduction) {
+        // 生产环境：返回通用错误信息，不泄露细节
+        res.status(500).json({
+          error: 'Internal Server Error',
+          message: 'An unexpected error occurred.',
+        });
+      } else {
+        // 开发环境：返回详细错误信息便于调试
+        res.status(500).json({
+          error: 'Internal Server Error',
+          message: err.message,
+          stack: err.stack,
+        });
+      }
+    });
+
     server.listen(port, () => {
       log('info', `Ready on http://localhost:${port}`);
+      log('info', `Security headers enabled via helmet`, { production: isProduction });
     });
   })
   .catch((err) => {
