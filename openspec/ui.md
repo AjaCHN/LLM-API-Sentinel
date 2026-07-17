@@ -42,9 +42,12 @@ interface DashboardHeaderProps {
   setShowAlerts: (show: boolean) => void;
   theme: string | undefined;
   setTheme: (theme: string) => void;
-  geo: { city: string; country: string; ip?: string } | null;
+  geo: GeoLocation | null;
+  isGeoLoading: boolean;
+  refreshGeo: () => void;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  resolveAlert: (id: string) => Promise<void>;
 }
 ```
 
@@ -148,9 +151,135 @@ interface AlertsDropdownProps {
 2. UI 技术栈（Next.js + Tailwind CSS + shadcn/ui + Recharts）
 3. Data Integrity（Supabase PostgreSQL 持久化）
 
-### 2.7 ThemeProvider
+### 2.7 StatCard
 
-**功能**：管理深色/浅色主题切换（通过 `html` 根节点的 `class="dark"` 切换）
+**功能**：统计卡片组件，展示在线/降级/离线/平均延迟四项指标
+
+**Props**：
+```typescript
+interface StatCardProps {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  iconBgColor: string;
+  iconTextColor: string;
+  valueColor: string;
+  hoverBorderColor: string;
+  hoverShadowColor: string;
+}
+```
+
+**设计特点**：
+- 圆角卡片容器，半透明背景 + backdrop-blur-sm
+- 左侧图标容器（w-8 h-8 rounded-lg）+ 文字标签
+- 下方大数值（text-2xl font-bold），悬停时 scale-110
+- 悬停时边框颜色变化 + 阴影增强
+
+### 2.8 StatusDot
+
+**功能**：状态圆点组件（在线/降级/离线三色 + 光晕效果）
+
+**Props**：
+```typescript
+interface StatusDotProps {
+  status: 'online' | 'offline' | 'degraded';
+}
+```
+
+**设计特点**：
+- size-2.5 rounded-full
+- online → bg-emerald-500（静态）
+- degraded → bg-amber-500 + animate-pulse
+- offline → bg-destructive + animate-pulse
+- 带 `getStatusPulseColor` 光晕阴影
+- React.memo 优化性能
+
+### 2.9 ProgressBar
+
+**功能**：进度条组件（渐变填充 + shimmer 扫光动画）
+
+**Props**：
+```typescript
+interface ProgressBarProps {
+  value: number;  // 0-100
+  variant: 'success' | 'warning' | 'danger';
+  showLabel?: boolean;
+}
+```
+
+**设计特点**：
+- 容器 h-1.5 rounded-full bg-muted
+- 填充条渐变 + transition-[width] duration-1000 ease-out
+- success: from-emerald-500 to-emerald-400
+- warning: from-amber-500 to-amber-400
+- danger: from-red-500 to-red-400
+- shimmer 扫光覆盖层（白色 0.3 opacity，2s infinite）
+- React.memo 优化性能
+
+### 2.10 DashboardClient
+
+**功能**：仪表盘客户端主组件（'use client'），整合所有子组件和数据 hooks
+
+**Props**：无
+
+**内部结构**：
+```
+DashboardClient
+├── DashboardHeader
+├── GeoOptInDialog
+├── AlertsDropdown (Dialog)
+├── Hero Section
+│   ├── 标题 + 描述
+│   └── 4 × StatCard (online/degraded/offline/avgLatency)
+├── Alerts Banner (条件显示)
+├── API Status Grid Section
+│   ├── Section Header (标题 + 描述 + 刷新按钮)
+│   ├── ApiConfig
+│   └── ApiStatusGrid
+├── Latency History Chart Section
+│   ├── Section Header (标题 + 描述)
+│   └── LatencyHistoryChart
+└── DashboardFooter
+```
+
+### 2.11 GeoOptInDialog
+
+**功能**：地理位置授权对话框，用户同意后获取地理位置信息
+
+**Props**：无
+
+**设计特点**：
+- shadcn Dialog 组件
+- 用户同意后调用 `useGeoStore` 的 fetchGeoLocation
+- localStorage 持久化用户选择（geoOptIn）
+
+### 2.12 StructuredData
+
+**功能**：Schema.org 结构化数据组件（SEO），服务端渲染
+
+**Props**：无
+
+**设计特点**：
+- 使用 `<script type="application/ld+json">`
+- 包含监控服务的结构化数据（名称、描述、URL、运营范围）
+- 提升搜索引擎优化效果
+
+### 2.13 ChartSkeleton
+
+**功能**：图表骨架屏加载组件，数据加载时显示占位动画
+
+**Props**：无
+
+**设计特点**：
+- 使用 `animate-pulse` 脉冲动画
+- 模拟图表区域的骨架形状
+- 提升感知加载速度
+
+### 2.14 ThemeProvider
+
+**功能**：管理深色/浅色/系统主题切换（next-themes）
+
+**Props**：继承 `NextThemesProvider` 的所有 props
 
 ## 3. 组件库规范
 
@@ -716,32 +845,74 @@ stagger-8 → 0.40s
 ```
 <html lang>
 └── <body> (bg: #0f0f14 + 三层径向渐变)
-    ├── DashboardHeader (sticky top-0 z-50)
-    │   ├── Brand Logo (size-10 rounded-xl + primary/accent gradient)
-    │   ├── Title + Subtitle (hidden sm:block)
-    │   ├── Right Actions (Bell / Theme / Geo / User / Login)
-    │   └── Alerts Dialog (Dialog + DialogContent max-w-lg)
-    ├── <main> (mx-auto max-w-7xl)
-    │   ├── AlertsBanner（条件显示：当有活跃告警时）
-    │   ├── Section: API Status Grid (py-8)
-    │   └── Section: Latency History Chart (py-8)
-    └── DashboardFooter
-        ├── Separator
-        └── Grid: Global Coverage / UI Stack / Data Integrity
+    ├── ThemeProvider (next-themes)
+    ├── StructuredData (SEO - Server Component)
+    └── DashboardClient (Client Component)
+        ├── DashboardHeader (sticky top-0 z-50)
+        │   ├── Brand Logo (size-10 rounded-xl + primary/accent gradient)
+        │   ├── Title + Subtitle (hidden sm:block)
+        │   ├── Right Actions (Bell / Theme / Geo / User / Login)
+        │   └── AlertsDropdown (Dialog + DialogContent max-w-lg)
+        ├── GeoOptInDialog (地理位置授权弹窗)
+        ├── <main> (mx-auto max-w-7xl py-8 md:py-12)
+        │   ├── Hero Section
+        │   │   ├── 主标题 + 副标题描述
+        │   │   └── 4 × StatCard (online/degraded/offline/avgLatency)
+        │   ├── Alerts Banner（条件显示：当有活跃告警时）
+        │   ├── Section: API Status Grid
+        │   │   ├── Section Header (标题 + 描述 + 刷新按钮)
+        │   │   ├── ApiConfig (自定义 API 配置)
+        │   │   └── ApiStatusGrid (按 provider 分组的卡片网格)
+        │   └── Section: Latency History Chart
+        │       ├── Section Header (标题 + 描述)
+        │       └── LatencyHistoryChart / ChartSkeleton
+        └── DashboardFooter
+            ├── Separator
+            └── Grid: Global Coverage / UI Tech Stack / Data Integrity
 ```
 
 ### 8.2 垂直间距
 
 - main: `py-8 md:py-12`
-- Section 间: `space-y-10`
+- Section 间: `space-y-12`
+- Hero 区域内: `space-y-8`
 - Header 内部: 紧凑 flex items-center gap-2
 
 ### 8.3 最大宽度
 
 - 所有内容容器：`max-w-7xl`
 - AlertsDropdown Dialog 内容：`max-w-lg`
+- ApiConfig 新 API 表单：`sm:grid-cols-3`
+
+### 8.4 服务端/客户端组件划分
+
+| 组件 | 类型 | 说明 |
+|-----|------|------|
+| app/page.tsx | Server Component | 页面入口，组合 StructuredData + DashboardClient |
+| StructuredData | Server Component | SEO 结构化数据，无交互 |
+| ThemeProvider | Client Component | 'use client'，管理主题状态 |
+| DashboardClient | Client Component | 'use client'，主仪表盘，所有交互逻辑 |
+| 所有子组件 | Client Component | 继承父组件的 'use client' |
 
 ## 9. 版本历史
+
+### v2.7.0
+- 🚀 Next.js 14.2 App Router 架构升级
+- 🎯 新增 DashboardClient 主组件（客户端入口）
+- 📊 新增 StatCard 统计卡片组件（4项核心指标）
+- 💠 新增 StatusDot 状态圆点组件（三色 + 光晕 + React.memo）
+- 📈 新增 ProgressBar 进度条组件（渐变 + shimmer + React.memo）
+- 🗺️ 新增 GeoOptInDialog 地理位置授权对话框
+- 🔍 新增 StructuredData SEO 结构化数据组件
+- 💀 新增 ChartSkeleton 骨架屏加载组件
+- ⚡ 新增 StatusGrid 兼容层（向后兼容 ApiStatusGrid）
+- 🌍 16 语言国际化支持（useI18n hook）
+- 🏪 5 个 Zustand Store（api/auth/alerts/geo/error）
+- 🔒 Supabase 后端集成（Auth + PostgreSQL + Realtime）
+- 📱 响应式优化（移动端 1 列 → 桌面端 4 列）
+- ♿ 无障碍增强（语义化 HTML + ARIA + 键盘导航）
+- ⚛️ React.memo 性能优化（LatencyHistoryChart/StatusDot/ProgressBar）
+- 🎨 Tailwind CSS 4.1 + CSS 变量主题系统
 
 ### v2.6.3
 - 🎨 Dark Indigo 主题全面落地（CSS 变量驱动）

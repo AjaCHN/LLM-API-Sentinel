@@ -12,13 +12,14 @@ LLM API Sentinel 使用 Supabase PostgreSQL 作为主要数据库，包含以下
 | **StatusHistory** | API 的历史性能数据，用于生成图表 | 持续追加 |
 | **Alert** | 系统告警信息，包含告警类型、严重程度、解决状态等 | 创建→解决→保留 |
 
-### 1.2 集合路径
+### 1.2 表结构概览
 
-| 表名 | 用途 | 读写权限 |
-|---------|------|---------|
-| `api_status` | 存储每个 API 的当前状态 | 所有人可读，所有人可写 |
-| `status_history` | 存储 API 状态历史记录 | 所有人可读，所有人可写 |
-| `alerts` | 存储系统告警信息 | 所有人可读写 |
+| 表名 | 用途 | 读取权限 | 写入权限 |
+|-----|------|---------|---------|
+| `api_status` | 存储每个 API 的当前状态 | 公开 | 认证用户 |
+| `status_history` | 存储 API 状态历史记录 | 公开 | 认证用户 |
+| `alerts` | 存储系统告警信息 | 公开 | 认证用户 |
+| `user_profiles` | 用户资料表（关联 Auth） | 仅本人 | 仅本人 |
 
 ### 1.3 数据结构
 
@@ -62,24 +63,40 @@ interface ApiStatus {
 #### StatusHistory
 ```typescript
 interface StatusHistory {
-  id?: string;                   // 记录 ID (自动生成)
+  id?: string;                   // 记录 ID (自动生成 UUID)
   apiId: string;                 // 关联的 API ID
   status: 'online' | 'offline' | 'degraded';  // 状态
   latency: number;               // 延迟(ms)
   timestamp: Date;               // 时间戳
-  time: string;                  // 格式化时间字符串
+  time: string;                  // 格式化时间字符串（用于图表显示）
+  error?: string;                // 错误信息
+  retries?: number;              // 重试次数
 }
 ```
 
 **字段说明**：
 | 字段 | 类型 | 必填 | 说明 |
 |-----|------|-----|------|
-| `id` | string | 否 | 自动生成 |
-| `apiId` | string | 是 | 关联 API |
+| `id` | string | 否 | UUID，自动生成 |
+| `apiId` | string | 是 | 关联 API ID |
 | `status` | enum | 是 | 状态值 |
 | `latency` | number | 是 | 延迟毫秒数 |
 | `timestamp` | Date | 是 | 时间戳 |
-| `time` | string | 是 | 格式化时间 |
+| `time` | string | 是 | 格式化时间字符串（图表 X 轴显示用） |
+| `error` | string | 否 | 错误描述 |
+| `retries` | number | 否 | 重试次数 |
+
+**数据库对应字段（蛇形命名）**：
+| TypeScript 字段 | 数据库字段 |
+|----------------|-----------|
+| apiId | api_id |
+| lastChecked | last_checked |
+| errorRate | error_rate |
+| averageLatency | average_latency |
+| maxLatency | max_latency |
+| minLatency | min_latency |
+| resolvedAt | resolved_at |
+| resolvedBy | resolved_by |
 
 #### Alert
 ```typescript
@@ -90,7 +107,7 @@ interface Alert {
   type: 'downtime' | 'latency' | 'error';  // 告警类型
   severity: 'low' | 'medium' | 'high' | 'critical';  // 严重程度
   message: string;               // 告警消息
-  timestamp: Date | unknown;     // 时间戳
+  timestamp: Date | string | number;  // 时间戳
   resolved: boolean;             // 是否已解决
   error?: string;                // 错误信息
   retries?: number;              // 重试次数
@@ -245,56 +262,30 @@ flowchart TD
 | 查询历史数据 | `apiId`, `timestamp` | `timestamp DESC` | 复合索引 |
 | 按提供商筛选 | `provider` | 无 | 单字段索引 |
 
-### 3.2 推荐索引
+### 3.2 数据库索引
 
-#### 告警集合索引
-```javascript
-// 活跃告警查询
-// 索引字段: resolved, timestamp DESC
-{
-  "fields": [
-    {"fieldPath": "resolved", "mode": "ASCENDING"},
-    {"fieldPath": "timestamp", "mode": "DESCENDING"}
-  ]
-}
+实际使用 PostgreSQL 索引，定义在 `supabase/schema.sql` 中：
+
+```sql
+-- 历史数据索引：按 API 查询历史记录
+CREATE INDEX IF NOT EXISTS idx_status_history_api_id ON status_history(api_id);
+CREATE INDEX IF NOT EXISTS idx_status_history_timestamp ON status_history(timestamp DESC);
+
+-- 告警索引：快速获取未解决告警
+CREATE INDEX IF NOT EXISTS idx_alerts_api_id ON alerts(api_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_resolved ON alerts(resolved);
+CREATE INDEX IF NOT EXISTS idx_alerts_timestamp ON alerts(timestamp DESC);
 ```
 
-**用途**：快速获取未解决的告警，按时间倒序排列
+### 3.3 索引用途说明
 
-#### 历史数据索引
-```javascript
-// 历史数据查询
-// 索引字段: apiId, timestamp DESC
-{
-  "fields": [
-    {"fieldPath": "apiId", "mode": "ASCENDING"},
-    {"fieldPath": "timestamp", "mode": "DESCENDING"}
-  ]
-}
-```
-
-**用途**：按 API 查询历史记录，支持时间范围筛选
-
-#### API 状态索引
-```javascript
-// 按提供商筛选
-// 索引字段: provider
-{
-  "fields": [
-    {"fieldPath": "provider", "mode": "ASCENDING"}
-  ]
-}
-```
-
-**用途**：按提供商分组显示 API 状态
-
-### 3.3 索引管理
-
-| 索引 | 状态 | 优先级 |
-|-----|------|--------|
-| `api_status/provider` | 推荐 | 中 |
-| `status_history/apiId+timestamp` | 必须 | 高 |
-| `alerts/resolved+timestamp` | 必须 | 高 |
+| 索引 | 表名 | 用途 | 优先级 |
+|-----|------|------|--------|
+| `idx_status_history_api_id` | status_history | 按 API ID 过滤历史记录 | 高 |
+| `idx_status_history_timestamp` | status_history | 按时间排序历史数据 | 高 |
+| `idx_alerts_resolved` | alerts | 过滤已解决/未解决告警 | 高 |
+| `idx_alerts_timestamp` | alerts | 按时间倒序排列告警 | 高 |
+| `idx_alerts_api_id` | alerts | 按 API 查找告警 | 中 |
 
 ## 4. 数据生命周期管理
 
@@ -411,6 +402,11 @@ flowchart TD
 
 ### 6.1 Supabase RLS 策略
 
+安全模型（v2.6.3+）：
+- **READ (SELECT)**: 公开（所有用户，包括 anon）- 允许仪表盘数据访问
+- **WRITE (INSERT/UPDATE)**: 仅认证用户 - 匿名用户不能修改数据
+- **后台服务**: 使用 service_role 密钥，绕过 RLS
+
 ```sql
 -- 启用 RLS
 ALTER TABLE api_status ENABLE ROW LEVEL SECURITY;
@@ -418,36 +414,67 @@ ALTER TABLE status_history ENABLE ROW LEVEL SECURITY;
 ALTER TABLE alerts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 
--- API Status 表：所有人可读写
-CREATE POLICY "api_status_select_all" ON api_status FOR SELECT USING (true);
-CREATE POLICY "api_status_insert_all" ON api_status FOR INSERT WITH CHECK (true);
-CREATE POLICY "api_status_update_all" ON api_status FOR UPDATE USING (true);
+-- API Status: 所有人可读，仅认证用户可写
+CREATE POLICY "api_status_read_all" ON api_status FOR SELECT USING (true);
+CREATE POLICY "api_status_insert_authenticated" ON api_status FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "api_status_update_authenticated" ON api_status FOR UPDATE TO authenticated USING (true);
 
--- Status History 表：所有人可读写
-CREATE POLICY "status_history_select_all" ON status_history FOR SELECT USING (true);
-CREATE POLICY "status_history_insert_all" ON status_history FOR INSERT WITH CHECK (true);
+-- Status History: 所有人可读，仅认证用户可插入
+CREATE POLICY "status_history_read_all" ON status_history FOR SELECT USING (true);
+CREATE POLICY "status_history_insert_authenticated" ON status_history FOR INSERT TO authenticated WITH CHECK (true);
 
--- Alerts 表：所有人可读写
-CREATE POLICY "alerts_select_all" ON alerts FOR SELECT USING (true);
-CREATE POLICY "alerts_insert_all" ON alerts FOR INSERT WITH CHECK (true);
-CREATE POLICY "alerts_update_resolve" ON alerts FOR UPDATE USING (true);
+-- Alerts: 所有人可读，认证用户可更新(解决)和插入
+CREATE POLICY "alerts_read_all" ON alerts FOR SELECT USING (true);
+CREATE POLICY "alerts_update_authenticated" ON alerts FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "alerts_insert_authenticated" ON alerts FOR INSERT TO authenticated WITH CHECK (true);
 
--- User Profiles 表：用户可读写自己的资料
-CREATE POLICY "user_profiles_select_own" ON user_profiles FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "user_profiles_insert_own" ON user_profiles FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "user_profiles_update_own" ON user_profiles FOR UPDATE USING (auth.uid() = user_id);
+-- User Profiles: 用户可读写自己的资料
+CREATE POLICY "user_profiles_select_own" ON user_profiles FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "user_profiles_insert_own" ON user_profiles FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "user_profiles_update_own" ON user_profiles FOR UPDATE USING (auth.uid() = id);
+
+-- 显式最小权限授权
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon;
 ```
 
 ### 6.2 安全策略说明
 
 | 表名 | 读取权限 | 写入权限 | 说明 |
 |-----|---------|---------|------|
-| `api_status` | 公开 | 公开 | API 状态信息公开 |
-| `status_history` | 公开 | 公开 | 历史数据公开 |
-| `alerts` | 公开 | 公开 | 告警信息可被所有人管理 |
+| `api_status` | 公开 | 认证用户 | API 状态信息公开可读 |
+| `status_history` | 公开 | 认证用户 | 历史数据公开可读 |
+| `alerts` | 公开 | 认证用户 | 告警信息公开可读，认证用户可解决 |
 | `user_profiles` | 仅本人 | 仅本人 | 用户资料仅本人可访问 |
 
-### 6.3 数据验证规则
+### 6.3 自动创建用户资料
+
+用户注册时自动创建 user_profiles 记录：
+
+```sql
+-- 触发器函数
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.user_profiles (id, email, display_name)
+  VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name')
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Auth 用户表触发器
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+```
+
+### 6.4 数据验证规则
 
 #### ApiStatus 数据验证
 ```sql
@@ -500,47 +527,59 @@ CREATE TRIGGER alert_validation
 
 ## 7. 数据一致性
 
-### 7.1 事务保证
+### 7.1 批量写入流程
 
-**批量写入事务**：
+**写入操作分两步（非事务，但有错误处理）**：
 ```typescript
-import { supabase } from '../app/lib/supabase';
+// server.ts 中的后台监控写入逻辑
+async function runBackgroundMonitor() {
+  const results = await performCheck();
 
-async function updateStatuses(results: ApiStatus[]) {
-  // 批量更新 API 状态
-  const statusUpdates = results.map(result => ({
+  // 第一步：Upsert API 状态
+  const upsertData = results.map(result => ({
     id: result.id,
     name: result.name,
     provider: result.provider,
     url: result.url,
     status: result.status,
     latency: result.latency,
-    last_checked: new Date().toISOString(),
+    last_checked: result.lastChecked,
     error: result.error || null,
+    retries: result.retries || 0,
+    error_rate: result.errorRate || 0,
+    availability: result.availability || 100,
+    uptime: result.uptime || 100,
+    average_latency: result.averageLatency || null,
+    max_latency: result.maxLatency || null,
+    min_latency: result.minLatency || null,
+    updated_at: new Date().toISOString(),
   }));
 
-  const { error: statusError } = await supabase
+  const { error: upsertError } = await supabase
     .from('api_status')
-    .upsert(statusUpdates);
+    .upsert(upsertData, { onConflict: 'id' });
 
-  if (statusError) throw statusError;
+  if (upsertError) logError(upsertError, 'Failed to upsert API statuses');
 
-  // 批量插入历史记录
-  const historyInserts = results.map(result => ({
+  // 第二步：插入历史记录
+  const historyData = results.map(result => ({
     api_id: result.id,
     status: result.status,
     latency: result.latency,
+    error: result.error || null,
+    retries: result.retries || 0,
     timestamp: new Date().toISOString(),
-    time: new Date().toLocaleTimeString(),
   }));
 
   const { error: historyError } = await supabase
     .from('status_history')
-    .insert(historyInserts);
+    .insert(historyData);
 
-  if (historyError) throw historyError;
+  if (historyError) logError(historyError, 'Failed to insert history records');
 }
 ```
+
+**注意**：当前实现中两步写入不是在同一个数据库事务中，失败时只记录错误日志，不回滚。
 
 ### 7.2 一致性保证
 

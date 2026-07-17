@@ -5,15 +5,17 @@
 LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用性追踪系统，旨在为开发者和企业提供可靠的 API 状态监控服务。
 
 ### 1.1 核心功能
-- **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta, Mistral）和中国（Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek）主流 AI 供应商的连通性与延迟，共 12 个核心 API
+- **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta/Groq, Mistral）和中国（Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek）主流 AI 供应商的连通性与延迟，共 12 个核心 API
 - **历史数据**：使用 Recharts 交互式面积图可视化性能趋势（默认保留最近 50 个数据点）
-- **自适应 UI**：全响应式设计（1/2/3/4 列网格），支持深色/浅色模式切换，默认深色沉浸主题（靛蓝 #6366f1 + 紫色 #8b5cf6）
-- **实时更新**：基于 Supabase Realtime 实现状态即时同步（默认 5 分钟检查周期）
+- **自适应 UI**：全响应式设计（1/2/3/4 列网格），支持深色/浅色/系统模式切换，默认 Dark Indigo 沉浸主题（靛蓝 #6366f1 + 紫色 #8b5cf6）
+- **实时更新**：基于 Supabase Realtime 实现状态即时同步（默认 5 分钟后台检查周期）
 - **安全访问**：手动健康检查受 Supabase Auth (Google OAuth) 保护
 - **智能告警**：自动检测 API 宕机（offline）、降级（degraded）和延迟过高（阈值 1500ms），并生成告警通知
-- **数据缓存**：内存 + localStorage 双层缓存机制（默认 30 秒缓存，可配置 5 秒-1 分钟）
-- **地理位置**：实时检测监控节点位置，24 小时本地缓存
+- **数据缓存**：内存 + localStorage 双层缓存机制（默认 30 秒缓存，动态 5 秒- 1 分钟）
+- **地理位置**：检测监控节点位置，24 小时本地缓存（ipapi.co）
 - **多语言支持**：16 种语言国际化（en / zh-cn / zh-tw / ar / cs / es / hi / id / it / nl / pl / sv / th / tr / ru / vi），自动检测浏览器语言
+- **SEO 优化**：Schema.org 结构化数据、多语言 SEO 支持、Open Graph / Twitter Card meta
+- **性能优化**：Next.js App Router + Server Components、动态导入、React.memo、useMemo
 
 ### 1.2 技术栈
 | 类别 | 技术 | 版本 |
@@ -64,7 +66,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 ```
 ├── app/
 │   ├── components/
-│   │   ├── ui/                   # shadcn/ui 基础组件
+│   │   ├── ui/                   # shadcn/ui 基础组件 (13 个)
 │   │   │   ├── alert.tsx
 │   │   │   ├── avatar.tsx
 │   │   │   ├── badge.tsx
@@ -81,54 +83,94 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   ├── AlertsDropdown.tsx    # 告警下拉组件（shadcn Dialog）
 │   │   ├── ApiConfig.tsx         # API 配置组件（localStorage 读写）
 │   │   ├── ApiStatusGrid.tsx     # API 状态网格（主组件，按 provider 分组）
+│   │   ├── ChartSkeleton.tsx     # 图表骨架屏加载占位
+│   │   ├── DashboardClient.tsx   # 仪表盘客户端主组件（'use client'）
 │   │   ├── DashboardFooter.tsx   # 页脚组件（3 列 Feature 展示）
 │   │   ├── DashboardHeader.tsx   # 头部组件（Logo/告警/主题/地理/登录）
+│   │   ├── DashboardSkeleton.tsx # 仪表盘整体骨架屏
+│   │   ├── GeoOptInDialog.tsx    # 地理位置授权弹窗
 │   │   ├── LatencyHistoryChart.tsx # 延迟历史图表（Recharts AreaChart）
-│   │   ├── StatusGrid.tsx        # 状态网格（向后兼容，转发给 ApiStatusGrid）
+│   │   ├── ProgressBar.tsx       # 进度条组件（渐变 + shimmer）
+│   │   ├── StatCard.tsx          # 统计卡片组件（在线/降级/离线/平均延迟）
+│   │   ├── StatusDot.tsx         # 状态圆点组件（三色 + 光晕）
+│   │   ├── StatusGrid.tsx        # 兼容层（转发给 ApiStatusGrid）
+│   │   ├── StructuredData.tsx    # Schema.org 结构化数据（SEO）
 │   │   └── ThemeProvider.tsx     # 主题提供者（next-themes）
 │   ├── hooks/
 │   │   ├── use-mobile.ts         # 移动端检测
-│   │   ├── useAlerts.ts          # 告警管理（Zustand store）
-│   │   ├── useApiMonitor.ts      # API 监控逻辑（并发 + 重试）
+│   │   ├── useAlerts.ts          # 告警管理（Supabase Realtime）
+│   │   ├── useApiMonitor.ts      # API 监控逻辑（并发 + 重试 + 缓存）
 │   │   ├── useAuth.ts            # 认证管理（Supabase Auth）
-│   │   ├── useDashboardData.ts   # 仪表盘数据聚合（主 hook）
-│   │   ├── useGeoLocation.ts     # 地理位置（24 小时缓存）
+│   │   ├── useDashboardData.ts   # 仪表盘数据聚合（主 hook，组合各子 hook）
+│   │   ├── useGeoLocation.ts     # 地理位置（ipapi.co + 24h 缓存）
 │   │   └── useI18n.ts            # 国际化（16 语言自动检测）
 │   ├── lib/
-│   │   ├── cache.ts              # 缓存逻辑（内存 + localStorage）
+│   │   ├── cache.ts              # 缓存逻辑（内存 + localStorage 双层 + 智能过期）
 │   │   ├── concurrency.ts        # 并发控制（信号量，默认 5）
-│   │   ├── error-handler.ts      # 错误处理（统一捕获 + 分类）
+│   │   ├── error-handler.ts      # 错误处理（统一捕获 + 分类 + 日志）
 │   │   ├── error.tsx             # 错误边界和通知组件
+│   │   ├── error.test.ts         # 错误处理单元测试
 │   │   ├── i18n.ts               # 国际化系统（语言资源加载）
+│   │   ├── i18n.test.ts          # 国际化单元测试
 │   │   ├── metrics.ts            # 指标计算（平均延迟、可用性等）
-│   │   ├── monitor.ts            # API 监控核心逻辑
+│   │   ├── mock-data.ts          # Mock 数据（开发/测试用）
+│   │   ├── monitor.ts            # API 监控核心逻辑（检查 + 重试 + 指标）
+│   │   ├── monitor.test.ts       # 监控逻辑单元测试
 │   │   ├── notification.ts       # 通知处理
 │   │   ├── supabase.ts           # Supabase 客户端配置
-│   │   └── utils.ts              # 工具函数（cn / getApiColor）
-│   ├── store/                    # Zustand 状态管理
+│   │   └── utils.ts              # 工具函数（cn / getApiColor / 等）
+│   ├── store/                    # Zustand 状态管理 (5 个 store)
+│   │   ├── index.ts              # Store 统一导出
+│   │   ├── store.ts              # Store 类型定义
+│   │   ├── api.ts                # API 状态 store
+│   │   ├── auth.ts               # 认证 store
+│   │   ├── alerts.ts             # 告警 store
+│   │   ├── geo.ts                # 地理位置 store
+│   │   └── error.ts              # 错误/通知 store
 │   ├── locales/                  # 语言资源 JSON（16 种语言）
-│   ├── types/index.ts            # 类型定义
-│   ├── constants/index.ts        # 常量与默认 API 配置
-│   ├── style.css                 # 全局样式（CSS 变量 + Tailwind）
+│   ├── types/index.ts            # 类型定义（按逻辑分组）
+│   ├── constants/index.ts        # 常量与默认 API 配置（12 个 API）
+│   ├── style.css                 # 全局样式（CSS 变量 + Tailwind @theme + 动画）
 │   ├── globals.css               # 全局基础样式
-│   ├── layout.tsx                # 根布局（ThemeProvider 包裹）
-│   └── page.tsx                  # 主页面（Dashboard 组件）
+│   ├── layout.tsx                # 根布局（Server Component，ThemeProvider + StructuredData）
+│   └── page.tsx                  # 主页面（Server Component，Suspense + DashboardClient）
 ├── prototype/
 │   └── prototype.html            # 高保真原型（可直接浏览器打开预览）
 ├── openspec/
-│   ├── ui.md                     # UI 设计系统规范
+│   ├── README.md                 # OpenSpec 说明
+│   ├── config.yaml               # OpenSpec 配置
 │   ├── project.md                # 项目规范（当前文档）
 │   ├── architecture.md           # 架构文档
-│   ├── data.md                   # 数据模型
-│   ├── features.md               # 功能清单
-│   ├── logic.md                  # 业务逻辑
-│   └── README.md                 # OpenSpec 说明
+│   ├── data.md                   # 数据模型与安全
+│   ├── design-system.md          # 设计系统规范
+│   ├── features.md               # 功能规格
+│   ├── logic.md                  # 逻辑与服务
+│   ├── ui.md                     # UI 组件规范
+│   └── changes/                  # 变更提案目录
+├── scripts/
+│   └── add_missing_translations.cjs  # 翻译补全脚本
 ├── supabase/
 │   └── schema.sql                # 数据库 Schema
+├── public/
+│   ├── manifest.json             # PWA manifest
+│   ├── robots.txt                # 爬虫规则
+│   └── sitemap.xml               # 站点地图
 ├── CHANGELOG.md                  # 版本变更记录
 ├── README.md                     # 项目说明（英文）
 ├── README_CN.md                  # 项目说明（中文）
-└── package.json                  # 依赖与脚本
+├── package.json                  # 依赖与脚本
+├── tsconfig.json                 # TypeScript 配置
+├── next.config.mjs               # Next.js 配置
+├── next-env.d.ts                 # Next.js 类型声明
+├── components.json               # shadcn/ui 配置
+├── eslint.config.mjs             # ESLint 配置
+├── jest.config.cjs               # Jest 测试配置
+├── jest.setup.cjs                # Jest 测试 setup
+├── postcss.config.mjs            # PostCSS 配置
+├── server.ts                     # Express 后台监控服务器（可选）
+├── vercel.json                   # Vercel 部署配置
+├── edgeone.config.js             # EdgeOne 部署配置
+└── .gitignore                    # Git 忽略规则
 ```
 
 ### 2.2 命名约定
@@ -289,7 +331,20 @@ feat: 添加 API 配置功能
 
 ## 5. 组件规范
 
-### 5.1 DashboardHeader
+### 5.1 DashboardClient
+**功能**：仪表盘客户端主组件（'use client'），整合所有子组件和数据 hooks
+
+**Props**：无
+
+**结构**：
+- DashboardHeader + GeoOptInDialog + AlertsDropdown
+- Hero 区域（标题 + 描述 + 4 个 StatCard）
+- Alerts Banner（条件显示）
+- API Status Grid 区域（含 ApiConfig）
+- Latency History Chart 区域
+- DashboardFooter
+
+### 5.2 DashboardHeader
 **功能**：显示品牌信息、告警铃铛、主题切换、地理位置、用户登录状态
 
 **Props**：
@@ -302,24 +357,16 @@ interface DashboardHeaderProps {
   theme: string | undefined;
   setTheme: (theme: string) => void;
   geo: GeoLocation | null;
+  isGeoLoading: boolean;
+  refreshGeo: () => void;
   login: () => Promise<void>;
   logout: () => Promise<void>;
   resolveAlert: (id: string) => Promise<void>;
 }
 ```
 
-### 5.2 StatusGrid
-**功能**：以网格形式展示所有 API 状态卡片，支持供应商分组
-
-**Props**：
-```typescript
-interface StatusGridProps {
-  statuses: ApiStatus[];
-}
-```
-
 ### 5.3 ApiStatusGrid
-**功能**：旧版状态网格组件，保留用于兼容性
+**功能**：以网格形式展示所有 API 状态卡片，支持按供应商分组（主组件）
 
 **Props**：
 ```typescript
@@ -328,8 +375,18 @@ interface ApiStatusGridProps {
 }
 ```
 
-### 5.4 LatencyHistoryChart
-**功能**：使用 Recharts AreaChart 展示历史延迟数据
+### 5.4 StatusGrid
+**功能**：兼容层组件，转发给 ApiStatusGrid（向后兼容）
+
+**Props**：
+```typescript
+interface StatusGridProps {
+  statuses: ApiStatus[];
+}
+```
+
+### 5.5 LatencyHistoryChart
+**功能**：使用 Recharts AreaChart 展示历史延迟数据（React.memo 优化）
 
 **Props**：
 ```typescript
@@ -340,8 +397,8 @@ interface LatencyHistoryChartProps {
 }
 ```
 
-### 5.5 AlertsDropdown
-**功能**：显示活跃告警列表，支持告警解决
+### 5.6 AlertsDropdown
+**功能**：以 Dialog 形式展示活跃告警列表，支持告警解决
 
 **Props**：
 ```typescript
@@ -353,33 +410,87 @@ interface AlertsDropdownProps {
 }
 ```
 
-### 5.6 ApiConfig
-**功能**：允许用户自定义 API 检查配置
+### 5.7 ApiConfig
+**功能**：允许用户自定义 API 检查配置（添加/删除/编辑/重置），localStorage 持久化
 
 **Props**：无
 
-### 5.7 ThemeProvider
-**功能**：管理深色/浅色主题切换
+### 5.8 StatCard
+**功能**：统计卡片组件，展示在线/降级/离线/平均延迟四项指标
+
+**Props**：
+```typescript
+interface StatCardProps {
+  icon: React.ReactNode;
+  label: string;
+  value: number | string;
+  iconBgColor: string;
+  iconTextColor: string;
+  valueColor: string;
+  hoverBorderColor: string;
+  hoverShadowColor: string;
+}
+```
+
+### 5.9 ThemeProvider
+**功能**：管理深色/浅色/系统主题切换（next-themes）
 
 **Props**：继承 `NextThemesProvider` 的所有 props
+
+### 5.10 GeoOptInDialog
+**功能**：地理位置授权对话框，用户同意后获取地理位置信息
+
+**Props**：无
+
+### 5.11 StructuredData
+**功能**：Schema.org 结构化数据组件（SEO），服务端渲染
+
+**Props**：无
+
+### 5.12 StatusDot
+**功能**：状态圆点组件（在线/降级/离线三色 + 光晕效果）
+
+**Props**：
+```typescript
+interface StatusDotProps {
+  status: 'online' | 'offline' | 'degraded';
+  size?: 'sm' | 'md' | 'lg';
+}
+```
+
+### 5.13 ProgressBar
+**功能**：进度条组件（渐变填充 + shimmer 扫光动画）
+
+**Props**：
+```typescript
+interface ProgressBarProps {
+  value: number;  // 0-100
+  variant?: 'success' | 'warning' | 'danger';
+}
+```
+
+### 5.14 DashboardFooter
+**功能**：页脚组件，三栏展示（Global Coverage / UI Tech Stack / Data Integrity）
+
+**Props**：无
 
 ## 6. API 监控逻辑
 
 ### 6.1 监控的 API
-| 区域 | API | Provider | URL |
-|-----|-----|----------|-----|
-| 美国 | GPT-4o | OpenAI | https://api.openai.com/v1/models |
-| 美国 | Claude 3.5 | Anthropic | https://api.anthropic.com/v1/messages |
-| 美国 | Gemini 1.5 | Google | https://generativelanguage.googleapis.com/v1beta/models |
-| 美国 | Llama 3 | Meta (Groq) | https://api.groq.com/openai/v1/models |
-| 美国 | Mistral Large | Mistral | https://api.mistral.ai/v1/models |
-| 中国 | Kimi | Moonshot | https://api.moonshot.cn/v1/models |
-| 中国 | GLM-4 | ZhipuAI | https://open.bigmodel.cn/api/paas/v4/model_list |
-| 中国 | Baichuan 2 | Baichuan | https://api.baichuan-ai.com/v1/models |
-| 中国 | Qwen Max | Alibaba | https://dashscope.aliyuncs.com/api/v1/models |
-| 中国 | Hunyuan | Tencent | https://hunyuan.tencentcloudapi.com |
-| 中国 | Ernie 4.0 | Baidu | https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions |
-| 中国 | DeepSeek V3 | DeepSeek | https://api.deepseek.com/models |
+| 区域 | API 名称 | Provider | ID | URL |
+|-----|---------|----------|-----|-----|
+| 美国 | GPT-4o | OpenAI | `openai-gpt-4o` | https://api.openai.com/v1/models |
+| 美国 | Claude 3.5 | Anthropic | `anthropic-claude-3-5` | https://api.anthropic.com/v1/messages |
+| 美国 | Gemini 1.5 | Google | `google-gemini-1-5` | https://generativelanguage.googleapis.com/v1beta/models |
+| 美国 | Llama 3 (Groq) | Meta | `meta-llama-3` | https://api.groq.com/openai/v1/models |
+| 美国 | Mistral Large | Mistral | `mistral-large` | https://api.mistral.ai/v1/models |
+| 中国 | Kimi (Moonshot) | Moonshot | `moonshot-v1` | https://api.moonshot.cn/v1/models |
+| 中国 | GLM-4 (Zhipu) | ZhipuAI | `zhipu-glm-4` | https://open.bigmodel.cn/api/paas/v4/model_list |
+| 中国 | Baichuan 2 | Baichuan | `baichuan-2` | https://api.baichuan-ai.com/v1/models |
+| 中国 | Qwen Max (Ali) | Alibaba | `qwen-max` | https://dashscope.aliyuncs.com/api/v1/models |
+| 中国 | Hunyuan (Tencent) | Tencent | `hunyuan-pro` | https://hunyuan.tencentcloudapi.com |
+| 中国 | Ernie 4.0 (Baidu) | Baidu | `ernie-4` | https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions |
+| 中国 | DeepSeek V3 | DeepSeek | `deepseek-v3` | https://api.deepseek.com/models |
 
 ### 6.2 监控配置
 | 常量 | 值 | 说明 |

@@ -67,20 +67,26 @@ graph TD
 ```mermaid
 graph TD
     RootLayout[RootLayout] --> ThemeProvider[ThemeProvider]
-    ThemeProvider --> Dashboard[Dashboard Page]
+    ThemeProvider --> StructuredData[StructuredData SEO]
+    ThemeProvider --> DashboardClient[DashboardClient]
     
-    Dashboard --> DashboardHeader[DashboardHeader]
-    Dashboard --> AlertsBanner[Alerts Banner]
-    Dashboard --> StatusGridSection[Status Grid Section]
-    Dashboard --> HistoryChartSection[History Chart Section]
-    Dashboard --> DashboardFooter[DashboardFooter]
+    DashboardClient --> DashboardHeader[DashboardHeader]
+    DashboardClient --> GeoOptInDialog[GeoOptInDialog]
+    DashboardClient --> AlertsDropdown[AlertsDropdown Dialog]
+    DashboardClient --> StatCardSection[统计卡片区域]
+    DashboardClient --> AlertsBanner[告警横幅]
+    DashboardClient --> StatusGridSection[状态网格区域]
+    DashboardClient --> HistoryChartSection[历史图表区域]
+    DashboardClient --> DashboardFooter[DashboardFooter]
+    
+    StatCardSection --> StatCard[StatCard × 4]
     
     StatusGridSection --> ApiConfig[ApiConfig]
-    StatusGridSection --> StatusGrid[StatusGrid]
-    StatusGrid --> ApiStatusGrid[ApiStatusGrid]
-    ApiStatusGrid --> ApiCard[API Status Card]
+    StatusGridSection --> ApiStatusGrid[ApiStatusGrid]
+    ApiStatusGrid --> StatusDot[StatusDot]
+    ApiStatusGrid --> ProgressBar[ProgressBar]
     
-    HistoryChartSection --> ChartLegend[Chart Legend]
+    HistoryChartSection --> ChartSkeleton[ChartSkeleton]
     HistoryChartSection --> LatencyHistoryChart[LatencyHistoryChart]
     
     DashboardHeader --> AlertsDropdown[AlertsDropdown]
@@ -92,15 +98,20 @@ graph TD
 |-----|------|---------|
 | **RootLayout** | 根布局，设置主题和全局样式 | 无 |
 | **ThemeProvider** | 主题管理，支持深色/浅色模式 | `theme` |
-| **Dashboard** | 主页面容器，整合所有功能 | 所有状态 |
-| **DashboardHeader** | 头部导航，包含品牌、告警、主题切换、用户认证 | `user`, `alerts`, `theme`, `geo` |
-| **AlertsBanner** | 顶部告警横幅，显示活跃告警数量 | `alerts` |
-| **StatusGrid** | API 状态网格，支持供应商分组 | `statuses` |
-| **ApiStatusGrid** | API 状态卡片网格（旧版） | `statuses` |
-| **ApiCard** | 单个 API 状态卡片 | `status` |
-| **LatencyHistoryChart** | 延迟历史图表 | `history`, `statuses` |
+| **StructuredData** | SEO 结构化数据组件 | 无 |
+| **DashboardClient** | 主页面客户端组件，整合所有功能 | 所有状态 |
+| **DashboardHeader** | 头部导航，包含品牌、告警、主题切换、用户认证 | `user`, `alerts`, `theme`, `geo`, `isGeoLoading` |
+| **GeoOptInDialog** | 地理位置授权对话框 | `geo` |
+| **AlertsDropdown** | 告警下拉对话框 | `alerts` |
+| **StatCard** | 统计卡片，显示在线/降级/离线/平均延迟 | `statuses` |
+| **AlertsBanner** | 告警横幅，显示活跃告警数量 | `alerts` |
+| **ApiStatusGrid** | API 状态卡片网格 | `statuses` |
+| **StatusDot** | 状态指示点 | `status` |
+| **ProgressBar** | 延迟进度条 | `latency` |
 | **ApiConfig** | API 配置面板 | 本地存储 |
-| **AlertsDropdown** | 告警下拉菜单 | `alerts` |
+| **StatusGrid** | 兼容层组件，转发到 ApiStatusGrid | `statuses` |
+| **LatencyHistoryChart** | 延迟历史图表 | `history`, `statuses` |
+| **ChartSkeleton** | 图表加载骨架屏 | 无 |
 | **DashboardFooter** | 页脚信息 | 无 |
 
 ### 2.3 数据管理架构
@@ -457,12 +468,12 @@ graph TD
 
 ### 7.2 安全规则矩阵
 
-| 集合 | 读取权限 | 写入权限 | 说明 |
+| 表名 | 读取权限 | 写入权限 | 说明 |
 |-----|---------|---------|------|
-| `api_status` | 公开 | 管理员 | 状态信息公开可读 |
-| `status_history` | 公开 | 管理员 | 历史数据公开可读 |
-| `alerts` | 公开 | 管理员 | 告警信息公开可读 |
-| `users` | 管理员 | 管理员 | 用户管理（可选） |
+| `api_status` | 公开 | 认证用户 | 状态信息公开可读，认证用户可写入 |
+| `status_history` | 公开 | 认证用户 | 历史数据公开可读，认证用户可插入 |
+| `alerts` | 公开 | 认证用户 | 告警信息公开可读，认证用户可更新(解决)和插入 |
+| `user_profiles` | 仅本人 | 仅本人 | 用户资料仅本人可读写 |
 
 ## 8. 性能优化架构
 
