@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.7.0
+# LLM API Sentinel v2.7.2
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -17,6 +17,7 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 - **Adaptive UI**: Fully responsive design (1/2/3/4 columns) with Dark/Light mode support (dark-first).
 - **Real-time Updates**: Powered by Supabase Realtime for instant status synchronization (5-minute interval).
 - **Secure Access**: Manual health checks are protected by Google Authentication (Supabase Auth).
+- **Security Hardening**: Optional custom server (`server.ts`) adds Helmet security headers and per-IP rate limiting for manual checks.
 - **Smart Alerts**: Automatic detection of API downtime (offline), degraded state, and high latency (threshold: 1500ms) with severity-based notifications.
 - **Autonomous Monitoring**: Background tasks perform API checks every 5 minutes without user intervention.
 - **Performance Optimizations**:
@@ -29,7 +30,7 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 
 ## Tech Stack
 - **Framework**: Next.js 14.2.13 (App Router, Static Export)
-- **Backend**: Express 5.2.1 (Custom Server)
+- **Optional Server**: Express 5.2.1 + Helmet (Custom security server, opt-in)
 - **Database**: Supabase PostgreSQL
 - **Auth**: Supabase Auth (Google OAuth)
 - **Real-time**: Supabase Realtime
@@ -41,19 +42,26 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 
 ## Architecture
 
-This project uses a **Static Frontend + Supabase Backend** architecture:
+This project uses a **Static Frontend + Supabase Backend** architecture. By default the app is statically exported to `out/` and served from static hosting (Vercel / EdgeOne Pages / Netlify), so **no custom server is required** for the frontend.
 
 ```
-┌─────────────┐     ┌──────────────────┐     ┌──────────────┐
-│   Next.js   │────▶│    Supabase      │◀────│   Express    │
-│  (Static)   │     │  (PostgreSQL +   │     │  (Background)│
-│             │     │   Realtime)      │     │   Server     │
-└─────────────┘     └──────────────────┘     └──────────────┘
+┌──────────────────┐     ┌──────────────────┐
+│  Static Hosting  │────▶│    Supabase      │
+│  (out/ export)   │     │  (PostgreSQL +   │
+│                  │     │   Realtime)      │
+└──────────────────┘     └──────────────────┘
+         ▲                        ▲
+         │            ┌──────────┴──────────┐
+         │            │  Express (optional) │
+         │            │  server.ts — manual │
+         │            │  checks + security  │
+         └────────────┘  headers/rate-limit │
+                      └─────────────────────┘
 ```
 
 - **Frontend**: Static export to `out/` directory, deployable to any static hosting
 - **Real-time Data**: Supabase Realtime subscriptions (no polling)
-- **Backend**: Express server for scheduled API checks
+- **Backend**: Autonomous background monitoring runs via Supabase (scheduled functions / edge workers). `server.ts` is an opt-in Express server that wraps Next.js to add Helmet security headers and per-IP rate limiting for manual checks — useful for self-hosted `node server.ts` deployments.
 - **Authentication**: Supabase Auth with Google OAuth
 
 ## Getting Started
@@ -65,45 +73,58 @@ This project uses a **Static Frontend + Supabase Backend** architecture:
 
 ### Environment Setup
 
-1. Create a `.env.local` file in the root directory:
+1. Copy the example environment file and fill in your Supabase credentials:
+
+```bash
+cp .env.example .env.local
+```
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
+
+> See [docs/env.md](docs/env.md) for the full variable reference. Firebase configuration is deprecated and kept for migration reference only.
 
 2. Set up the database:
    - Create a Supabase project at [supabase.com](https://supabase.com)
    - Run the SQL schema from `supabase/schema.sql`
    - Enable Google OAuth in Supabase Auth settings
+   - (Optional) Set up scheduled background monitoring via Supabase Cron / Edge Functions
 
-3. Install dependencies:
+3. Install dependencies (this project uses `pnpm`):
 
 ```bash
-npm install
+pnpm install
 ```
 
 4. Run the development server:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 5. Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ### Deployment
 
-The project can be deployed to various static hosting platforms:项目可部署到多种静态托管平台：
-- **腾讯云 EdgeOne Pages**
-- **Vercel**
+The project is configured for **static export** (`output: 'export'` in `next.config.mjs`) and can be deployed to various static hosting platforms:
+- **腾讯云 EdgeOne Pages** (see `edgeone.config.js`)
+- **Vercel** (see `vercel.json`)
 - **Netlify**
 
-For Express server deployment:
+Build and deploy:
 ```bash
-npm run build
-npm start
+pnpm build   # outputs static files to out/
 ```
+
+> For a self-hosted deployment with extra security hardening (Helmet headers + per-IP rate limiting), run the optional Express server instead of `next start`:
+> ```bash
+> pnpm build
+> node server.ts
+> ```
+> Note: `server.ts` wraps Next.js in custom-server mode and is **not compatible** with static export — use one path or the other.
 
 ## API Monitoring Configuration
 - **Latency Threshold**: 1500ms
@@ -156,19 +177,32 @@ Supported languages:
 
 ```
 ├── app/
-│   ├── components/       # React components
+│   ├── components/       # React components (UI + dashboard widgets)
 │   ├── hooks/           # Custom React hooks
-│   ├── lib/             # Utility functions and core logic
-│   ├── store/           # Zustand state management
+│   ├── lib/             # Utility functions and core logic (monitor, geo, fetcher...)
+│   ├── store/           # Zustand state management (api/auth/alerts/geo/error)
 │   ├── types/           # TypeScript type definitions
-│   ├── constants/       # Application constants
-│   ├── locales/         # i18n translation files
+│   ├── constants/       # Application constants (thresholds, default APIs)
+│   ├── locales/         # i18n translation files (16 languages)
 │   ├── layout.tsx       # Root layout
 │   └── page.tsx         # Main dashboard page
-├── openspec/            # Project specification documents
-├── supabase/            # Database schema
+├── openspec/            # Project specification documents (architecture, data, ui...)
+├── docs/                # Supplementary docs (env, deployment, security, contributing)
+├── supabase/            # Database schema (schema.sql)
+├── server.ts            # Optional Express security server (Helmet + rate limit)
+├── next.config.mjs      # Next.js config (static export)
+├── vercel.json          # Vercel deployment config
+├── edgeone.config.js    # EdgeOne Pages deployment config
 └── package.json
 ```
+
+## Documentation
+
+- [openspec/](openspec/) — Architecture, data model, UI, features, and change proposals
+- [docs/env.md](docs/env.md) — Environment variables reference
+- [docs/deployment.md](docs/deployment.md) — Deployment guide (Vercel / EdgeOne / self-host)
+- [docs/security.md](docs/security.md) — Security architecture and best practices
+- [docs/contributing.md](docs/contributing.md) — Contribution guidelines
 
 ## License
 

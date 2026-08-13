@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.7.2] - 2026-08-13
+
+### Refactored
+- **模块化拆分**: 将超 200 行的源文件按职责拆分为更小模块，提升可读性与可维护性
+  - `DashboardClient.tsx` → 抽离 `HeroSection` / `AlertsBanner` 子组件与 `useDashboardStats` hook
+  - `ApiConfig.tsx` → 抽离 `api-config-validation.ts`（校验逻辑与类型）
+  - `ApiStatusGrid.tsx` → 抽离 `ApiCard.tsx` 子组件
+  - `useApiMonitor.ts` → 抽离 `supabase-mapping.ts`（数据映射）与 `alert-service.ts`（告警逻辑）
+- **类型安全**: 移除 `metrics.ts` 中的 `any` 类型，改用显式 `Record` 映射
+
+### Fixed
+- **版本对齐**: 统一各模块头注释与 `package.json` 版本号
+
+## [2.7.1] - 2026-08-13
+
+### Docs
+- **README 双语**: 修正运行模式说明——默认静态导出（`out/`）部署，Express `server.ts` 为可选的自定义安全服务器（Helmet 响应头 + 按 IP 速率限制），两者互斥。
+- **README 双语**: 包管理器统一为 `pnpm`，修正 `.env.local` 配置流程，补充 `docs/` 文档链接与项目结构（`store/`、`constants/`、`types/` 目录与 `server.ts`）。
+- **版本对齐**: 将文档与 `package.json` 版本号统一至代码实际版本 `v2.7.1`。
+- **新增文档**: 新增 `docs/env.md`（环境变量参考）、`docs/deployment.md`（部署指南）、`docs/security.md`（安全架构）、`docs/contributing.md`（贡献指南）。
+- **openspec**: 修正架构/功能文档版本号与运行模式描述，新增可选安全服务器说明。
+
+### Fixed
+- **README**: 修复部署小节中遗留的中英混排错误文本。
+
 ## [2.6.3] - 2026-06-10
 
 ### Changed

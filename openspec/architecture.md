@@ -2,13 +2,18 @@
 
 ## 1. 架构概览
 
-LLM API Sentinel 采用**静态前端 + Supabase 后端**架构，无需自定义 API 路由。前端直接与 Supabase PostgreSQL 进行实时数据同步，后端通过 Express 服务器执行定时监控任务。
+LLM API Sentinel 采用**静态前端 + Supabase 后端**架构，无需自定义 API 路由。前端直接与 Supabase PostgreSQL 进行实时数据同步。
+
+### 运行模式
+
+- **默认部署（静态导出）**：`next.config.mjs` 启用 `output: 'export'`，构建产物输出到 `out/`，由 Vercel / EdgeOne Pages / Netlify 等静态托管提供服务。后台监控通过 Supabase Cron / Edge Functions 运行，**此模式下无需自定义服务器**。
+- **可选自建模式（Express 安全服务器）**：`server.ts` 以自定义服务器模式包装 Next.js，新增 Helmet 安全响应头与按 IP 速率限制（用于手动健康检查）。该模式与静态导出互斥，仅用于 `node server.ts` 自托管场景。两种模式的后台监控逻辑一致（均执行定时 API 检查并写入 Supabase）。
 
 ### 1.1 技术栈
 | 类别 | 技术 | 版本 |
 |-----|------|------|
 | 前端框架 | Next.js 14.2.13 (App Router) | 14.2.13 |
-| 后端服务器 | Express 5.2.1 | 5.2.1 |
+| 后端服务器（可选） | Express 5.2.1（仅 `server.ts` 自建模式） | 5.2.1 |
 | 数据库 | Supabase PostgreSQL | - |
 | 身份验证 | Supabase Auth (Google OAuth) | - |
 | 样式 | Tailwind CSS 4.1.11 | 4.1.11 |

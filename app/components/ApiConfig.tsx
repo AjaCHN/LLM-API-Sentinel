@@ -1,4 +1,4 @@
-// app/components/ApiConfig.tsx v2.7.0
+// app/components/ApiConfig.tsx v2.7.2
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,6 +6,13 @@ import { Plus, Trash2, Save, X, Edit, Server } from 'lucide-react';
 import { APIS_TO_CHECK } from '@/constants';
 import { useI18n } from '@/hooks/useI18n';
 import { cn } from '@/lib/utils';
+import {
+  sanitizeInput,
+  validateUrl,
+  validateApiConfig,
+  MAX_URL_LENGTH,
+} from './api-config-validation';
+import type { ApiConfigItem, ValidatedApiConfigItem } from './api-config-validation';
 
 import {
   Card,
@@ -19,51 +26,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-
-interface ApiConfigItem {
-  id: string;
-  name: string;
-  provider: string;
-  url: string;
-}
-
-// 输入验证和清理函数
-const MAX_INPUT_LENGTH = 100;
-const MAX_URL_LENGTH = 200;
-
-function sanitizeInput(input: string): string {
-  // 白名单策略：仅保留字母、数字、空格、连字符、下划线、点和常见标点
-  return input
-    .replace(/[^a-zA-Z0-9\s\-_\.\/:@?#&=+~,()[\]{}|%]/g, '')
-    .trim()
-    .slice(0, MAX_INPUT_LENGTH);
-}
-
-function validateUrl(url: string): boolean {
-  // 验证 URL 格式和协议
-  try {
-    const parsed = new URL(url);
-    return parsed.protocol === 'https:' && parsed.hostname.includes('.');
-  } catch {
-    return false;
-  }
-}
-
-// 验证后的 API 配置接口
-interface ValidatedApiConfigItem {
-  id: string;
-  name: string;
-  provider: string;
-  url: string;
-  isValid: boolean;
-}
-
-function validateApiConfig(config: ApiConfigItem[]): ValidatedApiConfigItem[] {
-  return config.map(api => ({
-    ...api,
-    isValid: validateUrl(api.url) && api.name.length > 0 && api.provider.length > 0
-  }));
-}
 
 export default function ApiConfig() {
   const { t } = useI18n();

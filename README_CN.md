@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.7.0
+# LLM API Sentinel v2.7.2
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -11,6 +11,7 @@
 - **自适应 UI**：全响应式设计，支持深色/浅色模式切换。
 - **实时更新**：基于 Supabase Realtime 实现状态即时同步。
 - **安全访问**：手动健康检查受 Google 身份验证保护。
+- **安全加固**：可选的自定义服务器（`server.ts`）为手动检查添加 Helmet 安全响应头与按 IP 速率限制。
 - **智能告警**：自动检测 API 宕机和延迟过高，并生成告警通知。
 - **自主监控**：后台任务每 5 分钟自动执行 API 检查，无需用户干预。
 - **性能优化**：
@@ -24,7 +25,7 @@
 ## 技术栈
 
 - **前端框架**：Next.js 14.2.13 (App Router, 静态导出)
-- **后端服务器**：Express 5.2.1 (自定义服务器)
+- **可选服务器**：Express 5.2.1 + Helmet（自定义安全服务器，按需启用）
 - **数据库**：Supabase PostgreSQL
 - **身份验证**：Supabase Auth (Google OAuth)
 - **实时订阅**：Supabase Realtime
@@ -36,19 +37,26 @@
 
 ## 系统架构
 
-本项目采用 **静态前端 + Supabase 后端** 架构：
+本项目采用 **静态前端 + Supabase 后端** 架构。默认情况下应用静态导出到 `out/` 目录并由静态托管（Vercel / EdgeOne Pages / Netlify）提供，**前端无需自定义服务器**。
 
 ```
-┌─────────────┐     ┌──────────────────┐     ┌──────────────┐
-│   Next.js   │────▶│    Supabase      │◀────│   Express    │
-│  (静态)      │     │  (PostgreSQL +   │     │  (后台监控)  │
-│             │     │   Realtime)      │     │   服务器     │
-└─────────────┘     └──────────────────┘     └──────────────┘
+┌──────────────────┐     ┌──────────────────┐
+│  静态托管服务     │────▶│    Supabase      │
+│  (out/ 导出)     │     │  (PostgreSQL +   │
+│                  │     │   Realtime)      │
+└──────────────────┘     └──────────────────┘
+         ▲                        ▲
+         │            ┌──────────┴──────────┐
+         │            │  Express (可选)     │
+         │            │  server.ts — 手动   │
+         │            │  检查 + 安全头/限流 │
+         └────────────┘                     │
+                      └─────────────────────┘
 ```
 
 - **前端**：静态导出到 `out/` 目录，可部署到任何静态托管服务
 - **实时数据**：Supabase Realtime 订阅（无需轮询）
-- **后端**：Express 服务器执行定时 API 检查
+- **后端**：自主后台监控通过 Supabase（定时函数 / Edge Functions）运行。`server.ts` 为可选的 Express 服务器，用于以 `node server.ts` 自托管时增加 Helmet 安全响应头与按 IP 速率限制。
 - **身份验证**：Supabase Auth 集成 Google OAuth
 
 ## 快速开始
@@ -60,45 +68,58 @@
 
 ### 环境配置
 
-1. 在项目根目录创建 `.env.local` 文件：
+1. 复制环境变量示例文件并填入你的 Supabase 凭证：
+
+```bash
+cp .env.example .env.local
+```
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
+
+> 完整变量说明见 [docs/env.md](docs/env.md)。Firebase 配置已废弃，仅保留用于迁移参考。
 
 2. 设置数据库：
    - 在 [supabase.com](https://supabase.com) 创建 Supabase 项目
    - 运行 `supabase/schema.sql` 中的 SQL 脚本
    - 在 Supabase Auth 设置中启用 Google OAuth
+   - （可选）通过 Supabase Cron / Edge Functions 配置定时后台监控
 
-3. 安装依赖：
+3. 安装依赖（本项目使用 `pnpm`）：
 
 ```bash
-npm install
+pnpm install
 ```
 
 4. 启动开发服务器：
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 5. 在浏览器中打开 [http://localhost:3000](http://localhost:3000)。
 
 ### 部署
 
-项目可部署到多种静态托管平台：
-- **腾讯云 EdgeOne Pages**
-- **Vercel**
+项目已配置为 **静态导出**（`next.config.mjs` 中 `output: 'export'`），可部署到多种静态托管平台：
+- **腾讯云 EdgeOne Pages**（见 `edgeone.config.js`）
+- **Vercel**（见 `vercel.json`）
 - **Netlify**
 
-Express 服务器部署：
+构建并部署：
 ```bash
-npm run build
-npm start
+pnpm build   # 静态文件输出到 out/
 ```
+
+> 如需自托管并启用额外安全加固（Helmet 响应头 + 按 IP 速率限制），可改用可选的 Express 服务器，而非 `next start`：
+> ```bash
+> pnpm build
+> node server.ts
+> ```
+> 注意：`server.ts` 以自定义服务器模式包装 Next.js，与静态导出**不兼容**——二选一使用。
 
 ## API 监控配置
 
@@ -154,19 +175,32 @@ npm start
 
 ```
 ├── app/
-│   ├── components/       # React 组件
+│   ├── components/       # React 组件（UI + 仪表盘组件）
 │   ├── hooks/           # 自定义 React hooks
-│   ├── lib/             # 工具函数和核心逻辑
-│   ├── store/           # Zustand 状态管理
+│   ├── lib/             # 工具函数和核心逻辑（monitor, geo, fetcher...）
+│   ├── store/           # Zustand 状态管理（api/auth/alerts/geo/error）
 │   ├── types/           # TypeScript 类型定义
-│   ├── constants/       # 应用常量
-│   ├── locales/         # i18n 翻译文件
+│   ├── constants/       # 应用常量（阈值、默认 API）
+│   ├── locales/         # i18n 翻译文件（16 种语言）
 │   ├── layout.tsx       # 根布局
 │   └── page.tsx         # 主仪表盘页面
-├── openspec/            # 项目规范文档
-├── supabase/            # 数据库架构
+├── openspec/            # 项目规范文档（架构、数据模型、UI、功能、变更提案）
+├── docs/                # 补充文档（环境变量、部署、安全、贡献指南）
+├── supabase/            # 数据库架构（schema.sql）
+├── server.ts            # 可选 Express 安全服务器（Helmet + 限流）
+├── next.config.mjs      # Next.js 配置（静态导出）
+├── vercel.json          # Vercel 部署配置
+├── edgeone.config.js    # EdgeOne Pages 部署配置
 └── package.json
 ```
+
+## 相关文档
+
+- [openspec/](openspec/) — 架构、数据模型、UI、功能与变更提案
+- [docs/env.md](docs/env.md) — 环境变量参考
+- [docs/deployment.md](docs/deployment.md) — 部署指南（Vercel / EdgeOne / 自托管）
+- [docs/security.md](docs/security.md) — 安全架构与最佳实践
+- [docs/contributing.md](docs/contributing.md) — 贡献指南
 
 ## 许可证
 

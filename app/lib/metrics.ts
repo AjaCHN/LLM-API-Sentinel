@@ -1,4 +1,4 @@
-// app/lib/metrics.ts v2.7.0
+// app/lib/metrics.ts v2.7.2
 import { supabase } from './supabase';
 import type { StatusHistory } from '../types';
 import { logError } from './error-handler';
@@ -39,16 +39,18 @@ async function _fetchStatusHistory(
     return [];
   }
 
-  return (data || []).map((doc: any) => ({
-    id: doc.id,
-    apiId: doc.api_id,
-    status: doc.status,
-    latency: doc.latency,
-    timestamp: new Date(doc.timestamp),
-    time: new Date(doc.timestamp).toLocaleTimeString(),
-    error: doc.error,
-    retries: doc.retries
-  })) as StatusHistory[];
+  return (data || []).map(
+    (doc: Record<string, unknown>): StatusHistory => ({
+      id: doc.id as string,
+      apiId: doc.api_id as string,
+      status: doc.status as StatusHistory['status'],
+      latency: doc.latency as number,
+      timestamp: new Date(doc.timestamp as string),
+      time: new Date(doc.timestamp as string).toLocaleTimeString(),
+      error: doc.error as string | undefined,
+      retries: doc.retries as number | undefined
+    })
+  );
 }
 
 function _calculateMetricsFromHistory(history: StatusHistory[]): ApiMetrics {
