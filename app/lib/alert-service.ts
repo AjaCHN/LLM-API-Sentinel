@@ -1,4 +1,4 @@
-// app/lib/alert-service.ts v2.7.2
+// app/lib/alert-service.ts v2.9.0
 
 import { supabase } from './supabase';
 import { useAlertStore } from '../store';
@@ -19,11 +19,12 @@ export async function createAlertForResult(result: ApiStatus): Promise<void> {
 
     try {
       // 先查是否已存在未解决的同类告警
+      // 注意: alerts 真实列是 resolved(BOOLEAN)，非 status 字符串
       const { data: existing } = await supabase
         .from('alerts')
         .select('id')
         .eq('api_id', result.id)
-        .eq('status', 'active')
+        .eq('resolved', false)
         .limit(1);
 
       if (existing && existing.length > 0) return;
@@ -32,7 +33,7 @@ export async function createAlertForResult(result: ApiStatus): Promise<void> {
         api_id: result.id,
         severity,
         message,
-        status: 'active',
+        resolved: false,
         timestamp: new Date().toISOString(),
       });
 
@@ -65,7 +66,7 @@ export async function resolveAlert(alertId: string): Promise<void> {
   try {
     const { error } = await supabase
       .from('alerts')
-      .update({ status: 'resolved', resolved_at: new Date().toISOString() })
+      .update({ resolved: true, resolved_at: new Date().toISOString() })
       .eq('id', alertId);
 
     if (error) {

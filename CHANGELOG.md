@@ -1,5 +1,34 @@
 # Changelog
 
+## [2.9.0] - 2026-08-15
+
+### Fixed
+- **告警系统失效**: `alert-service.ts` 误用不存在的 `status` 字符串列，改为 schema 真实的 `resolved` 布尔列（`insert({resolved:false})` / 去重 `.eq('resolved', false)` / 解决 `.update({resolved:true})`），修复告警无法写入与重复告警
+- **时间范围装饰性**: `useDashboardStats` 新增 `activeRange` 参数，按 `timestamp` 窗口（1h/6h/24h）真实过滤图表数据，切换不再只高亮
+- **SSRF 防护加固**: `notification-platforms.ts` 新增十进制/十六进制编码 IP 归一化拦截（如 `2130706433`→`127.0.0.1`），堵住内网地址绕过
+
+### Refactor
+- **模块拆分（单文件≤200行）**: `DashboardClient` 拆出 `dashboard-sections`；`cache.ts` 拆出 `cache-storage`/`cache-validation`；`ApiConfig` 拆出 `api-config-list`/`api-config-form`；`notification-platforms` 拆出 `webhook-formatter`；`i18n.test` 拆出 `i18n.test-fixtures`
+- **语义化 id**: 主仪表盘、状态区、延迟区、配置、告警横幅、头部、脚部均带稳定 id
+
+### Docs
+- **规范冲突消解**: `project.md` RLS 策略改为与 `schema.sql` 一致（仅认证可写）；`ui.md` success token 统一为 `#22c55e`
+- **版本统一**: 全部文件头注释、package.json、config.yaml、README 双语文档统一至 v2.9.0
+
+## [2.8.5] - 2026-08-15
+
+### Fixed
+- **原型数据真实性**: 统计卡片副文案改为从真实数据派生（在线可用性均值 / 降级错误率均值 / 离线重试总次数 / 延迟峰值），移除写死的 `99.9%`/`2.3%`/`↓12%`
+- **Hero 在线语义**: 顶栏改为「在线数 · 总数 API 状态监控」，动态读取在线/总数
+- **图表等比渲染**: `preserveAspectRatio` 由 `none` 改 `xMidYMid meet` + `aspect-ratio:760/240`，消除宽屏横向拉伸变形；hover x 坐标换算兼容 meet 缩放与居中偏移
+- **趋势与卡片一致**: `generateChartData` 末点锚定当前实时延迟，刷新后曲线末端与卡片数值对齐；去除 `refreshData` 中重复的 `generateChartData` 调用
+- **API 卡片可视化**: 新增延迟进度条（含 shimmer 动效），对齐设计规范 ProgressBar 组件
+- **组件库对比度**: Badge/Alert/StatusDot 文字色改用 `color-mix(...72%, var(--color-foreground))`，统一浅色模式可读性
+
+### Docs
+- **设计文档对齐实现**: `design-system.md` 颜色 token 改为 `.light` 体系与真实 hex、字体策略统一系统字体栈、动画表对齐实际类（fade-in-up/spin-once/shimmer）
+- **UI/项目规范同步**: 图表描述由 Recharts 改为手写 SVG（含 React 可替换说明）、i18n 标注原型 2 语言/规划 16、版本号统一至 v2.8.5
+
 ## [2.8.4] - 2026-08-15
 
 ### Chore

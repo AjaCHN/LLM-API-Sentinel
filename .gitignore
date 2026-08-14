@@ -9,3 +9,7 @@ coverage/
 .pnpm-store/
 *.tsbuildinfo
 pnpm-lock.yaml
+
+# 临时 lint 产物
+eslint-result.json
+eslint2.json

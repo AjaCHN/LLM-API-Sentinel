@@ -1,4 +1,4 @@
-# UI 组件规范文档 (v2.8.4 - Dark Indigo Theme)
+# UI 组件规范文档 (v2.8.5 - Dark Indigo Theme)
 
 ## 1. 设计原则
 
@@ -23,9 +23,9 @@
 - **样式框架**: Tailwind CSS 4.1.11（`@theme` 块定义 CSS 变量桥接）
 - **组件库**: shadcn/ui（基于 Radix UI primitives）
 - **图标库**: Lucide React
-- **图表库**: Recharts（AreaChart）
+- **图表库**: 原型为手写 SVG（零依赖）；React 应用原型期同构，可平滑替换为 Recharts AreaChart
 - **颜色系统**: 深色紫色/靛蓝主题，CSS 变量驱动（详见 [design-system.md](design-system.md) 和 §5.1）
-- **动画**: 自定义 keyframes（pulse-gentle / fade-in-up / scale-in-gentle 等），遵循 `prefers-reduced-motion` 规范
+- **动画**: 自定义 keyframes（fade-in-up / spin-once / shimmer 等），遵循 `prefers-reduced-motion` 规范
 
 ## 2. 组件 API 规范
 
@@ -87,9 +87,9 @@ ApiStatusGrid
 
 ### 2.3 LatencyHistoryChart
 
-**功能**：使用 Recharts AreaChart 展示历史延迟数据
+**功能**：展示历史延迟趋势（原型为**手写 SVG**，零图表库依赖；React 应用原型期同构，可平滑替换为 Recharts AreaChart）
 
-**Props**：
+**Props**（React 版本规划）：
 ```typescript
 interface LatencyHistoryChartProps {
   chartData: ChartDataPoint[];
@@ -98,13 +98,15 @@ interface LatencyHistoryChartProps {
 }
 ```
 
-**设计特点**：
+**设计特点**（与 `prototype/assets/app.js` 的 `renderMultiLineChart` 对齐）：
 - 容器 `rounded-xl border bg-card`（shadcn Card）
-- 高度 320px (md: 420px)
-- 网格线 `strokeDasharray="6 6"`，透明度 0.06，vertical=false
-- 每条 API 曲线使用独立线性渐变填充（linearGradient id=color-{id}）
-- Tooltip 样式：`bg-card border-border rounded-xl`，使用 CSS 变量
-- `React.memo` 包裹：只在 chartData/statuses 变化时重渲染
+- 响应式高度：`aspect-ratio: 760/240`，`width:100%` + `preserveAspectRatio="xMidYMid meet"`（不再固定 320/420px）
+- 网格线透明度 0.06，仅水平方向
+- 每条 API 曲线：独立纯色 + 8% 不透明度区域填充（area fill）
+- 阈值线（1500ms）虚线标注
+- 可交互：图例可点击切换系列显隐（`hiddenSeries`）、hover 显示跟随鼠标的 tooltip（多系列数值 + 垂直扫描线）
+- Tooltip 样式：`bg-popover border-border rounded-xl`，使用 CSS 变量，带 `chart-tooltip` 过渡动画
+- 时间范围 24H / 7D / 30D 切换时曲线形态各异（日内昼夜波动 / 周内工作日峰值 / 30 天趋势+尖峰），末点锚定当前实时延迟
 
 ### 2.4 AlertsDropdown
 
@@ -148,7 +150,7 @@ interface AlertsDropdownProps {
 
 **三个模块**：
 1. Global Coverage（全球 AI 供应商监控）
-2. UI 技术栈（Next.js + Tailwind CSS + shadcn/ui + Recharts）
+2. UI 技术栈（Next.js + Tailwind CSS + shadcn/ui + 手写 SVG 图表）
 3. Data Integrity（Supabase PostgreSQL 持久化）
 
 ### 2.7 StatCard
@@ -412,7 +414,7 @@ data-[state=checked]:bg-primary data-[state=unchecked]:bg-input
 
 | 特征 | 规范 |
 |------|------|
-| 容器 | `Card > CardContent h-[320px] md:h-[420px] p-4` |
+| 容器 | `Card > CardContent p-4`；图表 SVG `aspect-ratio:760/240; width:100%; preserveAspectRatio="xMidYMid meet"` |
 | 网格 | `strokeDasharray="6 6"`，`opacity=0.06`，vertical=false |
 | X 轴 | fontSize 11，opacity 0.4，dy=12，>20 点时 `preserveStartEnd` |
 | Y 轴 | fontSize 11，opacity 0.4，insideLeft "ms" 标签 |
@@ -490,7 +492,7 @@ data-[state=checked]:bg-primary data-[state=unchecked]:bg-input
 | **选中/展开** | Dialog（AlertsDropdown） | 背景遮罩 + 内容缩放淡入；ESC 键关闭；点击外部关闭 |
 | **切换开关** | 主题切换按钮 | Sun/Moon 图标切换；悬停显示对应色调预览 |
 | **表单输入** | ApiConfig Input | focus-visible:ring-1 ring-ring；placeholder text-muted-foreground；disabled:opacity-50 |
-| **工具提示** | Recharts Tooltip | 内容卡片样式，阴影 boxShadow 0 8px 24px rgba(0,0,0,0.12) |
+| **工具提示** | 图表 hover Tooltip（手写 SVG） | 内容卡片样式，阴影 boxShadow 0 8px 24px rgba(0,0,0,0.12)，跟手定位 + 过渡动画 |
 
 ### 4.2 状态指示器规范
 
@@ -633,7 +635,7 @@ CSS 变量通过 Tailwind 4.1 的 `@theme` 语法注册为 Tailwind token，例�
 @theme {
   --color-background: var(--background);
   --color-primary: var(--primary);
-  --color-success: #34C759;
+  --color-success: #22c55e;
   /* ... 其他 token ... */
 }
 ```
@@ -803,8 +805,8 @@ stagger-8 → 0.40s
 | 主题切换（背景色） | 500ms | `cubic-bezier(0.4, 0, 0.2, 1)` | body transition |
 | 颜色过渡（按钮 hover） | 150-300ms | `ease-out` | `transition-colors` |
 | 卡片位移 hover | 350-400ms | `cubic-bezier(0.23, 1, 0.32, 1)` | card-hover-lift |
-| 入场动画 | 400-800ms | `cubic-bezier(0.25, 0.1, 0.25, 1)` | fade-in-up / slide-in-right |
-| 图表动画 | 1200ms | （Recharts 默认缓动） | animationDuration={1200} |
+| 入场动画 | 400-800ms | `cubic-bezier(0.25, 0.1, 0.25, 1)` | fade-in-up（原型统一使用 fade-in-up 交错，无 slide-in-right） |
+| 图表动画 | 实时重绘 + 0.4-0.5s 透明度过渡 | 手写 SVG | 区域填充淡入、图例切换、hover 扫描线（无 Recharts） |
 | 缩放反馈 | 200ms | `ease-out` | apple-button:active scale(0.96) |
 
 ### 6.4 动画使用原则
@@ -853,10 +855,7 @@ stagger-8 → 0.40s
 
 #### LatencyHistoryChart 高度
 
-| 断点 | 高度 |
-|------|------|
-| < 768px | 320px |
-| ≥ 768px | 420px |
+图表采用 `aspect-ratio: 760/240` 自适应宽度，不依赖固定像素高度，移动端/桌面端等比缩放无横向拉伸。
 
 ### 7.3 内容可见性适配
 
@@ -942,7 +941,7 @@ stagger-8 → 0.40s
 - 🔍 新增 StructuredData SEO 结构化数据组件
 - 💀 新增 ChartSkeleton 骨架屏加载组件
 - ⚡ 新增 StatusGrid 兼容层（向后兼容 ApiStatusGrid）
-- 🌍 16 语言国际化支持（useI18n hook）
+- 🌍 国际化支持（useI18n hook）；原型已实现 中文/English 2 种，规划扩展至 16 语言
 - 🏪 5 个 Zustand Store（api/auth/alerts/geo/error）
 - 🔒 Supabase 后端集成（Auth + PostgreSQL + Realtime）
 - 📱 响应式优化（移动端 1 列 → 桌面端 4 列）

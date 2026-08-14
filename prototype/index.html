@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LLM API Sentinel v2.8.4 | 全球LLM API实时监控</title>
+  <title>LLM API Sentinel v2.8.5 | 全球LLM API实时监控</title>
   <meta name="description" content="LLM API Sentinel — 实时监控全球主流 LLM API 服务健康状态" />
   <link rel="stylesheet" href="assets/styles.css" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -41,7 +41,7 @@
     <section class="animate-fade-in-up mb-10 text-center max-w-3xl mx-auto">
       <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-border bg-card text-muted-foreground mb-5">
         <span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
-        <span data-i18n="statusOnline">在线</span> · <span id="hero-api-count">12</span> <span data-i18n="apiStatus">API 状态监控</span>
+        <span id="hero-api-online">—</span> <span data-i18n="statusOnline">在线</span> · <span id="hero-api-count">—</span> <span data-i18n="apiStatus">API 状态监控</span>
       </span>
       <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1]">
         全球 LLM API<br class="sm:hidden" />
@@ -71,7 +71,7 @@
             <button data-range="30d" onclick="setTimeRange('30d')" class="px-3 py-1.5 rounded-lg text-sm text-muted-foreground hover:text-foreground transition-colors" aria-pressed="false">30D</button>
           </div>
         </div>
-        <svg id="latency-chart" class="w-full" style="height:240px" preserveAspectRatio="none"></svg>
+        <svg id="latency-chart" class="chart-svg w-full" preserveAspectRatio="xMidYMid meet"></svg>
         <div id="chart-legend" class="chart-legend"></div>
         </section>
 
@@ -129,6 +129,8 @@
       renderApiGrid();
       const hc = document.getElementById('hero-api-count');
       if (hc) hc.textContent = apis.length;
+      const ho = document.getElementById('hero-api-online');
+      if (ho) ho.textContent = apis.filter(a => a.status === 'online').length;
       const ls = document.getElementById('last-sync-time');
       if (ls) ls.textContent = getT().justNow;
     }
@@ -191,7 +193,14 @@
                 <div class="text-sm font-semibold tabular-nums">${a.errorRate}%</div>
               </div>
             </div>
-            ${offline ? `<div class="mt-3 text-xs text-destructive text-center">${t.needAttention} · ${a.retries || 0}×</div>` : ''}
+            ${offline ? `<div class="mt-3 text-xs text-destructive text-center">${t.needAttention} · ${a.retries || 0}×</div>` : `
+            <div class="mt-3">
+              <div class="h-1.5 rounded-full bg-secondary overflow-hidden">
+                <div class="h-full rounded-full relative" style="width:${Math.min(100, Math.round(a.latency / 500 * 100))}%;background:${a.color}">
+                  <div class="shimmer-overlay"></div>
+                </div>
+              </div>
+            </div>`}
           </div>`;
         }).join('')}
       `).join('');

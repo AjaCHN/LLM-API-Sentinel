@@ -111,13 +111,25 @@ function renderStats() {
   const avgLatency = apis.length
     ? Math.round(apis.reduce((s, a) => s + (a.latency || 0), 0) / apis.length)
     : 0;
+  const onlineApis = apis.filter(a => a.status === 'online');
+  const avgAvail = onlineApis.length
+    ? (onlineApis.reduce((s, a) => s + a.availability, 0) / onlineApis.length).toFixed(1)
+    : '—';
+  const degradedApis = apis.filter(a => a.status === 'degraded');
+  const avgErr = degradedApis.length
+    ? (degradedApis.reduce((s, a) => s + a.errorRate, 0) / degradedApis.length).toFixed(1)
+    : '0';
+  const totalRetries = apis.reduce((s, a) => s + (a.retries || 0), 0);
+  const peakLatency = onlineApis.length
+    ? Math.max(...onlineApis.map(a => a.latency))
+    : 0;
   const t = getT();
 
   const stats = [
-    { key: 'online', label: t.statsOnline, value: `${online}/${active}`, color: 'var(--color-success)', sub: `99.9% ${t.availabilityLabel}` },
-    { key: 'degraded', label: t.statsDegraded, value: degraded, color: 'var(--color-warning)', sub: '2.3% ERR' },
-    { key: 'offline', label: t.statsOffline, value: offline, color: 'var(--color-destructive)', sub: offline ? `${t.needAttention}` : t.statusOnline },
-    { key: 'latency', label: t.statsLatency, value: `${avgLatency}${t.unitMs}`, color: 'var(--color-primary)', sub: `↓ 12%` },
+    { key: 'online', label: t.statsOnline, value: `${online}/${active}`, color: 'var(--color-success)', sub: `${avgAvail}% ${t.availabilityLabel}` },
+    { key: 'degraded', label: t.statsDegraded, value: degraded, color: 'var(--color-warning)', sub: `${avgErr}% ERR` },
+    { key: 'offline', label: t.statsOffline, value: offline, color: 'var(--color-destructive)', sub: offline ? `${totalRetries}× ${t.retryUnit}` : t.statusOnline },
+    { key: 'latency', label: t.statsLatency, value: `${avgLatency}${t.unitMs}`, color: 'var(--color-primary)', sub: `${t.peakLabel} ${peakLatency}${t.unitMs}` },
   ];
 
   const wrap = document.getElementById('stats-grid');
@@ -277,7 +289,7 @@ function renderMultiLineChart() {
   svg.setAttribute('aria-label', `${getT().chartAriaPrefix} ${seriesCount} ${getT().chartAriaSuffix}`);
 
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   svg.innerHTML = gridLines + thresholdLine + areas + lines;
 
   // 构建交互热区（垂直扫描线 + hover）
@@ -300,7 +312,12 @@ function buildChartHover(svg, points, x, y, W, H, P, gridH) {
   }
   const moveHandler = (ev) => {
     const rect = svg.getBoundingClientRect();
-    const px = (ev.clientX - rect.left) / rect.width * W;
+    // meet 等比缩放：以较小缩放比为准，并居中偏移，得到 viewBox 内真实 x
+    const scale = Math.min(rect.width / W, rect.height / H);
+    const drawnW = W * scale, drawnH = H * scale;
+    const offX = (rect.width - drawnW) / 2;
+    const offY = (rect.height - drawnH) / 2;
+    const px = (ev.clientX - rect.left - offX) / scale;
     let idx = Math.round((px - P) / ((W - P * 2) / (points.length - 1)));
     idx = Math.max(0, Math.min(points.length - 1, idx));
     const gx = x(idx);
@@ -406,8 +423,6 @@ function refreshData() {
     return { ...a, latency: newLatency, availability: newAvail, errorRate: newErr, lastChecked: Date.now() };
   });
   // 重算历史曲线，使趋势与刷新后的最新延迟基线保持一致
-  generateChartData();
-
   generateChartData();
   if (renderFn) renderFn();
   const clock = document.getElementById('last-sync-time');

@@ -1,4 +1,4 @@
-# LLM API Sentinel 项目规范 (v2.8.4)
+# LLM API Sentinel 项目规范 (v2.8.5)
 
 ## 1. 项目概述
 
@@ -6,7 +6,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 
 ### 1.1 核心功能
 - **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta/Groq, Mistral）和中国（Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek）主流 AI 供应商的连通性与延迟，共 12 个核心 API
-- **历史数据**：使用 Recharts 交互式面积图可视化性能趋势（默认保留最近 50 个数据点）
+- **历史数据**：手写 SVG 交互式面积图（零图表库依赖）可视化性能趋势；支持 24H/7D/30D 时间范围，曲线末点锚定当前实时延迟（原型同构，React 应用可平滑替换为 Recharts）
 - **自适应 UI**：全响应式设计（1/2/3/4 列网格），支持深色/浅色/系统模式切换，默认 Dark Indigo 沉浸主题（靛蓝 #6366f1 + 紫色 #8b5cf6）
 - **实时更新**：基于 Supabase Realtime 实现状态即时同步（默认 5 分钟后台检查周期）
 - **安全访问**：手动健康检查受 Supabase Auth (Google OAuth) 保护
@@ -27,10 +27,10 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 | 实时订阅 | Supabase Realtime | - |
 | 样式 | Tailwind CSS 4.1.11 | 4.1.11 |
 | 组件库 | shadcn/ui (基于 Tailwind) | - |
-| 图表 | Recharts 3.8.0 | 3.8.0 |
+| 图表 | Recharts 3.8.0（React 应用，原型为手写 SVG 零依赖） | 3.8.0 |
 | 图标 | Lucide React | - |
 | 状态管理 | Zustand 5.0.12 | 5.0.12 |
-| 设计系统 | [design-system.md](design-system.md) | v2.8.4 |
+| 设计系统 | [design-system.md](design-system.md) | v2.8.5 |
 | 国际化 | 自定义 i18n 系统 | - |
 | 时间处理 | date-fns 4.1.0 | 4.1.0 |
 
@@ -92,7 +92,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   ├── DashboardHeader.tsx   # 头部组件（Logo/告警/主题/地理/登录）
 │   │   ├── DashboardSkeleton.tsx # 仪表盘整体骨架屏
 │   │   ├── GeoOptInDialog.tsx    # 地理位置授权弹窗
-│   │   ├── LatencyHistoryChart.tsx # 延迟历史图表（Recharts AreaChart）
+│   │   ├── LatencyHistoryChart.tsx # 延迟历史图表（手写 SVG / Recharts 可替换）
 │   │   ├── ProgressBar.tsx       # 进度条组件（渐变 + shimmer）
 │   │   ├── StatCard.tsx          # 统计卡片组件（在线/降级/离线/平均延迟）
 │   │   ├── StatusDot.tsx         # 状态圆点组件（三色 + 光晕）
@@ -106,7 +106,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   ├── useAuth.ts            # 认证管理（Supabase Auth）
 │   │   ├── useDashboardData.ts   # 仪表盘数据聚合（主 hook，组合各子 hook）
 │   │   ├── useGeoLocation.ts     # 地理位置（ipapi.co + 24h 缓存）
-│   │   └── useI18n.ts            # 国际化（16 语言自动检测）
+│   │   └── useI18n.ts            # 国际化（原型已实现 中文/English，规划 16 语言自动检测）
 │   ├── lib/
 │   │   ├── cache.ts              # 缓存逻辑（内存 + localStorage 双层 + 智能过期）
 │   │   ├── concurrency.ts        # 并发控制（信号量，默认 5）
@@ -394,7 +394,7 @@ interface StatusGridProps {
 ```
 
 ### 5.5 LatencyHistoryChart
-**功能**：使用 Recharts AreaChart 展示历史延迟数据（React.memo 优化）
+**功能**：展示历史延迟趋势（原型为手写 SVG 零依赖，React 应用可平滑替换为 Recharts AreaChart，React.memo 优化）
 
 **Props**：
 ```typescript
@@ -651,16 +651,19 @@ interface Alert {
 - 会话管理由 Supabase 自动处理
 
 ### 10.2 Row Level Security (RLS) 策略
-```sql
--- API 状态：所有人可读，可写入
-CREATE POLICY "api_status_read_all" ON api_status FOR SELECT USING (true);
-CREATE POLICY "api_status_insert_all" ON api_status FOR INSERT WITH CHECK (true);
-CREATE POLICY "api_status_update_all" ON api_status FOR UPDATE USING (true);
 
--- 告警：所有人可读写
+> 与 `supabase/schema.sql` 保持一致：状态与告警**公开可读**，但**仅认证用户可写入**，避免匿名篡改监控数据。
+
+```sql
+-- API 状态：所有人可读，仅认证用户可写入
+CREATE POLICY "api_status_read_all" ON api_status FOR SELECT USING (true);
+CREATE POLICY "api_status_write_auth" ON api_status FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "api_status_update_auth" ON api_status FOR UPDATE USING (auth.role() = 'authenticated');
+
+-- 告警：所有人可读，仅认证用户可写入/解决
 CREATE POLICY "alerts_read_all" ON alerts FOR SELECT USING (true);
-CREATE POLICY "alerts_update_resolve" ON alerts FOR UPDATE USING (true);
-CREATE POLICY "alerts_insert_all" ON alerts FOR INSERT WITH CHECK (true);
+CREATE POLICY "alerts_insert_auth" ON alerts FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "alerts_update_auth" ON alerts FOR UPDATE USING (auth.role() = 'authenticated');
 ```
 
 ### 10.3 安全最佳实践

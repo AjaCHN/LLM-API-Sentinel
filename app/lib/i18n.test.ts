@@ -1,55 +1,7 @@
-// app/lib/i18n.test.ts v2.7.0
+// app/lib/i18n.test.ts v2.9.0
 
 import { supportedLocales, initLocaleSync, getLocale, setLocale, t } from './i18n';
-
-import en from '../locales/en.json';
-import zhCn from '../locales/zh-cn.json';
-import zhTw from '../locales/zh-tw.json';
-import ar from '../locales/ar.json';
-import cs from '../locales/cs.json';
-import es from '../locales/es.json';
-import hi from '../locales/hi.json';
-import id from '../locales/id.json';
-import itLocale from '../locales/it.json';
-import nl from '../locales/nl.json';
-import pl from '../locales/pl.json';
-import ru from '../locales/ru.json';
-import sv from '../locales/sv.json';
-import th from '../locales/th.json';
-import tr from '../locales/tr.json';
-import vi from '../locales/vi.json';
-
-const allLocales: Record<string, Record<string, Record<string, string>>> = {
-  en,
-  'zh-CN': zhCn,
-  'zh-TW': zhTw,
-  ar,
-  cs,
-  es,
-  hi,
-  id,
-  it: itLocale,
-  nl,
-  pl,
-  ru,
-  sv,
-  th,
-  tr,
-  vi,
-};
-
-function getAllKeys(obj: Record<string, unknown>, prefix = ''): string[] {
-  const keys: string[] = [];
-  for (const [key, value] of Object.entries(obj)) {
-    const fullKey = prefix ? `${prefix}.${key}` : key;
-    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      keys.push(...getAllKeys(value as Record<string, unknown>, fullKey));
-    } else {
-      keys.push(fullKey);
-    }
-  }
-  return keys;
-}
+import { allLocales, getAllKeys, en, zhCn, zhTw } from './i18n.test-fixtures';
 
 describe('i18n', () => {
   beforeEach(() => {
@@ -126,7 +78,7 @@ describe('i18n', () => {
       });
 
       it('should have all new api keys in all locales', () => {
-        Object.entries(allLocales).forEach(([localeCode, localeData]) => {
+        Object.entries(allLocales).forEach(([, localeData]) => {
           newApiKeys.forEach((key) => {
             const apiObj = localeData.api as Record<string, string>;
             expect(apiObj).toHaveProperty(key);
@@ -141,7 +93,7 @@ describe('i18n', () => {
       it('should have the same number of api keys across all locales', () => {
         const enApiKeyCount = Object.keys(en.api).length;
 
-        Object.entries(allLocales).forEach(([localeCode, localeData]) => {
+        Object.entries(allLocales).forEach(([, localeData]) => {
           expect(Object.keys(localeData.api).length).toBe(enApiKeyCount);
         });
       });
@@ -149,7 +101,7 @@ describe('i18n', () => {
       it('should have all English keys present in all locales', () => {
         const enKeys = getAllKeys(en);
 
-        Object.entries(allLocales).forEach(([localeCode, localeData]) => {
+        Object.entries(allLocales).forEach(([, localeData]) => {
           const localeKeys = getAllKeys(localeData);
           const localeKeySet = new Set(localeKeys);
 
@@ -160,7 +112,7 @@ describe('i18n', () => {
       });
 
       it('should not have empty string values for new api keys', () => {
-        Object.entries(allLocales).forEach(([localeCode, localeData]) => {
+        Object.entries(allLocales).forEach(([, localeData]) => {
           expect(localeData.api.apis).not.toBe('');
           expect(localeData.api.other).not.toBe('');
           expect(localeData.api.timeout).not.toBe('');

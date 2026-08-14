@@ -6,7 +6,7 @@
 // 国际化翻译（与 app/i18n/en.ts / zh.ts 对齐）
 const i18n = {
   zh: {
-    title: 'LLM API Sentinel v2.8.4 | 全球LLM API实时监控',
+    title: 'LLM API Sentinel v2.8.5 | 全球LLM API实时监控',
     statsOnline: '在线服务',
     statsDegraded: '降级服务',
     statsOffline: '离线服务',
@@ -44,6 +44,8 @@ const i18n = {
     providerGroupUS: '国际供应商',
     providerGroupCN: '中国供应商',
     unitMs: 'ms',
+    retryUnit: '次重试',
+    peakLabel: '峰值',
     minAgo: '分钟前',
     justNow: '刚刚',
     resolve: '解决',
@@ -56,7 +58,7 @@ const i18n = {
     chartAriaSuffix: '个 API 的延迟变化',
   },
   en: {
-    title: 'LLM API Sentinel v2.8.4 | Global LLM API Monitoring',
+    title: 'LLM API Sentinel v2.8.5 | Global LLM API Monitoring',
     statsOnline: 'Online Services',
     statsDegraded: 'Degraded Services',
     statsOffline: 'Offline Services',
@@ -94,6 +96,8 @@ const i18n = {
     providerGroupUS: 'Global Providers',
     providerGroupCN: 'China Providers',
     unitMs: 'ms',
+    retryUnit: 'retries',
+    peakLabel: 'Peak',
     minAgo: 'm ago',
     justNow: 'Just now',
     resolve: 'Resolve',
@@ -166,6 +170,12 @@ function generateChartData() {
       }
       point[api.id] = Math.max(20, Math.round(variation));
     });
+    // 末点（循环最后一项 = 最新时刻）锚定到当前实时延迟，保证趋势末端与卡片数值一致
+    if (i === points - 1) {
+      apis.forEach(api => {
+        if (api.status !== 'offline') point[api.id] = api.latency;
+      });
+    }
     chartHistoryData.push(point);
   }
   chartHistoryData.reverse();

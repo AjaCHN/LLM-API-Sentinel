@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LLM API Sentinel · 组件库规范 v2.8.4</title>
+  <title>LLM API Sentinel · 组件库规范 v2.8.5</title>
   <link rel="stylesheet" href="assets/styles.css" />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -18,7 +18,7 @@
         </div>
         <div>
           <div class="font-semibold">组件库规范</div>
-          <div class="text-xs text-muted-foreground">Design System · v2.8.4</div>
+          <div class="text-xs text-muted-foreground">Design System · v2.8.5</div>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -69,10 +69,10 @@
       <h2 class="text-xl font-semibold mb-1">基础组件 · Badge</h2>
       <p class="text-sm text-muted-foreground mb-6">状态徽章：online / degraded / offline / info。</p>
       <div class="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-6">
-        <span class="px-2.5 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,var(--color-success) 15%,transparent);color:var(--color-success)">Online</span>
-        <span class="px-2.5 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,var(--color-warning) 15%,transparent);color:var(--color-warning)">Degraded</span>
-        <span class="px-2.5 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,var(--color-destructive) 15%,transparent);color:var(--color-destructive)">Offline</span>
-        <span class="px-2.5 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,var(--color-info) 15%,transparent);color:var(--color-info)">Info</span>
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,var(--color-success) 15%,transparent);color:color-mix(in srgb,var(--color-success) 72%,var(--color-foreground))">Online</span>
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,var(--color-warning) 15%,transparent);color:color-mix(in srgb,var(--color-warning) 72%,var(--color-foreground))">Degraded</span>
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,var(--color-destructive) 15%,transparent);color:color-mix(in srgb,var(--color-destructive) 72%,var(--color-foreground))">Offline</span>
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,var(--color-info) 15%,transparent);color:color-mix(in srgb,var(--color-info) 72%,var(--color-foreground))">Info</span>
         <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">Default</span>
         <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground">Primary</span>
       </div>
@@ -85,7 +85,7 @@
       <div class="grid sm:grid-cols-3 gap-4">
         <div class="rounded-xl border border-border bg-card p-5 card-hover-lift">
           <div class="text-sm text-muted-foreground">在线服务</div>
-          <div class="mt-2 text-2xl font-semibold text-success">10/12</div>
+          <div class="mt-2 text-2xl font-semibold" style="color:color-mix(in srgb,var(--color-success) 72%,var(--color-foreground))">10/12</div>
           <div class="mt-1 text-xs text-muted-foreground">99.9% 可用性</div>
         </div>
         <div class="rounded-xl border border-border bg-card p-5 card-hover-lift">
@@ -95,7 +95,7 @@
         </div>
         <div class="rounded-xl border border-border bg-card p-5 card-hover-lift">
           <div class="text-sm text-muted-foreground">活跃告警</div>
-          <div class="mt-2 text-2xl font-semibold text-warning">2</div>
+          <div class="mt-2 text-2xl font-semibold" style="color:color-mix(in srgb,var(--color-warning) 72%,var(--color-foreground))">2</div>
           <div class="mt-1 text-xs text-muted-foreground">需要关注</div>
         </div>
       </div>
@@ -133,16 +133,16 @@
       <p class="text-sm text-muted-foreground mb-6">default / success / warning / destructive / info。</p>
       <div class="space-y-3">
         <div class="flex items-start gap-3 rounded-xl border p-4" style="border-color:color-mix(in srgb,var(--color-destructive) 30%,transparent);background:color-mix(in srgb,var(--color-destructive) 10%,transparent)">
-          <svg class="w-5 h-5 mt-0.5 text-destructive" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-          <div><div class="font-medium text-destructive">Qwen Max 服务离线</div><div class="text-sm text-muted-foreground">检测到连续 2 次重试失败，已触发告警。</div></div>
+          <svg class="w-5 h-5 mt-0.5" style="color:color-mix(in srgb,var(--color-destructive) 72%,var(--color-foreground))" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <div><div class="font-medium" style="color:color-mix(in srgb,var(--color-destructive) 72%,var(--color-foreground))">Qwen Max 服务离线</div><div class="text-sm text-muted-foreground">检测到连续 2 次重试失败，已触发告警。</div></div>
         </div>
         <div class="flex items-start gap-3 rounded-xl border p-4" style="border-color:color-mix(in srgb,var(--color-warning) 30%,transparent);background:color-mix(in srgb,var(--color-warning) 10%,transparent)">
-          <svg class="w-5 h-5 mt-0.5 text-warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
-          <div><div class="font-medium text-warning">Gemini 1.5 Pro 延迟升高</div><div class="text-sm text-muted-foreground">当前延迟 1156ms，超过 1500ms 阈值附近。</div></div>
+          <svg class="w-5 h-5 mt-0.5" style="color:color-mix(in srgb,var(--color-warning) 72%,var(--color-foreground))" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+          <div><div class="font-medium" style="color:color-mix(in srgb,var(--color-warning) 72%,var(--color-foreground))">Gemini 1.5 Pro 延迟升高</div><div class="text-sm text-muted-foreground">当前延迟 1156ms，超过 1500ms 阈值附近。</div></div>
         </div>
         <div class="flex items-start gap-3 rounded-xl border p-4" style="border-color:color-mix(in srgb,var(--color-success) 30%,transparent);background:color-mix(in srgb,var(--color-success) 10%,transparent)">
-          <svg class="w-5 h-5 mt-0.5 text-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="M22 4 12 14.01l-3-3"/></svg>
-          <div><div class="font-medium text-success">所有服务运行正常</div><div class="text-sm text-muted-foreground">当前无活跃告警。</div></div>
+          <svg class="w-5 h-5 mt-0.5" style="color:color-mix(in srgb,var(--color-success) 72%,var(--color-foreground))" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="M22 4 12 14.01l-3-3"/></svg>
+          <div><div class="font-medium" style="color:color-mix(in srgb,var(--color-success) 72%,var(--color-foreground))">所有服务运行正常</div><div class="text-sm text-muted-foreground">当前无活跃告警。</div></div>
         </div>
       </div>
     </section>

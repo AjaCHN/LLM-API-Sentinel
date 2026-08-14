@@ -1,19 +1,10 @@
-// app/components/ApiConfig.tsx v2.8.2
+// app/components/ApiConfig.tsx v2.9.0
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Save, X, Edit, Server } from 'lucide-react';
+import { Save, X, Edit } from 'lucide-react';
 import { APIS_TO_CHECK } from '@/constants';
 import { useI18n } from '@/hooks/useI18n';
-import { cn } from '@/lib/utils';
-import {
-  sanitizeInput,
-  validateUrl,
-  validateApiConfig,
-  MAX_URL_LENGTH,
-} from './api-config-validation';
-import type { ApiConfigItem, ValidatedApiConfigItem } from './api-config-validation';
-
 import {
   Card,
   CardContent,
@@ -23,9 +14,15 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { ApiConfigList } from './api-config-list';
+import { ApiConfigForm } from './api-config-form';
+import {
+  sanitizeInput,
+  validateUrl,
+  validateApiConfig,
+  MAX_URL_LENGTH,
+} from './api-config-validation';
+import type { ApiConfigItem, ValidatedApiConfigItem } from './api-config-validation';
 
 export default function ApiConfig() {
   const { t } = useI18n();
@@ -59,25 +56,25 @@ export default function ApiConfig() {
 
   const addApi = () => {
     setValidationError(null);
-    
+
     const sanitizedName = sanitizeInput(newApi.name);
     const sanitizedProvider = sanitizeInput(newApi.provider);
     const sanitizedUrl = newApi.url.trim().slice(0, MAX_URL_LENGTH);
-    
+
     if (!sanitizedName || !sanitizedProvider) {
       setValidationError(t('config.errorNameRequired'));
       return;
     }
-    
+
     if (!validateUrl(sanitizedUrl)) {
       setValidationError(t('config.errorInvalidUrl'));
       return;
     }
-    
+
     const id = `${sanitizedProvider.toLowerCase().replace(/\s+/g, '-')}-${sanitizedName
       .toLowerCase()
       .replace(/\s+/g, '-')}`;
-    
+
     setConfig([...config, { id, name: sanitizedName, provider: sanitizedProvider, url: sanitizedUrl, isValid: true }]);
     setNewApi({ name: '', provider: '', url: '' });
   };
@@ -124,77 +121,9 @@ export default function ApiConfig() {
             {validationError}
           </div>
         )}
-        {config.map((api) => (
-          <div
-            key={api.id}
-            className={cn(
-              "flex items-center justify-between gap-4 rounded-lg border p-3",
-              !api.isValid && "border-destructive/50 bg-destructive/5"
-            )}
-          >
-            <div className="min-w-0">
-              {/* 使用 textContent 安全渲染，防止 XSS */}
-              <p className="truncate text-sm font-medium">{api.name}</p>
-              <p className="truncate text-xs text-muted-foreground">{api.provider}</p>
-              <p className="truncate font-mono text-xs text-muted-foreground">{api.url}</p>
-            </div>
-            {isEditing && (
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => removeApi(api.id)}
-                aria-label="remove api"
-              >
-                <Trash2 className="size-4 text-destructive" />
-              </Button>
-            )}
-          </div>
-        ))}
+        <ApiConfigList config={config} isEditing={isEditing} onRemove={removeApi} />
 
-        {isEditing && (
-          <div className="mt-2 rounded-lg border-2 border-dashed p-4">
-            <div className="mb-3 flex items-center gap-2">
-              <Badge variant="secondary" className="gap-1.5">
-                <Server className="size-3" />
-                {t('config.addApi')}
-              </Badge>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="new-api-name">{t('config.name')}</Label>
-                <Input
-                  id="new-api-name"
-                  value={newApi.name}
-                  onChange={(e) => setNewApi({ ...newApi, name: e.target.value })}
-                  placeholder="GPT-4o"
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="new-api-provider">{t('config.provider')}</Label>
-                <Input
-                  id="new-api-provider"
-                  value={newApi.provider}
-                  onChange={(e) => setNewApi({ ...newApi, provider: e.target.value })}
-                  placeholder="OpenAI"
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="new-api-url">{t('config.url')}</Label>
-                <Input
-                  id="new-api-url"
-                  type="url"
-                  value={newApi.url}
-                  onChange={(e) => setNewApi({ ...newApi, url: e.target.value })}
-                  placeholder="https://api.openai.com/v1/models"
-                />
-              </div>
-            </div>
-            <Button className="mt-3 gap-1.5" onClick={addApi}>
-              <Plus className="size-4" />
-              {t('config.addApi')}
-            </Button>
-          </div>
-        )}
+        {isEditing && <ApiConfigForm newApi={newApi} onChange={setNewApi} onAdd={addApi} />}
       </CardContent>
 
       {isEditing && (

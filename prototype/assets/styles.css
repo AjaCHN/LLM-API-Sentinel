@@ -226,6 +226,12 @@
 }
 
 /* ---------- 延迟图表增强 ---------- */
+.chart-svg {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 760 / 240;
+  display: block;
+}
 .chart-line {
   transition: opacity 0.4s ease, stroke-width 0.2s ease;
 }

@@ -1,4 +1,4 @@
-# LLM API Sentinel 设计系统 (v2.8.4)
+# LLM API Sentinel 设计系统 (v2.8.5)
 
 ## 1. 设计哲学
 
@@ -19,13 +19,13 @@
 > 色彩通过 CSS 变量定义，由 Tailwind CSS 4.1 的 `@theme` 桥接为 Tailwind token。所有组件使用语义化 class（如 `bg-primary`、`text-muted-foreground`），禁止硬编码色值。
 
 ### 2.1 主色调 (Dark Indigo)
-| Token | Hex (默认) | Hex (.dark) | 用途 |
+| Token | Hex (默认) | Hex (.light) | 用途 |
 |-------|-----------|------------|------|
-| `--primary` | `#6366f1` | `#818cf8` | 主色、按钮、链接、高亮 |
-| `--primary-foreground` | `#ffffff` | `#0a0a0f` | 主色上的文字 |
-| `--accent` | `#8b5cf6` | `#a78bfa` | 强调色、渐变辅助色 |
-| `--accent-foreground` | `#ffffff` | `#0a0a0f` | 强调色上的文字 |
-| `--ring` | `#6366f1` | `#818cf8` | 焦点环 |
+| `--primary` | `#6366f1` | `#6366f1` | 主色、按钮、链接、高亮 |
+| `--primary-foreground` | `#ffffff` | `#ffffff` | 主色上的文字 |
+| `--accent` | `#8b5cf6` | `#8b5cf6` | 强调色、渐变辅助色 |
+| `--accent-foreground` | `#ffffff` | `#ffffff` | 强调色上的文字 |
+| `--ring` | `#6366f1` | `#6366f1` | 焦点环 |
 
 ### 2.2 功能色 (语义色)
 | Token | Hex (默认) | 用途 |
@@ -35,21 +35,23 @@
 | `--destructive` | `#ef4444` | 离线、错误状态 |
 | `--info` | `#3b82f6` | 信息提示 |
 
-### 2.3 中性色 (默认主题 / 深色模式)
-| Token | Hex (:root 默认) | Hex (.dark 暗色) | 用途 |
-|-------|-----------------|-----------------|------|
-| `--background` | `#0f0f14` | `#0a0a0f` | 页面背景 |
-| `--foreground` | `#e4e4e7` | `#f4f4f5` | 主文字颜色 |
-| `--card` | `#1a1a24` | `#13131a` | 卡片背景 |
-| `--card-foreground` | `#e4e4e7` | `#f4f4f5` | 卡片文字 |
-| `--popover` | `#1a1a24` | `#13131a` | 弹出层背景 |
-| `--popover-foreground` | `#e4e4e7` | `#f4f4f5` | 弹出层文字 |
-| `--secondary` | `#252532` | `#1e1e28` | 次要背景 |
-| `--secondary-foreground` | `#e4e4e7` | `#f4f4f5` | 次要背景上的文字 |
-| `--muted` | `#252532` | `#1e1e28` | 弱化背景 |
-| `--muted-foreground` | `#71717a` | `#71717a` | 次要/辅助文字 |
-| `--border` | `#2a2a3a` | `#242430` | 边框 |
-| `--input` | `#2a2a3a` | `#242430` | 输入框背景 |
+### 2.3 中性色（深色为默认 / `.light` 覆盖浅色）
+> 原型与设计 token 以**深色为默认主题**（`:root` 即深色），通过 `.light` 类覆盖为浅色；不提供 `.dark` 类（与 shadcn 默认 `.dark` 体系相反，需注意）。
+
+| Token | Hex (:root 深色默认) | Hex (.light 浅色) | 用途 |
+|-------|---------------------|-------------------|------|
+| `--background` | `#0c0c0f` | `#fafaf9` | 页面背景 |
+| `--foreground` | `#e4e4e7` | `#18181b` | 主文字颜色 |
+| `--card` | `#15151c` | `#ffffff` | 卡片背景 |
+| `--card-foreground` | `#e4e4e7` | `#18181b` | 卡片文字 |
+| `--popover` | `#1c1c26` | `#ffffff` | 弹出层背景 |
+| `--popover-foreground` | `#e4e4e7` | `#18181b` | 弹出层文字 |
+| `--secondary` | `#23232e` | `#f4f4f5` | 次要背景 |
+| `--secondary-foreground` | `#e4e4e7` | `#18181b` | 次要背景上的文字 |
+| `--muted` | `#23232e` | `#f4f4f5` | 弱化背景 |
+| `--muted-foreground` | `#a1a1aa` | `#71717a` | 次要/辅助文字 |
+| `--border` | `#2a2a38` | `#e4e4e7` | 边框 |
+| `--input` | `#2a2a38` | `#e4e4e7` | 输入框背景 |
 
 ### 2.4 背景氛围光 (Radial Gradient)
 body 背景在纯色基础上叠加三层径向渐变，营造柔和紫色光晕：
@@ -75,11 +77,11 @@ radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 40%)
 ## 3. 字体系统
 
 ### 3.1 字体选择
-- **Sans (正文/标题)**: `'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif`（通过 `app/style.css` 的 `@theme` 定义变量 `--font-sans`，使用系统字体栈，**不依赖构建时网络拉取**）
-- **Mono (数据/代码)**: `'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`（变量 `--font-mono`）
+- **Sans (正文/标题)**: `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif`（通过 `app/style.css` 与 `prototype/assets/styles.css` 的 `@theme` 定义变量 `--font-sans`，**系统字体栈，零外网依赖，支持离线预览**）
+- **Mono (数据/代码)**: `ui-monospace, SFMono-Regular, "JetBrains Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace`（变量 `--font-mono`）
 - **Fallback**: `system-ui, -apple-system, sans-serif`
 
-> 字体策略已从 `next/font/google` 构建期拉取改为 CSS 变量系统字体栈，规避无外网环境的构建失败；部署环境有外网时可恢复 `next/font/google` 以获得更精确字重控制。原型（`prototype/assets/styles.css`）与代码（`app/style.css`）使用完全一致的字体变量定义，保证设计 token 对齐。
+> 字体策略统一为 CSS 变量系统字体栈，**不依赖 `next/font/google` 构建期拉取**，规避无外网环境的构建失败，且原型可完全离线打开预览。原型与代码（React 应用）使用完全一致的字体变量定义，保证设计 token 对齐。
 
 ### 3.2 字号层级 (Tailwind 体系)
 | 级别 | Tailwind class | 像素 | 用途 |
@@ -171,15 +173,15 @@ radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 40%)
 ## 7. 动效系统
 
 ### 7.1 核心动画 keyframes
-定义于 [app/style.css](file:///workspace/app/style.css)：
+定义于 [app/style.css](file:///workspace/app/style.css) 与 [prototype/assets/styles.css](file:///workspace/prototype/assets/styles.css)：
 
 | 动画名 | 用途 | 时长 |
 |-------|------|------|
-| `pulse-gentle` | StatusDot 外层光晕柔和脉冲 | 2s ease-in-out infinite |
-| `fade-in-up` | 偶数位卡片入场（淡入上移 30px） | — |
-| `slide-in-right` | 奇数位卡片入场（右滑淡入 20px） | — |
-| `scale-in-gentle` | Dialog / 新卡片轻柔缩放入场 | — |
-| `shimmer` | ProgressBar 扫光效果 | 2s infinite |
+| `fade-in-up`（`animate-fade-in-up`） | 卡片入场（淡入上移 30px） | 400-800ms cubic-bezier(0.25,0.1,0.25,1) |
+| `spin-once`（`animate-spin-once`） | 刷新按钮单次旋转 | 0.6s |
+| `shimmer`（`shimmer-overlay` / `skeleton-shimmer`） | ProgressBar 扫光 / 骨架屏占位 | 1.6-2s infinite |
+| `pulse`（原生） | StatusDot / 告警点柔和脉冲 | 2s ease-in-out infinite |
+| `status-dot-*` 光晕 | 在线/降级/离线状态点的外发光 | 2s ease-in-out infinite |
 
 ### 7.2 交错动画 (Stagger)
 循环渲染的卡片根据 index 设置 `animationDelay`，步长约 0.08s，营造节奏入场感。
@@ -190,7 +192,7 @@ radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 40%)
 | 颜色过渡（按钮 hover） | 150-300ms | `ease-out` |
 | 卡片位移 hover（card-hover-lift） | 400ms | `cubic-bezier(0.23, 1, 0.32, 1)` |
 | 入场动画 | 400-800ms | `cubic-bezier(0.25, 0.1, 0.25, 1)` |
-| 图表动画 | 1200ms | Recharts 默认缓动 |
+| 图表动画 | 实时重绘 + 0.4-0.5s 透明度过渡 | 手写 SVG（非 Recharts），含区域填充淡入、图例切换、hover 扫描线 |
 
 ### 7.4 动画使用原则
 1. **克制入场**：入场动画仅首次渲染触发，滚动/筛选不重复触发
