@@ -190,7 +190,7 @@ function openAlertsDialog() {
               <div class="text-xs text-muted-foreground">${a.provider} · ${timeAgo(a.lastChecked)} ${t.updatedAgo}</div>
             </div>
             <div class="flex items-center gap-2">
-              <span class="px-2 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,${getStatusColor(a.status)} 15%,transparent);color:${getStatusColor(a.status)}">${getStatusText(a.status)}</span>
+              <span class="px-2 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,${getStatusColor(a.status)} 15%,transparent);color:color-mix(in srgb,${getStatusColor(a.status)} 72%,var(--color-foreground))">${getStatusText(a.status)}</span>
               <button class="px-2.5 py-1 rounded-lg text-xs border border-border hover:bg-secondary transition-colors">${t.resolve}</button>
             </div>
           </div>`).join('') : `<div class="text-sm text-muted-foreground py-6 text-center">${t.noAlerts}</div>`}

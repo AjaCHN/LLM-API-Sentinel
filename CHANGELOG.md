@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.8.4] - 2026-08-15
+
+### Chore
+- **开发工作区**: 新增 `LLM-API-Sentinel.code-workspace` 多根工作区配置
+  - 编辑器设置：保存时 ESLint 自动修复 + 整理导入；Tailwind CSS 4 智能提示；路径别名 `@/*` 重命名
+  - 文件/搜索排除 `node_modules`/`.next`/`out`/`dist` 等构建产物
+  - 推荐扩展：ESLint、Tailwind CSS、React snippets、Error Lens、Code Spell Checker 等
+  - 预置任务：dev（默认构建任务）、build、lint、test（默认测试任务）
+  - 终端包管理器设为 `npm`（与 `package-lock.json` 一致）
+- **版本一致性**: 同步 README 双语文档标题至 v2.8.4
+
+## [2.8.3] - 2026-08-14
+
+### Fixed
+- **原型细节修复**: 清理 `generateChartData` 死代码（`swing`/`idx`）；移除告警横幅 `textColor` 死变量
+- **刷新联动图表**: `refreshData` 重算历史曲线，使延迟趋势与刷新后最新基线一致；离线项可用性钳制下限 5%、错误率封顶 99.9%
+- **浅色对比度**: 统计卡片数值、告警横幅、API 卡片图标/状态徽章、告警对话框徽章改用 `color-mix` 提升浅色模式可读性
+- **Hero 计数动态化**: 顶栏"在线 · N API 状态监控"改为读取 `apis.length`，移除硬编码 12
+- **组件库交互**: Switch 改用 CSS 驱动滑块动画（开/关回弹）；Tabs 支持点击切换并联动面板内容
+- **版本一致性**: 原型 `title` 与 i18n 标题统一至 v2.8.3；时间范围切换同步 `aria-pressed`
+
 ## [2.8.2] - 2026-08-14
 
 ### Perf

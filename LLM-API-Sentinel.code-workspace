@@ -1,0 +1,178 @@
+{
+  "folders": [
+    {
+      "name": "llm-api-sentinel",
+      "path": "."
+    }
+  ],
+  "settings": {
+    // ===== 编辑器基础 =====
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.rulers": [80, 100],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.eol": "\n",
+
+    // ===== TypeScript / JavaScript =====
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "typescript.preferences.importModuleSpecifierEnding": "minimal",
+    "typescript.suggest.paths": true,
+    "javascript.preferences.importModuleSpecifier": "non-relative",
+    "typescript.tsc.autoDetect": "on",
+    "typescript.reportDependencies": true,
+
+    // ===== ESLint（项目使用 eslint . 而非 prettier 脚本）=====
+    "eslint.useFlatConfig": true,
+    "eslint.run": "onSave",
+    "eslint.format.enable": true,
+    "eslint.workingDirectories": [
+      {
+        "mode": "auto"
+      }
+    ],
+
+    // ===== Tailwind CSS 4（由 @tailwindcss/postcss 处理，无独立配置）=====
+    "tailwindCSS.experimental.configFile": "postcss.config.mjs",
+    "tailwindCSS.includeLanguages": {
+      "typescript": "html",
+      "typescriptreact": "html"
+    },
+    "css.validate": false,
+
+    // ===== 路径别名 @/* -> ./app/* =====
+    "typescript.preferences.useAliasesForRenames": true,
+    "javascript.preferences.useAliasesForRenames": true,
+
+    // ===== 测试（Jest + ts-jest）=====
+    "jest.autoRun": "off",
+    "jest.showCoverageOnLoad": false,
+    "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+
+    // ===== 文件排除（减少搜索/资源管理器噪声）=====
+    "files.watcherExclude": {
+      "**/node_modules/**": true,
+      "**/.next/**": true,
+      "**/out/**": true,
+      "**/dist/**": true
+    },
+    "search.exclude": {
+      "node_modules": true,
+      ".next": true,
+      "out": true,
+      "dist": true,
+      "**/*.tsbuildinfo": true
+    },
+    "files.exclude": {
+      "**/.next": true,
+      "**/out": true,
+      "**/dist": true,
+      "**/.turbo": true
+    },
+
+    // ===== 终端默认用 pnpm（项目锁定 pnpm-lock.yaml）=====
+    "npm.packageManager": "pnpm",
+
+    // ===== 关联语言 =====
+    "files.associations": {
+      "*.config.mjs": "javascript",
+      "*.config.cjs": "javascript",
+      "*.config.js": "javascript"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "bradlc.vscode-tailwindcss",
+      "formulahendry.auto-complete-tag",
+      "dsznajder.es7-react-js-snippets",
+      "usernamehw.errorlens",
+      "streetsidesoftware.code-spell-checker",
+      "meguminn.file-preview",
+      "wix.vscode-import-cost",
+      ".ms-python.python",
+      "github.vscode-github-actions",
+      "prisma.prisma",
+      "toba.vsfire"
+    ]
+  },
+  "tasks": [
+    {
+      "label": "dev",
+      "type": "shell",
+      "command": "pnpm dev",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared",
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "pnpm build",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "lint",
+      "type": "shell",
+      "command": "pnpm lint",
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": [
+        {
+          "owner": "eslint",
+          "pattern": [
+            {
+              "regexp": "^(.+):\\sline\\s(\\d+),\\scol\\s(\\d+),\\s(Error|Warning|Info)\\s-\\s(.+)\\s\\[(.+)\\]$",
+              "file": 1,
+              "line": 2,
+              "column": 3,
+              "severity": 4,
+              "message": 5,
+              "code": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "pnpm test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
