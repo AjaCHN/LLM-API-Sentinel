@@ -2,6 +2,16 @@
 
 ## [2.7.2] - 2026-08-13
 
+### Docs
+- **社区健康文件**: 新增 GitHub Community Health Files
+  - `LICENSE` — 补充缺失的 MIT 许可证（README 已声明）
+  - `CODE_OF_CONDUCT.md` — Contributor Covenant 行为准则
+  - `CONTRIBUTING.md` — 根目录贡献指南（链接并强化 `docs/contributing.md`）
+  - `SECURITY.md` — 安全政策与漏洞私下报告流程
+  - `SUPPORT.md` — 支持渠道与常见问题
+  - `.github/PULL_REQUEST_TEMPLATE.md` — PR 模板
+  - `.github/ISSUE_TEMPLATE/` — Bug Report / Feature Request / config 模板
+
 ### Refactored
 - **模块化拆分**: 将超 200 行的源文件按职责拆分为更小模块，提升可读性与可维护性
   - `DashboardClient.tsx` → 抽离 `HeroSection` / `AlertsBanner` 子组件与 `useDashboardStats` hook
