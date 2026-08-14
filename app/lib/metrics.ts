@@ -1,4 +1,4 @@
-// app/lib/metrics.ts v2.7.2
+// app/lib/metrics.ts v2.8.2
 import { supabase } from './supabase';
 import type { StatusHistory } from '../types';
 import { logError } from './error-handler';
@@ -40,16 +40,20 @@ async function _fetchStatusHistory(
   }
 
   return (data || []).map(
-    (doc: Record<string, unknown>): StatusHistory => ({
-      id: doc.id as string,
-      apiId: doc.api_id as string,
-      status: doc.status as StatusHistory['status'],
-      latency: doc.latency as number,
-      timestamp: new Date(doc.timestamp as string),
-      time: new Date(doc.timestamp as string).toLocaleTimeString(),
-      error: doc.error as string | undefined,
-      retries: doc.retries as number | undefined
-    })
+    (doc: Record<string, unknown>): StatusHistory => {
+      const rawTimestamp = typeof doc.timestamp === 'string' ? doc.timestamp : String(doc.timestamp ?? '');
+      const parsedTime = new Date(rawTimestamp);
+      return {
+        id: typeof doc.id === 'string' ? doc.id : String(doc.id ?? ''),
+        apiId: typeof doc.api_id === 'string' ? doc.api_id : String(doc.api_id ?? ''),
+        status: (doc.status as StatusHistory['status']) ?? 'offline',
+        latency: typeof doc.latency === 'number' ? doc.latency : Number(doc.latency ?? 0),
+        timestamp: Number.isNaN(parsedTime.getTime()) ? new Date() : parsedTime,
+        time: Number.isNaN(parsedTime.getTime()) ? '' : parsedTime.toLocaleTimeString(),
+        error: typeof doc.error === 'string' ? doc.error : undefined,
+        retries: typeof doc.retries === 'number' ? doc.retries : undefined
+      };
+    }
   );
 }
 

@@ -1,4 +1,4 @@
-# UI 组件规范文档 (v2.7.1 - Dark Indigo Theme)
+# UI 组件规范文档 (v2.8.1 - Dark Indigo Theme)
 
 ## 1. 设计原则
 
@@ -360,6 +360,40 @@ focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
 disabled:cursor-not-allowed disabled:opacity-50
 ```
 
+#### Switch
+
+基于 `@radix-ui/react-switch`，受控开关。
+
+**默认样式**：
+```
+peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent
+transition-colors focus-visible:ring-2 focus-visible:ring-ring
+data-[state=checked]:bg-primary data-[state=unchecked]:bg-input
+```
+- thumb: `h-4 w-4 rounded-full bg-background shadow-lg data-[state=checked]:translate-x-4`
+
+#### Select
+
+基于 `@radix-ui/react-select`，下拉选择器。
+
+**组成**：`Select` / `SelectTrigger` / `SelectContent` / `SelectItem` / `SelectValue`
+
+**Trigger 样式**：`flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 text-sm shadow-sm focus:ring-1 focus:ring-ring`
+
+**Content 样式**：`z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95`
+
+**Item 样式**：`relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground`
+
+#### Tabs
+
+基于 `@radix-ui/react-tabs`，标签页切换。
+
+**组成**：`Tabs` / `TabsList` / `TabsTrigger` / `TabsContent`
+
+**List 样式**：`inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground`
+
+**Trigger 样式**：`inline-flex items-center justify-center rounded-md px-3 py-1 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow`
+
 ### 3.2 复合组件（业务封装）
 
 #### ApiStatusGrid
@@ -649,13 +683,15 @@ radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 40%)
 
 ### 5.4 字体系统
 
-**字体族**：
+**字体族**（通过 `app/style.css` 的 `@theme` 定义 CSS 变量，使用系统字体栈，**不依赖构建时网络拉取**，保证离线/无外网环境可构建）：
 | 变量 | 字体 | 用途 |
 |------|------|------|
-| `font-sans` | Inter（系统默认 sans-serif） | 正文、标题、按钮（绝大多数场景） |
-| `font-mono` | JetBrains Mono 后备链 | URL 显示、latency 数值、标签 |
+| `font-sans` | "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif | 正文、标题、按钮（绝大多数场景） |
+| `font-mono` | "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace | URL 显示、latency 数值、标签 |
 | `font-semibold` | 600 | CardTitle、section 标题 |
 | `font-bold` | 700 | 大数值、品牌标题 |
+
+> 说明：原先通过 `next/font/google` 在构建期拉取 Inter / JetBrains Mono，已改为 CSS 变量系统字体栈，规避无外网环境的构建失败；若部署环境有外网，可恢复 `next/font/google` 以获得更精确的字重控制。
 
 **字体大小**：
 | 大小 | Tailwind | 像素 | 用途 |

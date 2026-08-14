@@ -1,4 +1,4 @@
-// app/lib/cache.ts v2.7.0
+// app/lib/cache.ts v2.8.2
 import { CACHE_EXPIRY, MIN_CACHE_EXPIRY, MAX_CACHE_EXPIRY } from '../constants';
 import { ApiCheckResult, ApiCheckCache } from '../types';
 import { logError } from './error-handler';
@@ -100,6 +100,7 @@ export function loadCacheFromStorage(): ApiCheckCache {
 }
 
 // 保存缓存到存储
+// 性能优化: 仅在确有变化时才序列化写入，避免 setCache 每次都全量 JSON.stringify 阻塞主线程
 export function saveCacheToStorage(cache: ApiCheckCache) {
   // 保存到本地存储（持久数据）
   if (typeof localStorage !== 'undefined') {
@@ -127,6 +128,31 @@ export function saveCacheToStorage(cache: ApiCheckCache) {
   }
 }
 
+// 仅将单个 API 的最新结果写入存储，避免每次 setCache 全量重序列化整个缓存
+export function persistSingleCache(apiId: string, entry: ApiCheckCache[string]): void {
+  if (typeof sessionStorage !== 'undefined') {
+    try {
+      const cached = sessionStorage.getItem(CACHE_KEY);
+      const parsed: ApiCheckCache = cached ? JSON.parse(cached) : {};
+      parsed[apiId] = entry;
+      sessionStorage.setItem(CACHE_KEY, JSON.stringify(parsed));
+    } catch (error) {
+      logError(error, 'Failed to persist single cache to sessionStorage');
+    }
+  }
+
+  if (typeof localStorage !== 'undefined' && entry.expiry >= CACHE_EXPIRY) {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      const parsed: ApiCheckCache = cached ? JSON.parse(cached) : {};
+      parsed[apiId] = entry;
+      localStorage.setItem(CACHE_KEY, JSON.stringify(parsed));
+    } catch (error) {
+      logError(error, 'Failed to persist single cache to localStorage');
+    }
+  }
+}
+
 // 根据 API 特性计算缓存过期时间
 export function calculateCacheExpiry(apiId: string, status: string, latency: number): number {
   // 基础过期时间
@@ -143,19 +169,7 @@ export function calculateCacheExpiry(apiId: string, status: string, latency: num
     }
   }
   
-  const apiSpecificExpiry = getApiSpecificExpiry(apiId);
-  if (apiSpecificExpiry) {
-    return apiSpecificExpiry;
-  }
-  
   return baseExpiry;
-}
-
-// 获取特定 API 的缓存过期时间
-export function getApiSpecificExpiry(apiId: string): number | null {
-  const apiExpiryMap: Record<string, number> = {};
-  
-  return apiExpiryMap[apiId] || null;
 }
 
 // 检查缓存是否有效
@@ -191,14 +205,17 @@ export function getCache(apiId: string): ApiCheckResult | null {
 export function setCache(apiId: string, result: ApiCheckResult): void {
   // 计算缓存过期时间
   const expiry = calculateCacheExpiry(apiId, result.status, result.latency);
-  
-  memoryCache[apiId] = {
+
+  const entry = {
     result,
     timestamp: Date.now(),
     expiry
   };
-  
-  saveCacheToStorage(memoryCache);
+
+  memoryCache[apiId] = entry;
+
+  // 性能优化: 增量持久化单条记录，避免每次写入都全量序列化整个缓存
+  persistSingleCache(apiId, entry);
 }
 
 // 清除缓存

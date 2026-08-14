@@ -1,4 +1,4 @@
-// app/components/LatencyHistoryChart.tsx v2.7.0
+// app/components/LatencyHistoryChart.tsx v2.8.2
 'use client';
 
 import { memo } from 'react';
@@ -30,7 +30,7 @@ function LatencyHistoryChart({
   const optimizedChartData = chartData.slice(-CHART_DATA_LIMIT);
 
   return (
-    <Card>
+    <Card id="latency-section">
       <CardContent className="h-[320px] p-4 md:h-[420px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
@@ -109,8 +109,14 @@ function LatencyHistoryChart({
 }
 
 export default memo(LatencyHistoryChart, (prevProps, nextProps) => {
-  return (
-    JSON.stringify(prevProps.chartData) === JSON.stringify(nextProps.chartData) &&
-    JSON.stringify(prevProps.statuses) === JSON.stringify(nextProps.statuses)
-  );
+  // 浅比较: 数组引用未变即视为相等, 避免每次渲染都做昂贵的全量 JSON.stringify 深比较
+  const chartDataSame =
+    prevProps.chartData === nextProps.chartData ||
+    (prevProps.chartData.length === nextProps.chartData.length &&
+      prevProps.chartData.every((item, i) => item === nextProps.chartData[i]));
+  const statusesSame =
+    prevProps.statuses === nextProps.statuses ||
+    (prevProps.statuses.length === nextProps.statuses.length &&
+      prevProps.statuses.every((item, i) => item === nextProps.statuses[i]));
+  return chartDataSame && statusesSame && prevProps.getApiColor === nextProps.getApiColor;
 });

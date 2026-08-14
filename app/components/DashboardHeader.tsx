@@ -1,4 +1,4 @@
-// app/components/DashboardHeader.tsx v2.7.0
+// app/components/DashboardHeader.tsx v2.8.2
 'use client';
 
 import Image from 'next/image';
@@ -53,7 +53,7 @@ export default function DashboardHeader({
   const hasCriticalAlerts = alerts.some(a => a.severity === 'critical' || a.severity === 'high');
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/30 bg-background/80 backdrop-blur-xl">
+    <header id="app-header" className="sticky top-0 z-50 border-b border-border/30 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6 md:px-10 lg:px-16">
         <div className="flex items-center gap-3">
           <div className="relative group">

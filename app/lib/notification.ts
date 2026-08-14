@@ -1,12 +1,12 @@
 /**
  * @module notification
  * @description Handles platform-aware alert notifications (Discord / DingTalk / Feishu / generic webhook).
- * Provides formatting, sending, batch-parallel dispatch, and helper utilities.
+ * 平台格式化与发送逻辑见 notification-platforms.ts，本文件仅负责配置编排与对外 API。
  */
 
-// app/lib/notification.ts v2.7.0
+// app/lib/notification.ts v2.8.2
 import { Alert } from '../types';
-import { logError } from './error-handler';
+import { detectPlatform, formatAlert, sendWebhookRequest } from './notification-platforms';
 
 // Webhook 配置接口
 export interface WebhookConfig {
@@ -22,177 +22,7 @@ export interface NotificationConfig {
   enabled: boolean;
 }
 
-// Webhook 消息格式
-interface WebhookPayload {
-  msg_type: 'text' | 'markdown';
-  content: {
-    text?: string;
-    markdown?: {
-      title: string;
-      text: string;
-    };
-  };
-}
-
-// DingTalk/Feishu 消息格式
-interface DingTalkPayload {
-  msgtype: 'text' | 'markdown';
-  text?: { content: string };
-  markdown?: { title: string; text: string };
-}
-
-// Discord 消息格式
-interface DiscordPayload {
-  embeds: Array<{
-    title: string;
-    description: string;
-    color: number;
-    fields?: Array<{ name: string; value: string; inline?: boolean }>;
-    timestamp?: string;
-  }>;
-}
-
-/** Detect platform type from webhook URL. */
-function detectPlatform(url: string): 'dingtalk' | 'feishu' | 'discord' | 'generic' {
-  if (url.includes('oapi.dingtalk.com') || url.includes('dingtalk')) {
-    return 'dingtalk';
-  }
-  if (url.includes('open.feishu.cn') || url.includes('feishu')) {
-    return 'feishu';
-  }
-  if (url.includes('discord')) {
-    return 'discord';
-  }
-  return 'generic';
-}
-
-/** Format an alert payload for the target platform. */
-function formatAlert(alert: Alert, platform: string): WebhookPayload | DingTalkPayload | DiscordPayload {
-  const normalizedTimestamp =
-    alert.timestamp instanceof Date
-      ? alert.timestamp
-      : typeof alert.timestamp === 'number'
-        ? new Date(alert.timestamp)
-        : typeof alert.timestamp === 'string'
-          ? new Date(alert.timestamp)
-          : new Date();
-  const timestamp = normalizedTimestamp.toLocaleString();
-
-  const severityEmoji = {
-    low: '🔵',
-    medium: '🟡',
-    high: '🟠',
-    critical: '🔴'
-  }[alert.severity] || '⚪';
-
-  const statusEmoji = alert.type === 'downtime' ? '❌' : '⚠️';
-
-  const baseInfo = {
-    api: alert.apiName,
-    type: alert.type === 'downtime' ? '服务下线' : '延迟过高',
-    severity: alert.severity.toUpperCase(),
-    message: alert.message,
-    time: timestamp
-  };
-
-  if (platform === 'discord') {
-    const colorMap: Record<string, number> = {
-      low: 3447003,     // 蓝色
-      medium: 16776960, // 黄色
-      high: 16744448,   // 橙色
-      critical: 16724788 // 红色
-    };
-
-    return {
-      embeds: [{
-        title: `${severityEmoji} ${baseInfo.type} - ${baseInfo.api}`,
-        description: baseInfo.message,
-        color: colorMap[alert.severity] || 0,
-        fields: [
-          { name: '严重程度', value: baseInfo.severity, inline: true },
-          { name: '类型', value: baseInfo.type, inline: true },
-          ...(alert.latency ? [{ name: '延迟', value: `${alert.latency}ms`, inline: true }] : []),
-          ...(alert.error ? [{ name: '错误信息', value: alert.error }] : [])
-        ],
-        timestamp: normalizedTimestamp.toISOString()
-      }]
-    } as DiscordPayload;
-  }
-
-  // DingTalk/Feishu 格式
-  const markdownContent = `${statusEmoji} **${baseInfo.api}**\n\n` +
-    `> **类型**: ${baseInfo.type}\n` +
-    `> **严重程度**: ${baseInfo.severity}\n` +
-    `> **消息**: ${baseInfo.message}\n` +
-    `> **时间**: ${baseInfo.time}\n` +
-    (alert.latency ? `> **延迟**: ${alert.latency}ms\n` : '') +
-    (alert.error ? `> **错误**: ${alert.error}\n` : '');
-
-  if (platform === 'dingtalk' || platform === 'feishu') {
-    return {
-      msgtype: 'markdown',
-      markdown: {
-        title: `${severityEmoji} ${baseInfo.type} - ${baseInfo.api}`,
-        text: markdownContent
-      }
-    } as DingTalkPayload;
-  }
-
-  // 通用格式
-  const textContent = [
-    `${severityEmoji} ${baseInfo.type} - ${baseInfo.api}`,
-    `消息: ${baseInfo.message}`,
-    `严重程度: ${baseInfo.severity}`,
-    `时间: ${baseInfo.time}`,
-    alert.latency ? `延迟: ${alert.latency}ms` : '',
-    alert.error ? `错误: ${alert.error}` : ''
-  ].filter(Boolean).join('\n');
-
-  return {
-    msg_type: 'text',
-    content: { text: textContent }
-  } as WebhookPayload;
-}
-
-/** Send a webhook POST with timeout + abort handling. */
-async function sendWebhookRequest(
-  config: WebhookConfig,
-  payload: WebhookPayload | DingTalkPayload | DiscordPayload
-): Promise<boolean> {
-  const timeout = config.timeout || 5000;
-
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    const response = await fetch(config.url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload),
-      signal: controller.signal
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      logError(new Error(`Webhook request failed with status ${response.status}`), 'Webhook request failed');
-      return false;
-    }
-
-    return true;
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      logError(new Error(`Webhook request timed out after ${timeout}ms`), 'Webhook timeout');
-    } else {
-      logError(error, 'Webhook request failed');
-    }
-    return false;
-  }
-}
-
-// 通知服务类
+// 通知服务类：编排多 webhook 并行发送与配置管理
 class NotificationService {
   private config: NotificationConfig;
   private isSending: boolean = false;
@@ -218,8 +48,6 @@ class NotificationService {
     }
 
     this.isSending = true;
-    let success = 0;
-    let failed = 0;
 
     const enabledWebhooks = this.config.webhooks.filter(w => w.enabled);
 
@@ -238,8 +66,8 @@ class NotificationService {
       })
     );
 
-    success = results.filter(r => r === 'success').length;
-    failed = results.filter(r => r === 'failed').length;
+    const success = results.filter(r => r === 'success').length;
+    const failed = results.filter(r => r === 'failed').length;
 
     this.isSending = false;
     return { success, failed };

@@ -1,4 +1,4 @@
-// app/components/ApiConfig.tsx v2.7.2
+// app/components/ApiConfig.tsx v2.8.2
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -91,7 +91,7 @@ export default function ApiConfig() {
   };
 
   return (
-    <Card>
+    <Card id="api-config">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div>
           <CardTitle>{t('config.apiConfiguration')}</CardTitle>

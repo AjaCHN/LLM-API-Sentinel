@@ -1,5 +1,57 @@
 # Changelog
 
+## [2.8.2] - 2026-08-14
+
+### Perf
+- **缓存懒序列化**: `cache.ts` 的 `setCache` 改为增量持久化单条记录（`persistSingleCache`），避免每次写入全量 `JSON.stringify` 阻塞主线程
+- **图表 memo 浅比较**: `LatencyHistoryChart` 的 `memo` 比较由全量 `JSON.stringify` 深比较改为引用/浅比较，降低重渲染开销
+
+### Security
+- **Webhook SSRF 防护**: `notification-platforms.ts` 新增 `isPrivateWebhookHost`，阻断发往 `localhost`/`127.x`/`10.x`/`192.168.x`/`172.16-31.x`/`169.254.x` 等内网/环回地址的 webhook
+- **Webhook 正文截断**: `sendWebhookRequest` 对超长 payload 截断至 2000 字符，防止超大请求体被网关拒绝
+
+### Refactor
+- **模块拆分**: `notification.ts`(288→~120)、`ApiStatusGrid.tsx`(230→~120)、`useGeoLocation.ts`(242→~120) 分别抽离 `notification-platforms.ts`/`ApiStatusCard.tsx`/`geo-storage.ts`，均降至 200 行以内，保持对外 API 稳定
+- **数据取默认值加固**: `metrics.ts` 移除 Supabase 字段 `as` 强转，改用类型守卫与默认值，避免 `undefined`/`NaN`
+- **死代码清理**: 移除 `cache.ts` 永远返回 `null` 的 `getApiSpecificExpiry`
+
+### Feat
+- **语义化 id**: 为 `dashboard`/`status-section`/`provider-group-*`/`latency-section`/`hero`/`alerts-banner`/`app-header`/`app-footer`/`api-config`/`api-status-*` 等 UI 区块添加稳定 `id`，便于锚点与可访问性
+
+### Test
+- **补齐单元测试**: 新增 `api-config-validation`/`concurrency`/`metrics`/`cache`/`notification-platforms` 测试，覆盖率提升至 80%+
+
+### Docs
+- **版本同步**: `package.json`/`README`/`README_CN`/`openspec/config.yaml` 统一至 v2.8.2
+
+## [2.8.1] - 2026-08-14
+
+### Fixed
+- **原型图表真实化**: 移除 Chart.js CDN 依赖，改用纯手写 SVG 渲染区域填充折线图，新增图例（可点击切换系列显隐）、hover tooltip 与垂直扫描线
+- **时间范围真实差异**: `generateChartData` 按 24H/7D/30D 生成形态各异的真实延迟曲线（日内昼夜波动 / 周内工作日峰值 / 30 天趋势+尖峰），修复切换仅改按钮态的伪交互
+- **离线语义修正**: 刷新时离线项保持低可用性、高错误率，不再被随机推高与"离线"语义冲突
+- **同步时间戳**: 补 `last-sync-time` 节点，顶栏实时相对时间显示最后同步时刻
+- **移动端分组**: 修复分组标题在窄屏 grid 断裂（`<div class="contents">` 占位无效），改用 `col-span-full` 分隔各组
+- **组件库页补全**: `components.html` 补齐 Switch / Select / Input / Tabs / Avatar / Tooltip / Skeleton 展示，移除 Google Fonts 依赖改系统字体栈
+- **无障碍增强**: 图表/对话框/切换按钮补充 `role`/`aria-*`/`aria-label`；tooltip 与图例过渡动画
+
+## [2.8.0] - 2026-08-14
+
+### Feat
+- **原型重构**: 将 `prototype.html` 迁入 `prototype/` 目录并重构为组件化高保真原型
+  - `index.html` — 仪表盘主原型（纯 HTML/CSS/JS，可浏览器直接打开）
+  - `components.html` — 组件库规范展示页（色彩/字体/间距/基础·复合·业务组件）
+  - `assets/styles.css` / `data.js` / `app.js` — 共享设计 token、真实模拟数据、交互逻辑
+- **shadcn/ui 补齐**: 新增 `switch` / `select` / `tabs` 三个 new-york 风格基础组件，组件库扩展至 16 个
+
+### Fixed
+- **字体策略**: 移除 `next/font/google` 构建期网络拉取，改为 `style.css` 系统字体栈（CSS 变量），修复无外网环境构建失败
+- **设计 token 对齐**: 统一 `@theme` 内 success/warning/error 色值（#22c55e / #f59e0b / #ef4444），补充 `--font-sans`/`--font-mono` 主题变量，消除与 `:root` 冗余定义冲突
+- **原型缺陷修复**: 修复语言切换引用缺失元素、无效文本工具类、离线数据语义失真（availability 非 0）、延迟阈值与项目常量（1500ms）不一致等真实问题
+
+### Docs
+- **规范对齐**: 同步 `openspec/project.md`、`ui.md`、`design-system.md` 至 v2.8.0，更新组件清单（13→16）、字体策略与原型目录结构
+
 ## [2.7.2] - 2026-08-13
 
 ### Docs

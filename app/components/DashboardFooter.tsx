@@ -1,4 +1,4 @@
-// app/components/DashboardFooter.tsx v2.7.0
+// app/components/DashboardFooter.tsx v2.8.2
 'use client';
 
 import { Zap, ShieldCheck, Settings } from 'lucide-react';
@@ -10,7 +10,7 @@ export default function DashboardFooter() {
   const { t } = useI18n();
 
   return (
-    <footer className="flex flex-col gap-6 pt-8">
+    <footer id="app-footer" className="flex flex-col gap-6 pt-8">
       <Separator />
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div className="flex flex-col gap-2">

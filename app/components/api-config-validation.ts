@@ -1,4 +1,4 @@
-// app/components/api-config-validation.ts v2.7.2
+// app/components/api-config-validation.ts v2.8.2
 
 // 输入验证和清理函数相关类型与常量
 

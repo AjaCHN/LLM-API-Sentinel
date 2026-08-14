@@ -1,4 +1,4 @@
-# LLM API Sentinel 设计系统 (v2.7.1)
+# LLM API Sentinel 设计系统 (v2.8.1)
 
 ## 1. 设计哲学
 
@@ -75,11 +75,11 @@ radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 40%)
 ## 3. 字体系统
 
 ### 3.1 字体选择
-- **Sans (正文/标题)**: `Inter` (通过 `next/font/google` 加载，变量 `--font-sans`)
-- **Mono (数据/代码)**: `JetBrains Mono` (通过 `next/font/google` 加载，变量 `--font-mono`)
+- **Sans (正文/标题)**: `'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif`（通过 `app/style.css` 的 `@theme` 定义变量 `--font-sans`，使用系统字体栈，**不依赖构建时网络拉取**）
+- **Mono (数据/代码)**: `'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`（变量 `--font-mono`）
 - **Fallback**: `system-ui, -apple-system, sans-serif`
 
-> 项目使用 Next.js 内置字体优化方案，通过 `next/font/google` 自动自托管字体，避免 FOIT 和外部请求。
+> 字体策略已从 `next/font/google` 构建期拉取改为 CSS 变量系统字体栈，规避无外网环境的构建失败；部署环境有外网时可恢复 `next/font/google` 以获得更精确字重控制。原型（`prototype/assets/styles.css`）与代码（`app/style.css`）使用完全一致的字体变量定义，保证设计 token 对齐。
 
 ### 3.2 字号层级 (Tailwind 体系)
 | 级别 | Tailwind class | 像素 | 用途 |

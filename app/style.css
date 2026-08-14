@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -20,14 +23,15 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  
-  --color-success: #34C759;
-  --color-warning: #FF9500;
-  --color-error: #FF3B30;
-  
-  --color-success-10: rgba(52, 199, 89, 0.1);
-  --color-warning-10: rgba(255, 149, 0, 0.1);
-  --color-error-10: rgba(255, 59, 48, 0.1);
+
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+  --color-error: #ef4444;
+
+  --color-success-10: rgba(34, 197, 94, 0.1);
+  --color-warning-10: rgba(245, 158, 11, 0.1);
+  --color-error-10: rgba(239, 68, 68, 0.1);
 }
 
 :root {
@@ -50,10 +54,6 @@
   --border: #2a2a3a;
   --input: #2a2a3a;
   --ring: #6366f1;
-  
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --info: #3b82f6;
 }
 
 .dark {

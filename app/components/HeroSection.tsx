@@ -1,4 +1,4 @@
-// app/components/HeroSection.tsx v2.7.2
+// app/components/HeroSection.tsx v2.8.2
 
 import { Zap, AlertTriangle, Database, Globe } from 'lucide-react';
 import { StatCard } from '@/components/StatCard';
@@ -15,7 +15,7 @@ export function HeroSection({ stats }: HeroSectionProps) {
   const { t } = useI18n();
 
   return (
-    <section className="relative py-16 md:py-24 overflow-hidden">
+    <section id="hero" className="relative py-16 md:py-24 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-accent/5 rounded-full blur-3xl" />

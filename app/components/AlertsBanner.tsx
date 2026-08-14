@@ -1,4 +1,4 @@
-// app/components/AlertsBanner.tsx v2.7.2
+// app/components/AlertsBanner.tsx v2.8.2
 
 import { AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -20,7 +20,7 @@ export function AlertsBanner({ alerts, stats, onViewDetails }: AlertsBannerProps
   if (alerts.length === 0) return null;
 
   return (
-    <section className="-mt-4 mb-8">
+    <section id="alerts-banner" className="-mt-4 mb-8">
       <Alert className="border-destructive/30 bg-destructive/5 backdrop-blur-sm">
         <div className="flex items-start gap-4">
           <div className="flex size-12 items-center justify-center rounded-2xl bg-destructive/10">

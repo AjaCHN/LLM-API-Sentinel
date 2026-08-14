@@ -76,7 +76,7 @@ export default function DashboardClient() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div id="dashboard" className="min-h-screen bg-background text-foreground">
       <DashboardHeader
         user={user}
         alerts={alerts}

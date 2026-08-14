@@ -1,4 +1,4 @@
-# LLM API Sentinel 项目规范 (v2.7.1)
+# LLM API Sentinel 项目规范 (v2.8.1)
 
 ## 1. 项目概述
 
@@ -30,7 +30,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 | 图表 | Recharts 3.8.0 | 3.8.0 |
 | 图标 | Lucide React | - |
 | 状态管理 | Zustand 5.0.12 | 5.0.12 |
-| 设计系统 | [design-system.md](design-system.md) | v2.7.1 |
+| 设计系统 | [design-system.md](design-system.md) | v2.8.1 |
 | 国际化 | 自定义 i18n 系统 | - |
 | 时间处理 | date-fns 4.1.0 | 4.1.0 |
 
@@ -66,7 +66,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 ```
 ├── app/
 │   ├── components/
-│   │   ├── ui/                   # shadcn/ui 基础组件 (13 个)
+│   │   ├── ui/                   # shadcn/ui 基础组件 (16 个, new-york 风格)
 │   │   │   ├── alert.tsx
 │   │   │   ├── avatar.tsx
 │   │   │   ├── badge.tsx
@@ -77,8 +77,11 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   │   ├── input.tsx
 │   │   │   ├── label.tsx
 │   │   │   ├── popover.tsx
+│   │   │   ├── select.tsx
 │   │   │   ├── separator.tsx
 │   │   │   ├── skeleton.tsx
+│   │   │   ├── switch.tsx
+│   │   │   ├── tabs.tsx
 │   │   │   └── tooltip.tsx
 │   │   ├── AlertsDropdown.tsx    # 告警下拉组件（shadcn Dialog）
 │   │   ├── ApiConfig.tsx         # API 配置组件（localStorage 读写）
@@ -135,7 +138,12 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   ├── layout.tsx                # 根布局（Server Component，ThemeProvider + StructuredData）
 │   └── page.tsx                  # 主页面（Server Component，Suspense + DashboardClient）
 ├── prototype/
-│   └── prototype.html            # 高保真原型（可直接浏览器打开预览）
+│   ├── index.html                # 高保真可交互原型 · 仪表盘主页面（纯 HTML/CSS/JS）
+│   ├── components.html           # 组件库规范展示页（色彩/字体/间距/组件）
+│   └── assets/
+│       ├── styles.css            # 设计 token + 动画（与 app/style.css 语义变量对齐）
+│       ├── data.js               # 真实模拟数据 + i18n（与 app/lib/mock-data.ts 对齐）
+│       └── app.js                # 共享逻辑（主题/语言/渲染/图表/交互）
 ├── openspec/
 │   ├── README.md                 # OpenSpec 说明
 │   ├── config.yaml               # OpenSpec 配置
