@@ -1,4 +1,4 @@
-// app/lib/webhook-formatter.ts v2.9.0
+// app/lib/webhook-formatter.ts v2.9.6
 import { Alert } from '../types';
 
 // Webhook 消息格式
@@ -31,7 +31,22 @@ export interface DiscordPayload {
   }>;
 }
 
-export type WebhookBody = WebhookPayload | DingTalkPayload | DiscordPayload;
+// Slack 消息格式
+export interface SlackPayload {
+  text: string;
+  attachments?: Array<{ color: string; title: string; text: string; fields?: Array<{ title: string; value: string; short?: boolean }> }>;
+}
+
+// Microsoft Teams (Office 365 Connector) MessageCard 格式
+export interface TeamsPayload {
+  '@type': 'MessageCard';
+  '@context': 'http://schema.org/extensions';
+  themeColor: string;
+  summary: string;
+  sections: Array<{ activityTitle: string; facts: Array<{ name: string; value: string }> }>;
+}
+
+export type WebhookBody = WebhookPayload | DingTalkPayload | DiscordPayload | SlackPayload | TeamsPayload;
 
 /** 规范化告警时间戳为 Date 对象 */
 function normalizeTimestamp(alert: Alert): Date {
@@ -86,6 +101,55 @@ export function formatAlert(alert: Alert, platform: string): WebhookBody {
         timestamp: normalizedTimestamp.toISOString()
       }]
     } as DiscordPayload;
+  }
+
+  if (platform === 'slack') {
+    const hexColor: Record<string, string> = {
+      low: '#3498db',
+      medium: '#f1c40f',
+      high: '#e67e22',
+      critical: '#e74c3c'
+    };
+    return {
+      text: `${severityEmoji} ${baseInfo.type} - ${baseInfo.api}`,
+      attachments: [{
+        color: hexColor[alert.severity] || '#95a5a6',
+        title: `${baseInfo.api} 告警`,
+        text: baseInfo.message,
+        fields: [
+          { title: '严重程度', value: baseInfo.severity, short: true },
+          { title: '类型', value: baseInfo.type, short: true },
+          ...(alert.latency ? [{ title: '延迟', value: `${alert.latency}ms`, short: true }] : []),
+          ...(alert.error ? [{ title: '错误信息', value: alert.error }] : [])
+        ]
+      }]
+    } as SlackPayload;
+  }
+
+  if (platform === 'teams') {
+    const themeColor: Record<string, string> = {
+      low: '3498db',
+      medium: 'f1c40f',
+      high: 'e67e22',
+      critical: 'e74c3c'
+    };
+    return {
+      '@type': 'MessageCard',
+      '@context': 'http://schema.org/extensions',
+      themeColor: themeColor[alert.severity] || '95a5a6',
+      summary: `${baseInfo.type} - ${baseInfo.api}`,
+      sections: [{
+        activityTitle: `${severityEmoji} ${baseInfo.type} - ${baseInfo.api}`,
+        facts: [
+          { name: '严重程度', value: baseInfo.severity },
+          { name: '类型', value: baseInfo.type },
+          { name: '消息', value: baseInfo.message },
+          { name: '时间', value: baseInfo.time },
+          ...(alert.latency ? [{ name: '延迟', value: `${alert.latency}ms` }] : []),
+          ...(alert.error ? [{ name: '错误', value: alert.error }] : [])
+        ]
+      }]
+    } as TeamsPayload;
   }
 
   // DingTalk/Feishu 格式

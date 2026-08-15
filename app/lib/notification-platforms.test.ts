@@ -1,4 +1,4 @@
-// app/lib/notification-platforms.test.ts v2.8.2
+// app/lib/notification-platforms.test.ts v2.9.6
 import { detectPlatform, isPrivateWebhookHost, formatAlert } from './notification-platforms';
 import type { Alert } from '../types';
 
@@ -23,6 +23,12 @@ describe('detectPlatform', () => {
   });
   it('detects discord', () => {
     expect(detectPlatform('https://discord.com/api/webhooks/abc')).toBe('discord');
+  });
+  it('detects slack', () => {
+    expect(detectPlatform('https://hooks.slack.com/services/T/B/X')).toBe('slack');
+  });
+  it('detects microsoft teams', () => {
+    expect(detectPlatform('https://contoso.webhook.office.com/webhookb2/abc')).toBe('teams');
   });
   it('falls back to generic', () => {
     expect(detectPlatform('https://example.com/hook')).toBe('generic');

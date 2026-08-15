@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.9.6] - 2026-08-15
+
+### Feat
+- **CI/CD 流水线**: 新增 `.github/workflows/ci.yml`（PR/push 触发 lint + test + build 门禁）与 `release.yml`（语义化版本 tag 触发静态产物构建与 GitHub Release）
+- **后台监控 Edge Function 示例**: 新增 `supabase/functions/monitor/index.ts`（探测 26 个 LLM API 写入 `api_status` 与 `status_history`）及 `supabase/cron.sql`（pg_cron 每 5 分钟调度）
+- **多渠道告警增强**: `detectPlatform` 新增 Slack 与 Microsoft Teams 识别；`webhook-formatter` 新增 Slack attachments 与 Teams MessageCard 格式化分支
+
+### Test
+- **测试覆盖率门禁**: `jest.config.cjs` 新增 `collectCoverageFrom` 与 `coverageThreshold`（statements/functions/lines ≥70%）；`package.json` 的 `test` 脚本启用 `--coverage`
+- **新增纯逻辑测试**: `utils.test.ts`、`supabase-mapping.test.ts`、`cache-validation.test.ts`、`notification.test.ts`，并修正 `monitor.test.ts` 适配 26 API 现状与 jsdom 环境
+- **lint 范围聚焦**: `eslint.config.mjs` 忽略 `scripts/`、`prototype/`（独立工具与原型，非 Next 应用源码）
+
+### Docs
+- 同步版本号至 v2.9.6
+
 ## [2.9.5] - 2026-08-15
 
 ### Feat

@@ -1,4 +1,4 @@
-// app/lib/notification-platforms.ts v2.9.0
+// app/lib/notification-platforms.ts v2.9.6
 import { logError } from './error-handler';
 import type { WebhookConfig } from './notification';
 import { formatAlert, type WebhookBody } from './webhook-formatter';
@@ -52,8 +52,12 @@ export function isPrivateWebhookHost(url: string): boolean {
   }
 }
 
-/** 从 webhook URL 推断平台类型 */
-export function detectPlatform(url: string): 'dingtalk' | 'feishu' | 'discord' | 'generic' {
+/** 从 webhook URL 推断平台类型（支持多渠道：Slack / Teams / Discord / 钉钉 / 飞书 / 通用） */
+export function detectPlatform(
+  url: string
+): 'slack' | 'teams' | 'dingtalk' | 'feishu' | 'discord' | 'generic' {
+  if (url.includes('hooks.slack.com')) return 'slack';
+  if (url.includes('office.com') || url.includes('webhook.office.com')) return 'teams';
   if (url.includes('oapi.dingtalk.com') || url.includes('dingtalk')) return 'dingtalk';
   if (url.includes('open.feishu.cn') || url.includes('feishu')) return 'feishu';
   if (url.includes('discord')) return 'discord';

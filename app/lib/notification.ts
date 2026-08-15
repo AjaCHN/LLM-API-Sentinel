@@ -4,7 +4,7 @@
  * 平台格式化与发送逻辑见 notification-platforms.ts，本文件仅负责配置编排与对外 API。
  */
 
-// app/lib/notification.ts v2.8.2
+// app/lib/notification.ts v2.9.6
 import { Alert } from '../types';
 import { detectPlatform, formatAlert, sendWebhookRequest } from './notification-platforms';
 
