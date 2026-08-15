@@ -1,11 +1,11 @@
-// app/hooks/useI18n.ts v2.7.0
+// app/hooks/useI18n.ts v2.9.3
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  setLocale,
-  getLocale,
+  setLocale as persistLocale,
   initLocale,
+  getLocale,
   loadLocale,
   t as translate,
   formatMessage,
@@ -22,16 +22,11 @@ export function useI18n() {
 
   const changeLocale = useCallback(async (newLocale: string) => {
     await loadLocale(newLocale);
-    setLocale(newLocale);
+    persistLocale(newLocale);
     setCurrentLocale(getLocale());
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('locale', getLocale());
-    }
   }, []);
 
-  const t = useCallback((key: string) => {
-    return translate(key);
-  }, []);
+  const t = useCallback((key: string) => translate(key), []);
 
   const format = useCallback((template: string, params: Record<string, string | number>) => {
     return formatMessage(template, params);

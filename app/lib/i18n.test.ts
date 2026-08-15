@@ -154,9 +154,16 @@ describe('i18n', () => {
       expect(getLocale()).toBe('en');
     });
 
-    it('should not change locale if translations not loaded', () => {
+    it('should change locale when translations are available (static import)', () => {
       setLocale('zh-CN');
+      expect(getLocale()).toBe('zh-CN');
+      setLocale('en');
+    });
+
+    it('should not change locale for unsupported code', () => {
+      setLocale('xx-YY');
       expect(getLocale()).toBe('en');
+      setLocale('en');
     });
   });
 });
