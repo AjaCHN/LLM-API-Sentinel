@@ -27,7 +27,9 @@
     "alertsLabel": "Оповещения",
     "activeIssues": "активная проблема",
     "activeIssuesPlural": "активных проблем",
-    "detected": "обнаружено"
+    "detected": "обнаружено",
+    "offline": "не в сети",
+    "highLatency": "высокая задержка"
   },
   "api": {
     "online": "Онлайн",
@@ -108,5 +110,8 @@
     "enable": "Включить",
     "disable": "Отключить",
     "refresh": "Обновить местоположение"
+  },
+  "common": {
+    "close": "Закрыть"
   }
 }

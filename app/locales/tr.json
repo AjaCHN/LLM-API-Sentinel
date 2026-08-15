@@ -27,7 +27,9 @@
     "alertsLabel": "Uyarılar",
     "activeIssues": "aktif sorun",
     "activeIssuesPlural": "aktif sorun",
-    "detected": "tespit edildi"
+    "detected": "tespit edildi",
+    "offline": "çevrimdışı",
+    "highLatency": "yüksek gecikme"
   },
   "api": {
     "online": "Çevrimiçi",
@@ -108,5 +110,8 @@
     "enable": "Etkinleştir",
     "disable": "Devre dışı bırak",
     "refresh": "Konumu yenile"
+  },
+  "common": {
+    "close": "Kapat"
   }
 }

@@ -27,7 +27,9 @@
     "alertsLabel": "Cảnh Báo",
     "activeIssues": "vấn đề đang hoạt động",
     "activeIssuesPlural": "vấn đề đang hoạt động",
-    "detected": "đã phát hiện"
+    "detected": "đã phát hiện",
+    "offline": "ngoại tuyến",
+    "highLatency": "độ trễ cao"
   },
   "api": {
     "online": "Trực tuyến",
@@ -108,5 +110,8 @@
     "enable": "Bật",
     "disable": "Tắt",
     "refresh": "Làm mới vị trí"
+  },
+  "common": {
+    "close": "Đóng"
   }
 }

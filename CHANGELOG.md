@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.9.4] - 2026-08-15
+
+### Fix
+- **补全缺失翻译 key**: 为全部 16 个语言包补充 `common.close`、`alerts.offline`、`alerts.highLatency` 三个此前未定义但代码已引用的 key，修复告警横幅与错误通知显示原始 key 文字的问题
+
 ## [2.9.3] - 2026-08-15
 
 ### Fix

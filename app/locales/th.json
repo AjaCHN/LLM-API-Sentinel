@@ -27,7 +27,9 @@
     "alertsLabel": "การแจ้งเตือน",
     "activeIssues": "ปัญหาที่ใช้งานอยู่",
     "activeIssuesPlural": "ปัญหาที่ใช้งานอยู่",
-    "detected": "ตรวจพบ"
+    "detected": "ตรวจพบ",
+    "offline": "ออฟไลน์",
+    "highLatency": "ความหน่วงสูง"
   },
   "api": {
     "online": "ออนไลน์",
@@ -108,5 +110,8 @@
     "enable": "เปิดใช้งาน",
     "disable": "ปิดใช้งาน",
     "refresh": "รีเฟรชตำแหน่ง"
+  },
+  "common": {
+    "close": "ปิด"
   }
 }

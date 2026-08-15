@@ -27,7 +27,9 @@
     "alertsLabel": "Meldingen",
     "activeIssues": "actief probleem",
     "activeIssuesPlural": "actieve problemen",
-    "detected": "gedetecteerd"
+    "detected": "gedetecteerd",
+    "offline": "offline",
+    "highLatency": "hoge latentie"
   },
   "api": {
     "online": "Online",
@@ -108,5 +110,8 @@
     "enable": "Inschakelen",
     "disable": "Uitschakelen",
     "refresh": "Locatie vernieuwen"
+  },
+  "common": {
+    "close": "Sluiten"
   }
 }

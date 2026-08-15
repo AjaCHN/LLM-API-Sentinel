@@ -27,7 +27,9 @@
     "alertsLabel": "التنبيهات",
     "activeIssues": "مشكلة نشطة",
     "activeIssuesPlural": "مشاكل نشطة",
-    "detected": "تم الكشف"
+    "detected": "تم الكشف",
+    "offline": "غير متصل",
+    "highLatency": "زمن استجابة عالٍ"
   },
   "api": {
     "online": "متصل",
@@ -108,5 +110,8 @@
     "enable": "تفعيل",
     "disable": "تعطيل",
     "refresh": "تحديث الموقع"
+  },
+  "common": {
+    "close": "إغلاق"
   }
 }

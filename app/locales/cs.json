@@ -27,7 +27,9 @@
     "alertsLabel": "Upozornění",
     "activeIssues": "aktivní problém",
     "activeIssuesPlural": "aktivní problémy",
-    "detected": "detekováno"
+    "detected": "detekováno",
+    "offline": "offline",
+    "highLatency": "vysoká latence"
   },
   "api": {
     "online": "Online",
@@ -108,5 +110,8 @@
     "enable": "Povolit",
     "disable": "Zakázat",
     "refresh": "Obnovit polohu"
+  },
+  "common": {
+    "close": "Zavřít"
   }
 }

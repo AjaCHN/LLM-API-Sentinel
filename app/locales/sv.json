@@ -27,7 +27,9 @@
     "alertsLabel": "Larm",
     "activeIssues": "aktivt problem",
     "activeIssuesPlural": "aktiva problem",
-    "detected": "detekterad"
+    "detected": "detekterad",
+    "offline": "offline",
+    "highLatency": "hög latens"
   },
   "api": {
     "online": "Online",
@@ -108,5 +110,8 @@
     "enable": "Aktivera",
     "disable": "Inaktivera",
     "refresh": "Uppdatera plats"
+  },
+  "common": {
+    "close": "Stäng"
   }
 }

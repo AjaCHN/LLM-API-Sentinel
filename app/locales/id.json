@@ -27,7 +27,9 @@
     "alertsLabel": "Peringatan",
     "activeIssues": "masalah aktif",
     "activeIssuesPlural": "masalah aktif",
-    "detected": "terdeteksi"
+    "detected": "terdeteksi",
+    "offline": "offline",
+    "highLatency": "latensi tinggi"
   },
   "api": {
     "online": "Online",
@@ -108,5 +110,8 @@
     "enable": "Aktifkan",
     "disable": "Nonaktifkan",
     "refresh": "Perbarui lokasi"
+  },
+  "common": {
+    "close": "Tutup"
   }
 }

@@ -27,7 +27,9 @@
     "alertsLabel": "अलर्ट",
     "activeIssues": "सक्रिय समस्या",
     "activeIssuesPlural": "सक्रिय समस्याएं",
-    "detected": "पता चला"
+    "detected": "पता चला",
+    "offline": "ऑफ़लाइन",
+    "highLatency": "उच्च विलंबता"
   },
   "api": {
     "online": "ऑनलाइन",
@@ -108,5 +110,8 @@
     "enable": "सक्षम करें",
     "disable": "अक्षम करें",
     "refresh": "स्थान ताज़ा करें"
+  },
+  "common": {
+    "close": "बंद करें"
   }
 }

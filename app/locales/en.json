@@ -1,4 +1,7 @@
 {
+  "common": {
+    "close": "Close"
+  },
   "errors": {
     "networkTimeout": "Network request timed out. Please check your connection.",
     "networkOffline": "You are currently offline. Please check your network.",
@@ -27,7 +30,9 @@
     "alertsLabel": "Alerts",
     "activeIssues": "active issue",
     "activeIssuesPlural": "active issues",
-    "detected": "detected"
+    "detected": "detected",
+    "offline": "offline",
+    "highLatency": "high latency"
   },
   "api": {
     "online": "Online",

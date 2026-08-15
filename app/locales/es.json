@@ -27,7 +27,9 @@
     "alertsLabel": "Alertas",
     "activeIssues": "problema activo",
     "activeIssuesPlural": "problemas activos",
-    "detected": "detectado"
+    "detected": "detectado",
+    "offline": "sin conexión",
+    "highLatency": "alta latencia"
   },
   "api": {
     "online": "En línea",
@@ -108,5 +110,8 @@
     "enable": "Habilitar",
     "disable": "Deshabilitar",
     "refresh": "Actualizar ubicación"
+  },
+  "common": {
+    "close": "Cerrar"
   }
 }

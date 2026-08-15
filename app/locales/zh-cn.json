@@ -27,7 +27,9 @@
     "alertsLabel": "告警",
     "activeIssues": "活动问题",
     "activeIssuesPlural": "活动问题",
-    "detected": "已检测"
+    "detected": "已检测",
+    "offline": "离线",
+    "highLatency": "高延迟"
   },
   "api": {
     "online": "在线",
@@ -108,5 +110,8 @@
   },
   "general": {
     "and": "和"
+  },
+  "common": {
+    "close": "关闭"
   }
 }
