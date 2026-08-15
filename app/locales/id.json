@@ -70,7 +70,8 @@
     "performanceTrends": "Tren kinerja",
     "lastHour": "Satu jam terakhir",
     "last6Hours": "6 jam terakhir",
-    "last24Hours": "24 jam terakhir"
+    "last24Hours": "24 jam terakhir",
+    "changeLanguage": "Ubah bahasa"
   },
   "history": {
     "performanceHistory": "Riwayat kinerja",

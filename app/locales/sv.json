@@ -70,7 +70,8 @@
     "performanceTrends": "Prestandatrender",
     "lastHour": "Senaste timmen",
     "last6Hours": "Senaste 6 timmarna",
-    "last24Hours": "Senaste 24 timmarna"
+    "last24Hours": "Senaste 24 timmarna",
+    "changeLanguage": "Ändra språk"
   },
   "history": {
     "performanceHistory": "Prestandahistorik",

@@ -70,7 +70,8 @@
     "performanceTrends": "แนวโน้มประสิทธิภาพ",
     "lastHour": "ชั่วโมงที่ผ่านมา",
     "last6Hours": "6 ชั่วโมงที่ผ่านมา",
-    "last24Hours": "24 ชั่วโมงที่ผ่านมา"
+    "last24Hours": "24 ชั่วโมงที่ผ่านมา",
+    "changeLanguage": "เปลี่ยนภาษา"
   },
   "history": {
     "performanceHistory": "ประวัติประสิทธิภาพ",

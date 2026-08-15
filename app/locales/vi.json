@@ -70,7 +70,8 @@
     "performanceTrends": "Xu hướng hiệu suất",
     "lastHour": "Giờ qua",
     "last6Hours": "6 giờ qua",
-    "last24Hours": "24 giờ qua"
+    "last24Hours": "24 giờ qua",
+    "changeLanguage": "Đổi ngôn ngữ"
   },
   "history": {
     "performanceHistory": "Lịch sử hiệu suất",

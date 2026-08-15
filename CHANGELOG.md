@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.9.2] - 2026-08-15
+
+### Feat
+- **语言切换 UI**: 新增 `LocaleSwitcher` 组件（基于 `DropdownMenuRadioGroup`），挂载至 `DashboardHeader`，支持 16 种语言即时切换并持久化至 localStorage
+- **切换文案翻译**: 为全部 16 个 locale 的 `dashboard.changeLanguage` 补充对应语言翻译，保障切换器标签全覆盖
+
+### Fix
+- **SEO 语言声明对齐**: `layout.tsx` 与 `StructuredData.tsx` 的 `alternates.languages`/`alternateLocale`/`inLanguage` 移除无 locale 文件的 `ja`/`ko`，与实际支持的 16 种语言一致
+
 ## [2.9.1] - 2026-08-15
 
 ### Docs

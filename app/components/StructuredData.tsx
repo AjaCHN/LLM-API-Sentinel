@@ -41,7 +41,7 @@ export default function StructuredData() {
       },
       'query-input': 'required name=search_term_string',
     },
-    inLanguage: ['en', 'zh-CN', 'zh-TW', 'es', 'ja', 'ko', 'ar', 'hi', 'vi', 'th', 'id', 'ru', 'tr', 'it', 'nl', 'pl', 'cs', 'sv'],
+    inLanguage: ['en', 'zh-CN', 'zh-TW', 'ar', 'cs', 'es', 'hi', 'id', 'it', 'nl', 'pl', 'ru', 'sv', 'th', 'tr', 'vi'],
   };
 
   const organizationSchema = {

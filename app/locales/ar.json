@@ -70,7 +70,8 @@
     "performanceTrends": "اتجاهات الأداء",
     "lastHour": "الساعة الماضية",
     "last6Hours": "آخر 6 ساعات",
-    "last24Hours": "آخر 24 ساعة"
+    "last24Hours": "آخر 24 ساعة",
+    "changeLanguage": "تغيير اللغة"
   },
   "history": {
     "performanceHistory": "سجل الأداء",

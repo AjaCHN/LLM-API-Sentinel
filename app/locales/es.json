@@ -70,7 +70,8 @@
     "performanceTrends": "Tendencias de rendimiento",
     "lastHour": "Última hora",
     "last6Hours": "Últimas 6 horas",
-    "last24Hours": "Últimas 24 horas"
+    "last24Hours": "Últimas 24 horas",
+    "changeLanguage": "Cambiar idioma"
   },
   "history": {
     "performanceHistory": "Historial de rendimiento",

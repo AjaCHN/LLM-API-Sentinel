@@ -70,7 +70,8 @@
     "performanceTrends": "प्रदर्शन प्रवृत्तियां",
     "lastHour": "पिछले घंटे",
     "last6Hours": "पिछले 6 घंटे",
-    "last24Hours": "पिछले 24 घंटे"
+    "last24Hours": "पिछले 24 घंटे",
+    "changeLanguage": "भाषा बदलें"
   },
   "history": {
     "performanceHistory": "प्रदर्शन इतिहास",

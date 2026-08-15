@@ -70,7 +70,8 @@
     "performanceTrends": "Performance trends",
     "lastHour": "Last hour",
     "last6Hours": "Last 6 hours",
-    "last24Hours": "Last 24 hours"
+    "last24Hours": "Last 24 hours",
+    "changeLanguage": "Change language"
   },
   "history": {
     "performanceHistory": "Performance History",

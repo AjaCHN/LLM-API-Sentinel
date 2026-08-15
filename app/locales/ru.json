@@ -70,7 +70,8 @@
     "performanceTrends": "Тенденции производительности",
     "lastHour": "Последний час",
     "last6Hours": "Последние 6 часов",
-    "last24Hours": "Последние 24 часа"
+    "last24Hours": "Последние 24 часа",
+    "changeLanguage": "Сменить язык"
   },
   "history": {
     "performanceHistory": "История производительности",

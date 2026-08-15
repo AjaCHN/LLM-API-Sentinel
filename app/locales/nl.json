@@ -70,7 +70,8 @@
     "performanceTrends": "Prestatietrends",
     "lastHour": "Afgelopen uur",
     "last6Hours": "Afgelopen 6 uur",
-    "last24Hours": "Afgelopen 24 uur"
+    "last24Hours": "Afgelopen 24 uur",
+    "changeLanguage": "Taal wijzigen"
   },
   "history": {
     "performanceHistory": "Prestatiegeschiedenis",

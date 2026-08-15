@@ -70,7 +70,8 @@
     "performanceTrends": "Performans trendleri",
     "lastHour": "Son saat",
     "last6Hours": "Son 6 saat",
-    "last24Hours": "Son 24 saat"
+    "last24Hours": "Son 24 saat",
+    "changeLanguage": "Dili değiştir"
   },
   "history": {
     "performanceHistory": "Performans geçmişi",

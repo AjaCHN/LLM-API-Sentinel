@@ -70,7 +70,8 @@
     "performanceTrends": "Tendenze di prestazione",
     "lastHour": "Ultima ora",
     "last6Hours": "Ultime 6 ore",
-    "last24Hours": "Ultime 24 ore"
+    "last24Hours": "Ultime 24 ore",
+    "changeLanguage": "Cambia lingua"
   },
   "history": {
     "performanceHistory": "Cronologia delle prestazioni",

@@ -70,7 +70,8 @@
     "performanceTrends": "效能趨勢",
     "lastHour": "最近1小時",
     "last6Hours": "最近6小時",
-    "last24Hours": "最近24小時"
+    "last24Hours": "最近24小時",
+    "changeLanguage": "切換語言"
   },
   "history": {
     "performanceHistory": "效能歷史",

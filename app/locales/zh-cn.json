@@ -85,7 +85,8 @@
     "performanceTrends": "性能趋势",
     "lastHour": "最近1小时",
     "last6Hours": "最近6小时",
-    "last24Hours": "最近24小时"
+    "last24Hours": "最近24小时",
+    "changeLanguage": "切换语言"
   },
   "history": {
     "performanceHistory": "性能历史",

@@ -70,7 +70,8 @@
     "performanceTrends": "Výkonnostní trendy",
     "lastHour": "Poslední hodina",
     "last6Hours": "Posledních 6 hodin",
-    "last24Hours": "Posledních 24 hodin"
+    "last24Hours": "Posledních 24 hodin",
+    "changeLanguage": "Změnit jazyk"
   },
   "history": {
     "performanceHistory": "Historie výkonu",
