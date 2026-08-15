@@ -10,6 +10,7 @@ import { useI18n } from '@/hooks/useI18n';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import ShareButton from '@/components/ShareButton';
 
 interface DashboardHeaderProps {
   user: User | null;
@@ -120,6 +121,8 @@ export default function DashboardHeader({
           </Button>
 
           <LocaleSwitcher />
+
+          <ShareButton />
 
           {geo && (
             <div className="hidden lg:flex items-center gap-1.5 rounded-full bg-secondary/50 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur-sm border border-border/20">

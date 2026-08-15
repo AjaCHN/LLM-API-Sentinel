@@ -14,6 +14,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控系统，提供�
 | **API 配置管理** | 已实现 | 中 |
 | **国际化支持** | 已实现 | 中 |
 | **地理位置检测** | 已实现 | 低 |
+| **分享功能** | 已实现 | 中 |
 
 ## 2. 功能详细规格
 
@@ -211,6 +212,51 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控系统，提供�
 - 用户可手动刷新（需已授权）
 - 失败时使用降级数据（Unknown / Global）
 
+### 2.9 分享功能
+
+**功能描述**：用户可将当前分析页面（含筛选、时间范围等状态）以链接形式分享给他人，复制链接时自动附带一条项目宣传文案，多个文案随机选用，提升传播性。
+
+**触发入口**：
+- 仪表盘顶栏（DashboardHeader）的「分享」按钮（`ShareButton` 组件）
+- 点击后复制当前页面 URL（含 URL 查询参数）到剪贴板
+
+**复制内容格式**：
+```
+<分析链接>
+<随机项目宣传文案>
+```
+- 第一行：当前 `window.location.href`（含时间范围、语言等查询参数）
+- 第二行：从宣传文案库中随机抽取一条（`share.promos` 数组，随机均匀分布）
+- 两行之间以换行分隔，便于在 IM / 社交平台直接粘贴
+
+**宣传文案（Promo Copies）**：
+- 文案存放于 i18n 资源的 `share.promos` 数组（每语言可定义多条）
+- 未定义某语言文案时回退至英文（en）文案
+- 文案数量：英文 ≥ 4 条，中文（zh-cn / zh-tw）≥ 4 条，其余语言可选（回退 en）
+- 随机算法：基于数组长度取 `Math.floor(Math.random() * length)`，保证均匀随机
+
+**剪贴板实现**：
+- 优先使用 `navigator.clipboard.writeText`（HTTPS 安全上下文）
+- 失败时降级使用 `document.execCommand('copy')` 兜底
+- 复制成功显示「已复制」瞬时反馈（toast / tooltip），失败给出错误提示
+
+**交互状态**：
+- 复制中：按钮 loading 态（`disabled`）
+- 复制成功：`share.copied` 提示，2 秒后自动消失
+- 复制失败：`share.copyFailed` 提示
+
+**可访问性**：
+- 按钮携带 `aria-label={t('share.title')}`
+- 反馈文本使用 `aria-live="polite"` 区域
+
+**依赖**：
+- 依赖 Dashboard 顶栏展示（Theme / I18n 已具备）
+- 文案依赖 i18n `share` 命名空间
+
+**边界情况**：
+- 非安全上下文（HTTP / file://）下 `navigator.clipboard` 不可用 → 自动降级 execCommand
+- 用户拒绝剪贴板权限 → 捕获异常并提示失败
+
 ## 3. 功能依赖关系
 
 ```mermaid
@@ -229,6 +275,7 @@ graph TD
         Theme[主题切换]
         I18n[国际化]
         Geo[地理位置]
+        Share[分享功能]
     end
     
     Auth --> Dashboard
@@ -245,6 +292,7 @@ graph TD
     Dashboard --> Theme
     Dashboard --> I18n
     Dashboard --> Geo
+    Dashboard --> Share
 ```
 
 **依赖说明**：
@@ -479,3 +527,14 @@ sequenceDiagram
 - [ ] 显示城市和国家
 - [ ] 缓存 24 小时
 - [ ] 支持手动刷新
+
+### 7.9 分享功能
+
+**验收标准**：
+- [ ] 顶栏提供「分享」按钮
+- [ ] 点击复制当前页面分析链接到剪贴板
+- [ ] 复制内容同时包含一条随机项目宣传文案
+- [ ] 宣传文案从多条文案中等概率随机抽取
+- [ ] 复制成功显示「已复制」瞬时反馈
+- [ ] 非安全上下文（HTTP）下降级可用
+- [ ] 按钮与反馈具备正确 aria 标签

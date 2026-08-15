@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.9.7] - 2026-08-15
+
+### Feat
+- **分享功能**: 新增 `ShareButton` 组件与 `share-content.ts`，一键复制带随机宣传文案的分析链接（`ref=share` 来源标记），挂载至 `DashboardHeader`
+- **分享文案多语言**: 为全部 16 个 locale 补充 `share` section（标题/复制状态/5 条推广文案），保障分享弹窗全覆盖
+
 ## [2.9.6] - 2026-08-15
 
 ### Feat
@@ -14,6 +20,17 @@
 
 ### Docs
 - 同步版本号至 v2.9.6
+
+## [2.9.6] - 2026-08-15
+
+### Feat
+- **分享功能优化**: 复制分析链接时同步复制项目宣传文案，支持多条文案随机使用
+  - 新增 `ShareButton` 组件集成至仪表盘顶栏
+  - `share-content.ts` 提供随机宣传文案与分享文本组装
+  - 16 个语言包补充 `share` 命名空间（title/copied/copyFailed + promo1~5）
+  - 剪贴板优先 `navigator.clipboard`，非安全上下文降级 `execCommand`
+  - 复制成功/失败瞬时反馈，aria-live 可访问性支持
+- 同步更新 `openspec/features.md` 2.9 分享功能规格与 7.9 验收标准
 
 ## [2.9.5] - 2026-08-15
 

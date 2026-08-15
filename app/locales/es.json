@@ -113,5 +113,15 @@
   },
   "common": {
     "close": "Cerrar"
+  },
+  "share": {
+    "title": "Share analysis link",
+    "copied": "Link copied",
+    "copyFailed": "Copy failed",
+    "promo1": "📡 LLM API Sentinel — real-time status & latency tracking for 26+ major AI APIs. Check it now:",
+    "promo2": "🔍 Is your AI API up? Track OpenAI, Claude, Gemini, Qwen, DeepSeek & more in one dashboard:",
+    "promo3": "⚡ Monitor LLM API uptime, latency and error rates worldwide. Free & open:",
+    "promo4": "🌐 26+ AI providers, one live health board. Never guess if an API is down again:",
+    "promo5": "🚀 Stay ahead of AI outages. Real-time LLM API sentinel with history & alerts:"
   }
 }

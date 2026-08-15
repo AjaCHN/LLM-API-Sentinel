@@ -113,5 +113,15 @@
   },
   "common": {
     "close": "關閉"
+  },
+  "share": {
+    "title": "分享分析連結",
+    "copied": "連結已複製",
+    "copyFailed": "複製失敗",
+    "promo1": "📡 LLM API Sentinel —— 即時監測 26+ 主流 AI API 的狀態與延遲，立即查看：",
+    "promo2": "🔍 你的 AI 接口還在線嗎？一個面板掌握 OpenAI、Claude、Gemini、通義、DeepSeek 等：",
+    "promo3": "⚡ 全球追蹤 LLM API 的可用性、延遲與錯誤率，免費且開源：",
+    "promo4": "🌐 26+ AI 服務商，一塊即時健康看板，再也不用猜接口是否宕機：",
+    "promo5": "🚀 提前感知 AI 故障。帶歷史與告警的即時 LLM API 哨兵："
   }
 }
