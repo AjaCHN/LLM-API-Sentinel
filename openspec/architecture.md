@@ -102,7 +102,7 @@ graph TD
 | 组件 | 职责 | 状态依赖 |
 |-----|------|---------|
 | **RootLayout** | 根布局，设置主题和全局样式 | 无 |
-| **ThemeProvider** | 主题管理，支持深色/浅色模式 | `theme` |
+| **ThemeProvider** | 主题管理，纯深色沉浸主题（双档深度：`:root` 默认深 / `.dark` 更深），基于 next-themes | `theme` |
 | **StructuredData** | SEO 结构化数据组件 | 无 |
 | **DashboardClient** | 主页面客户端组件，整合所有功能 | 所有状态 |
 | **DashboardHeader** | 头部导航，包含品牌、告警、主题切换、用户认证 | `user`, `alerts`, `theme`, `geo`, `isGeoLoading` |

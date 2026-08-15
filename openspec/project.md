@@ -1,4 +1,4 @@
-# LLM API Sentinel 项目规范 (v2.9.1)
+# LLM API Sentinel 项目规范 (v2.9.4)
 
 ## 1. 项目概述
 
@@ -7,7 +7,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 ### 1.1 核心功能
 - **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta/Groq, Mistral）和中国（Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek）主流 AI 供应商的连通性与延迟，共 12 个核心 API
 - **历史数据**：手写 SVG 交互式面积图（零图表库依赖）可视化性能趋势；支持 24H/7D/30D 时间范围，曲线末点锚定当前实时延迟（原型同构，React 应用可平滑替换为 Recharts）
-- **自适应 UI**：全响应式设计（1/2/3/4 列网格），支持深色/浅色/系统模式切换，默认 Dark Indigo 沉浸主题（靛蓝 #6366f1 + 紫色 #8b5cf6）
+- **自适应 UI**：全响应式设计（1/2/3/4 列网格），采用纯深色沉浸主题（双档深度：`:root` 默认深 / `.dark` 更深），默认 Dark Indigo 沉浸主题（靛蓝 #6366f1 + 紫色 #8b5cf6）
 - **实时更新**：基于 Supabase Realtime 实现状态即时同步（默认 5 分钟后台检查周期）
 - **安全访问**：手动健康检查受 Supabase Auth (Google OAuth) 保护
 - **智能告警**：自动检测 API 宕机（offline）、降级（degraded）和延迟过高（阈值 1500ms），并生成告警通知
@@ -27,10 +27,10 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 | 实时订阅 | Supabase Realtime | - |
 | 样式 | Tailwind CSS 4.1.11 | 4.1.11 |
 | 组件库 | shadcn/ui (基于 Tailwind) | - |
-| 图表 | Recharts 3.8.0（React 应用，原型为手写 SVG 零依赖） | 3.8.0 |
+| 图表 | 手写 SVG（零依赖，React 应用）；Recharts 3.8.0 作为可替换备选 | 3.8.0 |
 | 图标 | Lucide React | - |
 | 状态管理 | Zustand 5.0.12 | 5.0.12 |
-| 设计系统 | [design-system.md](design-system.md) | v2.9.1 |
+| 设计系统 | [design-system.md](design-system.md) | v2.9.4 |
 | 国际化 | 自定义 i18n 系统 | - |
 | 时间处理 | date-fns 4.1.0 | 4.1.0 |
 
@@ -85,11 +85,12 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   │   └── tooltip.tsx
 │   │   ├── AlertsDropdown.tsx    # 告警下拉组件（shadcn Dialog）
 │   │   ├── ApiConfig.tsx         # API 配置组件（localStorage 读写）
-│   │   ├── ApiStatusGrid.tsx     # API 状态网格（主组件，按 provider 分组）
+│   │   ├── ApiStatusGrid.tsx     # API 状态网格（主组件，扁平 <section> 网格直接渲染）
 │   │   ├── ChartSkeleton.tsx     # 图表骨架屏加载占位
 │   │   ├── DashboardClient.tsx   # 仪表盘客户端主组件（'use client'）
 │   │   ├── DashboardFooter.tsx   # 页脚组件（3 列 Feature 展示）
-│   │   ├── DashboardHeader.tsx   # 头部组件（Logo/告警/主题/地理/登录）
+│   │   ├── DashboardHeader.tsx   # 头部组件（Logo/告警/主题/地理/语言切换/登录）
+│   │   ├── LocaleSwitcher.tsx     # 语言切换器（DropdownMenuRadioGroup，16 语言即时切换 + 持久化）
 │   │   ├── DashboardSkeleton.tsx # 仪表盘整体骨架屏
 │   │   ├── GeoOptInDialog.tsx    # 地理位置授权弹窗
 │   │   ├── LatencyHistoryChart.tsx # 延迟历史图表（手写 SVG / Recharts 可替换）
@@ -106,7 +107,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   ├── useAuth.ts            # 认证管理（Supabase Auth）
 │   │   ├── useDashboardData.ts   # 仪表盘数据聚合（主 hook，组合各子 hook）
 │   │   ├── useGeoLocation.ts     # 地理位置（ipapi.co + 24h 缓存）
-│   │   └── useI18n.ts            # 国际化（原型已实现 中文/English，规划 16 语言自动检测）
+│   │   └── useI18n.ts            # 国际化（16 语言，persistLocale 持久化 + 浏览器语言自动检测）
 │   ├── lib/
 │   │   ├── cache.ts              # 缓存逻辑（内存 + localStorage 双层 + 智能过期）
 │   │   ├── concurrency.ts        # 并发控制（信号量，默认 5）
@@ -441,7 +442,7 @@ interface StatCardProps {
 ```
 
 ### 5.9 ThemeProvider
-**功能**：管理深色/浅色/系统主题切换（next-themes）
+**功能**：管理纯深色沉浸主题（双档深度：`:root` 默认深 / `.dark` 更深），基于 next-themes（不提供浅色主题）
 
 **Props**：继承 `NextThemesProvider` 的所有 props
 
@@ -783,8 +784,8 @@ import { t, setLocale, getLocale, initLocale } from '@/lib/i18n';
 // 获取翻译
 const title = t('dashboard.title');
 
-// 设置语言
-setLocale('es');
+// 设置语言（持久化至 localStorage）
+persistLocale('es');
 
 // 初始化（自动检测）
 initLocale();

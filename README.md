@@ -1,11 +1,11 @@
-# LLM API Sentinel v2.9.1
+# LLM API Sentinel v2.9.5
 
 [English](README.md) | [中文](README_CN.md)
 
 Real-time monitoring and historical availability tracking for major LLM APIs worldwide.
 
 ## Design System
-- **Theme**: Dark-first with indigo (#6366f1) + violet (#8b5cf6) gradient accents
+- **Theme**: Deep dark-only immersive theme (two intensity levels) with indigo (#6366f1) + violet (#8b5cf6) gradient accents
 - **Components**: shadcn/ui (Card, Button, Alert, Badge, Avatar, Dialog, Input, Popover, Tooltip, Separator, Skeleton, DropdownMenu, Label)
 - **Visuals**: 3-layer radial-gradient background, status-dot pulse indicators, fade-in-up entrance animations
 - **Responsive**: 1/2/3/4-column grid (sm/md/lg/xl breakpoints)
@@ -13,8 +13,8 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 
 ## Features
 - **Global Monitoring**: Tracks reachability and latency for 12 AI providers in the US (OpenAI, Anthropic, Google, Meta, Mistral) and China (Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek).
-- **Historical Data**: Visualizes performance trends using Recharts interactive Area Charts (50 data points limit).
-- **Adaptive UI**: Fully responsive design (1/2/3/4 columns) with Dark/Light mode support (dark-first).
+- **Historical Data**: Visualizes performance trends using hand-written SVG area charts (zero charting dependency, 50 data points limit; Recharts available as a drop-in alternative).
+- **Adaptive UI**: Fully responsive design (1/2/3/4 columns) with a deep dark-only immersive theme (two intensity levels via `.dark` class).
 - **Real-time Updates**: Powered by Supabase Realtime for instant status synchronization (5-minute interval).
 - **Secure Access**: Manual health checks are protected by Google Authentication (Supabase Auth).
 - **Security Hardening**: Optional custom server (`server.ts`) adds Helmet security headers and per-IP rate limiting for manual checks.
@@ -35,7 +35,7 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 - **Auth**: Supabase Auth (Google OAuth)
 - **Real-time**: Supabase Realtime
 - **Styling**: Tailwind CSS 4.1.11 + shadcn/ui component library
-- **Charts**: Recharts 3.8.0
+- **Charts**: Hand-written SVG (zero-dependency); Recharts available as optional replacement
 - **Icons**: Lucide React
 - **State Management**: Zustand 5.0.12
 - **Time Processing**: date-fns 4.1.0
@@ -203,6 +203,7 @@ Supported languages:
 - [docs/deployment.md](docs/deployment.md) — Deployment guide (Vercel / EdgeOne / self-host)
 - [docs/security.md](docs/security.md) — Security architecture and best practices
 - [docs/contributing.md](docs/contributing.md) — Contribution guidelines
+- [docs/roadmap.md](docs/roadmap.md) — Roadmap & improvement proposals
 
 ## License
 

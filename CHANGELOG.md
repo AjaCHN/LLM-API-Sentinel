@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.9.5] - 2026-08-15
+
+### Feat
+- **扩展 AI API 监测平台**: 从 12 个扩展至 26 个，新增 xAI Grok、Cohere Command R、Perplexity Sonar、Together AI、Replicate、Stability AI、HuggingFace、OpenRouter、Fireworks AI、NVIDIA NIM、AI21 Labs（国际），以及 MiniMax、iFlytek Spark、Doubao 火山方舟、01.AI Yi、SiliconFlow、StepFun 阶跃星辰（国内）
+- **卡片紧凑布局**: `#status-section` 网格支持一行 4-5 列（`xl:grid-cols-4 2xl:grid-cols-5`），缩小卡片内边距/字号/间距适配多列显示
+
+### Fix
+- **补全缺失翻译 key**: 为全部 16 个语言包补充 `common.close`、`alerts.offline`、`alerts.highLatency` 三个此前未定义但代码已引用的 key
+
+### Docs
+- **文档一致性更新**: 同步全部项目文档至 v2.9.5
+  - README 双语文档标题统一至 v2.9.5；图表库描述更正为手写 SVG 零依赖（Recharts 仅作可替换备选）
+  - 主题描述统一为纯深色双档（移除所有"深色/浅色切换"过时表述，与设计系统权威一致）
+  - openspec ui.md / project.md / design-system.md 标题统一至 v2.9.5
+  - project.md：图表库表格、ApiStatusGrid 扁平网格、LocaleSwitcher 组件、useI18n 16 语言与 `persistLocale` 示例对齐代码现状
+  - features.md / ui.md：修正 Provider Group 嵌套树为扁平网格、主题切换验收标准对齐
+  - docs/contributing.md 示例版本更新
+- **发展路线文档**: 新增 `docs/roadmap.md`，提出短期（CI/CD、测试覆盖、后台监控示例）、中期（SLA 状态页、多渠道告警、可配置目标）、长期（平台化 API/widget、移动端）及技术债清理建议，并在 README 文档链接补充
+
 ## [2.9.4] - 2026-08-15
 
 ### Fix

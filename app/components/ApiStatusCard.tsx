@@ -1,4 +1,4 @@
-// app/components/ApiStatusCard.tsx v2.8.2
+// app/components/ApiStatusCard.tsx v2.9.4
 'use client';
 
 import React from 'react';
@@ -47,7 +47,7 @@ export default function ApiStatusCard({ api, provider, index }: ApiStatusCardPro
         animationDelay: `${index * 0.08}s`,
         // 性能优化: content-visibility 优化离屏渲染
         contentVisibility: 'auto',
-        containIntrinsicSize: '0 200px'
+        containIntrinsicSize: '0 168px'
       }}
     >
       {!isOffline && (
@@ -58,13 +58,13 @@ export default function ApiStatusCard({ api, provider, index }: ApiStatusCardPro
         <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-destructive via-destructive/70 to-transparent" />
       )}
 
-      <CardHeader className="relative">
-        <div className="flex items-start justify-between gap-3">
+      <CardHeader className="relative p-4 pb-2">
+        <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <CardTitle className="truncate text-base group-hover:text-primary transition-colors">
+            <CardTitle className="truncate text-sm group-hover:text-primary transition-colors">
               {api.name}
             </CardTitle>
-            <CardDescription className="mt-1">{provider}</CardDescription>
+            <CardDescription className="mt-0.5 text-xs">{provider}</CardDescription>
           </div>
           <Badge
             variant={statusBadgeVariant as 'default' | 'secondary' | 'destructive'}
@@ -78,13 +78,13 @@ export default function ApiStatusCard({ api, provider, index }: ApiStatusCardPro
         </div>
       </CardHeader>
 
-      <CardContent className="relative space-y-4">
+      <CardContent className="relative space-y-3 p-4 pt-2">
         <div className="relative">
           <div className="flex items-baseline justify-between gap-2">
-            <span className="text-sm text-muted-foreground">{t('api.latency')}</span>
+            <span className="text-xs text-muted-foreground">{t('api.latency')}</span>
             <span
               className={cn(
-                'text-2xl font-bold tabular-nums transition-colors',
+                'text-xl font-bold tabular-nums transition-colors',
                 latencyColorClass
               )}
             >
@@ -100,13 +100,13 @@ export default function ApiStatusCard({ api, provider, index }: ApiStatusCardPro
         </div>
 
         {(api.errorRate !== undefined || api.availability !== undefined) && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2">
             {api.errorRate !== undefined && (
               <div className={cn(
-                'rounded-lg border p-3 transition-colors',
+                'rounded-lg border p-2.5 transition-colors',
                 api.errorRate > 1 ? 'border-amber-500/30 bg-amber-500/5' : 'border-border/50 bg-muted/30'
               )}>
-                <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1.5">
                   <span className="font-medium">{t('api.errorRate')}</span>
                   <span className={cn(
                     'font-bold',
@@ -122,8 +122,8 @@ export default function ApiStatusCard({ api, provider, index }: ApiStatusCardPro
               </div>
             )}
             {api.availability !== undefined && (
-              <div className="rounded-lg border border-border/50 bg-muted/30 p-3">
-                <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+              <div className="rounded-lg border border-border/50 bg-muted/30 p-2.5">
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1.5">
                   <span className="font-medium">{t('api.availability')}</span>
                   <span className="font-bold text-emerald-400">{api.availability}%</span>
                 </div>
@@ -158,7 +158,7 @@ export default function ApiStatusCard({ api, provider, index }: ApiStatusCardPro
         )}
       </CardContent>
 
-      <CardFooter className="relative flex items-center justify-between text-xs text-muted-foreground border-t border-border/30">
+      <CardFooter className="relative flex items-center justify-between gap-2 px-4 py-2.5 text-[11px] text-muted-foreground border-t border-border/30">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-primary/60" />
           <span>{t('api.lastChecked')}: {new Date(api.lastChecked).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>

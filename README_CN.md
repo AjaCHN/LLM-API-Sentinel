@@ -1,4 +1,4 @@
-# LLM API Sentinel v2.9.1
+# LLM API Sentinel v2.9.5
 
 [English](README.md) | [中文](README_CN.md)
 
@@ -8,7 +8,7 @@
 
 - **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta, Mistral）和中国（Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek）主流 AI 供应商的连通性与延迟。
 - **历史数据**：使用交互式面积图可视化性能趋势。
-- **自适应 UI**：全响应式设计，支持深色/浅色模式切换。
+- **自适应 UI**：全响应式设计（1/2/3/4 列），采用纯深色沉浸主题（通过 `.dark` 类提供两档深度）。
 - **实时更新**：基于 Supabase Realtime 实现状态即时同步。
 - **安全访问**：手动健康检查受 Google 身份验证保护。
 - **安全加固**：可选的自定义服务器（`server.ts`）为手动检查添加 Helmet 安全响应头与按 IP 速率限制。
@@ -30,7 +30,7 @@
 - **身份验证**：Supabase Auth (Google OAuth)
 - **实时订阅**：Supabase Realtime
 - **样式**：Tailwind CSS 4.1.11
-- **图表**：Recharts 3.8.0
+- **图表**：手写 SVG（零依赖）；Recharts 作为可选替换
 - **图标**：Lucide React
 - **状态管理**：Zustand 5.0.12
 - **时间处理**：date-fns 4.1.0
@@ -201,6 +201,7 @@ pnpm build   # 静态文件输出到 out/
 - [docs/deployment.md](docs/deployment.md) — 部署指南（Vercel / EdgeOne / 自托管）
 - [docs/security.md](docs/security.md) — 安全架构与最佳实践
 - [docs/contributing.md](docs/contributing.md) — 贡献指南
+- [docs/roadmap.md](docs/roadmap.md) — 发展路线与改进建议
 
 ## 许可证
 

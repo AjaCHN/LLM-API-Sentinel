@@ -1,4 +1,4 @@
-// app/components/ApiStatusGrid.tsx v2.9.1
+// app/components/ApiStatusGrid.tsx v2.9.4
 'use client';
 
 import React from 'react';
@@ -12,7 +12,10 @@ export default function ApiStatusGrid({ statuses }: { statuses: ApiStatus[] }) {
   if (statuses.length === 0) return null;
 
   return (
-    <section id="status-section" className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <section
+      id="status-section"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+    >
       {statuses.map((api, index) => (
         <ApiStatusCard
           key={api.id}

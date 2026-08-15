@@ -1,4 +1,4 @@
-# UI 组件规范文档 (v2.8.5 - Dark Indigo Theme)
+# UI 组件规范文档 (v2.9.4 - Dark Indigo Theme)
 
 ## 1. 设计原则
 
@@ -71,10 +71,7 @@ interface ApiStatusGridProps {
 **内部结构**：
 ```
 ApiStatusGrid
-├── Provider Group (按 provider 分组)
-│   ├── Provider Header (provider 名称 + 图标 + Badge 数量)
-│   └── ApiCard (API 状态卡片，交错入场动画)
-└── Empty State (无数据时显示 dashed border 提示)
+└── ApiCard[] (API 状态卡片扁平网格，交错入场动画，provider 透传至卡片)
 ```
 
 **设计特点**：
@@ -279,7 +276,7 @@ DashboardClient
 
 ### 2.14 ThemeProvider
 
-**功能**：管理深色/浅色/系统主题切换（next-themes）
+**功能**：管理纯深色沉浸主题（双档深度：`:root` 默认深 / `.dark` 更深），基于 next-themes（不提供浅色主题）
 
 **Props**：继承 `NextThemesProvider` 的所有 props
 
@@ -897,7 +894,7 @@ stagger-8 → 0.40s
         │   ├── Section: API Status Grid
         │   │   ├── Section Header (标题 + 描述 + 刷新按钮)
         │   │   ├── ApiConfig (自定义 API 配置)
-        │   │   └── ApiStatusGrid (按 provider 分组的卡片网格)
+        │   │   └── ApiStatusGrid (扁平卡片网格，provider 透传至 ApiStatusCard)
         │   └── Section: Latency History Chart
         │       ├── Section Header (标题 + 描述)
         │       └── LatencyHistoryChart / ChartSkeleton
