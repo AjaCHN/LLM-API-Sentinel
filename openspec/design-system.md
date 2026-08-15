@@ -1,4 +1,4 @@
-# LLM API Sentinel 设计系统 (v2.8.5)
+# LLM API Sentinel 设计系统 (v2.9.1)
 
 ## 1. 设计哲学
 
@@ -16,44 +16,47 @@
 
 ## 2. 色彩系统
 
-> 色彩通过 CSS 变量定义，由 Tailwind CSS 4.1 的 `@theme` 桥接为 Tailwind token。所有组件使用语义化 class（如 `bg-primary`、`text-muted-foreground`），禁止硬编码色值。
+> 色彩通过 Tailwind CSS 4.1 的 `@theme` 定义语义 token（如 `--color-background` → `bg-background`），由 `app/style.css` 落地为 CSS 变量。所有组件使用语义化 class（如 `bg-primary`、`text-muted-foreground`），禁止硬编码色值。下表 Hex 与 `app/style.css` 严格一致。
 
-### 2.1 主色调 (Dark Indigo)
-| Token | Hex (默认) | Hex (.light) | 用途 |
-|-------|-----------|------------|------|
-| `--primary` | `#6366f1` | `#6366f1` | 主色、按钮、链接、高亮 |
+### 2.1 主题机制（`.dark` 体系）
+> 采用标准 shadcn/ui 的 **`.dark` 覆盖体系**：`:root` 为默认深色主题，`.dark` 类在 `<html>` 上叠加更深一档的深色；**不提供 `.light` 浅色主题**（当前实现仅支持深色，符合 "Dark Indigo 沉浸主题" 定位）。这与旧文档描述的 `.light` 体系不同，以 `app/style.css` 实现为准。
+
+### 2.2 主色调 (Dark Indigo)
+| Token | Hex (`:root` 默认深) | Hex (`.dark` 更深) | 用途 |
+|-------|---------------------|-------------------|------|
+| `--primary` | `#6366f1` | `#818cf8` | 主色、按钮、链接、高亮 |
 | `--primary-foreground` | `#ffffff` | `#ffffff` | 主色上的文字 |
 | `--accent` | `#8b5cf6` | `#8b5cf6` | 强调色、渐变辅助色 |
 | `--accent-foreground` | `#ffffff` | `#ffffff` | 强调色上的文字 |
-| `--ring` | `#6366f1` | `#6366f1` | 焦点环 |
+| `--ring` | `#6366f1` | `#818cf8` | 焦点环 |
 
-### 2.2 功能色 (语义色)
-| Token | Hex (默认) | 用途 |
-|-------|-----------|------|
-| `--success` | `#22c55e` | 在线、正常状态 |
-| `--warning` | `#f59e0b` | 降级、警告状态 |
-| `--destructive` | `#ef4444` | 离线、错误状态 |
-| `--info` | `#3b82f6` | 信息提示 |
+### 2.3 功能色 (语义色)
+语义色额外提供 `-10` alpha 变体（如 `--color-success-10`），用于浅底填充、边框、光晕等低对比场景。
 
-### 2.3 中性色（深色为默认 / `.light` 覆盖浅色）
-> 原型与设计 token 以**深色为默认主题**（`:root` 即深色），通过 `.light` 类覆盖为浅色；不提供 `.dark` 类（与 shadcn 默认 `.dark` 体系相反，需注意）。
+| Token | Hex (`:root` 默认深) | Hex (`.dark`) | 用途 |
+|-------|---------------------|---------------|------|
+| `--success` | `#22c55e` | `#22c55e` | 在线、正常状态 |
+| `--warning` | `#f59e0b` | `#f59e0b` | 降级、警告状态 |
+| `--destructive` | `#ef4444` | `#ef4444` | 离线、错误状态 |
+| `--info` | `#3b82f6` | `#3b82f6` | 信息提示 |
 
-| Token | Hex (:root 深色默认) | Hex (.light 浅色) | 用途 |
+### 2.4 中性色（深色双档：`:root` / `.dark`）
+| Token | Hex (`:root` 默认深) | Hex (`.dark` 更深) | 用途 |
 |-------|---------------------|-------------------|------|
-| `--background` | `#0c0c0f` | `#fafaf9` | 页面背景 |
-| `--foreground` | `#e4e4e7` | `#18181b` | 主文字颜色 |
-| `--card` | `#15151c` | `#ffffff` | 卡片背景 |
-| `--card-foreground` | `#e4e4e7` | `#18181b` | 卡片文字 |
-| `--popover` | `#1c1c26` | `#ffffff` | 弹出层背景 |
-| `--popover-foreground` | `#e4e4e7` | `#18181b` | 弹出层文字 |
-| `--secondary` | `#23232e` | `#f4f4f5` | 次要背景 |
-| `--secondary-foreground` | `#e4e4e7` | `#18181b` | 次要背景上的文字 |
-| `--muted` | `#23232e` | `#f4f4f5` | 弱化背景 |
-| `--muted-foreground` | `#a1a1aa` | `#71717a` | 次要/辅助文字 |
-| `--border` | `#2a2a38` | `#e4e4e7` | 边框 |
-| `--input` | `#2a2a38` | `#e4e4e7` | 输入框背景 |
+| `--background` | `#0f0f14` | `#0a0a0f` | 页面背景 |
+| `--foreground` | `#e6e6ec` | `#ededf2` | 主文字颜色 |
+| `--card` | `#16161e` | `#121219` | 卡片背景 |
+| `--card-foreground` | `#e6e6ec` | `#ededf2` | 卡片文字 |
+| `--popover` | `#1b1b25` | `#17171f` | 弹出层背景 |
+| `--popover-foreground` | `#e6e6ec` | `#ededf2` | 弹出层文字 |
+| `--secondary` | `#1e1e28` | `#1a1a24` | 次要背景 |
+| `--secondary-foreground` | `#e6e6ec` | `#ededf2` | 次要背景上的文字 |
+| `--muted` | `#1e1e28` | `#1a1a24` | 弱化背景 |
+| `--muted-foreground` | `#9a9aa6` | `#8b8b96` | 次要/辅助文字 |
+| `--border` | `#262632` | `#1f1f2b` | 边框 |
+| `--input` | `#262632` | `#1f1f2b` | 输入框背景 |
 
-### 2.4 背景氛围光 (Radial Gradient)
+### 2.5 背景氛围光 (Radial Gradient)
 body 背景在纯色基础上叠加三层径向渐变，营造柔和紫色光晕：
 ```css
 radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 50%)
@@ -61,7 +64,7 @@ radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 50%)
 radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 40%)
 ```
 
-### 2.5 渐变系统
+### 2.6 渐变系统
 ```css
 /* 主渐变（标题文字用） */
 --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);

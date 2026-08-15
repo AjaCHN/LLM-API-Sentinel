@@ -4,15 +4,15 @@
  */
 
 let currentLang = 'zh';
-let currentTheme = 'dark';
+let currentTheme = 'dark'; // 'dark' = 更深档(.dark)，'default' = 默认深(:root)
 let currentTimeRange = '24h';
 let currentLocation = 'Shanghai, CN';
 let renderFn = null; // 当前页面的渲染函数
 
 /* ---------------- 工具 ---------------- */
-function getTheme() { return document.documentElement.classList.contains('light') ? 'light' : 'dark'; }
+function getTheme() { return document.documentElement.classList.contains('dark') ? 'dark' : 'default'; }
 function setTheme(theme) {
-  document.documentElement.classList.toggle('light', theme === 'light');
+  document.documentElement.classList.toggle('dark', theme === 'dark');
   currentTheme = theme;
   updateThemeIcon();
 }
@@ -44,7 +44,7 @@ function updateThemeIcon() {
     : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>';
 }
 function toggleTheme() {
-  setTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  setTheme(getTheme() === 'dark' ? 'default' : 'dark');
   if (renderFn) renderFn();
 }
 
@@ -440,6 +440,8 @@ function navigate(href) {
 /* ---------------- 初始化 ---------------- */
 function appInit(render) {
   renderFn = render;
+  // 默认应用更深一档深色主题（与 app/style.css 的 .dark 档一致）
+  if (getTheme() !== 'dark') setTheme('dark');
   updateLangUI();
   updateThemeIcon();
   updateTimeRangeUI();

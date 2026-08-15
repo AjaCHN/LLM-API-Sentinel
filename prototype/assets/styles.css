@@ -13,50 +13,53 @@
   --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", "SF Mono",
     Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* 语义色彩（深色为默认） */
-  --color-background: #0c0c0f;
-  --color-foreground: #e6e6ea;
-  --color-card: #14141b;
-  --color-card-foreground: #e6e6ea;
-  --color-popover: #14141b;
+  /* 语义色彩（深色为默认，值对齐 app/style.css 的 :root 档） */
+  --color-background: #0f0f14;
+  --color-foreground: #e6e6ec;
+  --color-card: #16161e;
+  --color-card-foreground: #e6e6ec;
+  --color-popover: #1b1b25;
   --color-primary: #6366f1;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #1d1d28;
-  --color-secondary-foreground: #e6e6ea;
-  --color-muted: #1d1d28;
-  --color-muted-foreground: #8a8a98;
+  --color-secondary: #1e1e28;
+  --color-secondary-foreground: #e6e6ec;
+  --color-muted: #1e1e28;
+  --color-muted-foreground: #9a9aa6;
   --color-accent: #8b5cf6;
   --color-accent-foreground: #ffffff;
-  --color-destructive: #f43f5e;
+  --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
-  --color-border: #26262f;
-  --color-input: #26262f;
+  --color-border: #262632;
+  --color-input: #262632;
   --color-ring: #6366f1;
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-info: #3b82f6;
 }
 
-/* 浅色模式覆盖 */
-.light {
-  --color-background: #fafaf9;
-  --color-foreground: #1c1c22;
-  --color-card: #ffffff;
-  --color-card-foreground: #1c1c22;
-  --color-popover: #ffffff;
-  --color-primary: #4f46e5;
+/* 更深一档深色（对齐 app/style.css 的 .dark 档，由 <html class="dark"> 触发） */
+.dark {
+  --color-background: #0a0a0f;
+  --color-foreground: #ededf2;
+  --color-card: #121219;
+  --color-card-foreground: #ededf2;
+  --color-popover: #17171f;
+  --color-primary: #818cf8;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #f1f1ef;
-  --color-secondary-foreground: #1c1c22;
-  --color-muted: #f1f1ef;
-  --color-muted-foreground: #78787f;
-  --color-accent: #7c3aed;
+  --color-secondary: #1a1a24;
+  --color-secondary-foreground: #ededf2;
+  --color-muted: #1a1a24;
+  --color-muted-foreground: #8b8b96;
+  --color-accent: #8b5cf6;
   --color-accent-foreground: #ffffff;
-  --color-destructive: #e11d48;
+  --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
-  --color-border: #e7e7e3;
-  --color-input: #e7e7e3;
-  --color-ring: #4f46e5;
+  --color-border: #1f1f2b;
+  --color-input: #1f1f2b;
+  --color-ring: #818cf8;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
 }
 
 /* ---------- 动效 ---------- */

@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.9.1] - 2026-08-15
+
+### Docs
+- **设计系统对齐实现**: `design-system.md` 色彩章节重写为 Tailwind v4 `@theme` + `.dark` 覆盖体系，token 值严格对齐 `app/style.css`（`:root` 默认深 `#0f0f14` / `.dark` 更深 `#0a0a0f`），去除过时 `.light` 体系描述
+- **数据表可见性修正**: `project.md` 7.1 节 `api_status`/`status_history`/`alerts` 可见性改为「认证用户可写」，与 10.2 RLS 策略及 `schema.sql` 一致
+- **章节编号修复**: `project.md` 章节跳号（13→15→16→17）重排为连续 14 国际化 / 15 部署 / 16 Supabase 配置
+
+### Style
+- **原型主题对齐**: `prototype/assets/styles.css` 语义 token 值对齐 `app/style.css`，主题机制由 `.light` 切换改为 `.dark` 双档深色（`:root` 默认深 / `.dark` 更深），`app.js` `toggleTheme` 同步切换 `.dark` 类
+
+### Refactor
+- **状态网格简化**: `ApiStatusGrid.tsx` 移除按 provider 分组与空状态卡片，改为扁平 `<section>` 网格直接渲染，provider 透传至 `ApiStatusCard`
+
+### Chore
+- **版本统一**: 原型 3 文件 title、`project.md`/`design-system.md` 标题、package.json、config.yaml、`ApiStatusGrid.tsx` 统一至 v2.9.1
+
 ## [2.9.0] - 2026-08-15
 
 ### Fixed

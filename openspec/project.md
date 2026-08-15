@@ -1,4 +1,4 @@
-# LLM API Sentinel 项目规范 (v2.8.5)
+# LLM API Sentinel 项目规范 (v2.9.1)
 
 ## 1. 项目概述
 
@@ -30,7 +30,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 | 图表 | Recharts 3.8.0（React 应用，原型为手写 SVG 零依赖） | 3.8.0 |
 | 图标 | Lucide React | - |
 | 状态管理 | Zustand 5.0.12 | 5.0.12 |
-| 设计系统 | [design-system.md](design-system.md) | v2.8.5 |
+| 设计系统 | [design-system.md](design-system.md) | v2.9.1 |
 | 国际化 | 自定义 i18n 系统 | - |
 | 时间处理 | date-fns 4.1.0 | 4.1.0 |
 
@@ -524,9 +524,9 @@ interface ProgressBarProps {
 ### 7.1 Supabase 表结构
 | 表名 | 用途 | 说明 |
 |---------|------|------|
-| `api_status` | API 当前状态 | 所有人可读，所有人可写入 |
-| `status_history` | 历史性能数据 | 所有人可读，所有人可写入 |
-| `alerts` | 系统告警 | 所有人可读写 |
+| `api_status` | API 当前状态 | 所有人可读，**仅认证用户可写入** |
+| `status_history` | 历史性能数据 | 所有人可读，**仅认证用户可写入** |
+| `alerts` | 系统告警 | 所有人可读，**仅认证用户可写入/解决** |
 | `user_profiles` | 用户资料 | 关联 Supabase Auth 用户 |
 
 ### 7.2 数据结构
@@ -736,7 +736,7 @@ main 分支更新 → GitHub Actions → 构建 → 部署
 - 单元测试：`*.test.ts`
 - 组件测试：`*.test.tsx`
 
-## 15. 国际化 (i18n)
+## 14. 国际化 (i18n)
 
 ### 15.1 支持的语言
 | 语言代码 | 语言名称 | 本地名称 |
@@ -790,9 +790,9 @@ setLocale('es');
 initLocale();
 ```
 
-## 17. Supabase 配置
+## 16. Supabase 配置
 
-### 17.1 客户端配置
+### 16.1 客户端配置
 ```typescript
 // app/lib/supabase.ts
 import { createClient } from '@supabase/supabase-js';
@@ -803,7 +803,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 ```
 
-### 17.2 服务端配置
+### 16.2 服务端配置
 ```typescript
 // server.ts
 import { createClient } from '@supabase/supabase-js';
@@ -814,7 +814,7 @@ const supabase = createClient(
 );
 ```
 
-### 17.3 数据表说明
+### 16.3 数据表说明
 | 表名 | 说明 |
 |------|------|
 | `api_status` | 存储 API 当前状态 |
@@ -822,7 +822,7 @@ const supabase = createClient(
 | `alerts` | 存储系统告警 |
 | `user_profiles` | 用户资料表，自动关联 Auth 用户 |
 
-### 17.4 实时订阅
+### 16.4 实时订阅
 Supabase 支持实时数据订阅，用于告警更新：
 ```typescript
 const channel = supabase
@@ -837,16 +837,16 @@ const channel = supabase
   .subscribe();
 ```
 
-## 16. 部署
+## 15. 部署
 
-### 16.1 环境配置
+### 15.1 环境配置
 - Supabase 项目配置：在 `.env.local` 文件中配置以下环境变量：
   - `NEXT_PUBLIC_SUPABASE_URL`: Supabase 项目 URL
   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase Anon Key（前端使用）
   - `SUPABASE_SERVICE_ROLE_KEY`: Supabase Service Role Key（服务端使用）
 - 数据库迁移：运行 `supabase/schema.sql` 中的 SQL 脚本
 
-### 16.2 启动命令
+### 15.2 启动命令
 | 命令 | 用途 |
 |-----|------|
 | `npm run dev` | 开发模式 |
