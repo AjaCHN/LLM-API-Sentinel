@@ -12,7 +12,6 @@ import { AlertsBanner } from '@/components/AlertsBanner';
 import { StatusMonitorSection, LatencyHistorySection } from '@/components/dashboard-sections';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-import { useI18n } from '@/hooks/useI18n';
 
 const TIME_RANGES = ['dashboard.lastHour', 'dashboard.last6Hours', 'dashboard.last24Hours'] as const;
 
@@ -31,14 +30,13 @@ export default function DashboardClient() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [activeRange, setActiveRange] = useState<number>(0);
-  const { t } = useI18n();
 
   const { stats, chartData } = useDashboardStats(statuses, history, activeRange);
 
   useEffect(() => { setMounted(true); }, []);
   if (!mounted) return null;
 
-  const canRunCheck = isChecking || !user;
+  const canRunCheck = isChecking;
 
   return (
     <div id="dashboard" className="min-h-screen bg-background text-foreground">

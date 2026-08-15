@@ -1,8 +1,8 @@
-                                                            // app/hooks/useApiMonitor.ts v2.7.2
+                                                            // app/hooks/useApiMonitor.ts v2.9.8
 // 改进：使用本地 API 检查，同时支持从 Supabase 同步数据
 import { useCallback, useEffect, startTransition } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useApiStore, useAuthStore } from '../store';
 import { ApiStatus, StatusHistory } from '../types';
 import { logError, handleError } from '../lib/error-handler';
@@ -39,6 +39,8 @@ export function useApiMonitor() {
 
   // 同步 API 状态到 Supabase
   const syncToSupabase = useCallback(async (results: ApiStatus[]) => {
+    // 未配置 Supabase 时不发起同步请求
+    if (!isSupabaseConfigured) return;
     try {
       const { error: upsertError } = await supabase
         .from('api_status')
@@ -118,9 +120,15 @@ export function useApiMonitor() {
     syncToSupabase,
   ]);
 
-  // 初始化时尝试从 Supabase 加载（可选），否则使用本地模拟数据
+  // 初始化时尝试从 Supabase 加载（可选），否则使用本地模拟数据；
+  // 同时自动执行一次主动探测，确保页面加载即有真实监控数据，无需手动点击。
   useEffect(() => {
     const loadInitialData = async () => {
+      // 未配置 Supabase 时直接使用本地模拟数据，避免向占位端点发起无意义请求
+      if (!isSupabaseConfigured) {
+        setStatuses(generateMockApiStatuses());
+        return;
+      }
       try {
         const { data, error } = await supabase.from('api_status').select('*');
 
@@ -141,8 +149,11 @@ export function useApiMonitor() {
 
     if (statuses.length === 0) {
       loadInitialData();
+      // 自动执行一次主动探测，保证访客也能立即看到真实 API 状态
+      runCheck();
     }
-  }, [statuses.length, setStatuses]);
+    // 仅在首次挂载时自动探测一次
+  }, [statuses.length, setStatuses, runCheck]);
 
   return {
     statuses,

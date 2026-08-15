@@ -1,6 +1,6 @@
-// app/hooks/useAlerts.ts v2.7.0
+// app/hooks/useAlerts.ts v2.9.8
 import { useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAlertStore, useAuthStore } from '../store';
 import { Alert } from '../types';
 import { logError, handleError } from '../lib/error-handler';
@@ -10,6 +10,9 @@ export function useAlerts() {
   const { setError } = useAuthStore();
 
   useEffect(() => {
+    // 未配置 Supabase 时不发起查询与实时订阅，避免向占位端点报错
+    if (!isSupabaseConfigured) return;
+
     const loadAlerts = async () => {
       try {
         const { data, error } = await supabase

@@ -1,4 +1,4 @@
-// app/layout.tsx v2.8.0
+// app/layout.tsx v2.9.8
 // 安全改进: SITE_URL 默认值使用 localhost 而非生产域名，防止开发环境配置错误
 // 字体策略: 不依赖运行时网络拉取，改用 style.css 中定义的系统字体栈（--font-sans / --font-mono）
 import type { Metadata, Viewport } from 'next';
@@ -7,7 +7,7 @@ import { ThemeProvider } from './components/ThemeProvider';
 import StructuredData from './components/StructuredData';
 
 const isDev = process.env.NODE_ENV !== 'production';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || (isDev ? 'http://localhost:3000' : 'https://llm-api-sentinel.vercel.app');
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || (isDev ? 'http://localhost:3000' : 'https://llmapi.ewuse.com');
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

@@ -1,10 +1,10 @@
-// app/components/StructuredData.tsx v2.7.2
+// app/components/StructuredData.tsx v2.9.8
 // 安全修复: 对 JSON-LD 内容进行安全转义，防止 XSS 攻击
 // 原因: JSON.stringify 不会转义 </script> 等危险字符，直接注入 script 标签可能导致 XSS
 // 安全改进: SITE_URL 默认值使用 localhost 而非生产域名，防止开发环境配置错误
 
 const isDev = process.env.NODE_ENV !== 'production';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || (isDev ? 'http://localhost:3000' : 'https://llm-api-sentinel.vercel.app');
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || (isDev ? 'http://localhost:3000' : 'https://llmapi.ewuse.com');
 
 /**
  * 安全转义 JSON 字符串以用于内联 script 标签

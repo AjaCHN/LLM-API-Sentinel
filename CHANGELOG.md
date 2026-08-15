@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.9.8] - 2026-08-15
+
+### Fix
+- **规范链接域名修正**: `layout.tsx` 与 `StructuredData.tsx` 的 `SITE_URL` 生产回退域名由 `llm-api-sentinel.vercel.app` 改为实际部署域名 `llmapi.ewuse.com`，修复 canonical/OG/JSON-LD 指向错误域名导致的 SEO 规范链接问题
+- **初始数据空屏**: `useApiMonitor` 初始化时自动执行一次主动探测（`runCheck`），页面加载即显示真实 API 状态，不再依赖用户手动点击"立即检查"
+- **访客只读探测**: `DashboardClient` 的 `canRunCheck` 移除 `!user` 限制，访客亦可手动触发只读探测刷新监控数据
+- **Supabase 降级优化**: `useApiMonitor`/`useAlerts`/`useAuth` 在未配置 Supabase 时跳过查询与实时订阅，消除向占位端点发起的无意义请求与控制台噪音
+
+### Feat
+- **SEO 完整性**: 新增 `app/robots.ts` 与 `app/sitemap.ts`，提供 `robots.txt` 与 `sitemap.xml`（兼容静态导出），声明正确 sitemap 与 host
+
 ## [2.9.7] - 2026-08-15
 
 ### Feat
