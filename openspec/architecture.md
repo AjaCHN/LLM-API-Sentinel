@@ -17,7 +17,7 @@ LLM API Sentinel 采用**静态前端 + Supabase 后端**架构，无需自定�
 | 数据库 | Supabase PostgreSQL | - |
 | 身份验证 | Supabase Auth (Google OAuth) | - |
 | 样式 | Tailwind CSS 4.1.11 | 4.1.11 |
-| 图表 | Recharts 3.8.0 | 3.8.0 |
+| 图表 | 手写 SVG（零依赖，React 应用）；Recharts 3.8.0 作为可替换备选 | 3.8.0 |
 | 图标 | Lucide React | - |
 | 状态管理 | Zustand 5.0.12 | 5.0.12 |
 | 时间处理 | date-fns 4.1.0 | 4.1.0 |

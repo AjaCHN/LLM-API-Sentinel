@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.10.11] - 2026-08-16
+
+### Docs
+- **对齐 openspec 与代码实现**：`ui.md`/`features.md`/`architecture.md` 图表描述由「Recharts」更正为「手写 SVG（零依赖，Recharts 可选）」；主题描述由「深/浅双主题」更正为「纯深色双档（`:root`/`.dark`）」
+- **同步版本号**：`openspec/config.yaml`、`project.md`、`ui.md`、`design-system.md` 标题统一至 v2.10.10；更正 `project.md` 设计系统链接版本、`.github/CONTRIBUTING` 示例版本
+- **更新路线图**：`docs/roadmap.md` 当前能力基线由 v2.9.4/12 API/无 CI 更新为 v2.10.10/29 API/CI 已落地，并标记短期项完成状态
+- **修正部署文档**：`docs/deployment.md` 后台监控 API 数量 12 → 29
+
 ## [2.10.10] - 2026-08-16
 
 ### Feat

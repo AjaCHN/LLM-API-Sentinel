@@ -1,4 +1,4 @@
-# UI 组件规范文档 (v2.10.1 - Dark Indigo Theme)
+# UI 组件规范文档 (v2.10.10 - Dark Indigo Theme)
 
 ## 1. 设计原则
 
@@ -23,7 +23,7 @@
 - **样式框架**: Tailwind CSS 4.1.11（`@theme` 块定义 CSS 变量桥接）
 - **组件库**: shadcn/ui（基于 Radix UI primitives）
 - **图标库**: Lucide React
-- **图表库**: Recharts AreaChart（SSR 禁用，动态加载），见 `components/LatencyHistoryChart.tsx`
+- **图表库**: 手写 SVG 面积图（零依赖，React 应用）；Recharts 3.8.0 作为可替换备选，见 `components/LatencyHistoryChart.tsx`
 - **颜色系统**: 深色紫色/靛蓝主题，CSS 变量驱动（详见 [design-system.md](design-system.md) 和 §5.1）
 - **动画**: 自定义 keyframes（fade-in-up / spin-once / shimmer 等），遵循 `prefers-reduced-motion` 规范
 
@@ -84,7 +84,7 @@ ApiStatusGrid
 
 ### 2.3 LatencyHistoryChart
 
-**功能**：展示历史延迟趋势（基于 Recharts AreaChart，`ssr:false` 动态加载）
+**功能**：展示历史延迟趋势（基于手写 SVG 面积图，零图表库依赖；React 应用可平滑替换为 Recharts）
 
 **Props**（React 版本规划）：
 ```typescript
@@ -98,7 +98,7 @@ interface LatencyHistoryChartProps {
 **设计特点**（与 `prototype/assets/app.js` 的 `renderMultiLineChart` 对齐）：
 - 容器 `rounded-xl border bg-card`（shadcn Card）
 - 容器 `rounded-xl border bg-card`（shadcn Card）
-- 固定响应式高度：`h-[320px] md:h-[420px]`（Recharts 容器）
+- 固定响应式高度：`h-[320px] md:h-[420px]`（SVG 容器，`viewBox` 自适应）
 - 网格线透明度 0.06，仅水平方向
 - 每条 API 曲线：独立纯色 + 8% 不透明度区域填充（area fill）
 - 阈值线（1500ms）虚线标注
@@ -277,7 +277,7 @@ DashboardClient
 
 ### 2.14 ThemeProvider
 
-**功能**：管理深色/浅色双主题，基于 next-themes（`attribute="class"`），顶栏提供切换按钮（Sun/Moon 图标）
+**功能**：管理纯深色沉浸主题（双档深度：`:root` 默认深 / `.dark` 更深），基于 next-themes（`attribute="class"`），顶栏提供深浅档切换按钮（Moon 图标）
 
 **Props**：继承 `NextThemesProvider` 的所有 props
 
@@ -411,7 +411,7 @@ data-[state=checked]:bg-primary data-[state=unchecked]:bg-input
 
 | 特征 | 规范 |
 |------|------|
-| 容器 | `Card > CardContent p-4`；Recharts `ResponsiveContainer` + `AreaChart`，高度 `h-[320px] md:h-[420px]` |
+| 容器 | `Card > CardContent p-4`；手写 SVG `<svg viewBox>` 响应式，高度 `h-[320px] md:h-[420px]`（Recharts 可作替换实现） |
 | 网格 | `strokeDasharray="6 6"`，`opacity=0.06`，vertical=false |
 | X 轴 | fontSize 11，opacity 0.4，dy=12，>20 点时 `preserveStartEnd` |
 | Y 轴 | fontSize 11，opacity 0.4，insideLeft "ms" 标签 |
@@ -803,7 +803,7 @@ stagger-8 → 0.40s
 | 颜色过渡（按钮 hover） | 150-300ms | `ease-out` | `transition-colors` |
 | 卡片位移 hover | 350-400ms | `cubic-bezier(0.23, 1, 0.32, 1)` | card-hover-lift |
 | 入场动画 | 400-800ms | `cubic-bezier(0.25, 0.1, 0.25, 1)` | fade-in-up（原型统一使用 fade-in-up 交错，无 slide-in-right） |
-| 图表动画 | 实时重绘 + 0.4-0.5s 透明度过渡 | Recharts AreaChart | 区域填充淡入、Tooltip 跟随、hover 高亮 |
+| 图表动画 | 实时重绘 + 0.4-0.5s 透明度过渡 | 手写 SVG（非 Recharts） | 区域填充淡入、Tooltip 跟随、hover 高亮 |
 | 缩放反馈 | 200ms | `ease-out` | apple-button:active scale(0.96) |
 
 ### 6.4 动画使用原则
@@ -852,7 +852,7 @@ stagger-8 → 0.40s
 
 #### LatencyHistoryChart 高度
 
-图表采用 Recharts AreaChart，固定响应式高度 `h-[320px] md:h-[420px]`，自适应宽度。
+图表采用手写 SVG 面积图（零依赖），固定响应式高度 `h-[320px] md:h-[420px]`，自适应宽度（Recharts 可作为替换实现）。
 
 ### 7.3 内容可见性适配
 

@@ -1,35 +1,31 @@
 # 发展路线与改进建议 (Roadmap & Improvement Proposals)
 
-本文档基于项目当前状态（v2.9.4：静态前端 + Supabase 后端、12 个中美 API 实时监控、16 语言、手写 SVG 图表、纯深色双档主题、可选 Express 安全服务器），提出务实的发展方向。按优先级分为短期、中期、长期三类，并单列工程质量项。
+本文档基于项目当前状态（v2.10.10：静态前端 + Supabase 后端、29 个中美 API 实时监控、16 语言、手写 SVG 图表、纯深色双档主题、可选 Express 安全服务器、CI/CD 已落地），提出务实的发展方向。按优先级分为短期、中期、长期三类，并单列工程质量项。
 
 ## 当前能力基线
 
-- **监控对象**：美国 5 家（OpenAI / Anthropic / Google / Meta / Mistral）+ 中国 7 家（Kimi / Zhipu / Baichuan / Qwen / Hunyuan / Ernie / DeepSeek）。
-- **核心功能**：连通性 + 延迟监控、实时状态网格、历史趋势（24H/7D/30D）、阈值告警、Google OAuth 保护、Supabase Realtime 同步。
-- **部署**：默认静态导出（`out/`）至 Vercel / EdgeOne / Netlify；可选 `server.ts` 自建安全服务器。
-- **工程现状**：Jest + Testing Library 已接入，但**尚无 CI**；Firebase 残留配置仅作迁移参考。
+- **监控对象**：29 个主流 LLM API（美国 16 家 + 中国 13 家），覆盖 OpenAI / Anthropic / Google / Meta / Mistral / xAI / Cohere / Perplexity / 智谱 / 阿里 / 腾讯 / 百度 / DeepSeek / Kimi / 火山等。
+- **核心功能**：连通性 + 延迟监控、实时状态网格（扁平、不按供应商分组）、历史趋势（24H/7D/30D）、阈值告警、Google OAuth 保护、Supabase Realtime 同步。
+- **部署**：默认静态导出（`out/`）至 Vercel / EdgeOne / Netlify；可选 `server.ts` 自建安全服务器（Helmet + 限流）。
+- **工程现状**：Jest + 覆盖率门禁已接入（`jest.config.cjs` 设 statements/functions/lines ≥ 70%）；CI（`ci.yml`）+ Release（`release.yml`）已上线；多渠道告警已支持 Webhook / Slack / Discord / Teams / 钉钉 / 飞书；Firebase 残留配置仅作迁移参考。
 
 ---
 
 ## 短期（稳定性与工程化）
 
-### 1. 引入 CI/CD（最高优先级）
-当前仓库无 `.github/workflows/`，所有 lint/test/build 依赖手动执行。
-- 新增 `ci.yml`：PR 时跑 `pnpm lint` + `pnpm test` + `pnpm build`。
-- 新增 `deploy-preview.yml`：PR 预览部署（Vercel Preview / EdgeOne 预览）。
-- 新增 `release.yml`：打 tag 时自动构建并发布。
-- 门禁：测试未过禁止合并（配合现有 PR 模板的检查清单）。
+### 1. 引入 CI/CD（✅ 已完成）
+- `ci.yml`：PR/push 到 main/dev 触发 `pnpm lint` + `pnpm test --coverage` + `pnpm build` 门禁。
+- `release.yml`：语义化版本 tag 触发静态产物构建与 GitHub Release。
+- 门禁：测试/覆盖未过禁止合并（配合 PR 模板检查清单）。
 
-### 2. 补全单元测试与覆盖率
-- 优先覆盖纯逻辑模块：`app/lib/monitor.ts`（健康检查协议）、`app/lib/geo.ts`（地理映射）、`app/hooks/useI18n.ts`（持久化与语言检测）。
-- 在 `jest.config.cjs` 设定覆盖率阈值（如 statements ≥ 70%），防止回归。
-- 为 `LatencyHistoryChart` 等 SVG 组件补快照测试。
+### 2. 补全单元测试与覆盖率（🟡 进行中）
+- 已覆盖纯逻辑模块：`app/lib/monitor.ts`、`cache-*.ts`、`concurrency.ts`、`i18n.ts`、`metrics.ts`、`notification-platforms.ts`、`webhook-formatter.ts`、`utils.ts`、`supabase-mapping.ts`、`cache-validation.ts`、`notification.ts`。
+- `jest.config.cjs` 已设覆盖率阈值（statements/functions/lines ≥ 70%）。
+- 待补：为 `LatencyHistoryChart` 等 SVG 组件补快照测试；提升 branches 覆盖率。
 
-### 3. 落地后台监控的官方示例
-`docs/deployment.md` 提及后台监控依赖 Supabase Cron / Edge Functions，但缺少可复制的样例。
-- 提供 `supabase/functions/monitor/index.ts` 示例 Edge Function（执行 12 API 检查并写入表）。
-- 提供 `supabase/cron.sql` 示例（每 5 分钟调度）。
-- 降低自托管用户的上手成本。
+### 3. 落地后台监控的官方示例（✅ 已完成）
+- 已提供 `supabase/functions/monitor/index.ts` 示例 Edge Function（探测 29 API 并写入 `api_status` / `status_history`，含 SSRF 防护与超时中断）。
+- 已提供 `supabase/cron.sql` 示例（pg_cron 每 5 分钟调度 + 90 天数据保留策略）。
 
 ---
 
@@ -93,8 +89,8 @@
 
 ## 建议落地顺序
 
-1. **CI/CD + 测试覆盖**（立刻提升交付可靠性）
-2. **后台监控示例 + 多渠道告警**（让核心监控真正可用、可感知）
+1. ~~**CI/CD + 测试覆盖**~~（✅ 已完成，持续提升覆盖率）
+2. ~~**后台监控示例 + 多渠道告警**~~（✅ 已完成监控示例；多渠道告警已支持 Slack/Teams/Discord/钉钉/飞书）
 3. **公开状态页 + SLA**（对外价值最大化）
 4. **可配置目标 + 平台化 API**（向多租户/生态演进）
 5. 持续清理技术债

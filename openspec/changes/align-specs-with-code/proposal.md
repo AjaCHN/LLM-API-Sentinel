@@ -15,9 +15,9 @@
 
 ### 规范文档修正（features.md / ui.md）
 1. **API 监控范围**：12 → 29 个（与 `app/constants/index.ts` DEFAULT_APIS 一致），补全 §2.1 表格
-2. **主题**：纯深色 → 深/浅双主题（next-themes，顶栏切换按钮）
+2. **主题**：深/浅双主题 → 纯深色双档（` :root` 默认深 / `.dark` 更深），顶栏切换深浅档（无浅色主题）
 3. **ApiStatusGrid**：按 provider 分组 → 扁平网格（grid 4 列 @ xl/2xl）
-4. **图表库**：手写 SVG → Recharts AreaChart（ssr:false 动态加载）
+4. **图表库**：Recharts → 手写 SVG 面积图（零依赖）；Recharts 3.8.0 作为可替换备选（ssr:false 动态加载）
 5. **页面宽度**：max-w-7xl → max-w-[1600px]
 6. **Alerts 色值**：medium=amber-500 / low=blue-400（对齐代码）
 7. **分享键名**：明确 `share.promos` 数组语义（与代码改造后的实现一致）

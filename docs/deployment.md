@@ -56,7 +56,7 @@ node server.ts
 
 ## 4. 后台监控任务
 
-无论采用哪种前端部署方式，后台监控（每 5 分钟检查 12 个 API 并写入 Supabase）建议在 Supabase 侧运行：
+无论采用哪种前端部署方式，后台监控（每 5 分钟检查全部 API —— 当前 29 个，并写入 Supabase）建议在 Supabase 侧运行：
 
 - 使用 **Supabase Cron** 定时调用 Edge Function；或
 - 部署 Edge Function 并由外部调度器触发。

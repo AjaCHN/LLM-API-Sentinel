@@ -1,4 +1,4 @@
-# LLM API Sentinel 项目规范 (v2.10.1)
+# LLM API Sentinel 项目规范 (v2.10.10)
 
 ## 1. 项目概述
 
@@ -30,7 +30,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 | 图表 | 手写 SVG（零依赖，React 应用）；Recharts 3.8.0 作为可替换备选 | 3.8.0 |
 | 图标 | Lucide React | - |
 | 状态管理 | Zustand 5.0.12 | 5.0.12 |
-| 设计系统 | [design-system.md](design-system.md) | v2.9.4 |
+| 设计系统 | [design-system.md](design-system.md) | v2.10.10 |
 | 国际化 | 自定义 i18n 系统 | - |
 | 时间处理 | date-fns 4.1.0 | 4.1.0 |
 
@@ -133,7 +133,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   └── error.ts              # 错误/通知 store
 │   ├── locales/                  # 语言资源 JSON（16 种语言）
 │   ├── types/index.ts            # 类型定义（按逻辑分组）
-│   ├── constants/index.ts        # 常量与默认 API 配置（12 个 API）
+│   ├── constants/index.ts        # 常量与默认 API 配置（29 个 API）
 │   ├── style.css                 # 全局样式（CSS 变量 + Tailwind @theme + 动画）
 │   ├── globals.css               # 全局基础样式
 │   ├── layout.tsx                # 根布局（Server Component，ThemeProvider + StructuredData）
