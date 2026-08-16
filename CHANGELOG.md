@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.10.4] - 2026-08-16
+
+### Refactor
+- **对齐规范与代码**: openspec/features.md、ui.md 修正 9 类过时描述（API 29 个、深/浅双主题、扁平网格、Recharts、max-w-[1600px]、Alerts 色值、share.promos 数组）
+- **share-content.ts 改造**: promo1..5 平铺键 → 真正的 share.promos 数组（消除规范偏差根因）
+- **i18n**: 16 个语言包 share.promo1..5 迁移至 share.promos 数组
+- **ApiStatusCard**: containIntrinsicSize 估算高度 168px → 200px，避免内容溢出滚动跳动
+- **prototype 归档**: 顶部与 data.js 标注历史原型及与 app 的差异清单
+- 新增 openspec/change align-specs-with-code 记录本次对齐
+
 ## [2.10.3] - 2026-08-16
 
 ### Chore

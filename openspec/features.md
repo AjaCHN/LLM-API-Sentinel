@@ -22,7 +22,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控系统，提供�
 
 **功能描述**：实时监控全球主流 AI 供应商的 API 状态和延迟
 
-**监控范围**（共 12 个 API）：
+**监控范围**（共 29 个 API，硬编码于 `app/constants/index.ts` 的 `DEFAULT_APIS`）：
 
 | 区域 | API 名称 | Provider | 状态 |
 |-----|---------|----------|------|
@@ -31,6 +31,17 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控系统，提供�
 | 美国 | Gemini 1.5 | Google | ✅ |
 | 美国 | Llama 3 (Groq) | Meta | ✅ |
 | 美国 | Mistral Large | Mistral | ✅ |
+| 美国 | Grok (xAI) | xAI | ✅ |
+| 美国 | Command R (Cohere) | Cohere | ✅ |
+| 美国 | Sonar (Perplexity) | Perplexity | ✅ |
+| 美国 | Llama (Together) | Together AI | ✅ |
+| 美国 | Replicate | Replicate | ✅ |
+| 美国 | Stability AI | Stability AI | ✅ |
+| 美国 | Hugging Face | HuggingFace | ✅ |
+| 美国 | OpenRouter | OpenRouter | ✅ |
+| 美国 | Fireworks AI | Fireworks | ✅ |
+| 美国 | NVIDIA NIM | NVIDIA | ✅ |
+| 美国 | AI21 Labs | AI21 | ✅ |
 | 中国 | Kimi (Moonshot) | Moonshot | ✅ |
 | 中国 | GLM-4 (Zhipu) | ZhipuAI | ✅ |
 | 中国 | Baichuan 2 | Baichuan | ✅ |
@@ -38,6 +49,12 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控系统，提供�
 | 中国 | Hunyuan (Tencent) | Tencent | ✅ |
 | 中国 | Ernie 4.0 (Baidu) | Baidu | ✅ |
 | 中国 | DeepSeek V3 | DeepSeek | ✅ |
+| 中国 | MiniMax | MiniMax | ✅ |
+| 中国 | Spark (iFlytek) | iFlytek | ✅ |
+| 中国 | Doubao (Volcano) | ByteDance | ✅ |
+| 中国 | Yi (01.AI) | 01.AI | ✅ |
+| 中国 | SiliconFlow | SiliconFlow | ✅ |
+| 中国 | StepFun | StepFun | ✅ |
 
 **监控指标**：
 - **状态**：online / offline / degraded
@@ -129,7 +146,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控系统，提供�
 
 ### 2.5 主题切换
 
-**功能描述**：纯深色沉浸主题（双档深度：`:root` 默认深 / `.dark` 更深），基于 next-themes，不提供浅色主题
+**功能描述**：深色/浅色双主题（基于 next-themes，`attribute="class"`），支持系统/深/浅切换，顶栏提供主题切换按钮
 
 **主题模式**：
 - **默认深度**：`:root` 默认深色主题
@@ -467,7 +484,7 @@ sequenceDiagram
 ### 7.1 API 监控功能
 
 **验收标准**：
-- [ ] 所有 12 个 API 都能被正确监控
+- [ ] 所有 29 个 API 都能被正确监控
 - [ ] 状态显示正确（online/offline/degraded）
 - [ ] 延迟显示准确（毫秒级）
 - [ ] 后台每 5 分钟自动检查
@@ -500,7 +517,7 @@ sequenceDiagram
 ### 7.5 主题切换
 
 **验收标准**：
-- [ ] 支持纯深色双档主题（`:root` 默认深 / `.dark` 更深）
+- [ ] 支持深色/浅色双主题（`:root`/`.light` 浅色，` .dark` 深色）
 - [ ] 主题切换即时生效
 - [ ] 主题偏好持久化
 

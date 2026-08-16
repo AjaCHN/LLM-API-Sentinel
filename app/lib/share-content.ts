@@ -1,29 +1,27 @@
-// app/lib/share-content.ts v2.9.7
-// 分享功能文案工具: 复制分析链接时附带一条随机项目宣传文案
-// 文案以 share.promo1..share.promoN 形式存放于 i18n，运行时随机挑选序号
+// app/lib/share-content.ts v2.10.4
+type TranslateFn = (key: string) => string;
 
-/** 宣传文案条数（en / zh-cn / zh-tw 均提供该数量条） */
-export const PROMO_COUNT = 5;
+/** 随机选取一条宣传文案（promos 数组，索引随机） */
+function getRandomPromo(t: TranslateFn): string {
+  const promos = t('share.promos') as unknown;
+  if (Array.isArray(promos) && promos.length > 0) {
+    const idx = Math.floor(Math.random() * promos.length);
+    return String(promos[idx] ?? '');
+  }
+  return '';
+}
 
-/** 当前 URL 查询参数是否已经包含分享来源标记 */
+/** 构建带 ref 参数的分析分享链接 */
 export function buildShareUrl(): string {
   if (typeof window === 'undefined') return '';
   const url = new URL(window.location.href);
-  // 标记分享来源，便于统计（幂等：重复添加不重复）
   url.searchParams.set('ref', 'share');
   return url.toString();
 }
 
-/** 从 share.promo1..share.promoN 中随机抽取一条文案 */
-export function getRandomPromo(t: (key: string) => string): string {
-  const n = Math.floor(Math.random() * PROMO_COUNT) + 1;
-  // 未翻译的文案会回退到 en 同序号，仍然可用
-  return t(`share.promo${n}`);
-}
-
-/** 组装分享文本: 分析链接 + 换行 + 随机宣传文案 */
-export function buildShareText(t: (key: string) => string): string {
+/** 组装最终分享文本：分享链接 + 换行 + 随机宣传文案 */
+export function buildShareText(t: TranslateFn): string {
   const url = buildShareUrl();
   const promo = getRandomPromo(t);
-  return `${url}\n${promo}`;
+  return promo ? `${url}\n${promo}` : url;
 }

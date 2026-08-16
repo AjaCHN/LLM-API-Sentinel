@@ -23,7 +23,7 @@
 - **样式框架**: Tailwind CSS 4.1.11（`@theme` 块定义 CSS 变量桥接）
 - **组件库**: shadcn/ui（基于 Radix UI primitives）
 - **图标库**: Lucide React
-- **图表库**: 原型为手写 SVG（零依赖）；React 应用原型期同构，可平滑替换为 Recharts AreaChart
+- **图表库**: Recharts AreaChart（SSR 禁用，动态加载），见 `components/LatencyHistoryChart.tsx`
 - **颜色系统**: 深色紫色/靛蓝主题，CSS 变量驱动（详见 [design-system.md](design-system.md) 和 §5.1）
 - **动画**: 自定义 keyframes（fade-in-up / spin-once / shimmer 等），遵循 `prefers-reduced-motion` 规范
 
@@ -59,7 +59,7 @@ interface DashboardHeaderProps {
 
 ### 2.2 ApiStatusGrid
 
-**功能**：以网格形式展示所有 API 状态卡片，支持按供应商分组
+**功能**：以网格形式展示所有 API 状态卡片（扁平网格，不按供应商分组）
 
 **Props**：
 ```typescript
@@ -84,7 +84,7 @@ ApiStatusGrid
 
 ### 2.3 LatencyHistoryChart
 
-**功能**：展示历史延迟趋势（原型为**手写 SVG**，零图表库依赖；React 应用原型期同构，可平滑替换为 Recharts AreaChart）
+**功能**：展示历史延迟趋势（基于 Recharts AreaChart，`ssr:false` 动态加载）
 
 **Props**（React 版本规划）：
 ```typescript
@@ -97,7 +97,8 @@ interface LatencyHistoryChartProps {
 
 **设计特点**（与 `prototype/assets/app.js` 的 `renderMultiLineChart` 对齐）：
 - 容器 `rounded-xl border bg-card`（shadcn Card）
-- 响应式高度：`aspect-ratio: 760/240`，`width:100%` + `preserveAspectRatio="xMidYMid meet"`（不再固定 320/420px）
+- 容器 `rounded-xl border bg-card`（shadcn Card）
+- 固定响应式高度：`h-[320px] md:h-[420px]`（Recharts 容器）
 - 网格线透明度 0.06，仅水平方向
 - 每条 API 曲线：独立纯色 + 8% 不透明度区域填充（area fill）
 - 阈值线（1500ms）虚线标注
@@ -123,8 +124,8 @@ interface AlertsDropdownProps {
 | 严重程度 | 颜色 |
 |---------|------|
 | `critical` / `high` | text-destructive (#ef4444) |
-| `medium` | text-amber-600 |
-| `low` | text-blue-600 |
+| `medium` | text-amber-500 |
+| `low` | text-blue-400 |
 
 **空状态**：无告警时显示 `CheckCircle2` 图标 + 文字提示
 
@@ -147,7 +148,7 @@ interface AlertsDropdownProps {
 
 **三个模块**：
 1. Global Coverage（全球 AI 供应商监控）
-2. UI 技术栈（Next.js + Tailwind CSS + shadcn/ui + 手写 SVG 图表）
+2. UI 技术栈（Next.js + Tailwind CSS + shadcn/ui + Recharts 图表）
 3. Data Integrity（Supabase PostgreSQL 持久化）
 
 ### 2.7 StatCard
@@ -276,7 +277,7 @@ DashboardClient
 
 ### 2.14 ThemeProvider
 
-**功能**：管理纯深色沉浸主题（双档深度：`:root` 默认深 / `.dark` 更深），基于 next-themes（不提供浅色主题）
+**功能**：管理深色/浅色双主题，基于 next-themes（`attribute="class"`），顶栏提供切换按钮（Sun/Moon 图标）
 
 **Props**：继承 `NextThemesProvider` 的所有 props
 
@@ -399,8 +400,7 @@ data-[state=checked]:bg-primary data-[state=unchecked]:bg-input
 
 | 特征 | 规范 |
 |------|------|
-| 布局 | 外部 flex gap-12；每个 provider 内 `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5` |
-| 分组标题 | `rounded-xl bg-primary/15` 图标容器 + `text-xl font-semibold` 标题 + secondary Badge |
+| 布局 | 扁平 `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4`，不按 provider 分组 |
 | 卡片容器 | `Card` + `bg-card/80 backdrop-blur-sm` + 悬停 `border-primary/30` + `card-hover-lift` |
 | 状态色带 | 离线态左侧红色竖条 `from-destructive via destructive/70 to-transparent` |
 | 状态圆点 | size-2.5 rounded-full + `shadow-[0_0_12px_*]` 光晕，非 online 使用 `animate-pulse` |
@@ -411,7 +411,7 @@ data-[state=checked]:bg-primary data-[state=unchecked]:bg-input
 
 | 特征 | 规范 |
 |------|------|
-| 容器 | `Card > CardContent p-4`；图表 SVG `aspect-ratio:760/240; width:100%; preserveAspectRatio="xMidYMid meet"` |
+| 容器 | `Card > CardContent p-4`；Recharts `ResponsiveContainer` + `AreaChart`，高度 `h-[320px] md:h-[420px]` |
 | 网格 | `strokeDasharray="6 6"`，`opacity=0.06`，vertical=false |
 | X 轴 | fontSize 11，opacity 0.4，dy=12，>20 点时 `preserveStartEnd` |
 | Y 轴 | fontSize 11，opacity 0.4，insideLeft "ms" 标签 |
@@ -439,7 +439,7 @@ data-[state=checked]:bg-primary data-[state=unchecked]:bg-input
 | 区域 | 规范 |
 |------|------|
 | 容器 | `sticky top-0 z-50 border-b border-border/30 bg-background/80 backdrop-blur-xl h-16` |
-| 内部宽度 | `max-w-7xl px-6 md:px-10 lg:px-16` |
+| 内部宽度 | `max-w-[1600px] px-6 md:px-10 lg:px-16` |
 | 左侧品牌 | size-10 rounded-xl + primary/accent 渐变，悬停 group-hover:scale-105 + blur-xl 光晕 |
 | 右侧按钮 | variant="ghost" size="icon"，均带 aria-label |
 | 告警徽标 | absolute -right-0.5 -top-0.5 size-5 rounded-full text-[10px] font-bold；critical→destructive+animate-pulse，其他→primary |
@@ -489,7 +489,7 @@ data-[state=checked]:bg-primary data-[state=unchecked]:bg-input
 | **选中/展开** | Dialog（AlertsDropdown） | 背景遮罩 + 内容缩放淡入；ESC 键关闭；点击外部关闭 |
 | **切换开关** | 主题切换按钮 | Sun/Moon 图标切换；悬停显示对应色调预览 |
 | **表单输入** | ApiConfig Input | focus-visible:ring-1 ring-ring；placeholder text-muted-foreground；disabled:opacity-50 |
-| **工具提示** | 图表 hover Tooltip（手写 SVG） | 内容卡片样式，阴影 boxShadow 0 8px 24px rgba(0,0,0,0.12)，跟手定位 + 过渡动画 |
+| **工具提示** | 图表 hover Tooltip（Recharts） | 内容卡片样式，阴影 boxShadow 0 8px 24px rgba(0,0,0,0.12)，跟手定位 + 过渡动画 |
 
 ### 4.2 状态指示器规范
 
@@ -803,7 +803,7 @@ stagger-8 → 0.40s
 | 颜色过渡（按钮 hover） | 150-300ms | `ease-out` | `transition-colors` |
 | 卡片位移 hover | 350-400ms | `cubic-bezier(0.23, 1, 0.32, 1)` | card-hover-lift |
 | 入场动画 | 400-800ms | `cubic-bezier(0.25, 0.1, 0.25, 1)` | fade-in-up（原型统一使用 fade-in-up 交错，无 slide-in-right） |
-| 图表动画 | 实时重绘 + 0.4-0.5s 透明度过渡 | 手写 SVG | 区域填充淡入、图例切换、hover 扫描线（无 Recharts） |
+| 图表动画 | 实时重绘 + 0.4-0.5s 透明度过渡 | Recharts AreaChart | 区域填充淡入、Tooltip 跟随、hover 高亮 |
 | 缩放反馈 | 200ms | `ease-out` | apple-button:active scale(0.96) |
 
 ### 6.4 动画使用原则
@@ -852,7 +852,7 @@ stagger-8 → 0.40s
 
 #### LatencyHistoryChart 高度
 
-图表采用 `aspect-ratio: 760/240` 自适应宽度，不依赖固定像素高度，移动端/桌面端等比缩放无横向拉伸。
+图表采用 Recharts AreaChart，固定响应式高度 `h-[320px] md:h-[420px]`，自适应宽度。
 
 ### 7.3 内容可见性适配
 
@@ -886,7 +886,7 @@ stagger-8 → 0.40s
         │   ├── Right Actions (Bell / Theme / Geo / User / Login)
         │   └── AlertsDropdown (Dialog + DialogContent max-w-lg)
         ├── GeoOptInDialog (地理位置授权弹窗)
-        ├── <main> (mx-auto max-w-7xl py-8 md:py-12)
+        ├── <main> (mx-auto max-w-[1600px] py-8 md:py-12)
         │   ├── Hero Section
         │   │   ├── 主标题 + 副标题描述
         │   │   └── 4 × StatCard (online/degraded/offline/avgLatency)
@@ -912,7 +912,7 @@ stagger-8 → 0.40s
 
 ### 8.3 最大宽度
 
-- 所有内容容器：`max-w-7xl`
+- 所有内容容器：`max-w-[1600px]`
 - AlertsDropdown Dialog 内容：`max-w-lg`
 - ApiConfig 新 API 表单：`sm:grid-cols-3`
 

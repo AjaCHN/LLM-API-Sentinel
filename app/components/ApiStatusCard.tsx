@@ -47,7 +47,7 @@ export default function ApiStatusCard({ api, provider, index }: ApiStatusCardPro
         animationDelay: `${index * 0.08}s`,
         // 性能优化: content-visibility 优化离屏渲染
         contentVisibility: 'auto',
-        containIntrinsicSize: '0 168px'
+        containIntrinsicSize: '0 200px'
       }}
     >
       {!isOffline && (
