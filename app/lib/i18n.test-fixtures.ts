@@ -1,4 +1,4 @@
-// app/lib/i18n.test-fixtures.ts v2.9.0
+// app/lib/i18n.test-fixtures.ts v2.10.7
 import en from '../locales/en.json';
 import zhCn from '../locales/zh-cn.json';
 import zhTw from '../locales/zh-tw.json';
@@ -17,7 +17,7 @@ import tr from '../locales/tr.json';
 import vi from '../locales/vi.json';
 
 /** 全部语言包（code -> 嵌套字典），供翻译完整性测试复用 */
-export const allLocales: Record<string, Record<string, Record<string, string>>> = {
+export const allLocales: Record<string, Record<string, Record<string, string | string[]>>> = {
   en,
   'zh-CN': zhCn,
   'zh-TW': zhTw,

@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.10.7] - 2026-08-16
+
+### Fix
+- **修复构建失败**: `app/lib/i18n.test-fixtures.ts` 与 `app/lib/i18n.ts` 的语言包类型签名由 `Record<string, string>` 放宽为 `Record<string, string | string[]>`，匹配 `share.promos` 等字符串数组字段，消除 TS 类型不兼容导致的 `next build` 编译错误
+- 同步版本至 v2.10.7，并补齐 `openspec/config.yaml` 遗漏的 2.10.6 版本号
+
 ## [2.10.6] - 2026-08-16
 
 ### Refactor
