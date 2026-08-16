@@ -1,4 +1,4 @@
-// app/components/DashboardSkeleton.tsx v2.9.7
+// app/components/DashboardSkeleton.tsx v2.10.5
 // LLM API Sentinel — Dashboard Skeleton (pure presentational)
 // Static shimmer-only layout that mirrors the general dashboard structure.
 // No hooks, no state, no interactivity — safe for Suspense fallback.
@@ -7,7 +7,7 @@ export default function DashboardSkeleton() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Header shadow bar */}
       <header className="sticky top-0 z-40 w-full border-b border-border/30 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto max-w-[1600px] px-6 md:px-10 lg:px-16">
+        <div className="mx-auto max-w-[1400px] px-6 md:px-10 lg:px-16">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="h-8 w-8 rounded-lg bg-muted/40 animate-pulse" />
@@ -22,7 +22,7 @@ export default function DashboardSkeleton() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1600px] px-6 md:px-10 lg:px-16">
+      <main className="mx-auto max-w-[1400px] px-6 md:px-10 lg:px-16">
         {/* Hero shimmer */}
         <section className="relative py-16 md:py-24 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
@@ -78,7 +78,7 @@ export default function DashboardSkeleton() {
           </div>
 
           {/* Status grid shimmer placeholder */}
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={`sg-${i}`}

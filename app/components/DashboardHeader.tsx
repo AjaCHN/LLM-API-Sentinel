@@ -1,4 +1,4 @@
-// app/components/DashboardHeader.tsx v2.9.7
+// app/components/DashboardHeader.tsx v2.10.5
 'use client';
 
 import Image from 'next/image';
@@ -56,7 +56,7 @@ export default function DashboardHeader({
 
   return (
     <header id="app-header" className="sticky top-0 z-50 border-b border-border/30 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-4 px-6 md:px-10 lg:px-16">
+      <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between gap-4 px-6 md:px-10 lg:px-16">
         <div className="flex items-center gap-3">
           <div className="relative group">
             <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 transition-transform duration-300 group-hover:scale-105">

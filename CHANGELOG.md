@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.10.6] - 2026-08-16
+
+### Refactor
+- **对齐设计原型（低风险项）**: 页面宽度 max-w-[1600px] → max-w-[1400px]（DashboardClient/Header/Skeleton 三处），状态网格移除 2xl 列档（对齐原型 xl:grid-cols-4）
+- **openspec/ui.md 同步**: 容器宽度与网格列数描述回调至原型范式（1400px / 无 2xl）
+- **prototype 注释修正**: 顶部与 data.js 由「历史归档」改为「设计原型对齐基准」，差异清单标注为有意保留的增强（29 API、双主题、Recharts、扁平网格）
+- 保留 29 个 API 与浅色主题等已上线能力不回退
+
 ## [2.10.5] - 2026-08-16
 
 ### Chore

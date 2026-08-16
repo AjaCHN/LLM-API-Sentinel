@@ -400,7 +400,7 @@ data-[state=checked]:bg-primary data-[state=unchecked]:bg-input
 
 | 特征 | 规范 |
 |------|------|
-| 布局 | 扁平 `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4`，不按 provider 分组 |
+| 布局 | 扁平 `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4`，不按 provider 分组 |
 | 卡片容器 | `Card` + `bg-card/80 backdrop-blur-sm` + 悬停 `border-primary/30` + `card-hover-lift` |
 | 状态色带 | 离线态左侧红色竖条 `from-destructive via destructive/70 to-transparent` |
 | 状态圆点 | size-2.5 rounded-full + `shadow-[0_0_12px_*]` 光晕，非 online 使用 `animate-pulse` |
@@ -439,7 +439,7 @@ data-[state=checked]:bg-primary data-[state=unchecked]:bg-input
 | 区域 | 规范 |
 |------|------|
 | 容器 | `sticky top-0 z-50 border-b border-border/30 bg-background/80 backdrop-blur-xl h-16` |
-| 内部宽度 | `max-w-[1600px] px-6 md:px-10 lg:px-16` |
+| 内部宽度 | `max-w-[1400px] px-6 md:px-10 lg:px-16` |
 | 左侧品牌 | size-10 rounded-xl + primary/accent 渐变，悬停 group-hover:scale-105 + blur-xl 光晕 |
 | 右侧按钮 | variant="ghost" size="icon"，均带 aria-label |
 | 告警徽标 | absolute -right-0.5 -top-0.5 size-5 rounded-full text-[10px] font-bold；critical→destructive+animate-pulse，其他→primary |
@@ -886,7 +886,7 @@ stagger-8 → 0.40s
         │   ├── Right Actions (Bell / Theme / Geo / User / Login)
         │   └── AlertsDropdown (Dialog + DialogContent max-w-lg)
         ├── GeoOptInDialog (地理位置授权弹窗)
-        ├── <main> (mx-auto max-w-[1600px] py-8 md:py-12)
+        ├── <main> (mx-auto max-w-[1400px] py-8 md:py-12)
         │   ├── Hero Section
         │   │   ├── 主标题 + 副标题描述
         │   │   └── 4 × StatCard (online/degraded/offline/avgLatency)
@@ -912,7 +912,7 @@ stagger-8 → 0.40s
 
 ### 8.3 最大宽度
 
-- 所有内容容器：`max-w-[1600px]`
+- 所有内容容器：`max-w-[1400px]`
 - AlertsDropdown Dialog 内容：`max-w-lg`
 - ApiConfig 新 API 表单：`sm:grid-cols-3`
 

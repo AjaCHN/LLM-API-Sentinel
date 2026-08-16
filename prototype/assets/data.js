@@ -1,8 +1,6 @@
 /* LLM API Sentinel - Prototype Shared Data & i18n
- * ⚠️ 历史原型：本文件仅含 12 个 API 与手写 SVG 图表，已落后 app/：
- *   - app/constants/index.ts DEFAULT_APIS 实际为 29 个 API
- *   - app 使用 Recharts AreaChart（非手写 SVG）
- *   - app 已支持深/浅双主题（next-themes）
+ * 📐 设计原型数据基准：含 12 个 API 与手写 SVG 图表范式。
+ * app/ 已扩展（DEFAULT_APIS=29、Recharts、双主题），详见 prototype/index.html 顶部说明。
  * 文件路径: /workspace/prototype/assets/data.js
  */
 

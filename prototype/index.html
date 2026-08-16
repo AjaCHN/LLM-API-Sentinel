@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <!--
-  ⚠️ 历史原型归档 (Legacy Prototype, v2.10.1)
-  - 本 prototype/ 为早期静态原型，已于 v2.10.0 与 app/ 实现产生差异：
-    1. API 数量：本原型硬编码 12 个；app/constants/index.ts 已扩至 29 个
-    2. 主题：本原型仅深色调（无 light）；app 已支持深/浅双主题（next-themes）
-    3. 图表：本原型为手写 SVG；app 使用 Recharts AreaChart
-    4. 布局：本原型 max-w-[1400px]；app 已加宽至 max-w-[1600px]
-  - 规范以 openspec/features.md + ui.md 为准，代码以 app/ 为准。本原型仅供历史参考。
+  📐 设计原型 (Design Prototype, v2.10.1)
+  - 本 prototype/ 为 app/ 的静态设计原型与对齐基准，描述核心视觉与交互范式：
+    · 布局宽度 max-w-[1400px]（app 于 v2.10.5 对齐此值，撤销此前的 1600px 加宽）
+    · 网格 xl 断点 4 列、无 2xl 档（app 已对齐）
+    · 纯深色双档、手写 SVG 图表、按 provider 分组等均为原型原始范式
+  - 以下差异为 app/ 有意保留的增强（非偏离，规范以 openspec/ 为准）：
+    1. API 数量：原型 12 个；app 已扩至 29 个（保留更广监测覆盖）
+    2. 主题：原型纯深双档；app 已支持深/浅双主题（保留，用户要求）
+    3. 图表：原型手写 SVG；app 使用 Recharts AreaChart（保留，已上线能力）
+    4. 网格：原型按 provider 分组；app 采用扁平网格（保留）
 -->
 <html lang="zh" class="">
 <head>
