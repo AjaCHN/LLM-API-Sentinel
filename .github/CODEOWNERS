@@ -1,0 +1,25 @@
+# CODEOWNERS v2.10.2
+# 定义仓库各路径的默认审查者。GitHub 在 PR 时据此自动请求审查。
+# 语法：<pattern> <@owner1> <@owner2>
+# 维护者请替换为实际 GitHub 用户名/团队。
+
+# 默认所有者（全仓库回退）
+*       @Tanox
+
+# 核心应用与配置
+/app/           @Tanox
+/openspec/      @Tanox
+/docs/          @Tanox
+
+# CI / 构建 / 部署
+/.github/       @Tanox
+/next.config.mjs    @Tanox
+/edgeone.config.js  @Tanox
+/server.ts          @Tanox
+
+# 数据库与后台
+/supabase/      @Tanox
+
+# 依赖与元数据
+/package.json   @Tanox
+/pnpm-lock.yaml @Tanox

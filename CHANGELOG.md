@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.10.2] - 2026-08-16
+
+### Docs
+- **补全 Community Health Files**: 新增 `.github/CODEOWNERS` 定义默认审查者
+- **同步规范版本**: `openspec/project.md`、`ui.md`、`design-system.md` 标题版本由 v2.9.4 对齐至 v2.10.1，消除版本漂移
+
 ## [2.10.1] - 2026-08-16
 
 ### Fix
