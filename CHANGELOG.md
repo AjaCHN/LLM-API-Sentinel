@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.10.1] - 2026-08-16
+
+### Fix
+- **消除时钟竞态**: `refreshData` 不再直接写 `last-sync-time`，仅更新 `lastSyncTs`，DOM 文本交由 `updateClock` 统一刷新
+- **峰值延迟失真**: `renderStats` 峰值改为涵盖所有非离线 API（含 degraded），避免漏掉最慢真实峰值（如 Gemini 1156ms）
+- **进度条区分度**: 延迟进度条基准由硬编码 500ms 改为动态最大值（下限 500ms），正常 API 与降级 API 区分更清晰
+
+### Style
+- **删除死代码**: `prototype/assets/styles.css` 移除已不使用的 `.light .bg-ambient` 覆盖块（主题为 `.dark` 体系）
+
+### A11y
+- **主题按钮语义**: `theme-toggle` 的 `aria-label`/`title` 随切换动态更新（"切换到更深深色/默认深色"），新增 i18n 键 `themeToDark`/`themeToDefault`
+- **图表读屏**: 延迟图表 `<svg>` 内增加 `<title>` 子元素，与 `aria-label` 双保险
+- **刷新反馈**: 刷新按钮刷新期间设置 `aria-busy="true"`
+- **对话框焦点陷阱**: 告警对话框打开时焦点置于首个可聚焦元素，Tab/Shift+Tab 在框内循环，避免焦点逃逸背景
+
 ## [2.10.0] - 2026-08-16
 
 ### Feat

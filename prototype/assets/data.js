@@ -6,7 +6,7 @@
 // 国际化翻译（与 app/i18n/en.ts / zh.ts 对齐）
 const i18n = {
   zh: {
-    title: 'LLM API Sentinel v2.9.1 | 全球LLM API实时监控',
+    title: 'LLM API Sentinel v2.10.1 | 全球LLM API实时监控',
     statsOnline: '在线服务',
     statsDegraded: '降级服务',
     statsOffline: '离线服务',
@@ -56,9 +56,11 @@ const i18n = {
     chartLegend: '图例',
     chartAriaPrefix: '延迟趋势图，展示',
     chartAriaSuffix: '个 API 的延迟变化',
+    themeToDark: '切换到更深深色',
+    themeToDefault: '切换到默认深色',
   },
   en: {
-    title: 'LLM API Sentinel v2.9.1 | Global LLM API Monitoring',
+    title: 'LLM API Sentinel v2.10.1 | Global LLM API Monitoring',
     statsOnline: 'Online Services',
     statsDegraded: 'Degraded Services',
     statsOffline: 'Offline Services',
@@ -108,6 +110,8 @@ const i18n = {
     chartLegend: 'Legend',
     chartAriaPrefix: 'Latency trend chart showing',
     chartAriaSuffix: 'APIs over time',
+    themeToDark: 'Switch to deeper dark',
+    themeToDefault: 'Switch to default dark',
   }
 };
 

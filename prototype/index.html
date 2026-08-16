@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LLM API Sentinel v2.9.1 | 全球LLM API实时监控</title>
+  <title>LLM API Sentinel v2.10.1 | 全球LLM API实时监控</title>
   <meta name="description" content="LLM API Sentinel — 实时监控全球主流 LLM API 服务健康状态" />
   <link rel="stylesheet" href="assets/styles.css" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -158,6 +158,8 @@
         { label: t.providerGroupUS, ids: ['openai-gpt-4o','anthropic-claude-3-5','google-gemini-1-5','meta-llama-3','mistral-large'] },
         { label: t.providerGroupCN, ids: ['moonshot-v1','zhipu-glm-4','baichuan-2','qwen-max','hunyuan-pro','ernie-4','deepseek-v3'] },
       ];
+      // 进度条基准：取可视非离线 API 的最大延迟（下限 500ms），保证相对区分度
+      const latencyBase = Math.max(500, ...apis.filter(a => a.status !== 'offline').map(a => a.latency));
       grid.innerHTML = groups.map(g => `
         <div class="col-span-full flex items-center gap-2 mt-4 mb-1">
           <span class="text-xs font-medium uppercase tracking-wider text-muted-foreground">${g.label}</span>
@@ -196,7 +198,7 @@
             ${offline ? `<div class="mt-3 text-xs text-destructive text-center">${t.needAttention} · ${a.retries || 0}×</div>` : `
             <div class="mt-3">
               <div class="h-1.5 rounded-full bg-secondary overflow-hidden">
-                <div class="h-full rounded-full relative" style="width:${Math.min(100, Math.round(a.latency / 500 * 100))}%;background:${a.color}">
+                <div class="h-full rounded-full relative" style="width:${Math.min(100, Math.round(a.latency / latencyBase * 100))}%;background:${a.color}">
                   <div class="shimmer-overlay"></div>
                 </div>
               </div>

@@ -38,10 +38,16 @@ function timeAgo(timestamp) {
 function updateThemeIcon() {
   const btn = document.getElementById('theme-toggle');
   if (!btn) return;
+  const t = getT();
   const theme = getTheme();
-  btn.innerHTML = theme === 'dark'
+  const isDark = theme === 'dark';
+  btn.innerHTML = isDark
     ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>'
     : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>';
+  // 无障碍：动态反映当前主题与目标动作（随语言更新）
+  const label = isDark ? t.themeToDefault : t.themeToDark;
+  btn.setAttribute('aria-label', label);
+  btn.setAttribute('title', label);
 }
 function toggleTheme() {
   setTheme(getTheme() === 'dark' ? 'default' : 'dark');
@@ -120,8 +126,10 @@ function renderStats() {
     ? (degradedApis.reduce((s, a) => s + a.errorRate, 0) / degradedApis.length).toFixed(1)
     : '0';
   const totalRetries = apis.reduce((s, a) => s + (a.retries || 0), 0);
-  const peakLatency = onlineApis.length
-    ? Math.max(...onlineApis.map(a => a.latency))
+  // 峰值延迟涵盖所有非离线 API（含 degraded，否则会漏掉最慢的真实峰值）
+  const reachableApis = apis.filter(a => a.status !== 'offline');
+  const peakLatency = reachableApis.length
+    ? Math.max(...reachableApis.map(a => a.latency))
     : 0;
   const t = getT();
 
@@ -221,16 +229,32 @@ function openAlertsDialog() {
     dialog.setAttribute('aria-modal', 'true');
     dialog.setAttribute('aria-label', t.alertsTitle);
     dialog.tabIndex = -1;
-    dialog.focus();
+    // 焦点置于对话框内首个可聚焦元素（无障碍）
+    const focusable = dialog.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    (focusable[0] || dialog).focus();
   }
   document.addEventListener('keydown', escClose);
+  document.addEventListener('keydown', tabTrap);
 }
 function closeAlertsDialog() {
   const host = document.getElementById('dialog-host');
   if (host) host.innerHTML = '';
   document.removeEventListener('keydown', escClose);
+  document.removeEventListener('keydown', tabTrap);
 }
 function escClose(e) { if (e.key === 'Escape') closeAlertsDialog(); }
+// 焦点陷阱：Tab / Shift+Tab 在对话框内循环，避免焦点逃出到背景
+function tabTrap(e) {
+  if (e.key !== 'Tab') return;
+  const dialog = document.querySelector('#dialog-host .dialog-content');
+  if (!dialog) return;
+  const focusable = [...dialog.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
+    .filter(el => !el.disabled && el.offsetParent !== null);
+  if (!focusable.length) { e.preventDefault(); return; }
+  const first = focusable[0], last = focusable[focusable.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
 
 /* ---------------- 延迟图表（手写 SVG：区域填充 + 图例 + hover tooltip） ---------------- */
 const hiddenSeries = new Set(); // 被图例隐藏的 api.id
@@ -283,14 +307,14 @@ function renderMultiLineChart() {
     lines += `<polyline class="chart-line" data-api="${api.id}" points="${coords.join(' ')}" fill="none" stroke="${api.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"/>`;
   });
 
-  // 可访问性：为图表提供文本摘要（aria）
+  // 可访问性：为图表提供文本摘要（aria-label + 内部 <title> 双保险）
   const seriesCount = apis.filter(a => a.status !== 'offline' && !hiddenSeries.has(a.id)).length;
+  const ariaText = `${getT().chartAriaPrefix} ${seriesCount} ${getT().chartAriaSuffix}`;
   svg.setAttribute('role', 'img');
-  svg.setAttribute('aria-label', `${getT().chartAriaPrefix} ${seriesCount} ${getT().chartAriaSuffix}`);
-
+  svg.setAttribute('aria-label', ariaText);
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-  svg.innerHTML = gridLines + thresholdLine + areas + lines;
+  svg.innerHTML = `<title>${ariaText}</title>` + gridLines + thresholdLine + areas + lines;
 
   // 构建交互热区（垂直扫描线 + hover）
   buildChartHover(svg, points, x, y, W, H, P, gridH);
@@ -407,7 +431,11 @@ function setTimeRange(range) {
 /* ---------------- 刷新 ---------------- */
 function refreshData() {
   const btn = document.getElementById('refresh-btn');
-  if (btn) { btn.classList.add('animate-spin-once'); setTimeout(() => btn.classList.remove('animate-spin-once'), 600); }
+  if (btn) {
+    btn.classList.add('animate-spin-once');
+    btn.setAttribute('aria-busy', 'true');
+    setTimeout(() => { btn.classList.remove('animate-spin-once'); btn.setAttribute('aria-busy', 'false'); }, 600);
+  }
 
   apis = apis.map(a => {
     if (a.status === 'offline') {
@@ -425,8 +453,7 @@ function refreshData() {
   // 重算历史曲线，使趋势与刷新后的最新延迟基线保持一致
   generateChartData();
   if (renderFn) renderFn();
-  const clock = document.getElementById('last-sync-time');
-  if (clock) clock.textContent = getT().justNow;
+  // 仅更新同步时间戳，DOM 文本交由 updateClock 统一刷新（避免与每秒时钟竞态）
   lastSyncTs = Date.now();
 }
 let lastSyncTs = Date.now();
