@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.10.3] - 2026-08-16
+
+### Chore
+- **Community Health Files 移入 `.github/`**: `CODE_OF_CONDUCT.md`、`CONTRIBUTING.md`、`SECURITY.md`、`SUPPORT.md` 由仓库根迁移至 `.github/`，统一社区健康文件位置（`LICENSE` 保留根目录以满足 GitHub license 检测）
+- 文件内相对链接在 `.github/` 内仍有效，无需改写
+
 ## [2.10.2] - 2026-08-16
 
 ### Docs
