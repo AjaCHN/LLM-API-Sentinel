@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.5] - 2026-08-16
+
+### Chore
+- **清理根目录临时/无效文件**: 删除 TS 增量编译缓存 `tsconfig.tsbuildinfo`、调试日志 `.devserver.log`、`Playwright` 调试目录 `.playwright-cli/`、未跟踪且项目不使用的 `pnpm-lock.yaml`（项目使用 npm + `package-lock.json`）
+- **gitignore 补强**: 新增 `.trae/`（TRAE 编辑器本地缓存目录），避免非源码产物误提交
+- 同步版本至 v2.10.5，并补齐 `openspec/config.yaml` 遗漏的 2.10.4 版本号
+
 ## [2.10.4] - 2026-08-16
 
 ### Refactor

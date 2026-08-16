@@ -14,3 +14,6 @@ pnpm-lock.yaml
 eslint-result.json
 eslint2.json
 .playwright-cli/
+
+# 编辑器/工具本地缓存
+.trae/
