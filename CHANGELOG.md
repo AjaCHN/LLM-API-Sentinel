@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.9.9] - 2026-08-15
+
+### Fix
+- **修复构建失败**: `tsconfig.json` 的 `exclude` 新增 `supabase` 目录，避免 Deno 版 Edge Function（`supabase/functions/monitor/index.ts`，含 `https://esm.sh/...` 远程 import 与 `Deno.serve`）被 `next build` 的 TypeScript 编译误纳入导致 `Cannot find module` 编译错误
+
 ## [2.9.8] - 2026-08-15
 
 ### Fix
