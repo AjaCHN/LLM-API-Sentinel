@@ -1,6 +1,6 @@
 {
   "name": "llm-api-sentinel",
-  "version": "2.10.8",
+  "version": "2.10.10",
   "type": "module",
   "private": true,
   "scripts": {

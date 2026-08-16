@@ -1,4 +1,4 @@
-                                                            // app/hooks/useApiMonitor.ts v2.9.8
+                                                            // app/hooks/useApiMonitor.ts v2.10.9
 // 改进：使用本地 API 检查，同时支持从 Supabase 同步数据
 import { useCallback, useEffect, startTransition } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -7,6 +7,7 @@ import { useApiStore, useAuthStore } from '../store';
 import { ApiStatus, StatusHistory } from '../types';
 import { logError, handleError } from '../lib/error-handler';
 import { performCheck } from '../lib/monitor';
+import { CHECK_INTERVAL } from '../constants';
 import { generateMockApiStatuses } from '../lib/mock-data';
 import {
   toApiStatusUpsert,
@@ -154,6 +155,14 @@ export function useApiMonitor() {
     }
     // 仅在首次挂载时自动探测一次
   }, [statuses.length, setStatuses, runCheck]);
+
+  // 定时自动巡检：按 CHECK_INTERVAL 周期刷新所有 API 状态，使仪表盘数据保持鲜活
+  useEffect(() => {
+    const timer = setInterval(() => {
+      runCheck();
+    }, CHECK_INTERVAL);
+    return () => clearInterval(timer);
+  }, [runCheck]);
 
   return {
     statuses,

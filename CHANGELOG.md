@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.10.10] - 2026-08-16
+
+### Feat
+- **接入 Google Analytics 4**: 在 `layout.tsx` 的 `<head>` 注入 gtag 脚本，Measurement ID `G-7RGKS16M38`，用于站点流量与行为分析
+
+## [2.10.9] - 2026-08-16
+
+### Fix
+- **启用定时自动巡检**: `useApiMonitor` 新增基于 `CHECK_INTERVAL`(5 分钟)的 `setInterval` 自动刷新,修复部署后仪表盘数据不自动更新的问题
+- **修正 robots.txt Sitemap 域名**: 由过时的 `llm-api-sentinel.vercel.app` 改为实际部署域 `llmapi.ewuse.com`,统一 SEO 抓取指向
+- 同步版本至 v2.10.9
+
 ## [2.10.8] - 2026-08-16
 
 ### Chore

@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://llm-api-sentinel.vercel.app/sitemap.xml
+Sitemap: https://llmapi.ewuse.com/sitemap.xml
 
 Disallow: /api/
 Disallow: /_next/
