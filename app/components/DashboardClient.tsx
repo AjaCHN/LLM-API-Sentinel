@@ -1,4 +1,4 @@
-// app/components/DashboardClient.tsx v2.9.0
+// app/components/DashboardClient.tsx v2.9.7
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -53,7 +53,7 @@ export default function DashboardClient() {
         onClose={() => setShowAlerts(false)} resolveAlert={resolveAlert}
       />
 
-      <main className="mx-auto max-w-7xl px-6 md:px-10 lg:px-16">
+      <main className="mx-auto max-w-[1600px] px-6 md:px-10 lg:px-16">
         <HeroSection stats={stats} />
 
         <AlertsBanner alerts={alerts} stats={stats} onViewDetails={() => setShowAlerts(true)} />
