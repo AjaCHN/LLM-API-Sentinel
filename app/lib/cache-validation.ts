@@ -13,6 +13,10 @@ export function isValidCacheEntry(entry: unknown): entry is CacheEntry {
   if (!entry || typeof entry !== 'object') return false;
   const obj = entry as Record<string, unknown>;
   if (!obj.result || typeof obj.result !== 'object') return false;
+  // 防御：result 内部结构缺失会导致后续访问崩溃，需校验关键字段
+  const result = obj.result as Record<string, unknown>;
+  if (typeof result.status !== 'string') return false;
+  if (typeof result.latency !== 'number') return false;
   if (typeof obj.timestamp !== 'number') return false;
   if (typeof obj.expiry !== 'number') return false;
   return true;

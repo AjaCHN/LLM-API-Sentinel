@@ -1,12 +1,12 @@
 // app/lib/share-content.ts v2.10.4
-type TranslateFn = (key: string) => string;
+import { tArray } from './i18n';
 
 /** 随机选取一条宣传文案（promos 数组，索引随机） */
-function getRandomPromo(t: TranslateFn): string {
-  const promos = t('share.promos') as unknown;
-  if (Array.isArray(promos) && promos.length > 0) {
+function getRandomPromo(): string {
+  const promos = tArray('share.promos');
+  if (promos.length > 0) {
     const idx = Math.floor(Math.random() * promos.length);
-    return String(promos[idx] ?? '');
+    return promos[idx] ?? '';
   }
   return '';
 }
@@ -20,8 +20,8 @@ export function buildShareUrl(): string {
 }
 
 /** 组装最终分享文本：分享链接 + 换行 + 随机宣传文案 */
-export function buildShareText(t: TranslateFn): string {
+export function buildShareText(): string {
   const url = buildShareUrl();
-  const promo = getRandomPromo(t);
+  const promo = getRandomPromo();
   return promo ? `${url}\n${promo}` : url;
 }

@@ -113,7 +113,7 @@ export function logError(error: unknown, context: string): void {
       timestamp: appError.timestamp,
       // 不暴露 user data, 仅记录错误类型
       message: typeof appError.message === 'string'
-        ? appError.message.replace(/([^\\s]{100,})/g, '[truncated]')
+        ? appError.message.replace(/(\S{100,})/g, '[truncated]')
         : 'unknown',
     };
     console.error(JSON.stringify(safeLog));

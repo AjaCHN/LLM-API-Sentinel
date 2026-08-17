@@ -212,6 +212,24 @@ export function t(key: string): string {
   return key;
 }
 
+/** 读取数组型翻译值（如 share.promos），非数组时返回空数组，便于随机选取等场景 */
+export function tArray(key: string): string[] {
+  const keys = key.split('.');
+  const data: unknown = translations[currentLocale];
+  if (data && typeof data === 'object') {
+    let value: unknown = data;
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = (value as Record<string, unknown>)[k];
+      } else {
+        return [];
+      }
+    }
+    return Array.isArray(value) ? value.map(String) : [];
+  }
+  return [];
+}
+
 export function formatMessage(template: string, params: Record<string, string | number>): string {
   return template.replace(/\{(\w+)\}/g, (_, key) => String(params[key] ?? `{${key}}`));
 }

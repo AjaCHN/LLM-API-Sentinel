@@ -36,7 +36,7 @@ export default function DashboardClient() {
   useEffect(() => { setMounted(true); }, []);
   if (!mounted) return null;
 
-  const canRunCheck = isChecking;
+  const canRunCheck = !isChecking;
 
   return (
     <div id="dashboard" className="min-h-screen bg-background text-foreground">

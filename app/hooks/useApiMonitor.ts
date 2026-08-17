@@ -3,7 +3,7 @@
 import { useCallback, useEffect, startTransition } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { useApiStore, useAuthStore } from '../store';
+import { useApiStore, useAuthStore, useErrorStore } from '../store';
 import { ApiStatus, StatusHistory } from '../types';
 import { logError, handleError } from '../lib/error-handler';
 import { performCheck } from '../lib/monitor';
@@ -36,7 +36,7 @@ export function useApiMonitor() {
       addHistoryEntry: state.addHistoryEntry,
     }))
   );
-  const { setError } = useAuthStore();
+  const { showError } = useErrorStore();
 
   // 同步 API 状态到 Supabase
   const syncToSupabase = useCallback(async (results: ApiStatus[]) => {
@@ -108,7 +108,7 @@ export function useApiMonitor() {
       syncInIdle();
     } catch (err) {
       logError(err, 'Check failed');
-      setError(handleError(err).message);
+      showError(handleError(err));
     } finally {
       setIsChecking(false);
     }

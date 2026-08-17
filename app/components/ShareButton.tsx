@@ -42,7 +42,7 @@ export default function ShareButton() {
   const handleShare = useCallback(async () => {
     if (state === 'copying') return;
     setState('copying');
-    const text = buildShareText(t);
+    const text = buildShareText();
     let ok = false;
     try {
       if (navigator.clipboard && window.isSecureContext) {
