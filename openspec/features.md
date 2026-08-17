@@ -90,7 +90,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控系统，提供�
 **性能优化**：
 - 使用 useMemo 缓存图表数据计算
 - 使用 Map 进行 O(1) 时间复杂度的数据聚合
-- 手写 SVG 渲染（零依赖；Recharts 可作替换实现）
+- Recharts 面积图渲染（`ssr:false` 动态导入 + ChartSkeleton 骨架屏）
 
 ### 2.3 智能告警系统
 
@@ -146,11 +146,11 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控系统，提供�
 
 ### 2.5 主题切换
 
-**功能描述**：纯深色沉浸主题（双档深度，基于 next-themes，`attribute="class"`），`:root` 默认深 / `.dark` 更深，顶栏提供深浅档切换按钮（不提供浅色主题）
+**功能描述**：浅色/深色双主题，基于 next-themes（`attribute="class"`，`defaultTheme="system"`，`enableSystem`），`<html>` 上切换 `.light` / `.dark` 类，顶栏提供 Sun/Moon 切换按钮，主题偏好持久化到 localStorage（`theme` key）
 
 **主题模式**：
-- **默认深度**：`:root` 默认深色主题
-- **更深一档**：`.dark` 类在 `<html>` 上叠加更深一档深色
+- **浅色**：`:root` / `.light` 为浅色（Slate 系）
+- **深色**：`.dark` 为 Dark Indigo 沉浸主题
 
 **切换方式**：
 - 点击头部主题切换按钮
@@ -517,7 +517,7 @@ sequenceDiagram
 ### 7.5 主题切换
 
 **验收标准**：
-- [ ] 支持纯深色双档主题（`:root` 默认深 / `.dark` 更深，无浅色主题）
+- [ ] 支持浅色/深色双主题（`.light` / `.dark`，`system` 默认跟随系统）
 - [ ] 主题切换即时生效
 - [ ] 主题偏好持久化
 

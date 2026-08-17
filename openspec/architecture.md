@@ -17,7 +17,7 @@ LLM API Sentinel 采用**静态前端 + Supabase 后端**架构，无需自定�
 | 数据库 | Supabase PostgreSQL | - |
 | 身份验证 | Supabase Auth (Google OAuth) | - |
 | 样式 | Tailwind CSS 4.1.11 | 4.1.11 |
-| 图表 | 手写 SVG（零依赖，React 应用）；Recharts 3.8.0 作为可替换备选 | 3.8.0 |
+| 图表 | Recharts 3.8.0 面积图（`ssr:false` 动态导入） | 3.8.0 |
 | 图标 | Lucide React | - |
 | 状态管理 | Zustand 5.0.12 | 5.0.12 |
 | 时间处理 | date-fns 4.1.0 | 4.1.0 |
@@ -102,7 +102,7 @@ graph TD
 | 组件 | 职责 | 状态依赖 |
 |-----|------|---------|
 | **RootLayout** | 根布局，设置主题和全局样式 | 无 |
-| **ThemeProvider** | 主题管理，纯深色沉浸主题（双档深度：`:root` 默认深 / `.dark` 更深），基于 next-themes | `theme` |
+| **ThemeProvider** | 主题管理，浅色/深色双主题（next-themes `defaultTheme="system"`），基于 next-themes | `theme` |
 | **StructuredData** | SEO 结构化数据组件 | 无 |
 | **DashboardClient** | 主页面客户端组件，整合所有功能 | 所有状态 |
 | **DashboardHeader** | 头部导航，包含品牌、告警、主题切换、用户认证 | `user`, `alerts`, `theme`, `geo`, `isGeoLoading` |

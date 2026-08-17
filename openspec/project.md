@@ -1,13 +1,13 @@
-# LLM API Sentinel 项目规范 (v2.10.10)
+# LLM API Sentinel 项目规范 (v2.10.12)
 
 ## 1. 项目概述
 
 LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用性追踪系统，旨在为开发者和企业提供可靠的 API 状态监控服务。
 
 ### 1.1 核心功能
-- **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta/Groq, Mistral）和中国（Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek）主流 AI 供应商的连通性与延迟，共 12 个核心 API
-- **历史数据**：手写 SVG 交互式面积图（零图表库依赖）可视化性能趋势；支持 24H/7D/30D 时间范围，曲线末点锚定当前实时延迟（原型同构，React 应用可平滑替换为 Recharts）
-- **自适应 UI**：全响应式设计（1/2/3/4 列网格），采用纯深色沉浸主题（双档深度：`:root` 默认深 / `.dark` 更深），默认 Dark Indigo 沉浸主题（靛蓝 #6366f1 + 紫色 #8b5cf6）
+- **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta/Groq, Mistral）和中国（Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek）主流 AI 供应商的连通性与延迟，共 29 个核心 API
+- **历史数据**：Recharts 面积图可视化性能趋势；支持 24H/7D/30D 时间范围，曲线末点锚定当前实时延迟（`app/components/LatencyHistoryChart.tsx`，`ssr:false` 动态加载 + ChartSkeleton）
+- **自适应 UI**：全响应式设计（1/2/3/4 列网格），采用浅色/深色双主题（next-themes `defaultTheme="system"`），默认 Dark Indigo 沉浸主题（靛蓝 #6366f1 + 紫色 #8b5cf6）
 - **实时更新**：基于 Supabase Realtime 实现状态即时同步（默认 5 分钟后台检查周期）
 - **安全访问**：手动健康检查受 Supabase Auth (Google OAuth) 保护
 - **智能告警**：自动检测 API 宕机（offline）、降级（degraded）和延迟过高（阈值 1500ms），并生成告警通知
@@ -27,10 +27,10 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 | 实时订阅 | Supabase Realtime | - |
 | 样式 | Tailwind CSS 4.1.11 | 4.1.11 |
 | 组件库 | shadcn/ui (基于 Tailwind) | - |
-| 图表 | 手写 SVG（零依赖，React 应用）；Recharts 3.8.0 作为可替换备选 | 3.8.0 |
+| 图表 | Recharts 3.8.0 面积图（`ssr:false` 动态导入） | 3.8.0 |
 | 图标 | Lucide React | - |
 | 状态管理 | Zustand 5.0.12 | 5.0.12 |
-| 设计系统 | [design-system.md](design-system.md) | v2.10.10 |
+| 设计系统 | [design-system.md](design-system.md) | v2.10.12 |
 | 国际化 | 自定义 i18n 系统 | - |
 | 时间处理 | date-fns 4.1.0 | 4.1.0 |
 
@@ -93,7 +93,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   ├── LocaleSwitcher.tsx     # 语言切换器（DropdownMenuRadioGroup，16 语言即时切换 + 持久化）
 │   │   ├── DashboardSkeleton.tsx # 仪表盘整体骨架屏
 │   │   ├── GeoOptInDialog.tsx    # 地理位置授权弹窗
-│   │   ├── LatencyHistoryChart.tsx # 延迟历史图表（手写 SVG / Recharts 可替换）
+│   │   ├── LatencyHistoryChart.tsx # 延迟历史图表（Recharts 面积图，ssr:false）
 │   │   ├── ProgressBar.tsx       # 进度条组件（渐变 + shimmer）
 │   │   ├── StatCard.tsx          # 统计卡片组件（在线/降级/离线/平均延迟）
 │   │   ├── StatusDot.tsx         # 状态圆点组件（三色 + 光晕）
@@ -395,7 +395,7 @@ interface StatusGridProps {
 ```
 
 ### 5.5 LatencyHistoryChart
-**功能**：展示历史延迟趋势（原型为手写 SVG 零依赖，React 应用可平滑替换为 Recharts AreaChart，React.memo 优化）
+**功能**：展示历史延迟趋势（Recharts AreaChart，`ssr:false` 动态导入 + ChartSkeleton 骨架屏，React.memo 优化）
 
 **Props**：
 ```typescript
@@ -442,7 +442,7 @@ interface StatCardProps {
 ```
 
 ### 5.9 ThemeProvider
-**功能**：管理纯深色沉浸主题（双档深度：`:root` 默认深 / `.dark` 更深），基于 next-themes（不提供浅色主题）
+**功能**：管理浅色/深色双主题（next-themes `defaultTheme="system" enableSystem`），`<html>` 切换 `.light`/`.dark`，基于 next-themes
 
 **Props**：继承 `NextThemesProvider` 的所有 props
 

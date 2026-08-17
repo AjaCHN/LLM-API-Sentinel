@@ -1,4 +1,4 @@
-# LLM API Sentinel 设计系统 (v2.10.10)
+# LLM API Sentinel 设计系统 (v2.10.12)
 
 ## 1. 设计哲学
 
@@ -18,43 +18,43 @@
 
 > 色彩通过 Tailwind CSS 4.1 的 `@theme` 定义语义 token（如 `--color-background` → `bg-background`），由 `app/style.css` 落地为 CSS 变量。所有组件使用语义化 class（如 `bg-primary`、`text-muted-foreground`），禁止硬编码色值。下表 Hex 与 `app/style.css` 严格一致。
 
-### 2.1 主题机制（`.dark` 体系）
-> 采用标准 shadcn/ui 的 **`.dark` 覆盖体系**：`:root` 为默认深色主题，`.dark` 类在 `<html>` 上叠加更深一档的深色；**不提供 `.light` 浅色主题**（当前实现仅支持深色，符合 "Dark Indigo 沉浸主题" 定位）。这与旧文档描述的 `.light` 体系不同，以 `app/style.css` 实现为准。
+### 2.1 主题机制（浅色 / 深色双主题）
+> 采用 next-themes（`attribute="class"`，`defaultTheme="system"`，`enableSystem`），在 `<html>` 上切换 `.light` / `.dark` 类：**浅色 `:root`/`.light`** 为默认浅色（Slate 系），**深色 `.dark`** 为 Dark Indigo 沉浸主题。两套 token 均在 `app/style.css` 显式定义，主题偏好持久化到 localStorage（`theme` key）。以 `app/style.css` 实现为准。
 
-### 2.2 主色调 (Dark Indigo)
-| Token | Hex (`:root` 默认深) | Hex (`.dark` 更深) | 用途 |
-|-------|---------------------|-------------------|------|
+### 2.2 主色调 (Indigo)
+| Token | Hex (`.light`) | Hex (`.dark`) | 用途 |
+|-------|---------------|---------------|------|
 | `--primary` | `#6366f1` | `#818cf8` | 主色、按钮、链接、高亮 |
-| `--primary-foreground` | `#ffffff` | `#ffffff` | 主色上的文字 |
-| `--accent` | `#8b5cf6` | `#8b5cf6` | 强调色、渐变辅助色 |
-| `--accent-foreground` | `#ffffff` | `#ffffff` | 强调色上的文字 |
+| `--primary-foreground` | `#ffffff` | `#0a0a0f` | 主色上的文字 |
+| `--accent` | `#8b5cf6` | `#a78bfa` | 强调色、渐变辅助色 |
+| `--accent-foreground` | `#ffffff` | `#0a0a0f` | 强调色上的文字 |
 | `--ring` | `#6366f1` | `#818cf8` | 焦点环 |
 
 ### 2.3 功能色 (语义色)
 语义色额外提供 `-10` alpha 变体（如 `--color-success-10`），用于浅底填充、边框、光晕等低对比场景。
 
-| Token | Hex (`:root` 默认深) | Hex (`.dark`) | 用途 |
-|-------|---------------------|---------------|------|
+| Token | Hex (`.light`) | Hex (`.dark`) | 用途 |
+|-------|---------------|---------------|------|
 | `--success` | `#22c55e` | `#22c55e` | 在线、正常状态 |
 | `--warning` | `#f59e0b` | `#f59e0b` | 降级、警告状态 |
-| `--destructive` | `#ef4444` | `#ef4444` | 离线、错误状态 |
+| `--destructive` | `#ef4444` | `#f87171` | 离线、错误状态 |
 | `--info` | `#3b82f6` | `#3b82f6` | 信息提示 |
 
-### 2.4 中性色（深色双档：`:root` / `.dark`）
-| Token | Hex (`:root` 默认深) | Hex (`.dark` 更深) | 用途 |
-|-------|---------------------|-------------------|------|
-| `--background` | `#0f0f14` | `#0a0a0f` | 页面背景 |
-| `--foreground` | `#e6e6ec` | `#ededf2` | 主文字颜色 |
-| `--card` | `#16161e` | `#121219` | 卡片背景 |
-| `--card-foreground` | `#e6e6ec` | `#ededf2` | 卡片文字 |
-| `--popover` | `#1b1b25` | `#17171f` | 弹出层背景 |
-| `--popover-foreground` | `#e6e6ec` | `#ededf2` | 弹出层文字 |
-| `--secondary` | `#1e1e28` | `#1a1a24` | 次要背景 |
-| `--secondary-foreground` | `#e6e6ec` | `#ededf2` | 次要背景上的文字 |
-| `--muted` | `#1e1e28` | `#1a1a24` | 弱化背景 |
-| `--muted-foreground` | `#9a9aa6` | `#8b8b96` | 次要/辅助文字 |
-| `--border` | `#262632` | `#1f1f2b` | 边框 |
-| `--input` | `#262632` | `#1f1f2b` | 输入框背景 |
+### 2.4 中性色（浅色 / 深色双主题：`.light` / `.dark`）
+| Token | Hex (`.light`) | Hex (`.dark`) | 用途 |
+|-------|---------------|---------------|------|
+| `--background` | `#f8fafc` | `#0a0a0f` | 页面背景 |
+| `--foreground` | `#0f172a` | `#f4f4f5` | 主文字颜色 |
+| `--card` | `#ffffff` | `#13131a` | 卡片背景 |
+| `--card-foreground` | `#0f172a` | `#f4f4f5` | 卡片文字 |
+| `--popover` | `#ffffff` | `#13131a` | 弹出层背景 |
+| `--popover-foreground` | `#0f172a` | `#f4f4f5` | 弹出层文字 |
+| `--secondary` | `#e2e8f0` | `#1e1e28` | 次要背景 |
+| `--secondary-foreground` | `#0f172a` | `#f4f4f5` | 次要背景上的文字 |
+| `--muted` | `#e2e8f0` | `#1e1e28` | 弱化背景 |
+| `--muted-foreground` | `#64748b` | `#71717a` | 次要/辅助文字 |
+| `--border` | `#e2e8f0` | `#242430` | 边框 |
+| `--input` | `#e2e8f0` | `#242430` | 输入框背景 |
 
 ### 2.5 背景氛围光 (Radial Gradient)
 body 背景在纯色基础上叠加三层径向渐变，营造柔和紫色光晕：
@@ -195,7 +195,7 @@ radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 40%)
 | 颜色过渡（按钮 hover） | 150-300ms | `ease-out` |
 | 卡片位移 hover（card-hover-lift） | 400ms | `cubic-bezier(0.23, 1, 0.32, 1)` |
 | 入场动画 | 400-800ms | `cubic-bezier(0.25, 0.1, 0.25, 1)` |
-| 图表动画 | 实时重绘 + 0.4-0.5s 透明度过渡 | 手写 SVG（非 Recharts），含区域填充淡入、图例切换、hover 扫描线 |
+| 图表动画 | 实时重绘 + 0.4-0.5s 透明度过渡 | Recharts `animationDuration`，含区域填充淡入、Tooltip 跟随、hover 高亮 |
 
 ### 7.4 动画使用原则
 1. **克制入场**：入场动画仅首次渲染触发，滚动/筛选不重复触发

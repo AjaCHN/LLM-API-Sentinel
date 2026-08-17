@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.12] - 2026-08-17
+
+### Docs
+- **纠错 openspec 与代码对齐**：v2.10.11 误将图表写成「手写 SVG」、主题写成「纯深色双档」，与 `app/style.css` 及 `LatencyHistoryChart.tsx` 实际实现不符，本次更正为「Recharts 面积图」与「浅色/深色双主题（next-themes `defaultTheme="system"`）」
+- **同步配色 token**：`design-system.md` 中性色/主色/功能色表改为与 `app/style.css` 一致的 `.light`(浅)/`.dark`(深) 真实 Hex 值
+- **统一版本号**：`openspec/config.yaml`、`project.md`、`ui.md`、`design-system.md` 标题与 `package.json` 同步至 v2.10.12
+
 ## [2.10.11] - 2026-08-16
 
 ### Docs
