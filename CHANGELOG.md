@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.10.20] - 2026-08-26
+
+### CI
+- **固定 CI pnpm 版本**: `ci.yml` 与 `release.yml` 的 `pnpm/action-setup@v4` 显式指定 `version: 9.15.0`，与 `package.json` 的 `packageManager` 单一来源对齐，提升可复现性
+
 ## [2.10.19] - 2026-08-26
 
 ### CI

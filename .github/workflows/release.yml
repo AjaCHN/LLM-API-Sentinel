@@ -1,4 +1,4 @@
-# .github/workflows/release.yml v2.9.6
+# .github/workflows/release.yml v2.10.20
 # 发布流程：推送语义化版本 tag (如 v2.9.6) 时自动构建静态产物并创建 GitHub Release。
 
 name: Release
@@ -21,6 +21,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

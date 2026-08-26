@@ -1,4 +1,4 @@
-# .github/workflows/ci.yml v2.9.6
+# .github/workflows/ci.yml v2.10.20
 # 持续集成：PR 与 push 时执行 lint + test + build 门禁，未通过禁止合并。
 
 name: CI
@@ -22,6 +22,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
