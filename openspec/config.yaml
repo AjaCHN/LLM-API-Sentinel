@@ -10,7 +10,7 @@ context: |
   Security: no secrets in code/logs, validate inputs, XSS protection, HTTPS in production
   i18n: 16 languages supported (en/zh-cn/zh-tw/ar/cs/es/hi/id/it/nl/pl/sv/th/tr/ru/vi)
   Error handling: use unified logError instead of console.error/console.warn
-  Version: v2.10.12 (SemVer)
+  Version: v2.10.14 (SemVer)
 
 # Per-artifact rules
 rules:

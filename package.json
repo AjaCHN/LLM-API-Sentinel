@@ -1,8 +1,12 @@
 {
   "name": "llm-api-sentinel",
-  "version": "2.10.12",
+  "version": "2.10.15",
   "type": "module",
   "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "pnpm": ">=9"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,7 +14,8 @@
     "lint": "eslint .",
     "clean": "next clean",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "@google/genai": "^1.17.0",

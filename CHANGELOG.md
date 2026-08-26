@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.10.15] - 2026-08-26
+
+### Refactor
+- **对齐原型 UI（视觉层）**: StatusMonitorSection 去除冗余外层 Card 包裹，改为 section 直接标题 + 网格（对齐原型 `section` 直接网格风格）；状态监控区与延迟区标题由 `text-2xl font-bold` 降级为 `text-lg font-semibold`（对齐原型 `text-lg` 小标题）
+- **Brand logo 渐变对齐原型**: DashboardHeader logo 由淡色 `from-primary/20 to-accent/20` 改为实心 `from-primary to-accent` + `shadow-lg shadow-primary/20`，图标色 `#fff`（`text-primary-foreground`）
+- 保留 29 API / 浅色主题 / Recharts / 扁平网格等已上线能力不回退
+
+## [2.10.14] - 2026-08-26
+
+### Fix
+- **原型告警对话框 Resolve 按钮无响应**：新增 `resolveAlert(id)` 轻量 mock，将对应 API 标记为在线并刷新横幅与卡片，按钮接入 `onclick` 与 `aria-label`
+- **原型初始时间范围文案硬编码 24H**：`appInit` 渲染后调用 `setTimeRange(currentTimeRange)` 同步中英文文案
+- **统计卡片 offline 无离线时语义异常**：子文案由"在线"改为"全部正常"（`allNormal` i18n 键），新增 zh/en 翻译
+- **原型图表 tooltip 前景色变量未定义**：`@theme` 与 `.dark` 档补 `--color-popover-foreground`，消除回退依赖
+- **原型版本标注脱节**：`index.html`/`components.html`/`data.js` 自身版本 v2.10.1 统一至 v2.10.13
+
+## [2.10.13] - 2026-08-26
+
+### Chore
+- **强制 pnpm 包管理器约束**：`package.json` 新增 `packageManager: pnpm@9.15.0`、`engines.pnpm >=9`、`scripts.preinstall: npx only-allow pnpm`；根目录新增 `.npmrc`（`engine-strict=true`、`package-manager-strict=true`）
+- 清理旧锁文件 `package-lock.json` / `yarn.lock`，保留 `pnpm-lock.yaml`
+- 版本同步至 v2.10.13
+
 ## [2.10.12] - 2026-08-17
 
 ### Docs
