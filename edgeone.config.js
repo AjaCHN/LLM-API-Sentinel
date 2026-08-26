@@ -1,5 +1,4 @@
 module.exports = {
-  installCommand: 'pnpm install',
   buildCommand: 'pnpm build',
   outputDirectory: 'out',
   routes: [
