@@ -12,6 +12,9 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
+# 临时 pnpm 重装/验证脚本（非项目产物）
+pnpm-reinstall.bat
+
 # 临时 lint 产物
 eslint-result.json
 eslint2.json
