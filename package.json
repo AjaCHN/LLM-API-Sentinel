@@ -1,6 +1,6 @@
 {
   "name": "llm-api-sentinel",
-  "version": "2.10.20",
+  "version": "2.10.21",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@9.15.0",

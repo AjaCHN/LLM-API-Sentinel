@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.10.21] - 2026-08-26
+
+### Fix
+- **修复 CI 缺失 pnpm-lock.yaml**: 将 `pnpm-lock.yaml` 从 `.gitignore` 移除并提交（pnpm 项目须入库 lockfile 以保证 `--frozen-lockfile` 可复现安装），消除 `Dependencies lock file is not found` 错误
+
 ## [2.10.20] - 2026-08-26
 
 ### CI
