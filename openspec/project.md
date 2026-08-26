@@ -1,4 +1,4 @@
-# LLM API Sentinel 项目规范 (v2.10.12)
+# LLM API Sentinel 项目规范 (v2.10.15)
 
 ## 1. 项目概述
 
@@ -30,7 +30,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 | 图表 | Recharts 3.8.0 面积图（`ssr:false` 动态导入） | 3.8.0 |
 | 图标 | Lucide React | - |
 | 状态管理 | Zustand 5.0.12 | 5.0.12 |
-| 设计系统 | [design-system.md](design-system.md) | v2.10.12 |
+| 设计系统 | [design-system.md](design-system.md) | v2.10.15 |
 | 国际化 | 自定义 i18n 系统 | - |
 | 时间处理 | date-fns 4.1.0 | 4.1.0 |
 
