@@ -478,14 +478,271 @@ function navigate(href) {
 
 /* ---------------- 初始化 ---------------- */
 function appInit(render) {
-  renderFn = render;
+  // prototype.html 不注入自定义渲染时回退到内置 renderAll（高保真原型）
+  renderFn = render || renderAll;
   // 默认应用更深一档深色主题（与 app/style.css 的 .dark 档一致）
   if (getTheme() !== 'dark') setTheme('dark');
   updateLangUI();
   updateThemeIcon();
   updateTimeRangeUI();
   updateClock();
-  render();
+  renderFn();
   // 同步初始时间范围文案（覆盖 index.html 中硬编码的 24H）
   setTimeRange(currentTimeRange);
 }
+
+/* =====================================================================
+ * 高保真原型 (prototype.html) 专用渲染与交互
+ * 仅当 renderAll 作为 appInit 回退时触发；index.html 注入自定义 render 时不会调用。
+ * ===================================================================== */
+
+// 内置默认渲染编排
+function renderAll() {
+  updateHeaderUI();
+  renderStats();
+  renderAlertsBanner();
+  renderAlertsIcon();
+  renderMultiLineChart();
+  renderChartLegend();
+  renderLiveFeed();
+  renderApiGrid();
+  renderLogs();
+}
+
+// 顶栏与图表静态文案（按语言/主题同步）
+function updateHeaderUI() {
+  const t = getT();
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set('header-subtitle', currentLang === 'zh' ? '全球 LLM API 实时监控' : 'Global LLM API monitoring');
+  set('chart-title', t.latencyLabel + (currentLang === 'zh' ? '趋势' : ' trend'));
+  set('chart-subtitle', currentLang === 'zh' ? '各 API 响应延迟（ms）' : 'Per-API response latency (ms)');
+  set('feed-title', t.feedTitle);
+  set('api-grid-title', t.apiGridTitle);
+  set('logs-title', t.logsTitle);
+  set('empty-text', t.emptyText);
+  set('settings-title', t.settingsTitle);
+  set('detail-title', t.detailTitle);
+  set('chart-range-label', { '1h': currentLang === 'zh' ? '最近 1 小时' : 'Last 1 hour', '24h': currentLang === 'zh' ? '最近 24 小时' : 'Last 24 hours', '7d': currentLang === 'zh' ? '最近 7 天' : 'Last 7 days', '30d': currentLang === 'zh' ? '最近 30 天' : 'Last 30 days' }[currentTimeRange]);
+  const langBtn = document.getElementById('langBtn');
+  if (langBtn) langBtn.textContent = currentLang === 'zh' ? 'EN' : '中';
+  const themeBtn = document.getElementById('themeBtn');
+  if (themeBtn) {
+    const isDark = getTheme() === 'dark';
+    themeBtn.innerHTML = isDark
+      ? '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg>'
+      : '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>';
+    const label = isDark ? t.themeToDefault : t.themeToDark;
+    themeBtn.setAttribute('aria-label', label);
+    themeBtn.setAttribute('title', label);
+  }
+  set('settings-theme-label', currentLang === 'zh' ? '深色模式' : 'Dark mode');
+  set('settings-theme-sub', currentLang === 'zh' ? '切换浅色 / 深色外观' : 'Toggle light / dark appearance');
+  set('settings-lang-label', currentLang === 'zh' ? '语言' : 'Language');
+  // 语言说明标注 app 真实支持 16 种语言（原型预览仅 zh/en 子集）
+  set('settings-lang-sub', currentLang === 'zh' ? '中文 / English（app 支持 16 种语言）' : 'Chinese / English (app supports 16 languages)');
+  set('settings-alert-label', currentLang === 'zh' ? '桌面通知' : 'Desktop notifications');
+  set('settings-alert-sub', currentLang === 'zh' ? '离线 / 降级时提醒' : 'Alert on offline / degraded');
+  set('settings-auto-label', currentLang === 'zh' ? '自动刷新' : 'Auto refresh');
+  set('settings-auto-sub', currentLang === 'zh' ? '每 30 秒拉取一次' : 'Poll every 30s');
+  const sLangBtn = document.getElementById('settings-lang-btn');
+  if (sLangBtn) sLangBtn.textContent = currentLang === 'zh' ? 'EN' : '中';
+  syncSettingsSwitch();
+}
+
+// 告警铃铛徽标计数
+function renderAlertsIcon() {
+  const badge = document.getElementById('alerts-badge');
+  if (!badge) return;
+  const alerts = apis.filter(a => a.status !== 'online');
+  const n = alerts.length;
+  badge.textContent = n;
+  badge.classList.toggle('hidden', n === 0);
+}
+
+// 实时动态
+function renderLiveFeed() {
+  const el = document.getElementById('live-feed');
+  if (!el) return;
+  const t = getT();
+  const events = apis.filter(a => a.status !== 'offline').slice(0, 8)
+    .map(a => ({ api: a, at: a.lastChecked })).sort((x, y) => y.at - x.at);
+  el.innerHTML = events.map(e => {
+    const color = getStatusColor(e.api.status);
+    const dotCls = e.api.status === 'online' ? 'status-dot-online' : e.api.status === 'degraded' ? 'status-dot-degraded' : 'status-dot-offline';
+    const label = e.api.status === 'degraded' ? (currentLang === 'zh' ? '延迟偏高' : 'High latency') : (currentLang === 'zh' ? '检测正常' : 'Healthy');
+    return `<div class="flex items-start gap-2.5 rounded-lg p-2 hover:bg-secondary/60 transition-colors">
+      <span class="mt-1.5 h-2 w-2 rounded-full ${dotCls}" style="background:${color}"></span>
+      <div class="min-w-0 flex-1">
+        <div class="text-xs font-medium truncate">${e.api.name}</div>
+        <div class="text-[11px] text-muted-foreground flex items-center gap-1.5">
+          <span>${label}</span><span class="opacity-50">·</span><span class="tabular-nums">${e.api.latency}ms</span><span class="opacity-50">·</span><span>${timeAgo(e.at)}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// API 网格（可搜索 + 空状态）
+let apiSearchTerm = '';
+function filterApis(value) {
+  apiSearchTerm = (value || '').trim().toLowerCase();
+  renderApiGrid();
+}
+function renderApiGrid() {
+  const el = document.getElementById('api-grid');
+  const empty = document.getElementById('api-empty');
+  if (!el) return;
+  const t = getT();
+  const list = apis.filter(a => !apiSearchTerm || a.name.toLowerCase().includes(apiSearchTerm) || a.provider.toLowerCase().includes(apiSearchTerm));
+  if (empty) empty.classList.toggle('hidden', list.length > 0);
+  el.innerHTML = list.map(a => {
+    const color = getStatusColor(a.status);
+    const dotCls = a.status === 'online' ? 'status-dot-online' : a.status === 'degraded' ? 'status-dot-degraded' : 'status-dot-offline';
+    const availW = Math.max(2, Math.min(100, a.availability));
+    return `<button onclick="openDetail('${a.id}')" aria-label="${a.name} ${t.detailTitle}" class="text-left rounded-xl bg-secondary border border-border p-3.5 transition-colors hover:border-primary/40">
+      <div class="flex items-center justify-between gap-2 mb-2.5">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="h-2.5 w-2.5 rounded-full flex-none ${dotCls}" style="background:${color}"></span>
+          <span class="text-sm font-medium truncate">${a.name}</span>
+        </div>
+        <span class="text-[11px] px-2 py-0.5 rounded-full" style="background:color-mix(in srgb,${color} 16%,transparent);color:${color}">${getStatusText(a.status)}</span>
+      </div>
+      <div class="flex items-baseline gap-1">
+        <span class="text-xl font-semibold tabular-nums">${a.status === 'offline' ? '—' : a.latency}</span>
+        <span class="text-xs text-muted-foreground">${a.status === 'offline' ? '' : 'ms'}</span>
+      </div>
+      <div class="mt-2 h-1.5 rounded-full bg-muted overflow-hidden">
+        <div class="h-full rounded-full" style="width:${availW}%;background:${color}"></div>
+      </div>
+      <div class="mt-1.5 flex items-center justify-between text-[11px] text-muted-foreground">
+        <span>${t.availabilityLabel} ${a.availability}%</span>
+        <span>${timeAgo(a.lastChecked)}</span>
+      </div>
+    </button>`;
+  }).join('');
+}
+
+// 事件日志时间线
+function renderLogs() {
+  const el = document.getElementById('logs-list');
+  const cnt = document.getElementById('logs-count');
+  if (!el) return;
+  const t = getT();
+  const meta = {
+    offline:   { color: 'var(--color-destructive)', icon: 'M18 6 6 18M6 6l12 12' },
+    degraded:  { color: 'var(--color-warning)',     icon: 'M12 9v4M12 17h.01' },
+    recovered: { color: 'var(--color-success)',     icon: 'M20 6 9 17l-5-5' },
+    checked:   { color: 'var(--color-info)',        icon: 'M9 12l2 2 4-4' },
+  };
+  if (cnt) cnt.textContent = `${logs.length} ${currentLang === 'zh' ? '条' : 'events'}`;
+  el.innerHTML = logs.map(l => {
+    const api = apis.find(a => a.id === l.apiId);
+    const m = meta[l.type] || meta.checked;
+    return `<li class="ml-4">
+      <span class="absolute -left-[9px] flex h-4 w-4 items-center justify-center rounded-full border border-border" style="background:${m.color}22">
+        <svg viewBox="0 0 24 24" class="w-2.5 h-2.5" fill="none" stroke="${m.color}" stroke-width="3"><path d="${m.icon}"/></svg>
+      </span>
+      <div class="rounded-xl bg-secondary/50 border border-border px-3 py-2">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-sm font-medium">${api ? api.name : l.apiId}</span>
+          <span class="text-[11px] text-muted-foreground tabular-nums">${timeAgo(l.ts)}</span>
+        </div>
+        <div class="text-xs mt-0.5" style="color:${m.color}">${t[l.msg]}</div>
+      </div>
+    </li>`;
+  }).join('');
+}
+
+// 详情抽屉
+function openDetail(id) {
+  const drawer = document.getElementById('detail-drawer');
+  const overlay = document.getElementById('detail-drawer-overlay');
+  if (!drawer) return;
+  renderDetail(id);
+  drawer.classList.add('is-open');
+  drawer.setAttribute('aria-hidden', 'false');
+  overlay.classList.add('is-open');
+}
+function closeDetail() {
+  const drawer = document.getElementById('detail-drawer');
+  const overlay = document.getElementById('detail-drawer-overlay');
+  if (!drawer) return;
+  drawer.classList.remove('is-open');
+  drawer.setAttribute('aria-hidden', 'true');
+  overlay.classList.remove('is-open');
+}
+function renderDetail(id) {
+  const el = document.getElementById('detail-content');
+  if (!el) return;
+  const t = getT();
+  const a = apis.find(x => x.id === id);
+  if (!a) return;
+  const color = getStatusColor(a.status);
+  const availW = Math.max(2, Math.min(100, a.availability));
+  const R = 52, C = 2 * Math.PI * R;
+  const off = C * (1 - a.availability / 100);
+  el.innerHTML = `
+    <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <span class="h-3 w-3 rounded-full flex-none" style="background:${color}"></span>
+        <div class="min-w-0">
+          <h2 class="text-base font-semibold truncate">${a.name}</h2>
+          <p class="text-xs text-muted-foreground">${a.provider}</p>
+        </div>
+      </div>
+      <button onclick="closeDetail()" aria-label="close" class="p-1.5 rounded-lg hover:bg-secondary transition-colors">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="flex items-center gap-5 mb-5">
+      <svg viewBox="0 0 120 120" class="w-24 h-24 -rotate-90">
+        <circle cx="60" cy="60" r="${R}" fill="none" stroke="var(--color-border)" stroke-width="10"/>
+        <circle cx="60" cy="60" r="${R}" fill="none" stroke-width="10" stroke-linecap="round"
+          stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" style="stroke:${color};transition:stroke-dashoffset .8s cubic-bezier(0.16,1,0.3,1)"/>
+        <text x="60" y="60" text-anchor="middle" dominant-baseline="central" transform="rotate(90 60 60)" fill="var(--color-foreground)" font-size="18" font-weight="600">${a.availability}%</text>
+      </svg>
+      <div class="space-y-1.5 text-sm">
+        <div><span class="text-muted-foreground">${t.availabilityLabel}</span> <span class="font-medium tabular-nums">${a.availability}%</span></div>
+        <div><span class="text-muted-foreground">${t.errorRateLabel}</span> <span class="font-medium tabular-nums">${a.errorRate}%</span></div>
+        <div><span class="text-muted-foreground">${t.lastSyncLabel}</span> <span class="font-medium">${timeAgo(a.lastChecked)}</span></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      ${metricBox(t.latencyLabel, a.status === 'offline' ? '—' : a.latency + 'ms', color)}
+      ${metricBox(t.providerLabel, a.provider, 'var(--color-foreground)')}
+      ${metricBox(t.regionLabel, currentLang === 'zh' ? '全球' : 'Global', 'var(--color-foreground)')}
+      ${metricBox(t.statusOnline, getStatusText(a.status), color)}
+    </div>`;
+}
+function metricBox(label, value, color) {
+  return `<div class="rounded-xl bg-secondary border border-border p-3">
+    <div class="text-[11px] text-muted-foreground mb-1">${label}</div>
+    <div class="text-sm font-semibold truncate" style="color:${color}">${value}</div>
+  </div>`;
+}
+
+// 设置抽屉
+function openSettings() {
+  const drawer = document.getElementById('settings-drawer');
+  const overlay = document.getElementById('settings-drawer-overlay');
+  if (!drawer) return;
+  drawer.classList.add('is-open');
+  drawer.setAttribute('aria-hidden', 'false');
+  overlay.classList.add('is-open');
+}
+function closeSettings() {
+  const drawer = document.getElementById('settings-drawer');
+  const overlay = document.getElementById('settings-drawer-overlay');
+  if (!drawer) return;
+  drawer.classList.remove('is-open');
+  drawer.setAttribute('aria-hidden', 'true');
+  overlay.classList.remove('is-open');
+}
+// 同步设置抽屉内开关 / 语言按钮状态
+function syncSettingsSwitch() {
+  const sw = document.getElementById('settings-theme-switch');
+  if (sw) sw.setAttribute('aria-checked', getTheme() === 'dark' ? 'true' : 'false');
+  const sLang = document.getElementById('settings-lang-btn');
+  if (sLang) sLang.textContent = currentLang === 'zh' ? 'EN' : '中';
+}
+

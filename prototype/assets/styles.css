@@ -13,51 +13,51 @@
   --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", "SF Mono",
     Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* 语义色彩（深色为默认，值对齐 app/style.css 的 :root 档） */
-  --color-background: #0f0f14;
-  --color-foreground: #e6e6ec;
-  --color-card: #16161e;
-  --color-card-foreground: #e6e6ec;
-  --color-popover: #1b1b25;
-  --color-popover-foreground: #e6e6ec;
+  /* 语义色彩 · 浅色档（对齐 app/style.css 的 :root 档，由 .light 触发） */
+  --color-background: #f8fafc;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0f172a;
   --color-primary: #6366f1;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #1e1e28;
-  --color-secondary-foreground: #e6e6ec;
-  --color-muted: #1e1e28;
-  --color-muted-foreground: #9a9aa6;
+  --color-secondary: #e2e8f0;
+  --color-secondary-foreground: #0f172a;
+  --color-muted: #e2e8f0;
+  --color-muted-foreground: #64748b;
   --color-accent: #8b5cf6;
   --color-accent-foreground: #ffffff;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
-  --color-border: #262632;
-  --color-input: #262632;
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
   --color-ring: #6366f1;
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-info: #3b82f6;
 }
 
-/* 更深一档深色（对齐 app/style.css 的 .dark 档，由 <html class="dark"> 触发） */
+/* 深色档（对齐 app/style.css 的 .dark 档，由 <html class="dark"> 触发，原型默认深色） */
 .dark {
   --color-background: #0a0a0f;
-  --color-foreground: #ededf2;
-  --color-card: #121219;
-  --color-card-foreground: #ededf2;
-  --color-popover: #17171f;
-  --color-popover-foreground: #ededf2;
+  --color-foreground: #f4f4f5;
+  --color-card: #13131a;
+  --color-card-foreground: #f4f4f5;
+  --color-popover: #13131a;
+  --color-popover-foreground: #f4f4f5;
   --color-primary: #818cf8;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #1a1a24;
-  --color-secondary-foreground: #ededf2;
-  --color-muted: #1a1a24;
-  --color-muted-foreground: #8b8b96;
-  --color-accent: #8b5cf6;
-  --color-accent-foreground: #ffffff;
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #ffffff;
-  --color-border: #1f1f2b;
-  --color-input: #1f1f2b;
+  --color-primary-foreground: #0a0a0f;
+  --color-secondary: #1e1e28;
+  --color-secondary-foreground: #f4f4f5;
+  --color-muted: #1e1e28;
+  --color-muted-foreground: #71717a;
+  --color-accent: #a78bfa;
+  --color-accent-foreground: #0a0a0f;
+  --color-destructive: #f87171;
+  --color-destructive-foreground: #0a0a0f;
+  --color-border: #242430;
+  --color-input: #242430;
   --color-ring: #818cf8;
   --color-success: #22c55e;
   --color-warning: #f59e0b;

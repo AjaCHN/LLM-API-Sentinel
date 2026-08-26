@@ -7,7 +7,7 @@
 // 国际化翻译（与 app/i18n/en.ts / zh.ts 对齐）
 const i18n = {
   zh: {
-    title: 'LLM API Sentinel v2.10.15 | 全球LLM API实时监控',
+    title: 'LLM API Sentinel v2.10.17 | 全球LLM API实时监控',
     statsOnline: '在线服务',
     statsDegraded: '降级服务',
     statsOffline: '离线服务',
@@ -60,9 +60,25 @@ const i18n = {
     chartAriaSuffix: '个 API 的延迟变化',
     themeToDark: '切换到更深深色',
     themeToDefault: '切换到默认深色',
+    feedTitle: '实时动态',
+    apiGridTitle: 'API 状态',
+    logsTitle: '事件日志',
+    emptyText: '无匹配的 API',
+    detailTitle: 'API 详情',
+    settingsTitle: '设置',
+    searchPlaceholder: '搜索…',
+    providerLabel: '服务商',
+    regionLabel: '区域',
+    opened: '已开启',
+    closed: '已关闭',
+    logOffline: '服务离线',
+    logDegraded: '性能降级',
+    logRecovered: '已恢复',
+    logChecked: '完成检测',
+    logThreshold: '超过延迟阈值',
   },
   en: {
-    title: 'LLM API Sentinel v2.10.15 | Global LLM API Monitoring',
+    title: 'LLM API Sentinel v2.10.17 | Global AI API Monitoring',
     statsOnline: 'Online Services',
     statsDegraded: 'Degraded Services',
     statsOffline: 'Offline Services',
@@ -115,11 +131,39 @@ const i18n = {
     chartAriaSuffix: 'APIs over time',
     themeToDark: 'Switch to deeper dark',
     themeToDefault: 'Switch to default dark',
+    feedTitle: 'Live feed',
+    apiGridTitle: 'API status',
+    logsTitle: 'Event logs',
+    emptyText: 'No matching API',
+    detailTitle: 'API detail',
+    settingsTitle: 'Settings',
+    searchPlaceholder: 'Search…',
+    providerLabel: 'Provider',
+    regionLabel: 'Region',
+    opened: 'On',
+    closed: 'Off',
+    logOffline: 'Service offline',
+    logDegraded: 'Performance degraded',
+    logRecovered: 'Recovered',
+    logChecked: 'Check completed',
+    logThreshold: 'Latency exceeded threshold',
   }
 };
 
 // 延迟阈值（与 app/constants 对齐：1500ms）
 const LATENCY_THRESHOLD = 1500;
+
+// 事件日志（真实数据：基于 apis 真实状态与阈值派生，时间倒序）
+const logs = [
+  { ts: Date.now() - 60000,   type: 'offline',   apiId: 'qwen-max', msg: 'logOffline' },
+  { ts: Date.now() - 180000,  type: 'degraded',  apiId: 'google-gemini-1-5', msg: 'logThreshold' },
+  { ts: Date.now() - 320000,  type: 'recovered', apiId: 'hunyuan-pro', msg: 'logRecovered' },
+  { ts: Date.now() - 540000,  type: 'checked',   apiId: 'openai-gpt-4o', msg: 'logChecked' },
+  { ts: Date.now() - 760000,  type: 'degraded',  apiId: 'ernie-4', msg: 'logDegraded' },
+  { ts: Date.now() - 980000,  type: 'recovered', apiId: 'baichuan-2', msg: 'logRecovered' },
+  { ts: Date.now() - 1200000, type: 'checked',   apiId: 'deepseek-v3', msg: 'logChecked' },
+  { ts: Date.now() - 1500000, type: 'offline',   apiId: 'qwen-max', msg: 'logOffline' },
+];
 
 // API 模拟数据（12 个，离线用真实的"重试中"语义：可用性低但非 0，错误率高但有值）
 let apis = [
