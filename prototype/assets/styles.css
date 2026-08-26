@@ -19,6 +19,7 @@
   --color-card: #16161e;
   --color-card-foreground: #e6e6ec;
   --color-popover: #1b1b25;
+  --color-popover-foreground: #e6e6ec;
   --color-primary: #6366f1;
   --color-primary-foreground: #ffffff;
   --color-secondary: #1e1e28;
@@ -44,6 +45,7 @@
   --color-card: #121219;
   --color-card-foreground: #ededf2;
   --color-popover: #17171f;
+  --color-popover-foreground: #ededf2;
   --color-primary: #818cf8;
   --color-primary-foreground: #ffffff;
   --color-secondary: #1a1a24;

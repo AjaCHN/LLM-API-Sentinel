@@ -7,7 +7,7 @@
 // 国际化翻译（与 app/i18n/en.ts / zh.ts 对齐）
 const i18n = {
   zh: {
-    title: 'LLM API Sentinel v2.10.1 | 全球LLM API实时监控',
+    title: 'LLM API Sentinel v2.10.13 | 全球LLM API实时监控',
     statsOnline: '在线服务',
     statsDegraded: '降级服务',
     statsOffline: '离线服务',
@@ -34,6 +34,7 @@ const i18n = {
     statusOnline: '在线',
     statusDegraded: '降级',
     statusOffline: '离线',
+    allNormal: '全部正常',
     latencyLabel: '延迟',
     availabilityLabel: '可用性',
     errorRateLabel: '错误率',
@@ -61,7 +62,7 @@ const i18n = {
     themeToDefault: '切换到默认深色',
   },
   en: {
-    title: 'LLM API Sentinel v2.10.1 | Global LLM API Monitoring',
+    title: 'LLM API Sentinel v2.10.13 | Global LLM API Monitoring',
     statsOnline: 'Online Services',
     statsDegraded: 'Degraded Services',
     statsOffline: 'Offline Services',
@@ -88,6 +89,7 @@ const i18n = {
     statusOnline: 'Online',
     statusDegraded: 'Degraded',
     statusOffline: 'Offline',
+    allNormal: 'All normal',
     latencyLabel: 'Latency',
     availabilityLabel: 'Availability',
     errorRateLabel: 'Error Rate',

@@ -136,7 +136,7 @@ function renderStats() {
   const stats = [
     { key: 'online', label: t.statsOnline, value: `${online}/${active}`, color: 'var(--color-success)', sub: `${avgAvail}% ${t.availabilityLabel}` },
     { key: 'degraded', label: t.statsDegraded, value: degraded, color: 'var(--color-warning)', sub: `${avgErr}% ERR` },
-    { key: 'offline', label: t.statsOffline, value: offline, color: 'var(--color-destructive)', sub: offline ? `${totalRetries}× ${t.retryUnit}` : t.statusOnline },
+    { key: 'offline', label: t.statsOffline, value: offline, color: 'var(--color-destructive)', sub: offline > 0 ? `${totalRetries}× ${t.retryUnit}` : t.allNormal },
     { key: 'latency', label: t.statsLatency, value: `${avgLatency}${t.unitMs}`, color: 'var(--color-primary)', sub: `${t.peakLabel} ${peakLatency}${t.unitMs}` },
   ];
 
@@ -211,7 +211,7 @@ function openAlertsDialog() {
             </div>
             <div class="flex items-center gap-2">
               <span class="px-2 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,${getStatusColor(a.status)} 15%,transparent);color:color-mix(in srgb,${getStatusColor(a.status)} 72%,var(--color-foreground))">${getStatusText(a.status)}</span>
-              <button class="px-2.5 py-1 rounded-lg text-xs border border-border hover:bg-secondary transition-colors">${t.resolve}</button>
+              <button onclick="resolveAlert('${a.id}')" class="px-2.5 py-1 rounded-lg text-xs border border-border hover:bg-secondary transition-colors" aria-label="${t.resolve} ${a.name}">${t.resolve}</button>
             </div>
           </div>`).join('') : `<div class="text-sm text-muted-foreground py-6 text-center">${t.noAlerts}</div>`}
       </div>
@@ -235,6 +235,18 @@ function openAlertsDialog() {
   }
   document.addEventListener('keydown', escClose);
   document.addEventListener('keydown', tabTrap);
+}
+// 轻量 mock：将对应告警标记为已解决（在线）并从列表移除，刷新横幅与卡片
+function resolveAlert(id) {
+  const target = apis.find(a => a.id === id);
+  if (!target) return;
+  target.status = 'online';
+  target.availability = 100;
+  target.errorRate = 0;
+  target.lastChecked = Date.now();
+  if (renderFn) renderFn();
+  renderAlertsBanner();
+  closeAlertsDialog();
 }
 function closeAlertsDialog() {
   const host = document.getElementById('dialog-host');
@@ -474,4 +486,6 @@ function appInit(render) {
   updateTimeRangeUI();
   updateClock();
   render();
+  // 同步初始时间范围文案（覆盖 index.html 中硬编码的 24H）
+  setTimeRange(currentTimeRange);
 }
