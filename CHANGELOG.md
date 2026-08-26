@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.10.18] - 2026-08-26
+
+### Fix
+- **修复 useApiMonitor 编译错误**: `useCallback` 依赖数组中遗留未定义的 `setError`，改为已解构的 `showError`（对齐 `useErrorStore`），消除 `next build` 的 TS2304 类型错误
+
 ## [2.10.17] - 2026-08-26
 
 ### Fix

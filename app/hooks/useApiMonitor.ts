@@ -1,4 +1,4 @@
-                                                            // app/hooks/useApiMonitor.ts v2.10.9
+                                                            // app/hooks/useApiMonitor.ts v2.10.18
 // 改进：使用本地 API 检查，同时支持从 Supabase 同步数据
 import { useCallback, useEffect, startTransition } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -115,7 +115,7 @@ export function useApiMonitor() {
   }, [
     setIsChecking,
     setLastUpdate,
-    setError,
+    showError,
     setStatuses,
     addHistoryEntry,
     syncToSupabase,
