@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.10.19] - 2026-08-26
+
+### CI
+- **修复 GitHub Actions pnpm 版本冲突**: 移除 `pnpm/action-setup@v4` 的 `version: 9`，改由 `package.json` 的 `packageManager: pnpm@9.15.0` 单一来源驱动，消除 `ERR_PNPM_BAD_PM_VERSION`
+- **升级 Node 运行时**: workflow `node-version` 由 20 升至 22（规避 Node 20 弃用）
+
 ## [2.10.18] - 2026-08-26
 
 ### Fix
