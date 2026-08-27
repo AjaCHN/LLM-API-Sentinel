@@ -1,98 +1,21 @@
-// app/lib/i18n.ts v2.10.26
-// 安全加固: 添加 locale 白名单验证，防止 localStorage 篡改导致的异常
-// 修复: 改用静态导入所有语言包，避免动态模板 import 在客户端打包失败导致
-//       页面显示 i18n key 而非翻译字符串的问题
+// app/lib/i18n.ts v2.10.28
+// i18n 编排层：状态管理与翻译取值。常量与校验逻辑分别抽离到 i18n-locales.ts / i18n-validation.ts。
+// 安全加固: 添加 locale 白名单验证，防止 localStorage 篡改导致的异常。
+// 修复: 改用静态导入所有语言包，避免动态模板 import 在客户端打包失败导致页面显示 i18n key 的问题。
 
-type TranslationData = { [section: string]: { [key: string]: string | string[] } };
-
-import enData from '../locales/en.json';
-import zhCnData from '../locales/zh-cn.json';
-import zhTwData from '../locales/zh-tw.json';
-import arData from '../locales/ar.json';
-import csData from '../locales/cs.json';
-import esData from '../locales/es.json';
-import hiData from '../locales/hi.json';
-import idData from '../locales/id.json';
-import itData from '../locales/it.json';
-import nlData from '../locales/nl.json';
-import plData from '../locales/pl.json';
-import svData from '../locales/sv.json';
-import thData from '../locales/th.json';
-import trData from '../locales/tr.json';
-import ruData from '../locales/ru.json';
-import viData from '../locales/vi.json';
-
-const translations: Record<string, TranslationData> = {
-  en: enData as TranslationData,
-  'zh-CN': zhCnData as TranslationData,
-  'zh-TW': zhTwData as TranslationData,
-  ar: arData as TranslationData,
-  cs: csData as TranslationData,
-  es: esData as TranslationData,
-  hi: hiData as TranslationData,
-  id: idData as TranslationData,
-  it: itData as TranslationData,
-  nl: nlData as TranslationData,
-  pl: plData as TranslationData,
-  sv: svData as TranslationData,
-  th: thData as TranslationData,
-  tr: trData as TranslationData,
-  ru: ruData as TranslationData,
-  vi: viData as TranslationData,
-};
+import {
+  translations,
+  enFallback,
+  supportedLocales,
+} from './i18n-locales';
+import {
+  isValidLocale,
+  getSafeLocaleFromStorage,
+  langToLocale,
+  resolveZhLocale,
+} from './i18n-validation';
 
 let currentLocale = 'en';
-const enFallback: TranslationData = enData as TranslationData;
-
-export const supportedLocales = [
-  { code: 'en', name: 'English', nativeName: 'English' },
-  { code: 'zh-CN', name: 'Chinese (Simplified)', nativeName: '简体中文' },
-  { code: 'zh-TW', name: 'Chinese (Traditional)', nativeName: '繁體中文' },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
-  { code: 'cs', name: 'Czech', nativeName: 'Čeština' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español' },
-  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
-  { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia' },
-  { code: 'it', name: 'Italian', nativeName: 'Italiano' },
-  { code: 'nl', name: 'Dutch', nativeName: 'Nederlands' },
-  { code: 'pl', name: 'Polish', nativeName: 'Polski' },
-  { code: 'sv', name: 'Swedish', nativeName: 'Svenska' },
-  { code: 'th', name: 'Thai', nativeName: 'ไทย' },
-  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
-  { code: 'ru', name: 'Russian', nativeName: 'Русский' },
-  { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
-] as const;
-
-// 安全: 有效的 locale 代码白名单（从 supportedLocales 生成）
-const VALID_LOCALE_CODES = new Set<string>(supportedLocales.map((l) => l.code));
-
-/**
- * 安全验证 locale 字符串是否在白名单中
- * 防止 localStorage 被篡改导致加载恶意 locale
- */
-export function isValidLocale(locale: unknown): locale is string {
-  return typeof locale === 'string' && VALID_LOCALE_CODES.has(locale);
-}
-
-/**
- * 安全地从 localStorage 读取 locale，失败则返回默认值
- */
-function getSafeLocaleFromStorage(): string {
-  if (typeof window === 'undefined') return 'en';
-  try {
-    const saved = localStorage.getItem('locale');
-    if (isValidLocale(saved)) {
-      return saved;
-    }
-    // 无效值则清除
-    if (saved !== null) {
-      localStorage.removeItem('locale');
-    }
-    return 'en';
-  } catch {
-    return 'en';
-  }
-}
 
 export async function loadLocale(locale: string): Promise<void> {
   if (translations[locale]) {
@@ -137,25 +60,9 @@ export function detectBrowserLocale(): string {
   }
 
   const langOnly = browserLangLower.split('-')[0];
-
-  const langToLocale: Record<string, string> = {
-    zh: browserLangLower.includes('tw') || browserLangLower.includes('hant') ? 'zh-TW' : 'zh-CN',
-    en: 'en',
-    ar: 'ar',
-    cs: 'cs',
-    es: 'es',
-    hi: 'hi',
-    id: 'id',
-    it: 'it',
-    nl: 'nl',
-    pl: 'pl',
-    sv: 'sv',
-    th: 'th',
-    tr: 'tr',
-    ru: 'ru',
-    vi: 'vi',
-  };
-
+  if (langOnly === 'zh') {
+    return resolveZhLocale(browserLangLower);
+  }
   return langToLocale[langOnly] || 'en';
 }
 
