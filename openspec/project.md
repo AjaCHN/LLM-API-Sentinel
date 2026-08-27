@@ -1,4 +1,4 @@
-# LLM API Sentinel 项目规范 (v2.10.23)
+# LLM API Sentinel 项目规范 (v2.10.26)
 
 ## 1. 项目概述
 
@@ -6,7 +6,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 
 ### 1.1 核心功能
 - **全球监控**：追踪美国（OpenAI, Anthropic, Google, Meta/Groq, Mistral）和中国（Moonshot/Kimi, ZhipuAI, Baichuan, Alibaba/Qwen, Tencent/Hunyuan, Baidu/Ernie, DeepSeek）主流 AI 供应商的连通性与延迟，共 29 个核心 API
-- **历史数据**：Recharts 面积图可视化性能趋势；支持 24H/7D/30D 时间范围，曲线末点锚定当前实时延迟（`app/components/LatencyHistoryChart.tsx`，`ssr:false` 动态加载 + ChartSkeleton）
+- **历史数据**：Recharts 面积图可视化性能趋势；支持 1H/6H/24H 时间范围（`TIME_RANGES: lastHour/last6Hours/last24Hours`），曲线末点锚定当前实时延迟（`app/components/LatencyHistoryChart.tsx`，`ssr:false` 动态加载 + ChartSkeleton）
 - **自适应 UI**：全响应式设计（1/2/3/4 列网格），采用浅色/深色双主题（next-themes `defaultTheme="system"`），默认 Dark Indigo 沉浸主题（靛蓝 #6366f1 + 紫色 #8b5cf6）
 - **实时更新**：基于 Supabase Realtime 实现状态即时同步（默认 5 分钟后台检查周期）
 - **安全访问**：手动健康检查受 Supabase Auth (Google OAuth) 保护

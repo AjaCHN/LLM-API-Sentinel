@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.10.26] - 2026-08-27
+
+### Docs
+- **同步规范头注释与版本**: `project.md`/`server.ts`/`supabase/functions/monitor/index.ts`/`app/lib/i18n.ts` 头注释统一至 v2.10.26，消除系统性脱节
+- **修正 project.md 时间范围**: `24H/7D/30D` 改为 `1H/6H/24H`，与 `DashboardClient.tsx` 的 `TIME_RANGES` 对齐
+
 ## [2.10.25] - 2026-08-27
 
 ### Docs

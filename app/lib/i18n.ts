@@ -1,4 +1,4 @@
-// app/lib/i18n.ts v2.10.7
+// app/lib/i18n.ts v2.10.26
 // 安全加固: 添加 locale 白名单验证，防止 localStorage 篡改导致的异常
 // 修复: 改用静态导入所有语言包，避免动态模板 import 在客户端打包失败导致
 //       页面显示 i18n key 而非翻译字符串的问题

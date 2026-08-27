@@ -1,4 +1,4 @@
-// server.ts v2.7.1
+// server.ts v2.10.26
 // 安全加固: 添加 helmet 安全头、禁用 x-powered-by、错误处理中间件、body 大小限制
 import express from 'express';
 import helmet from 'helmet';
