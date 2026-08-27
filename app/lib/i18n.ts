@@ -15,6 +15,9 @@ import {
   resolveZhLocale,
 } from './i18n-validation';
 
+// 重新导出，保持与拆分前一致的公开 API 契约（消费方从 '@/lib/i18n' 导入 supportedLocales）
+export { supportedLocales } from './i18n-locales';
+
 let currentLocale = 'en';
 
 export async function loadLocale(locale: string): Promise<void> {
