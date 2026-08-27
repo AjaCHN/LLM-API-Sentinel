@@ -11,7 +11,7 @@
 - **自适应 UI**：全响应式设计（1/2/3/4 列），采用纯深色沉浸主题（通过 `.dark` 类提供两档深度）。
 - **实时更新**：基于 Supabase Realtime 实现状态即时同步。
 - **安全访问**：手动健康检查受 Google 身份验证保护。
-- **安全加固**：可选的自定义服务器（`server.ts`）为手动检查添加 Helmet 安全响应头与按 IP 速率限制。
+- **安全加固**：可选的自定义服务器（`examples/self-host-server.ts`）为手动检查添加 Helmet 安全响应头与按 IP 速率限制。
 - **智能告警**：自动检测 API 宕机和延迟过高，并生成告警通知。
 - **自主监控**：后台任务每 5 分钟自动执行 API 检查，无需用户干预。
 - **性能优化**：
@@ -48,7 +48,7 @@
          ▲                        ▲
          │            ┌──────────┴──────────┐
          │            │  Express (可选)     │
-         │            │  server.ts — 手动   │
+         │            │  self-host-server.ts — 手动   │
          │            │  检查 + 安全头/限流 │
          └────────────┘                     │
                       └─────────────────────┘
@@ -56,7 +56,7 @@
 
 - **前端**：静态导出到 `out/` 目录，可部署到任何静态托管服务
 - **实时数据**：Supabase Realtime 订阅（无需轮询）
-- **后端**：自主后台监控通过 Supabase（定时函数 / Edge Functions）运行。`server.ts` 为可选的 Express 服务器，用于以 `node server.ts` 自托管时增加 Helmet 安全响应头与按 IP 速率限制。
+- **后端**：自主后台监控通过 Supabase（定时函数 / Edge Functions）运行。`examples/self-host-server.ts` 为可选的 Express 服务器，用于以 `node examples/self-host-server.ts` 自托管时增加 Helmet 安全响应头与按 IP 速率限制。
 - **身份验证**：Supabase Auth 集成 Google OAuth
 
 ## 快速开始
@@ -187,7 +187,7 @@ pnpm build   # 静态文件输出到 out/
 ├── openspec/            # 项目规范文档（架构、数据模型、UI、功能、变更提案）
 ├── docs/                # 补充文档（环境变量、部署、安全、贡献指南）
 ├── supabase/            # 数据库架构（schema.sql）
-├── server.ts            # 可选 Express 安全服务器（Helmet + 限流）
+├── examples/self-host-server.ts  # 可选 Express 安全服务器（Helmet + 限流）
 ├── next.config.mjs      # Next.js 配置（静态导出）
 ├── vercel.json          # Vercel 部署配置
 ├── edgeone.config.js    # EdgeOne Pages 部署配置

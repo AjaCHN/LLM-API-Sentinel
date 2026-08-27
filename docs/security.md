@@ -25,11 +25,11 @@
 | `X-XSS-Protection` | `1; mode=block` | 启用浏览器 XSS 过滤 |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` | 限制 Referer 泄露 |
 
-在可选自建模式（`server.ts`）下，额外通过 **Helmet** 中间件强化上述头部。
+在可选自建模式（`examples/self-host-server.ts`）下，额外通过 **Helmet** 中间件强化上述头部。
 
 ## 4. 速率限制（自建模式）
 
-`server.ts` 对 `/api/check` 手动检查接口施加 **按 IP 速率限制**（默认每 15 分钟最多 30 次），防范滥用与暴力探测。
+`examples/self-host-server.ts` 对 `/api/check` 手动检查接口施加 **按 IP 速率限制**（默认每 15 分钟最多 30 次），防范滥用与暴力探测。
 
 ## 5. 静态导出与攻击面
 

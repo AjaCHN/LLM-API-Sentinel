@@ -773,10 +773,10 @@ addHistoryEntry: (entryOrEntries) => set((state) => {
 
 ### 8.1 任务调度
 
-后台监控任务在 Express 服务器 (server.ts) 中运行，使用 setInterval 定时执行：
+后台监控任务在 Express 服务器 (examples/self-host-server.ts) 中运行，使用 setInterval 定时执行：
 
 ```typescript
-// server.ts
+// examples/self-host-server.ts
 // 后台任务：每 5 分钟执行一次
 setInterval(runBackgroundMonitor, 5 * 60 * 1000);
 // 首次检查：服务器启动后延迟 10 秒执行

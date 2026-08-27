@@ -40,19 +40,19 @@ pnpm build   # 输出静态文件到 out/
 
 ## 3. 可选自建模式（Express 安全服务器）
 
-若希望自托管并启用额外安全加固（Helmet 安全响应头 + 按 IP 速率限制），可使用 `server.ts` 以自定义服务器模式运行：
+若希望自托管并启用额外安全加固（Helmet 安全响应头 + 按 IP 速率限制），可使用 `examples/self-host-server.ts` 以自定义服务器模式运行：
 
 ```bash
 pnpm build
-node server.ts
+node examples/self-host-server.ts
 ```
 
-`server.ts` 会：
+`examples/self-host-server.ts` 会：
 - 用 Helmet 设置 `X-Content-Type-Options`、`X-Frame-Options`、`X-XSS-Protection`、`Referrer-Policy` 等响应头。
 - 对 `/api/check` 手动检查接口施加按 IP 的速率限制（默认每 15 分钟最多 30 次）。
 - 以 `next` 自定义服务器方式提供页面。
 
-> ⚠️ 注意：`server.ts` 使用 Next.js 自定义服务器模式，**与静态导出 (`output: 'export'`) 不兼容**。若使用 `server.ts`，需将 `next.config.mjs` 中的 `output` 改为 `'standalone'` 或移除该配置，并改用 `node server.ts` 提供服务，而非静态托管。两者二选一。
+> ⚠️ 注意：`examples/self-host-server.ts` 使用 Next.js 自定义服务器模式，**与静态导出 (`output: 'export'`) 不兼容**。若使用 `examples/self-host-server.ts`，需将 `next.config.mjs` 中的 `output` 改为 `'standalone'` 或移除该配置，并改用 `node examples/self-host-server.ts` 提供服务，而非静态托管。两者二选一。
 
 ## 4. 后台监控任务
 

@@ -531,7 +531,7 @@ CREATE TRIGGER alert_validation
 
 **写入操作分两步（非事务，但有错误处理）**：
 ```typescript
-// server.ts 中的后台监控写入逻辑
+// examples/self-host-server.ts 中的后台监控写入逻辑
 async function runBackgroundMonitor() {
   const results = await performCheck();
 

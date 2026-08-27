@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.10.29] - 2026-08-27
+
+### Refactor
+- **降级 server.ts 至 examples/**: 将根目录 `server.ts` 移至 `examples/self-host-server.ts`，明示其为自托管可选件（非默认路径）；同步更新 README/README_CN/openspec/docs 全部 `server.ts` 引用
+
 ## [2.10.28] - 2026-08-27
 
 ### Refactor

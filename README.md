@@ -17,7 +17,7 @@ Real-time monitoring and historical availability tracking for major LLM APIs wor
 - **Adaptive UI**: Fully responsive design (1/2/3/4 columns) with a deep dark-only immersive theme (two intensity levels via `.dark` class).
 - **Real-time Updates**: Powered by Supabase Realtime for instant status synchronization (5-minute interval).
 - **Secure Access**: Manual health checks are protected by Google Authentication (Supabase Auth).
-- **Security Hardening**: Optional custom server (`server.ts`) adds Helmet security headers and per-IP rate limiting for manual checks.
+- **Security Hardening**: Optional custom server (`examples/self-host-server.ts`) adds Helmet security headers and per-IP rate limiting for manual checks.
 - **Smart Alerts**: Automatic detection of API downtime (offline), degraded state, and high latency (threshold: 1500ms) with severity-based notifications.
 - **Autonomous Monitoring**: Background tasks perform API checks every 5 minutes without user intervention.
 - **Performance Optimizations**:
@@ -53,7 +53,7 @@ This project uses a **Static Frontend + Supabase Backend** architecture. By defa
          ▲                        ▲
          │            ┌──────────┴──────────┐
          │            │  Express (optional) │
-         │            │  server.ts — manual │
+         │            │  self-host-server.ts — manual │
          │            │  checks + security  │
          └────────────┘  headers/rate-limit │
                       └─────────────────────┘
@@ -61,7 +61,7 @@ This project uses a **Static Frontend + Supabase Backend** architecture. By defa
 
 - **Frontend**: Static export to `out/` directory, deployable to any static hosting
 - **Real-time Data**: Supabase Realtime subscriptions (no polling)
-- **Backend**: Autonomous background monitoring runs via Supabase (scheduled functions / edge workers). `server.ts` is an opt-in Express server that wraps Next.js to add Helmet security headers and per-IP rate limiting for manual checks — useful for self-hosted `node server.ts` deployments.
+- **Backend**: Autonomous background monitoring runs via Supabase (scheduled functions / edge workers). `examples/self-host-server.ts` is an opt-in Express server that wraps Next.js to add Helmet security headers and per-IP rate limiting for manual checks — useful for self-hosted `node examples/self-host-server.ts` deployments.
 - **Authentication**: Supabase Auth with Google OAuth
 
 ## Getting Started
@@ -189,7 +189,7 @@ Supported languages:
 ├── openspec/            # Project specification documents (architecture, data, ui...)
 ├── docs/                # Supplementary docs (env, deployment, security, contributing)
 ├── supabase/            # Database schema (schema.sql)
-├── server.ts            # Optional Express security server (Helmet + rate limit)
+├── examples/self-host-server.ts  # Optional Express security server (Helmet + rate limit)
 ├── next.config.mjs      # Next.js config (static export)
 ├── vercel.json          # Vercel deployment config
 ├── edgeone.config.js    # EdgeOne Pages deployment config

@@ -177,7 +177,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 ├── jest.config.cjs               # Jest 测试配置
 ├── jest.setup.cjs                # Jest 测试 setup
 ├── postcss.config.mjs            # PostCSS 配置
-├── server.ts                     # Express 后台监控服务器（可选）
+├── examples/self-host-server.ts  # Express 后台监控服务器（可选，自建模式）
 ├── vercel.json                   # Vercel 部署配置
 ├── edgeone.config.js             # EdgeOne 部署配置
 └── .gitignore                    # Git 忽略规则
@@ -807,7 +807,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 ### 16.2 服务端配置
 ```typescript
-// server.ts
+// examples/self-host-server.ts
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
