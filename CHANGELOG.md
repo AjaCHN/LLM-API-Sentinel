@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.10.30] - 2026-08-27
+
+### Fix
+- **修复 examples 自托管脚本 CI 构建失败**: 修正 `examples/self-host-server.ts` 中 `./app/...` 相对路径为 `../app/...`；并将 `examples/` 从 tsconfig `exclude` 中排除，避免独立示例脚本拖垮 Next 构建类型检查
+
 ## [2.10.29] - 2026-08-27
 
 ### Refactor

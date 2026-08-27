@@ -1,13 +1,13 @@
-// examples/self-host-server.ts v2.10.29
+// examples/self-host-server.ts v2.10.30
 // 安全加固: 添加 helmet 安全头、禁用 x-powered-by、错误处理中间件、body 大小限制
 import express from 'express';
 import helmet from 'helmet';
 import next from 'next';
 import { createClient } from '@supabase/supabase-js';
 import { parse } from 'url';
-import { performCheck } from './app/lib/monitor';
-import { LATENCY_THRESHOLD } from './app/constants';
-import type { ApiCheckResult } from './app/types';
+import { performCheck } from '../app/lib/monitor';
+import { LATENCY_THRESHOLD } from '../app/constants';
+import type { ApiCheckResult } from '../app/types';
 
 const dev = process.env.NODE_ENV !== 'production';
 const isProduction = process.env.NODE_ENV === 'production';
