@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.10.27] - 2026-08-27
+
+### Refactor
+- **消除监控 API 双源**: 抽出 `app/constants/apis.json` 作为单一真源，前端 `DEFAULT_APIS` 改为导入；Edge Function `monitor` 改为运行时读取同步的 `apis.json`，新增 `scripts/sync-apis.mjs`（`--check` 已在 CI 校验一致性），杜绝前后台探测目标漂移
+
 ## [2.10.26] - 2026-08-27
 
 ### Docs

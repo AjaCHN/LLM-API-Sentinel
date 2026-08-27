@@ -1,4 +1,4 @@
-# .github/workflows/ci.yml v2.10.20
+# .github/workflows/ci.yml v2.10.27
 # 持续集成：PR 与 push 时执行 lint + test + build 门禁，未通过禁止合并。
 
 name: CI
@@ -33,6 +33,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Sync check (apis.json single-source)
+        run: node scripts/sync-apis.mjs --check
 
       - name: Lint
         run: pnpm lint
