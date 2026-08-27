@@ -7,7 +7,7 @@
 // 国际化翻译（与 app/i18n/en.ts / zh.ts 对齐）
 const i18n = {
   zh: {
-    title: 'LLM API Sentinel v2.10.17 | 全球LLM API实时监控',
+    title: 'LLM API Sentinel v2.10.24 | 全球LLM API实时监控',
     statsOnline: '在线服务',
     statsDegraded: '降级服务',
     statsOffline: '离线服务',
@@ -78,7 +78,7 @@ const i18n = {
     logThreshold: '超过延迟阈值',
   },
   en: {
-    title: 'LLM API Sentinel v2.10.17 | Global AI API Monitoring',
+    title: 'LLM API Sentinel v2.10.24 | Global AI API Monitoring',
     statsOnline: 'Online Services',
     statsDegraded: 'Degraded Services',
     statsOffline: 'Offline Services',

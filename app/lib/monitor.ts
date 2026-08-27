@@ -1,10 +1,11 @@
-// app/lib/monitor.ts v2.8.2
+// app/lib/monitor.ts v2.10.18
 import { APIS_TO_CHECK, MAX_RETRIES, RETRY_DELAY, DEGRADED_THRESHOLD } from '../constants';
 import { ApiCheckResult } from '../types';
 import { getCache, setCache, initializeCache } from './cache';
 import { concurrencyManager, processBatch } from './concurrency';
+import { loadMetricsFromStorage, persistSingleMetric } from './metrics-storage';
 
-interface HistoricalMetrics {
+export interface HistoricalMetrics {
   totalChecks: number;
   failedChecks: number;
   totalLatency: number;
@@ -12,7 +13,10 @@ interface HistoricalMetrics {
   minLatency: number;
 }
 
-const metricsCache: Map<string, HistoricalMetrics> = new Map();
+// 从持久化存储加载累计指标，保证跨刷新真实累加（可用性/延迟历史基于真实探测次数）
+const metricsCache: Map<string, HistoricalMetrics> = new Map(
+  Object.entries(loadMetricsFromStorage())
+);
 
 // 安全清理错误消息，防止敏感信息泄露到缓存
 function sanitizeErrorMessage(message: string): string {
@@ -28,10 +32,10 @@ function calculateRealMetrics(
   apiId: string,
   currentLatency: number,
   isOnline: boolean,
-  totalChecks: number = 100
+  totalChecks: number = 1
 ): { errorRate: number; availability: number; uptime: number; averageLatency: number; maxLatency: number; minLatency: number } {
   const existingMetrics = metricsCache.get(apiId);
-  
+
   if (!existingMetrics) {
     const initialMetrics: HistoricalMetrics = {
       totalChecks: totalChecks,
@@ -41,9 +45,10 @@ function calculateRealMetrics(
       minLatency: isOnline ? currentLatency : Number.MAX_SAFE_INTEGER
     };
     metricsCache.set(apiId, initialMetrics);
+    persistSingleMetric(apiId, initialMetrics);
     return calculateFromMetrics(initialMetrics, currentLatency);
   }
-  
+
   const updatedMetrics: HistoricalMetrics = {
     totalChecks: Math.min(existingMetrics.totalChecks + 1, 1000),
     failedChecks: isOnline ? existingMetrics.failedChecks : existingMetrics.failedChecks + 1,
@@ -51,8 +56,9 @@ function calculateRealMetrics(
     maxLatency: isOnline ? Math.max(existingMetrics.maxLatency, currentLatency) : existingMetrics.maxLatency,
     minLatency: isOnline ? Math.min(existingMetrics.minLatency, currentLatency) : existingMetrics.minLatency
   };
-  
+
   metricsCache.set(apiId, updatedMetrics);
+  persistSingleMetric(apiId, updatedMetrics);
   return calculateFromMetrics(updatedMetrics, currentLatency);
 }
 

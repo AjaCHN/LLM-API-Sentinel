@@ -1,11 +1,11 @@
 # 发展路线与改进建议 (Roadmap & Improvement Proposals)
 
-本文档基于项目当前状态（v2.10.15：静态前端 + Supabase 后端、29 个中美 API 实时监控、16 语言、Recharts 图表、浅色/深色双主题、可选 Express 安全服务器、CI/CD 已落地），提出务实的发展方向。按优先级分为短期、中期、长期三类，并单列工程质量项。
+本文档基于项目当前状态（v2.10.23：静态前端 + Supabase 后端、29 个中美 API 实时监控、16 语言、Recharts 图表、浅色/深色双主题、可选 Express 安全服务器、CI/CD 已落地、真实探测无演示数据），提出务实的发展方向。按优先级分为短期、中期、长期三类，并单列工程质量项。
 
 ## 当前能力基线
 
 - **监控对象**：29 个主流 LLM API（美国 16 家 + 中国 13 家），覆盖 OpenAI / Anthropic / Google / Meta / Mistral / xAI / Cohere / Perplexity / 智谱 / 阿里 / 腾讯 / 百度 / DeepSeek / Kimi / 火山等。
-- **核心功能**：连通性 + 延迟监控、实时状态网格（扁平、不按供应商分组）、历史趋势（24H/7D/30D）、阈值告警、Google OAuth 保护、Supabase Realtime 同步。
+- **核心功能**：连通性 + 延迟监控、实时状态网格（扁平、不按供应商分组）、历史趋势（24H/7D/30D）、阈值告警、Google OAuth 保护、Supabase Realtime 同步。**数据真实性**：v2.10.22 起移除全部演示数据注入，Supabase 未配置/加载失败时为空态（骨架占位）等待真实探测；累计指标（可用性/延迟）经 `metrics-storage.ts` 真实写入 localStorage 跨刷新累加。
 - **部署**：默认静态导出（`out/`）至 Vercel / EdgeOne / Netlify；可选 `server.ts` 自建安全服务器（Helmet + 限流）。
 - **工程现状**：Jest + 覆盖率门禁已接入（`jest.config.cjs` 设 statements/functions/lines ≥ 70%）；CI（`ci.yml`）+ Release（`release.yml`）已上线；多渠道告警已支持 Webhook / Slack / Discord / Teams / 钉钉 / 飞书；Firebase 残留配置仅作迁移参考。
 

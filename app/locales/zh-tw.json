@@ -73,7 +73,8 @@
     "lastHour": "最近1小時",
     "last6Hours": "最近6小時",
     "last24Hours": "最近24小時",
-    "changeLanguage": "切換語言"
+    "changeLanguage": "切換語言",
+    "noData": "暫無監控資料——正在進行真實探測..."
   },
   "history": {
     "performanceHistory": "效能歷史",

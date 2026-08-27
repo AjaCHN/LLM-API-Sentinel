@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LLM API Sentinel - High-fidelity interactive prototype (prototype.html v2.10.17)
+<!-- LLM API Sentinel - High-fidelity interactive prototype (prototype.html v2.10.24)
  * 复用 assets/app.js + assets/data.js + assets/styles.css
  * 对齐 app/ 当前布局（max-w-[1400px] / .dark 双档语义色）
 -->
@@ -7,7 +7,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LLM API Sentinel · 高保真原型 v2.10.17</title>
+  <title>LLM API Sentinel · 高保真原型 v2.10.24</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="assets/styles.css" />
   <style>
@@ -93,7 +93,7 @@
   </header>
 
   <!-- 主体 -->
-  <main class="mx-auto max-w-[1400px] px-4 sm:px-6 py-6 space-y-6">
+  <main id="main-content" class="mx-auto max-w-[1400px] px-4 sm:px-6 py-6 space-y-6">
     <!-- 统计卡 -->
     <section id="stats-grid" aria-label="overview stats" class="stagger grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4"></section>
 
@@ -115,7 +115,7 @@
 
     <!-- 实时 feed + API 网格 -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <section id="live-feed-card" class="card-hover-lift rounded-2xl bg-card border border-border p-5 lg:col-span-1" aria-label="live feed">
+      <section id="live-feed-section" class="card-hover-lift rounded-2xl bg-card border border-border p-5 lg:col-span-1" aria-label="live feed">
         <div class="flex items-center gap-2 mb-3">
           <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-success"></span></span>
           <h2 class="text-sm font-semibold" id="feed-title">实时动态</h2>
@@ -123,7 +123,7 @@
         <div id="live-feed" class="space-y-2.5 max-h-[420px] overflow-y-auto pr-1"></div>
       </section>
 
-      <section id="api-grid-card" class="rounded-2xl bg-card border border-border p-5 lg:col-span-2" aria-label="api grid">
+      <section id="api-grid-section" class="rounded-2xl bg-card border border-border p-5 lg:col-span-2" aria-label="api grid">
         <div class="flex items-center justify-between mb-3">
           <h2 class="text-sm font-semibold" id="api-grid-title">API 状态</h2>
           <div class="flex items-center gap-2">
@@ -140,7 +140,7 @@
     </div>
 
     <!-- 日志时间线（真实数据） -->
-    <section id="logs-card" class="card-hover-lift rounded-2xl bg-card border border-border p-5" aria-label="event logs">
+    <section id="logs-section" class="card-hover-lift rounded-2xl bg-card border border-border p-5" aria-label="event logs">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-sm font-semibold" id="logs-title">事件日志</h2>
         <span class="text-xs text-muted-foreground" id="logs-count"></span>
@@ -150,7 +150,7 @@
   </main>
 
   <!-- 告警对话框 -->
-  <div id="alerts-dialog" role="dialog" aria-modal="true" aria-labelledby="alerts-dialog-title" class="hidden">
+  <div id="alerts-dialog" role="dialog" aria-modal="true" aria-labelledby="alerts-dialog-title" class="hidden" aria-label="alerts dialog">
     <div class="dialog-overlay" onclick="closeAlertsDialog()"></div>
     <div class="dialog-content w-[min(560px,92vw)] rounded-2xl bg-popover border border-border p-5" tabindex="-1">
       <div class="flex items-center justify-between mb-4">

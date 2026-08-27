@@ -29,7 +29,7 @@ export function HeroSection({ stats }: HeroSectionProps) {
           {t('dashboard.globalAIApiMonitoring')}
         </Badge>
 
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+        <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
           <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
             {t('dashboard.title')}
           </span>

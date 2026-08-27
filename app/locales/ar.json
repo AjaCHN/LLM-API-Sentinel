@@ -73,7 +73,8 @@
     "lastHour": "الساعة الماضية",
     "last6Hours": "آخر 6 ساعات",
     "last24Hours": "آخر 24 ساعة",
-    "changeLanguage": "تغيير اللغة"
+    "changeLanguage": "تغيير اللغة",
+    "noData": "لا توجد بيانات مراقبة بعد — جارٍ التحقق الفعلي..."
   },
   "history": {
     "performanceHistory": "سجل الأداء",

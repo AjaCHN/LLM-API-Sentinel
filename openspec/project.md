@@ -1,4 +1,4 @@
-# LLM API Sentinel 项目规范 (v2.10.15)
+# LLM API Sentinel 项目规范 (v2.10.23)
 
 ## 1. 项目概述
 
@@ -30,7 +30,7 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 | 图表 | Recharts 3.8.0 面积图（`ssr:false` 动态导入） | 3.8.0 |
 | 图标 | Lucide React | - |
 | 状态管理 | Zustand 5.0.12 | 5.0.12 |
-| 设计系统 | [design-system.md](design-system.md) | v2.10.15 |
+| 设计系统 | [design-system.md](design-system.md) | v2.10.23 |
 | 国际化 | 自定义 i18n 系统 | - |
 | 时间处理 | date-fns 4.1.0 | 4.1.0 |
 
@@ -117,7 +117,8 @@ LLM API Sentinel 是一个全球主流大模型 API 实时监控与历史可用�
 │   │   ├── i18n.ts               # 国际化系统（语言资源加载）
 │   │   ├── i18n.test.ts          # 国际化单元测试
 │   │   ├── metrics.ts            # 指标计算（平均延迟、可用性等）
-│   │   ├── mock-data.ts          # Mock 数据（开发/测试用）
+│   │   ├── metrics-storage.ts    # 累计指标持久化（可用性/延迟历史真实写入 localStorage，跨刷新累加）
+│   │   ├── mock-data.ts          # Mock 数据（开发/测试用，v2.10.22 起不再作初始状态注入，Supabase 未配置时为空态等待真实探测）
 │   │   ├── monitor.ts            # API 监控核心逻辑（检查 + 重试 + 指标）
 │   │   ├── monitor.test.ts       # 监控逻辑单元测试
 │   │   ├── notification.ts       # 通知处理

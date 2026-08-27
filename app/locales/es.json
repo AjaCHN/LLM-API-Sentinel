@@ -73,7 +73,8 @@
     "lastHour": "Última hora",
     "last6Hours": "Últimas 6 horas",
     "last24Hours": "Últimas 24 horas",
-    "changeLanguage": "Cambiar idioma"
+    "changeLanguage": "Cambiar idioma",
+    "noData": "Aún no hay datos de monitoreo — ejecutando detección real..."
   },
   "history": {
     "performanceHistory": "Historial de rendimiento",

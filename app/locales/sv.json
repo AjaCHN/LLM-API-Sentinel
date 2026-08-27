@@ -73,7 +73,8 @@
     "lastHour": "Senaste timmen",
     "last6Hours": "Senaste 6 timmarna",
     "last24Hours": "Senaste 24 timmarna",
-    "changeLanguage": "Ändra språk"
+    "changeLanguage": "Ändra språk",
+    "noData": "Ingen övervakningsdata ännu — kör verklig detektering..."
   },
   "history": {
     "performanceHistory": "Prestandahistorik",

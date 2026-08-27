@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.10.24] - 2026-08-27
+
+### Style
+- **大号字体使用衬线字体**：`app/style.css` 与 `prototype/assets/styles.css` 新增 `--font-serif` 变量与 `.font-display` 工具类；Hero 主标题、错误页标题等 ≥`text-2xl` 展示性标题套用衬线；纯数据数值（延迟/可用性/重试次数）保持等宽对齐，不套衬线
+- **原型补语义化 id**：`prototype.html` 的 `main-content`、`live-feed-section`、`api-grid-section`、`logs-section` 等主要容器补齐语义化 id，便于测试定位；全局版本展示位统一至 v2.10.24
+
+## [2.10.23] - 2026-08-27
+
+### Docs
+- **统一文档版本号至 v2.10.23**：`openspec/config.yaml`、`project.md`、`ui.md`、`design-system.md` 标题与 `package.json` 同步；`README`/`README_CN`/`docs/roadmap.md`/`docs/contributing.md` 标题与基线同步（此前滞后于代码至 v2.10.15~v2.10.19）
+- **反映 v2.10.22 重大变更**：`openspec/project.md` 目录树补充 `metrics-storage.ts` 并修正 `mock-data.ts` 注释（不再作初始注入）；`docs/roadmap.md` 基线补充「真实探测无演示数据 + 指标持久化」事实
+
+## [2.10.22] - 2026-08-27
+
+### Fix
+- **移除全部演示数据，保证检测真实**: 删除 `useApiMonitor` 初始 `generateMockApiStatuses()` 随机模拟注入（Supabase 未配置/加载失败时改为空态等待真实探测）；修正 `calculateRealMetrics` 累计基数由伪造的 100 次改为从 1 次真实探测起算，首探可用性只能为 100% 或 0%
+- **累计指标持久化**: 新增 `metrics-storage.ts`，将可用性/延迟历史真实写入 localStorage，跨刷新累加而非重置；`ApiStatusGrid` 空态改为真实探测骨架占位，16 个语言补充 `dashboard.noData` 文案
+
 ## [2.10.21] - 2026-08-26
 
 ### Fix

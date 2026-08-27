@@ -97,7 +97,7 @@ export function StatusMonitorSection({
       )}
 
       <div className="mt-6">
-        <ApiStatusGrid statuses={statuses} />
+        <ApiStatusGrid statuses={statuses} isChecking={isChecking} />
       </div>
     </section>
   );

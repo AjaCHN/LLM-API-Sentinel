@@ -1,4 +1,4 @@
-# UI 组件规范文档 (v2.10.15 - Dark Indigo Theme)
+# UI 组件规范文档 (v2.10.23 - Dark Indigo Theme)
 
 ## 1. 设计原则
 

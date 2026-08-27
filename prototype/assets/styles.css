@@ -12,6 +12,9 @@
     "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", "SF Mono",
     Menlo, Consolas, "Liberation Mono", monospace;
+  /* 衬线：用于大号标题/展示性文字（≥24px），零外网依赖 */
+  --font-serif: Georgia, "Times New Roman", "Songti SC", "SimSun",
+    "Noto Serif CJK SC", serif;
 
   /* 语义色彩 · 浅色档（对齐 app/style.css 的 :root 档，由 .light 触发） */
   --color-background: #f8fafc;
@@ -143,6 +146,9 @@
     radial-gradient(circle at 82% 18%, rgba(139, 92, 246, 0.045) 0%, transparent 48%),
     radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.025) 0%, transparent 42%);
 }
+
+/* 大号字体（≥24px 标题/展示文字）使用衬线字体 */
+.font-display { font-family: var(--font-serif); }
 
 /* 语义色工具类（补充 Tailwind 未自动生成的 token 映射） */
 .text-success { color: var(--color-success); }

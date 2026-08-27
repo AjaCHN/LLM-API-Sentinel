@@ -73,7 +73,8 @@
     "lastHour": "पिछले घंटे",
     "last6Hours": "पिछले 6 घंटे",
     "last24Hours": "पिछले 24 घंटे",
-    "changeLanguage": "भाषा बदलें"
+    "changeLanguage": "भाषा बदलें",
+    "noData": "अभी तक कोई मॉनिटरिंग डेटा नहीं — वास्तविक जाँच चल रही है..."
   },
   "history": {
     "performanceHistory": "प्रदर्शन इतिहास",

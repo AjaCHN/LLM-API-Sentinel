@@ -76,7 +76,8 @@
     "lastHour": "Last hour",
     "last6Hours": "Last 6 hours",
     "last24Hours": "Last 24 hours",
-    "changeLanguage": "Change language"
+    "changeLanguage": "Change language",
+    "noData": "No monitoring data yet — running real detection..."
   },
   "share": {
     "title": "Share analysis link",

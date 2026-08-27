@@ -8,7 +8,6 @@ import { ApiStatus, StatusHistory } from '../types';
 import { logError, handleError } from '../lib/error-handler';
 import { performCheck } from '../lib/monitor';
 import { CHECK_INTERVAL } from '../constants';
-import { generateMockApiStatuses } from '../lib/mock-data';
 import {
   toApiStatusUpsert,
   toStatusHistoryInsert,
@@ -121,13 +120,12 @@ export function useApiMonitor() {
     syncToSupabase,
   ]);
 
-  // 初始化时尝试从 Supabase 加载（可选），否则使用本地模拟数据；
-  // 同时自动执行一次主动探测，确保页面加载即有真实监控数据，无需手动点击。
+  // 初始化时尝试从 Supabase 加载（可选，仅取已持久化的真实探测记录）；
+  // 无论是否配置 Supabase，均自动执行一次主动真实探测，保证页面加载即有真实数据。
   useEffect(() => {
     const loadInitialData = async () => {
-      // 未配置 Supabase 时直接使用本地模拟数据，避免向占位端点发起无意义请求
+      // 未配置 Supabase 时不再注入模拟数据，保持空态等待真实探测结果
       if (!isSupabaseConfigured) {
-        setStatuses(generateMockApiStatuses());
         return;
       }
       try {
@@ -138,13 +136,10 @@ export function useApiMonitor() {
         if (data && data.length > 0) {
           const mappedData: ApiStatus[] = data.map((doc) => fromApiStatusRow(doc as Record<string, unknown>));
           setStatuses(mappedData.sort((a, b) => a.name.localeCompare(b.name)));
-        } else {
-          // 如果 Supabase 中没有数据，生成模拟数据
-          setStatuses(generateMockApiStatuses());
         }
+        // Supabase 中无数据时不生成模拟数据，交由下方 runCheck 进行真实探测
       } catch {
-        // 如果 Supabase 加载失败，生成模拟数据
-        setStatuses(generateMockApiStatuses());
+        // Supabase 加载失败时保持空态，交由 runCheck 进行真实探测
       }
     };
 

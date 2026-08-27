@@ -73,7 +73,8 @@
     "lastHour": "Afgelopen uur",
     "last6Hours": "Afgelopen 6 uur",
     "last24Hours": "Afgelopen 24 uur",
-    "changeLanguage": "Taal wijzigen"
+    "changeLanguage": "Taal wijzigen",
+    "noData": "Nog geen monitoringgegevens — echte detectie wordt uitgevoerd..."
   },
   "history": {
     "performanceHistory": "Prestatiegeschiedenis",

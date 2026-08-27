@@ -88,7 +88,8 @@
     "lastHour": "最近1小时",
     "last6Hours": "最近6小时",
     "last24Hours": "最近24小时",
-    "changeLanguage": "切换语言"
+    "changeLanguage": "切换语言",
+    "noData": "暂无监控数据——正在进行真实探测..."
   },
   "history": {
     "performanceHistory": "性能历史",

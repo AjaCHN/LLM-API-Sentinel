@@ -73,7 +73,8 @@
     "lastHour": "Giờ qua",
     "last6Hours": "6 giờ qua",
     "last24Hours": "24 giờ qua",
-    "changeLanguage": "Đổi ngôn ngữ"
+    "changeLanguage": "Đổi ngôn ngữ",
+    "noData": "Chưa có dữ liệu giám sát — đang chạy phát hiện thực tế..."
   },
   "history": {
     "performanceHistory": "Lịch sử hiệu suất",

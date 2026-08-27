@@ -1,4 +1,4 @@
-# LLM API Sentinel 设计系统 (v2.10.15)
+# LLM API Sentinel 设计系统 (v2.10.23)
 
 ## 1. 设计哲学
 
@@ -111,6 +111,8 @@ radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 40%)
 - 数据使用等宽字体 (`font-mono`)，确保数字对齐
 - 所有数值使用 `tabular-nums`（等宽数字对齐）
 - 中文内容行高增加至 1.75
+- **大号字体（≥`text-2xl`，即 24px 及以上）的展示性标题/文字使用衬线字体（`.font-display`，变量 `--font-serif`）**，涵盖 Hero 主标题、页面主标题、Section 大标题、错误页标题等
+- 例外：纯数据数值（如 StatCard 的延迟/可用性、ApiStatusCard 的重试次数）因依赖等宽对齐，仍使用 `font-mono`，不套用衬线
 
 ---
 
