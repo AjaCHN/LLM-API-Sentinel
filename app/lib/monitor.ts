@@ -120,6 +120,9 @@ async function checkApi(api: typeof APIS_TO_CHECK[0], retries: number = 0): Prom
     
     clearTimeout(timeoutId);
     const latency = Date.now() - start;
+    // 注：isOnline 仅代表端点 HTTP 可达（status < 500）。
+    // 多数受监控端点为需鉴权的 /v1/models 接口，无 Key 访问会返回 401/403（<500），
+    // 此时仍判为 online 表示"端点可达"，不代表服务对真实调用方可用。
     const isOnline = response.status < 500;
     
     if (!isOnline && retries < MAX_RETRIES) {

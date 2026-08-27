@@ -1,6 +1,6 @@
 {
   "name": "llm-api-sentinel",
-  "version": "2.10.30",
+  "version": "2.10.31",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@9.15.0",
@@ -9,16 +9,17 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm run preflight && next build",
     "start": "next start",
     "lint": "eslint .",
     "clean": "next clean",
+    "sync:apis": "node scripts/sync-apis.mjs",
+    "preflight": "node scripts/sync-apis.mjs --check",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "@google/genai": "^1.17.0",
     "@hookform/resolvers": "^5.2.1",
     "@radix-ui/react-avatar": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.16",

@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.10.31] - 2026-08-27
+
+### Fix
+- **清理死依赖**: 删除从未调用的 `@google/genai`（零真实调用，仅为体积/供应链风险）；`express`/`helmet` 经核实被 `examples/self-host-server.ts` 自托管服务端真实使用，保留
+- **API 单一真源自动化**: `package.json` 新增 `sync:apis`（复制）与 `preflight`（`--check` 校验）脚本，并将 `preflight` 接入 `build` 前置，本地构建即校验 `supabase/functions/monitor/apis.json` 与前端 `app/constants/apis.json` 一致（CI 已于 v2.10.27 接入相同校验）
+- **废弃模拟数据**: `app/lib/mock-data.ts` 已无任何调用方，重写为废弃占位（本项目自 v2.10.22 起全真实探测）
+- **探测语义澄清**: `monitor.ts` 补注 `isOnline` 仅代表端点 HTTP 可达，需鉴权端点可能返回 401/403 仍判 online
+
 ## [2.10.30] - 2026-08-27
 
 ### Fix
