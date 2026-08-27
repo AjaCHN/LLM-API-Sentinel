@@ -1,4 +1,4 @@
-# UI 组件规范文档 (v2.10.23 - Dark Indigo Theme)
+# UI 组件规范文档 (v2.10.25 - Dark Indigo Theme)
 
 ## 1. 设计原则
 
@@ -104,7 +104,8 @@ interface LatencyHistoryChartProps {
 - 阈值线（1500ms）虚线标注
 - 可交互：图例可点击切换系列显隐（`hiddenSeries`）、hover 显示跟随鼠标的 tooltip（多系列数值 + 垂直扫描线）
 - Tooltip 样式：`bg-popover border-border rounded-xl`，使用 CSS 变量，带 `chart-tooltip` 过渡动画
-- 时间范围 24H / 7D / 30D 切换时曲线形态各异（日内昼夜波动 / 周内工作日峰值 / 30 天趋势+尖峰），末点锚定当前实时延迟
+- 时间范围 1H / 6H / 24H 切换（与 `app/components/DashboardClient.tsx` 的 `TIME_RANGES` 一致），曲线形态各异（小时内密集波动 / 6 小时阶段性 / 24 小时昼夜波动），末点锚定当前实时延迟
+- 历史数据上限：内存保留最近 100 条延迟记录（`app/store/api.ts` 的 `addHistoryEntry` 以 `.slice(-100)` 截断）
 
 ### 2.4 AlertsDropdown
 

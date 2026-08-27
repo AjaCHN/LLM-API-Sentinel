@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.10.25] - 2026-08-27
+
+### Docs
+- **对齐规范与代码/原型**: `design-system.md` §4.2 最大容器宽度由 `max-w-7xl`(1280px) 改为 `max-w-[1400px]`(1400px)，与 `ui.md` 及 `app` 代码一致；`ui.md` 图表时间范围由 "24H/7D/30D" 修正为 "1H/6H/24H"（与 `DashboardClient.tsx` 的 `TIME_RANGES` 一致），并补注历史记录内存上限 100 条（`app/store/api.ts`）
+
 ## [2.10.24] - 2026-08-27
 
 ### Style

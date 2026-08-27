@@ -1,4 +1,4 @@
-# LLM API Sentinel 设计系统 (v2.10.23)
+# LLM API Sentinel 设计系统 (v2.10.25)
 
 ## 1. 设计哲学
 
@@ -133,7 +133,7 @@ radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.03) 0%, transparent 40%)
 - **小桌面 (lg)**: 3 列 API 卡片网格
 - **平板 (sm~lg)**: 2 列 API 卡片网格
 - **移动端 (< sm)**: 1 列 API 卡片网格
-- **最大容器宽度**: `max-w-7xl` (1280px)
+- **最大容器宽度**: `max-w-[1400px]` (1400px，与 `ui.md` 及 `app` 代码一致)
 - **Footer 网格**: 1 列 (移动端) / 3 列 (md+)
 
 ---
