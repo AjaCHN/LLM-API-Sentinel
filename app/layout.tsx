@@ -1,4 +1,4 @@
-// app/layout.tsx v2.10.7
+// app/layout.tsx v2.10.33
 // 安全改进: SITE_URL 默认值使用 localhost 而非生产域名，防止开发环境配置错误
 // 字体策略: 不依赖运行时网络拉取，改用 style.css 中定义的系统字体栈（--font-sans / --font-mono）
 import type { Metadata, Viewport } from 'next';
@@ -110,14 +110,14 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <StructuredData />
         {/* Google Analytics 4 */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7RGKS16M38" />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-0WKWY6YELE" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', 'G-7RGKS16M38');
+              gtag('config', 'G-0WKWY6YELE');
             `,
           }}
         />

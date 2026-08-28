@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.10.33] - 2026-08-28
+
+### Chore / Analytics
+- **更新 Google Analytics 衡量 ID**: `app/layout.tsx` 注入的 GA4 衡量 ID 由 `G-7RGKS16M38` 替换为 `G-0WKWY6YELE`
+
 ## [2.10.32] - 2026-08-28
 
 ### Docs
