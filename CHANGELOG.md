@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.10.32] - 2026-08-28
+
+### Docs
+- **同步 README 版本号**: `README.md`/`README_CN.md` 标题版本号从 v2.10.23/v2.10.24 更新至 v2.10.32，消除与 `package.json` 的脱节
+
+### Chore / Config
+- **恢复构建期 ESLint 检查**: `next.config.mjs` 的 `eslint.ignoreDuringBuilds` 由 `true` 改回 `false`，规范检查不再被跳过
+- **同步 openspec 头注释**: `design-system.md`/`project.md`/`ui.md` 标题版本号统一至 v2.10.32（`changes/` 归档提案属历史记录，保持原值未改）
+
 ## [2.10.31] - 2026-08-27
 
 ### Fix
