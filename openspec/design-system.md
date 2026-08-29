@@ -1,4 +1,4 @@
-# LLM API Sentinel 设计系统 (v2.10.32)
+# LLM API Sentinel 设计系统 (v2.10.35)
 
 ## 1. 设计哲学
 

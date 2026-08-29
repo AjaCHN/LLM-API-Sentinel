@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  📐 设计原型 (Design Prototype, v2.10.24)
+  📐 设计原型 (Design Prototype, v2.10.34)
   - 本 prototype/ 为 app/ 的静态设计原型与对齐基准，描述核心视觉与交互范式：
     · 布局宽度 max-w-[1400px]（app 于 v2.10.5 对齐此值，撤销此前的 1600px 加宽）
     · 网格 xl 断点 4 列、无 2xl 档（app 已对齐）
@@ -15,13 +15,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LLM API Sentinel v2.10.24 | 全球LLM API实时监控</title>
+  <title>LLM API Sentinel v2.10.34 | 全球LLM API实时监控</title>
   <meta name="description" content="LLM API Sentinel — 实时监控全球主流 LLM API 服务健康状态" />
   <link rel="stylesheet" href="assets/styles.css" />
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-ambient min-h-screen font-sans text-foreground antialiased">
-  <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+  <div id="prototype-main" class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
 
     <!-- ============ Header ============ -->
     <header class="sticky top-0 z-40 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 mb-8 bg-background/70 backdrop-blur-xl border-b border-border/60">
@@ -124,6 +124,7 @@
           <a href="components.html" class="hover:text-foreground link-underline transition-colors" data-i18n="docs">文档</a>
           <a href="#" onclick="return false" class="hover:text-foreground link-underline transition-colors" data-i18n="github">GitHub</a>
           <a href="#" onclick="return false" class="hover:text-foreground link-underline transition-colors" data-i18n="issues">问题反馈</a>
+          <span class="font-mono text-xs">v2.10.34</span>
         </div>
       </div>
     </footer>
@@ -185,13 +186,13 @@
           <div class="animate-fade-in-up card-hover-lift rounded-xl border border-border bg-card p-4">
             <div class="flex items-start justify-between gap-2">
               <div class="flex items-center gap-2.5 min-w-0">
-                <span class="w-8 h-8 rounded-lg grid place-items-center" style="background:color-mix(in srgb,${a.color} 15%,transparent);color:color-mix(in srgb,${a.color} 72%,var(--color-foreground))">${providerIcons[a.provider] || ''}</span>
+                <span class="w-8 h-8 rounded-lg grid place-items-center" style="background:alpha(${a.color}, 15, transparent);color:alpha(${a.color}, 72, var(--color-foreground))">${providerIcons[a.provider] || ''}</span>
                 <div class="min-w-0">
                   <div class="font-medium truncate">${a.name}</div>
                   <div class="text-xs text-muted-foreground truncate">${a.provider}</div>
                 </div>
               </div>
-              <span class="px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap" style="background:color-mix(in srgb,${getStatusColor(a.status)} 15%,transparent);color:color-mix(in srgb,${getStatusColor(a.status)} 72%,var(--color-foreground))">${getStatusText(a.status)}</span>
+              <span class="px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap" style="background:alpha(${getStatusColor(a.status)}, 15, transparent);color:alpha(${getStatusColor(a.status)}, 72, var(--color-foreground))">${getStatusText(a.status)}</span>
             </div>
             <div class="grid grid-cols-3 gap-2 mt-4 text-center">
               <div>

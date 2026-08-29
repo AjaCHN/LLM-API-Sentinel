@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- LLM API Sentinel - High-fidelity interactive prototype (prototype.html v2.10.24)
+<!-- LLM API Sentinel - High-fidelity interactive prototype (prototype.html v2.10.34)
  * 复用 assets/app.js + assets/data.js + assets/styles.css
  * 对齐 app/ 当前布局（max-w-[1400px] / .dark 双档语义色）
 -->
@@ -7,7 +7,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LLM API Sentinel · 高保真原型 v2.10.24</title>
+  <title>LLM API Sentinel · 高保真原型 v2.10.34</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="assets/styles.css" />
   <style>
@@ -19,11 +19,7 @@
     .stagger > *:nth-child(4){animation-delay:.22s}
     .stagger > *:nth-child(5){animation-delay:.28s}
     .stagger > *:nth-child(6){animation-delay:.34s}
-    /* 抽屉 */
-    .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:48;opacity:0;pointer-events:none;transition:opacity .25s ease}
-    .drawer-overlay.is-open{opacity:1;pointer-events:auto}
-    .drawer{position:fixed;top:0;right:0;height:100vh;width:min(420px,92vw);background:var(--color-popover);border-left:1px solid var(--color-border);z-index:49;transform:translateX(100%);transition:transform .32s cubic-bezier(0.16,1,0.3,1);overflow-y:auto}
-    .drawer.is-open{transform:translateX(0)}
+    /* 抽屉样式已统一移至 assets/styles.css（.drawer / .drawer-overlay），此处不再重复定义 */
     /* 详情进度环 */
     .ring-track{stroke:var(--color-border)}
     .ring-fill{stroke:var(--color-primary);transition:stroke-dashoffset .8s cubic-bezier(0.16,1,0.3,1)}

@@ -17,6 +17,11 @@ function setTheme(theme) {
   updateThemeIcon();
 }
 function getT() { return i18n[currentLang]; }
+// 统一的 alpha 混色工具：对齐 design-system §2.3 语义 alpha 思路，集中管理 color-mix
+function alpha(color, pct, target) {
+  return `color-mix(in srgb, ${color} ${pct}%, ${target})`;
+}
+
 function getStatusColor(status) {
   return status === 'online' ? 'var(--color-success)'
     : status === 'degraded' ? 'var(--color-warning)'
@@ -148,7 +153,7 @@ function renderStats() {
         <span class="text-sm text-muted-foreground">${s.label}</span>
         <span class="w-2.5 h-2.5 rounded-full" style="background:${s.color};box-shadow:0 0 8px ${s.color}"></span>
       </div>
-      <div class="mt-3 text-3xl font-semibold tabular-nums" style="color:color-mix(in srgb, ${s.color} 80%, var(--color-foreground))">${s.value}</div>
+      <div class="mt-3 text-3xl font-semibold tabular-nums" style="color:alpha(${s.color}, 80, var(--color-foreground))">${s.value}</div>
       <div class="mt-1 text-xs text-muted-foreground">${s.sub}</div>
     </div>
   `).join('');
@@ -169,14 +174,14 @@ function renderAlertsBanner() {
   // 浅色模式下用更高饱和度底色 + 同色文字（color-mix 提升对比度），深色模式保持柔和
   const isDark = getTheme() === 'dark';
   banner.style.background = isDark
-    ? `color-mix(in srgb, ${bg} 14%, var(--color-card))`
-    : `color-mix(in srgb, ${bg} 18%, var(--color-card))`;
-  banner.style.borderColor = `color-mix(in srgb, ${bg} 35%, var(--color-border))`;
+    ? alpha(bg, 14, 'var(--color-card)')
+    : alpha(bg, 18, 'var(--color-card)');
+  banner.style.borderColor = alpha(bg, 35, 'var(--color-border)');
   banner.innerHTML = `
     <div class="flex items-center justify-between gap-3 flex-wrap">
       <div class="flex items-center gap-3 min-w-0">
         <span class="w-3 h-3 rounded-full animate-pulse" style="background:${bg};box-shadow:0 0 10px ${bg}"></span>
-        <span class="font-medium" style="color:color-mix(in srgb, ${bg} 78%, var(--color-foreground))">
+        <span class="font-medium" style="color:alpha(${bg}, 78, var(--color-foreground))">
           ${count > 0 ? `${t.alertBannerPrefix} ${count} ${t.alertBannerSuffix}` : t.noAlerts}
         </span>
         <span class="text-sm text-muted-foreground truncate">
@@ -210,7 +215,7 @@ function openAlertsDialog() {
               <div class="text-xs text-muted-foreground">${a.provider} · ${timeAgo(a.lastChecked)} ${t.updatedAgo}</div>
             </div>
             <div class="flex items-center gap-2">
-              <span class="px-2 py-1 rounded-full text-xs font-medium" style="background:color-mix(in srgb,${getStatusColor(a.status)} 15%,transparent);color:color-mix(in srgb,${getStatusColor(a.status)} 72%,var(--color-foreground))">${getStatusText(a.status)}</span>
+              <span class="px-2 py-1 rounded-full text-xs font-medium" style="background:alpha(${getStatusColor(a.status)}, 15, transparent);color:alpha(${getStatusColor(a.status)}, 72, var(--color-foreground))">${getStatusText(a.status)}</span>
               <button onclick="resolveAlert('${a.id}')" class="px-2.5 py-1 rounded-lg text-xs border border-border hover:bg-secondary transition-colors" aria-label="${t.resolve} ${a.name}">${t.resolve}</button>
             </div>
           </div>`).join('') : `<div class="text-sm text-muted-foreground py-6 text-center">${t.noAlerts}</div>`}
@@ -605,7 +610,7 @@ function renderApiGrid() {
           <span class="h-2.5 w-2.5 rounded-full flex-none ${dotCls}" style="background:${color}"></span>
           <span class="text-sm font-medium truncate">${a.name}</span>
         </div>
-        <span class="text-[11px] px-2 py-0.5 rounded-full" style="background:color-mix(in srgb,${color} 16%,transparent);color:${color}">${getStatusText(a.status)}</span>
+        <span class="text-[11px] px-2 py-0.5 rounded-full" style="background:alpha(${color}, 16, transparent);color:${color}">${getStatusText(a.status)}</span>
       </div>
       <div class="flex items-baseline gap-1">
         <span class="text-xl font-semibold tabular-nums">${a.status === 'offline' ? '—' : a.latency}</span>

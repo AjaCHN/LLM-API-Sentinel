@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.10.35] - 2026-08-29
+
+### Chore / Docs
+- **同步 openspec 文档头注释版本号**: `project.md` / `ui.md` / `design-system.md` 头注释由 `v2.10.32` 更新至 `v2.10.35`，对齐应用 HEAD（同步后应用已 bump 至 v2.10.35）
+
+## [2.10.34] - 2026-08-29
+
+### Chore / Prototype
+- **对齐设计系统语义 alpha token**: `prototype/assets/styles.css` 新增 `--color-*-10/15/20` 语义 alpha 变体（明暗双档），对齐 `openspec/design-system.md §2.3`；`app.js` 抽离 `alpha()` 统一混色工具替换散落的 `color-mix` 硬编码
+- **修复 wireframes 详情抽屉失效**: `wireframes.html` 补齐 `#detail-drawer` DOM 与 `.drawer` 公共样式，使 `openDetail('...')` 调用真正可用
+- **补充语义化 id**: 各原型页主容器加 `#prototype-main`/`#wireframes-main`/`#component-library-main`，便于定位、无障碍与测试
+- **同步原型版本号**: `index.html`/`prototype.html`/`components.html`/`wireframes.html`/`data.js` 标题与文件头由 v2.10.24 统一至 v2.10.34
+
 ## [2.10.33] - 2026-08-28
 
 ### Chore / Analytics
