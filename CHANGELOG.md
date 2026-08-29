@@ -5,6 +5,9 @@
 ### Chore / Docs
 - **同步 openspec 文档头注释版本号**: `project.md` / `ui.md` / `design-system.md` 头注释由 `v2.10.32` 更新至 `v2.10.35`，对齐应用 HEAD（同步后应用已 bump 至 v2.10.35）
 
+### Fix / CI
+- **修复 EdgeOne CI frozen-lockfile 安装失败**: 重新生成 `pnpm-lock.yaml` 使其与 `package.json` 一致，移除 v2.10.31 清理死依赖后遗留的 `@google/genai` 锁文件条目（specifiers 不匹配导致 `ERR_PNPM_OUTDATED_LOCKFILE`）
+
 ## [2.10.34] - 2026-08-29
 
 ### Chore / Prototype
